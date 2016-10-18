@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+  <html lang="en" class="no-js" ng-app="PPVN">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>ScreenHits</title>
+		<meta name="description" content="LIMS for screens">
+		<link rel="shortcut icon" href="../favicon.ico"/>
+    <link rel="stylesheet" type="text/css" href="assets/css/assets.min.css"/>
+    <script src="assets/js/assets.min.js"></script>
+  </head>
+  <body perspective-view-navigation="movedown">
+    <div perspective-view>
+      <md-button class="md-fab md-mini md-primary" aria-label="Show menu" ng-click="showMenu()">
+        <i class="fa fa-lg fa-list-ul"></i>
+      </md-button>
+    </div>
+    <div perspective-view-menu>
+      <nav class="outer-nav">
+        <a href="/"><i class="fa fa-home"></i>&nbspHome</a>
+        <a href="/admin"><i class="fa fa-tachometer"></i>&nbspAdministration</a>
+      </nav>
+    </div>
+  </body>
+</html>

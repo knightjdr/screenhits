@@ -1,0 +1,27 @@
+{
+  "name": "screenhits",
+  "authors": [
+    "knightjdr@gmail.com"
+  ],
+  "description": "LIMS for managing screen data",
+  "main": "",
+  "keywords": [
+    "LIMS",
+    "CRISPR",
+    "RNAi"
+  ],
+  "license": "MIT",
+  "homepage": "",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "font-awesome": "^4.6.3",
+    "angular": "^1.5.8",
+    "angular-material": "^1.1.1"
+  }
+}
