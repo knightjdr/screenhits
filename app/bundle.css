@@ -1,0 +1,65 @@
+@import url(http://fonts.googleapis.com/css?family=Lato:300,400,700);
+*, *:after, *:before {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box; }
+
+body {
+  background-color: #607d8b;
+  font-family: 'Lato', Calibri, Arial, sans-serif; }
+
+a {
+  text-decoration: none;
+  outline: none; }
+
+a:hover, a:focus {
+  outline: none; }
+
+/*ppvn styling*/
+.ppvn-container {
+  background: #607d8b; }
+
+.effect-movedown {
+  background: #455a64; }
+
+.effect-movedown .ppvn-container::after {
+  background: rgba(52, 73, 94, 0.5); }
+
+.effect-movedown .outer-nav a:hover {
+  color: #ffa726; }
+
+.outer-nav {
+  font-weight: 300; }
+
+.outer-nav a:hover {
+  color: #ffdccd; }
+
+.outer-nav a {
+  color: #fff; }
+
+/*nav bar*/
+.navbar {
+  position: fixed;
+  top: 0px; }
+
+/*tooltips*/
+md-tooltip {
+  color: #000; }
+  md-tooltip .md-content {
+    background-color: #ffa726; }
+
+.home {
+  height: 100vh;
+  font-size: 2em;
+  font-weight: 500;
+  color: #FFFFFF;
+  -webkit-transition: color 0.3s;
+  -moz-transition: color 0.3s;
+  transition: color 0.3s;
+  /*flexbox*/
+  display: -webkit-flex;
+  display: flex;
+  -webkit-justify-content: center;
+  justify-content: center;
+  -webkit-align-items: center;
+  align-items: center; }

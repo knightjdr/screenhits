@@ -20,5 +20,10 @@
   "bugs": {
     "url": "https://github.com/knightjdr/screenhits/issues"
   },
-  "homepage": "https://github.com/knightjdr/screenhits#readme"
+  "homepage": "https://github.com/knightjdr/screenhits#readme",
+  "devDependencies": {
+    "gulp-nodemon": "^2.2.1",
+    "gulp-sass": "^2.3.2",
+    "jshint-stylish": "^2.2.1"
+  }
 }

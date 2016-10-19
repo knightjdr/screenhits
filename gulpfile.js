@@ -3,36 +3,41 @@ var concat = require('gulp-concat');
 var expect = require('gulp-expect-file');
 var gulp = require('gulp');
 var jshint = require('gulp-jshint');
+var nodemon = require('gulp-nodemon');
 var rename = require('gulp-rename');
+var sass = require('gulp-sass');
 var uglify = require('gulp-uglify');
 
 var appDirectory = 'app/';
-var assetsDiretory = 'assets/'
+var appSASS = [
+	'layout/layout.scss',
+	'home/home.scss'
+];
+var appJS = [
+		'app.module.js',
+		'app.config.js',
+		'app.routes.js'
+];
+var assetsDirectory = 'assets/'
 var assetsCSS = [
+	'angular-material.css',
 	'font-awesome.css',
 	'normalize.css',
-	'demo.css',
-	'ppvn-angular.css',
-	'angular-material.css'
+	'ppvn-angular.css'
 ];
 var assetsJS = [
 	'angular.min.js',
 	'angular-animate.min.js',
 	'angular-aria.min.js',
 	'angular-material.min.js',
+	'angular-ui-router.min.js',
+	'ct-ui-router-extras.min.js',
 	'ppvn-angular.min.js'
-];
-var assetsBodyJs = [
-	'classie.js',
-	'menu.js'
-];
-var bundleJS = [
-		'app.module.js'
 ];
 
 //minify asset css
 for(var i = 0, iLen = assetsCSS.length; i < iLen; i++) {
-	assetsCSS[i] = assetsDiretory + 'css/' + assetsCSS[i];
+	assetsCSS[i] = assetsDirectory + 'css/' + assetsCSS[i];
 }
 gulp.task('assets-css-minify', function() {
 	return gulp.src(assetsCSS)
@@ -41,61 +46,93 @@ gulp.task('assets-css-minify', function() {
     	path.basename += ".min";
   	}))
     .pipe(cleanCSS())
-    .pipe(gulp.dest(assetsDiretory + 'css/'))
+    .pipe(gulp.dest(assetsDirectory + 'css/'))
 	;
 });
 //concat asset css
 gulp.task('assets-css-concat', ['assets-css-minify'], function() {
-	return gulp.src(assetsDiretory + "css/*.min.css")
+	return gulp.src(assetsDirectory + "css/*.min.css")
 		.pipe(concat('assets.min.css'))
-    .pipe(gulp.dest(assetsDiretory + 'css/'))
+    .pipe(gulp.dest(assetsDirectory + 'css/'))
 	;
 });
 //build asset css
 gulp.task('build-assets-css', ['assets-css-minify', 'assets-css-concat']);
 
+//minify and bundle app css
+appCSS = [];
+for(var i = 0, iLen = appSASS.length; i < iLen; i++) {
+	appSASS[i] = appDirectory + appSASS[i];
+	var currFile = appSASS[i].substring(0, appSASS[i].lastIndexOf('.'));
+	appCSS.push(currFile + '.css');
+}
+gulp.task('sass-convert', function() {
+	gulp.src(appSASS, {base: "./"})
+  	.pipe(sass())
+    .pipe(gulp.dest("./"))
+	;
+});
+gulp.task('css-concat', ['sass-convert'], function() {
+	return gulp.src(appCSS)
+		.pipe(concat('bundle.css'))
+    .pipe(gulp.dest(appDirectory))
+	;
+});
+gulp.task('css-minify', ['sass-convert', 'css-concat'], function() {
+	return gulp.src(appDirectory + 'bundle.css')
+    .pipe(rename(function (path) {
+    	path.basename += ".min";
+  	}))
+    .pipe(cleanCSS())
+    .pipe(gulp.dest(appDirectory))
+	;
+});
+//build app css
+gulp.task('build-css', ['sass-convert', 'css-concat', 'css-minify']);
+
+//jshint
 gulp.task('jshint', function() {
-  return gulp.src(jsSource)
+  return gulp.src(appJS)
     .pipe(jshint())
     .pipe(jshint.reporter('jshint-stylish'));
 });
 
 //bundle asset javascript
 for(var i = 0, iLen = assetsJS.length; i < iLen; i++) {
-	assetsJS[i] = assetsDiretory + 'js/' + assetsJS[i];
+	assetsJS[i] = assetsDirectory + 'js/' + assetsJS[i];
 }
 gulp.task('assets-js-bundle', function() {
 	return gulp.src(assetsJS)
 		.pipe(expect(assetsJS))
 		.pipe(concat('assets.min.js'))
-    .pipe(gulp.dest(assetsDiretory + 'js/'))
-	;
-});
-
-//minify body asset javascript
-for(var i = 0, iLen = assetsBodyJs.length; i < iLen; i++) {
-	assetsBodyJs[i] = assetsDiretory + 'js/' + assetsBodyJs[i];
-}
-gulp.task('assets-body-js', function() {
-	return gulp.src(assetsBodyJs)
-		.pipe(expect(assetsBodyJs))
-		.pipe(concat('assets.body.js'))
-    .pipe(gulp.dest(assetsDiretory + 'js/'))
+    .pipe(gulp.dest(assetsDirectory + 'js/'))
 	;
 });
 
 //minify and bundle app javascript
-for(var i = 0, iLen = bundleJS.length; i < iLen; i++) {
-	bundleJS[i] = appDirectory + bundleJS[i];
+for(var i = 0, iLen = appJS.length; i < iLen; i++) {
+	appJS[i] = appDirectory + appJS[i];
 }
-gulp.task('js-minify', function() {
-	return gulp.src(bundleJS)
+gulp.task('js-minify', ['jshint'], function() {
+	return gulp.src(appJS)
 		.pipe(concat('bundle.js'))
     .pipe(gulp.dest(appDirectory))
     .pipe(rename('bundle.min.js'))
     .pipe(uglify())
     .pipe(gulp.dest(appDirectory))
 	;
+});
+
+gulp.task('dev', function() {
+	/*nodemon({
+  	script: 'server/index.js',
+    watch: ["server/index.js", "server/config.js", "server/app/"],
+    ext: 'js'
+   }).on('restart', function() {
+   	gulp.src('server/index.js')
+  });*/
+	gulp.watch(appSASS, ['build-css']);
+	gulp.watch(appJS, ['js-minify']);
 });
 
 gulp.task('build', function() {

@@ -1,24 +1,33 @@
 <!DOCTYPE html>
-  <html lang="en" class="no-js" ng-app="PPVN">
+<html lang="en" class="no-js">
   <head>
     <meta charset="UTF-8">
+    <base href="/">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 		<title>ScreenHits</title>
 		<meta name="description" content="LIMS for screens">
 		<link rel="shortcut icon" href="../favicon.ico"/>
     <link rel="stylesheet" type="text/css" href="assets/css/assets.min.css"/>
+    <link rel="stylesheet" type="text/css" href="app/bundle.min.css"/>
     <script src="assets/js/assets.min.js"></script>
+    <script src="app/bundle.min.js"></script>
   </head>
-  <body perspective-view-navigation="movedown">
+  <body perspective-view-navigation="movedown" ng-app="app">
     <div perspective-view>
-      <md-button class="md-fab md-mini md-primary" aria-label="Show menu" ng-click="showMenu()">
-        <i class="fa fa-lg fa-list-ul"></i>
-      </md-button>
+      <div class="navbar">
+        <md-button class="md-fab md-mini md-accent" aria-label="Show menu" ng-click="showMenu()">
+          <i class="fa fa-lg fa-list-ul"></i>
+          <md-tooltip md-direction="right">
+            Menu
+          </md-tooltip>
+        </md-button>
+      </div>
+      <div ui-view="home" ng-show="$state.current.name == 'root' || $state.current.name == 'root.home'"></div>
     </div>
     <div perspective-view-menu>
       <nav class="outer-nav">
-        <a href="/"><i class="fa fa-home"></i>&nbspHome</a>
-        <a href="/admin"><i class="fa fa-tachometer"></i>&nbspAdministration</a>
+        <a ui-sref="root.home"><i class="fa fa-home"></i>&nbspHome</a>
+        <a ui-sref="root.admin"><i class="fa fa-tachometer"></i>&nbspAdministration</a>
       </nav>
     </div>
   </body>
