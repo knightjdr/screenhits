@@ -25,17 +25,18 @@ a:hover, a:focus {
 .effect-movedown .ppvn-container::after {
   background: rgba(52, 73, 94, 0.5); }
 
-.effect-movedown .outer-nav a:hover {
-  color: #ffa726; }
+.effect-movedown .outer-nav a:hover i {
+  color: #ff5722; }
 
 .outer-nav {
   font-weight: 300; }
 
-.outer-nav a:hover {
-  color: #ffdccd; }
-
+.outer-nav a i,
 .outer-nav a {
-  color: #fff; }
+  color: #ffa726; }
+
+.outer-nav a:hover i {
+  color: #ff5722; }
 
 /*nav bar*/
 .navbar {
