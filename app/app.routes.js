@@ -17,16 +17,22 @@
 					sticky: true,
 					dsr: true,
 					views: {
+						'admin': {
+							templateUrl: "app/admin/admin.html"
+						},
 						'error': {
 							templateUrl: "app/404/404.html"
 						},
 						'home': {
 							templateUrl: "app/home/home.html"
 						},
-						'admin': {
-							templateUrl: "app/admin/admin.html"
+						'treasure': {
+							templateUrl: "app/treasure/treasure.html"
 						}
 					}
+       	})
+				.state('root.admin', {
+         	url: "admin"
        	})
 				.state('root.error', {
 					url: "404"
@@ -34,8 +40,8 @@
 				.state('root.home', {
 					url: ""
 				})
-				.state('root.admin', {
-         	url: "admin",
+				.state('root.treasure', {
+         	url: "treasure"
        	})
 			;
 

@@ -2,4 +2,16 @@
   <div class="flex-item">
     <img src="app/images/logo.png" />
   </div>
+  <div class="flex-item">
+    <div id="google-signin" google-signin clientid="498894175021-2v85kl2dnmnsqsaqo94a5ls6gsjbj7u4" ng-controller="signin as vm">
+      <span class="google-icon"></span>
+      <span class="google-text">Sign in</span>
+      <span class="google-sign-out" google-signout ng-show="vm.signedIn">
+        <i class="fa fa-sign-out"></i>
+        <md-tooltip md-direction="right">
+          Sign out
+        </md-tooltip>
+      </span>
+    </div>
+  </div>
 </div>

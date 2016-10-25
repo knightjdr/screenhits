@@ -10,13 +10,23 @@ var uglify = require('gulp-uglify');
 
 var appDirectory = 'app/';
 var appSASS = [
+	'layout/_palette.scss',
 	'layout/layout.scss',
-	'home/home.scss'
+	'404/404.scss',
+	'treasure/treasure.scss',
+	'home/home.scss',
+	'signin/signin.scss'
 ];
 var appJS = [
 		'app.module.js',
 		'app.config.js',
-		'app.routes.js'
+		'app.routes.js',
+		'404/404.controller.js',
+		'signin/credentials.service.js',
+		'signin/signout-unload.service.js',
+		'signin/signin.directive.js',
+		'signin/signout.directive.js',
+		'signin/signin.controller.js'
 ];
 var assetsDirectory = 'assets/'
 var assetsCSS = [

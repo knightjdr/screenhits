@@ -2,6 +2,6 @@
 	'use strict';
 
 	angular
-		.module('app', ['ngMaterial', 'PPVN', 'ui.router', 'ct.ui.router.extras'])
+		.module('app', ['ct.ui.router.extras', 'ngMaterial', 'PPVN', 'ui.router'])
 	;
 })();

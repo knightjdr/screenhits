@@ -1,9 +1,9 @@
 @import '../layout/palette';
 
-.home {
+.error {
   height: 100vh;
-  font-size: 2em;
-  font-weight: 500;
+  font-size: 1em;
+  font-weight: 400;
   color: white;
   -webkit-transition: color 0.3s;
   -moz-transition: color 0.3s;
@@ -17,4 +17,18 @@
 	align-items: center;
   -webkit-flex-direction: column;
   flex-direction: column;
+}
+
+.map-tooltip {
+  position: relative;
+}
+.map-tooltip-start {
+  @extend .map-tooltip;
+  left: 118px;
+  top: 106px;
+}
+.map-tooltip-treasure {
+  @extend .map-tooltip;
+  left: 365px;
+  top: 300px;
 }

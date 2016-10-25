@@ -1,4 +1,14 @@
+/*colors*/
 @import url(http://fonts.googleapis.com/css?family=Lato:300,400,700);
+.primary {
+  color: #607d8b; }
+
+.primary-h700 {
+  color: #455a64; }
+
+.accent-h400 {
+  color: #ffa726; }
+
 *, *:after, *:before {
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
@@ -9,6 +19,7 @@ body {
   font-family: 'Lato', Calibri, Arial, sans-serif; }
 
 a {
+  color: #ffa726;
   text-decoration: none;
   outline: none; }
 
@@ -25,18 +36,8 @@ a:hover, a:focus {
 .effect-movedown .ppvn-container::after {
   background: rgba(52, 73, 94, 0.5); }
 
-.effect-movedown .outer-nav a:hover i {
-  color: #ff5722; }
-
 .outer-nav {
   font-weight: 300; }
-
-.outer-nav a i,
-.outer-nav a {
-  color: #ffa726; }
-
-.outer-nav a:hover i {
-  color: #ff5722; }
 
 /*nav bar*/
 .navbar {
@@ -45,15 +46,44 @@ a:hover, a:focus {
 
 /*tooltips*/
 md-tooltip {
-  color: #000; }
+  color: #455a64;
+  font-weight: 500;
+  font-size: 12px; }
   md-tooltip .md-content {
     background-color: #ffa726; }
 
-.home {
+md-tooltip.opaque .md-content {
+  opacity: 1; }
+
+/*cursors*/
+.pointer {
+  cursor: pointer; }
+
+/*margins and positioning*/
+.m-l-2 {
+  margin-left: 2px; }
+
+.m-l-3 {
+  margin-left: 3px; }
+
+.m-t-30 {
+  margin-top: 30px; }
+
+/*colors*/
+.primary {
+  color: #607d8b; }
+
+.primary-h700 {
+  color: #455a64; }
+
+.accent-h400 {
+  color: #ffa726; }
+
+.error {
   height: 100vh;
-  font-size: 2em;
-  font-weight: 500;
-  color: #FFFFFF;
+  font-size: 1em;
+  font-weight: 400;
+  color: white;
   -webkit-transition: color 0.3s;
   -moz-transition: color 0.3s;
   transition: color 0.3s;
@@ -63,4 +93,130 @@ md-tooltip {
   -webkit-justify-content: center;
   justify-content: center;
   -webkit-align-items: center;
-  align-items: center; }
+  align-items: center;
+  -webkit-flex-direction: column;
+  flex-direction: column; }
+
+.map-tooltip, .map-tooltip-start, .map-tooltip-treasure {
+  position: relative; }
+
+.map-tooltip-start {
+  left: 118px;
+  top: 106px; }
+
+.map-tooltip-treasure {
+  left: 365px;
+  top: 300px; }
+
+/*colors*/
+.primary {
+  color: #607d8b; }
+
+.primary-h700 {
+  color: #455a64; }
+
+.accent-h400 {
+  color: #ffa726; }
+
+.treasure {
+  height: 100vh;
+  font-size: 1em;
+  font-weight: 400;
+  color: white;
+  -webkit-transition: color 0.3s;
+  -moz-transition: color 0.3s;
+  transition: color 0.3s;
+  /*flexbox*/
+  display: -webkit-flex;
+  display: flex;
+  -webkit-justify-content: center;
+  justify-content: center;
+  -webkit-align-items: center;
+  align-items: center;
+  -webkit-flex-direction: column;
+  flex-direction: column; }
+
+/*colors*/
+.primary {
+  color: #607d8b; }
+
+.primary-h700 {
+  color: #455a64; }
+
+.accent-h400 {
+  color: #ffa726; }
+
+.home {
+  height: 100vh;
+  font-size: 2em;
+  font-weight: 500;
+  color: white;
+  -webkit-transition: color 0.3s;
+  -moz-transition: color 0.3s;
+  transition: color 0.3s;
+  /*flexbox*/
+  display: -webkit-flex;
+  display: flex;
+  -webkit-justify-content: center;
+  justify-content: center;
+  -webkit-align-items: center;
+  align-items: center;
+  -webkit-flex-direction: column;
+  flex-direction: column; }
+
+/*colors*/
+.primary {
+  color: #607d8b; }
+
+.primary-h700 {
+  color: #455a64; }
+
+.accent-h400 {
+  color: #ffa726; }
+
+#google-signin {
+  display: inline-block;
+  border-radius: 4px;
+  border: 2px solid #e64a19;
+  background-color: white;
+  height: 36px;
+  width: auto;
+  padding: none;
+  font-size: 0; }
+
+#google-signin:hover {
+  cursor: pointer; }
+
+.google-icon {
+  background-image: url("images/google.png");
+  background-size: 32px 32px;
+  display: inline-block;
+  vertical-align: top;
+  width: 32px;
+  height: 32px;
+  padding-left: 5px;
+  padding-right: 5px; }
+
+.google-text {
+  display: inline-block;
+  vertical-align: top;
+  padding-left: 25px;
+  padding-right: 25px;
+  height: 32px;
+  line-height: 32px;
+  font-size: 18px;
+  font-weight: bold;
+  color: white;
+  background-color: #e64a19;
+  font-family: 'Roboto', sans-serif; }
+
+.google-sign-out {
+  display: inline-block;
+  vertical-align: top;
+  padding-right: 5px;
+  height: 32px;
+  line-height: 32px;
+  font-size: 18px;
+  color: white;
+  background-color: #e64a19;
+  font-family: 'Roboto', sans-serif; }

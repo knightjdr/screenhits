@@ -1,11 +1,13 @@
+@import 'palette';
 @import url(http://fonts.googleapis.com/css?family=Lato:300,400,700);
 *, *:after, *:before { -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box; }
 
 body {
-	background-color: #607d8b;
+	background-color: $primary;
 	font-family: 'Lato', Calibri, Arial, sans-serif;
 }
 a {
+	color: $accent-h400;
 	text-decoration: none;
 	outline: none;
 }
@@ -15,26 +17,16 @@ a:hover, a:focus {
 
 /*ppvn styling*/
 .ppvn-container {
-  background: #607d8b;
+  background: $primary;
 }
 .effect-movedown {
-  background: #455a64;
+  background: $primary-h700;
 }
 .effect-movedown .ppvn-container::after {
   background: rgba(52, 73, 94, 0.5);
 }
-.effect-movedown .outer-nav a:hover i {
-  color: #ff7043;
-}
 .outer-nav {
 	font-weight: 300;
-}
-.outer-nav a i,
-.outer-nav a {
-  color: #ffa726;
-}
-.outer-nav a:hover i {
-  color: #ff7043;
 }
 
 /*nav bar*/
@@ -45,8 +37,31 @@ a:hover, a:focus {
 
 /*tooltips*/
 md-tooltip {
-	color: #000;
+	color: $primary-h700;
+	font-weight: 500;
+	font-size: 12px;
   .md-content {
-  	background-color: #ffa726;
+  	background-color: $accent-h400;
   }
+}
+md-tooltip.opaque {
+  .md-content {
+		opacity: 1;
+  }
+}
+
+/*cursors*/
+.pointer {
+	cursor: pointer;
+}
+
+/*margins and positioning*/
+.m-l-2 {
+	margin-left: 2px;
+}
+.m-l-3 {
+	margin-left: 3px;
+}
+.m-t-30 {
+	margin-top: 30px;
 }

@@ -1,4 +1,14 @@
+/*colors*/
 @import url(http://fonts.googleapis.com/css?family=Lato:300,400,700);
+.primary {
+  color: #607d8b; }
+
+.primary-h700 {
+  color: #455a64; }
+
+.accent-h400 {
+  color: #ffa726; }
+
 *, *:after, *:before {
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
@@ -9,6 +19,7 @@ body {
   font-family: 'Lato', Calibri, Arial, sans-serif; }
 
 a {
+  color: #ffa726;
   text-decoration: none;
   outline: none; }
 
@@ -25,18 +36,8 @@ a:hover, a:focus {
 .effect-movedown .ppvn-container::after {
   background: rgba(52, 73, 94, 0.5); }
 
-.effect-movedown .outer-nav a:hover i {
-  color: #ff7043; }
-
 .outer-nav {
   font-weight: 300; }
-
-.outer-nav a i,
-.outer-nav a {
-  color: #ffa726; }
-
-.outer-nav a:hover i {
-  color: #ff7043; }
 
 /*nav bar*/
 .navbar {
@@ -45,6 +46,25 @@ a:hover, a:focus {
 
 /*tooltips*/
 md-tooltip {
-  color: #000; }
+  color: #455a64;
+  font-weight: 500;
+  font-size: 12px; }
   md-tooltip .md-content {
     background-color: #ffa726; }
+
+md-tooltip.opaque .md-content {
+  opacity: 1; }
+
+/*cursors*/
+.pointer {
+  cursor: pointer; }
+
+/*margins and positioning*/
+.m-l-2 {
+  margin-left: 2px; }
+
+.m-l-3 {
+  margin-left: 3px; }
+
+.m-t-30 {
+  margin-top: 30px; }

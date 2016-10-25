@@ -8,10 +8,10 @@
 .accent-h400 {
   color: #ffa726; }
 
-.home {
+.treasure {
   height: 100vh;
-  font-size: 2em;
-  font-weight: 500;
+  font-size: 1em;
+  font-weight: 400;
   color: white;
   -webkit-transition: color 0.3s;
   -moz-transition: color 0.3s;

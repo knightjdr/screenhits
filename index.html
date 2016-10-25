@@ -15,19 +15,43 @@
   <body perspective-view-navigation="movedown" ng-app="app">
     <div perspective-view>
       <div class="navbar">
-        <md-button class="md-fab md-mini md-accent" aria-label="Show menu" ng-click="showMenu()">
-          <i class="fa fa-lg fa-list-ul"></i>
+        <md-button class="md-fab md-mini md-accent" aria-label="Show menu" ng-click="showMenu()" md-autohide="true">
+          <i class="fa fa-lg fa-list-ul primary-h700"></i>
           <md-tooltip md-direction="right">
             Menu
           </md-tooltip>
         </md-button>
       </div>
+      <div ui-view="error" ng-show="$state.includes('root.error')"></div>
       <div ui-view="home" ng-show="$state.current.name == 'root' || $state.current.name == 'root.home'"></div>
+      <div ui-view="treasure" ng-show="$state.includes('root.treasure')"></div>
     </div>
     <div perspective-view-menu>
       <nav class="outer-nav">
-        <a ui-sref="root.home"><i class="fa fa-home"></i>&nbspHome</a>
-        <a ui-sref="root.admin"><i class="fa fa-tachometer"></i>&nbspAdministration</a>
+        <a ui-sref="root.home">
+          <md-button class="md-fab md-mini md-accent" aria-label="Home">
+            <i class="fa fa-home fa-lg primary-h700"></i>
+            <md-tooltip md-direction="bottom">
+              Home
+            </md-tooltip>
+          </md-button>
+        </a>
+        <a ui-sref="root.admin">
+          <md-button class="md-fab md-mini md-accent" aria-label="Administration">
+            <i class="fa fa-tachometer fa-lg primary-h700 m-l-2"></i>
+            <md-tooltip md-direction="bottom">
+              Administration
+            </md-tooltip>
+          </md-button>
+        </a>
+        <a ui-sref="root.home">
+          <md-button class="md-fab md-mini md-accent google-sign-out" aria-label="Sign out" google-signout ng-controller="signin as vm" ng-show="vm.signedIn">
+            <i class="fa fa-sign-out fa-lg primary-h700 m-l-3"></i>
+            <md-tooltip md-direction="bottom">
+              Sign out
+            </md-tooltip>
+          </md-button>
+        </a>
       </nav>
     </div>
   </body>

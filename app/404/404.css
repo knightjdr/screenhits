@@ -8,10 +8,10 @@
 .accent-h400 {
   color: #ffa726; }
 
-.home {
+.error {
   height: 100vh;
-  font-size: 2em;
-  font-weight: 500;
+  font-size: 1em;
+  font-weight: 400;
   color: white;
   -webkit-transition: color 0.3s;
   -moz-transition: color 0.3s;
@@ -25,3 +25,14 @@
   align-items: center;
   -webkit-flex-direction: column;
   flex-direction: column; }
+
+.map-tooltip, .map-tooltip-start, .map-tooltip-treasure {
+  position: relative; }
+
+.map-tooltip-start {
+  left: 118px;
+  top: 106px; }
+
+.map-tooltip-treasure {
+  left: 365px;
+  top: 300px; }
