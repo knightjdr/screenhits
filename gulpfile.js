@@ -23,6 +23,7 @@ var appJS = [
 		'app.routes.js',
 		'404/404.controller.js',
 		'signin/credentials.service.js',
+		'signin/signin-callbacks.service.js',
 		'signin/signout-unload.service.js',
 		'signin/signin.directive.js',
 		'signin/signout.directive.js',
@@ -44,6 +45,7 @@ var assetsJS = [
 	'ct-ui-router-extras.min.js',
 	'ppvn-angular.min.js'
 ];
+var testJS = 'app/*/tests/*.spec.js'
 
 //minify asset css
 for(var i = 0, iLen = assetsCSS.length; i < iLen; i++) {
@@ -133,6 +135,13 @@ gulp.task('js-minify', ['jshint'], function() {
 	;
 });
 
+//check test JS
+gulp.task('test-jshint', function() {
+  return gulp.src(testJS)
+    .pipe(jshint())
+    .pipe(jshint.reporter('jshint-stylish'));
+});
+
 gulp.task('dev', function() {
 	/*nodemon({
   	script: 'server/index.js',
@@ -143,6 +152,7 @@ gulp.task('dev', function() {
   });*/
 	gulp.watch(appSASS, ['build-css']);
 	gulp.watch(appJS, ['js-minify']);
+	gulp.watch(testJS, ['test-jshint']);
 });
 
 gulp.task('build', function() {

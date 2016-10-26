@@ -107,6 +107,36 @@
 	'use strict';
 
 	angular.module('app')
+    .service('signinCallbacks', ['credentials', '$rootScope', function(credentials, $rootScope) {
+      var data = {};
+			this.success = function(authResult) {
+        for(var key in authResult) {
+           if(typeof(authResult[key]) === 'object') {
+             if(authResult[key].hasOwnProperty('U3')) {
+               data.email = authResult[key].U3;
+             }
+             if(authResult[key].hasOwnProperty('ig')) {
+               data.name = authResult[key].ig;
+             }
+             if(authResult[key].hasOwnProperty('access_token')) {
+               data.token = authResult[key].access_token;
+             }
+           }
+         }
+         credentials.set(data);
+         $rootScope.$broadcast('signin:updated', {text: 'Signed in'});
+			};
+			this.failure = function(err) {
+				credentials.set({});
+			};
+		}])
+  ;
+})();
+
+(function() {
+	'use strict';
+
+	angular.module('app')
     .service('signoutUnload', ['$window', function($window) {
       $window.onbeforeunload = function (e) {
         var auth2 = gapi.auth2.getAuthInstance();
@@ -133,44 +163,21 @@
 	'use strict';
 
 	angular.module('app')
-		.directive('googleSignin', ['credentials', function (credentials) {
+		.directive('googleSignin', ['signinCallbacks', function (signinCallbacks) {
          var ending = /\.apps\.googleusercontent\.com$/;
          return {
              restrict: 'A',
              link: function (scope, element, attrs) {
                  attrs.clientid += (ending.test(attrs.clientid) ? '' : '.apps.googleusercontent.com');
-								 attrs.$set('data-clientid', attrs.clientid);
                  var defaults = {
-                     onsuccess: onSignIn,
-                     cookiepolicy: 'single_host_origin',
-                     onfailure: onSignInFailure,
-                     scope: 'email',
-										 access_type: 'offline',
-                     customtargetid: 'google-signin'
+									 access_type: 'offline',
+									 clientid: attrs.clientid,
+									 cookiepolicy: 'single_host_origin',
+									 customtargetid: 'google-signin',
+									 onfailure: signinCallbacks.failure,
+									 onsuccess: signinCallbacks.success,
+									 scope: 'email'
                  };
-                 defaults.clientid = attrs.clientid;
-
-                 function onSignIn(authResult) {
-									 var data = {};
-									 for(var key in authResult) {
-											if(typeof(authResult[key]) === 'object') {
-												if(authResult[key].hasOwnProperty('U3')) {
-													data.email = authResult[key].U3;
-												}
-												if(authResult[key].hasOwnProperty('ig')) {
-													data.name = authResult[key].ig;
-												}
-												if(authResult[key].hasOwnProperty('access_token')) {
-													data.token = authResult[key].access_token;
-												}
-											}
-										}
-										credentials.set(data);
-										document.getElementsByClassName('google-text')[0].innerHTML = 'Signed in';
-                 }
-                 function onSignInFailure(err) {
-									 	credentials.set({});
-                 }
 
                  // Asynchronously load the G+ SDK and font
 								 var links = document.getElementsByTagName('link')[0];
@@ -206,7 +213,7 @@
 	'use strict';
 
 	angular.module('app')
-		.directive('googleSignout', ['credentials', '$state', function (credentials, $state) {
+		.directive('googleSignout', ['credentials', '$rootScope', '$state', function (credentials, $rootScope, $state) {
       return {
         restrict: 'A',
         link: function (scope, element, attrs) {
@@ -215,8 +222,7 @@
             var auth2 = gapi.auth2.getAuthInstance();
     				auth2.disconnect().then(function () {
               credentials.set({});
-              document.getElementsByClassName('google-text')[0].innerHTML = 'Sign in';
-              $state.go('root.home');
+              $rootScope.$broadcast('signin:updated', {text: 'Sign in'});
             });
           });
         }
@@ -232,6 +238,7 @@
 		.controller('signin', ['$scope', 'credentials', function ($scope, credentials) {
       var vm = this;
       vm.signedIn = false;
+			vm.signedInText = 'Sign in';
       //watch for credential changes
       $scope.$on('credentials:updated', function(event, data) {
         if(data.name) {
@@ -239,6 +246,13 @@
           $scope.$digest();
         } else {
           vm.signedIn = false;
+          $scope.$digest();
+        }
+      });
+			//watch for text changes
+			$scope.$on('signin:updated', function(event, data) {
+        if(data.text) {
+          vm.signedInText = data.text;
           $scope.$digest();
         }
       });

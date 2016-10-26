@@ -11,44 +11,21 @@
 	'use strict';
 
 	angular.module('app')
-		.directive('googleSignin', ['credentials', function (credentials) {
+		.directive('googleSignin', ['signinCallbacks', function (signinCallbacks) {
          var ending = /\.apps\.googleusercontent\.com$/;
          return {
              restrict: 'A',
              link: function (scope, element, attrs) {
                  attrs.clientid += (ending.test(attrs.clientid) ? '' : '.apps.googleusercontent.com');
-								 attrs.$set('data-clientid', attrs.clientid);
                  var defaults = {
-                     onsuccess: onSignIn,
-                     cookiepolicy: 'single_host_origin',
-                     onfailure: onSignInFailure,
-                     scope: 'email',
-										 access_type: 'offline',
-                     customtargetid: 'google-signin'
+									 access_type: 'offline',
+									 clientid: attrs.clientid,
+									 cookiepolicy: 'single_host_origin',
+									 customtargetid: 'google-signin',
+									 onfailure: signinCallbacks.failure,
+									 onsuccess: signinCallbacks.success,
+									 scope: 'email'
                  };
-                 defaults.clientid = attrs.clientid;
-
-                 function onSignIn(authResult) {
-									 var data = {};
-									 for(var key in authResult) {
-											if(typeof(authResult[key]) === 'object') {
-												if(authResult[key].hasOwnProperty('U3')) {
-													data.email = authResult[key].U3;
-												}
-												if(authResult[key].hasOwnProperty('ig')) {
-													data.name = authResult[key].ig;
-												}
-												if(authResult[key].hasOwnProperty('access_token')) {
-													data.token = authResult[key].access_token;
-												}
-											}
-										}
-										credentials.set(data);
-										document.getElementsByClassName('google-text')[0].innerHTML = 'Signed in';
-                 }
-                 function onSignInFailure(err) {
-									 	credentials.set({});
-                 }
 
                  // Asynchronously load the G+ SDK and font
 								 var links = document.getElementsByTagName('link')[0];
