@@ -118,6 +118,34 @@ md-tooltip.opaque .md-content {
 .accent-h400 {
   color: #ffa726; }
 
+.close {
+  height: 100vh;
+  font-size: 1em;
+  font-weight: 400;
+  color: white;
+  -webkit-transition: color 0.3s;
+  -moz-transition: color 0.3s;
+  transition: color 0.3s;
+  /*flexbox*/
+  display: -webkit-flex;
+  display: flex;
+  -webkit-justify-content: center;
+  justify-content: center;
+  -webkit-align-items: center;
+  align-items: center;
+  -webkit-flex-direction: column;
+  flex-direction: column; }
+
+/*colors*/
+.primary {
+  color: #607d8b; }
+
+.primary-h700 {
+  color: #455a64; }
+
+.accent-h400 {
+  color: #ffa726; }
+
 .treasure {
   height: 100vh;
   font-size: 1em;

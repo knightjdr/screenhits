@@ -1,3 +1,16 @@
+(function (window) {
+  window.__env = window.__env || {};
+  //API url
+  window.__env.apiUrl = 'http://localhost:8003';
+  //base url
+  window.__env.baseUrl = '/';
+  //support e-mail
+  window.__env.email = 'jknight@lunenfeld.ca';
+  //gapi client ID
+  window.__env.clientID = '498894175021-2v85kl2dnmnsqsaqo94a5ls6gsjbj7u4';
+
+}(this));
+
 (function() {
 	'use strict';
 
@@ -11,6 +24,7 @@
 
 	angular
     .module('app')
+		.constant('__env', window.__env)
     .config(['$mdThemingProvider', function($mdThemingProvider) {
       $mdThemingProvider.theme('default')
       .primaryPalette('blue-grey')
@@ -29,40 +43,46 @@
 		}])
     .config(['$locationProvider', '$stateProvider', '$urlRouterProvider', function($locationProvider, $stateProvider, $urlRouterProvider) {
 			$urlRouterProvider
-				.otherwise("/404")
+				.otherwise('/404')
 			;
 
 			$stateProvider
         .state('root', {
-          url: "/",
+          url: '/',
 					sticky: true,
 					dsr: true,
 					views: {
 						'admin': {
-							templateUrl: "app/admin/admin.html"
+							templateUrl: 'app/admin/admin.html'
+						},
+						'close': {
+							templateUrl: 'app/404/close.html'
 						},
 						'error': {
-							templateUrl: "app/404/404.html"
+							templateUrl: 'app/404/404.html'
 						},
 						'home': {
-							templateUrl: "app/home/home.html"
+							templateUrl: 'app/home/home.html'
 						},
 						'treasure': {
-							templateUrl: "app/treasure/treasure.html"
+							templateUrl: 'app/404/treasure.html'
 						}
 					}
        	})
 				.state('root.admin', {
-         	url: "admin"
+         	url: 'admin'
        	})
+				.state('root.close', {
+         	url: 'treasure'
+				})
 				.state('root.error', {
-					url: "404"
+					url: '404'
 				})
 				.state('root.home', {
-					url: ""
+					url: ''
 				})
 				.state('root.treasure', {
-         	url: "treasure"
+         	url: '0111010001110010011001010110000101110011011101010111001001100101'
        	})
 			;
 
@@ -76,11 +96,12 @@
 	'use strict';
 
 	angular.module('app')
-		.controller('404', ['$scope', '$state', '$window', function ($scope, $state, $window) {
+		.controller('404', ['__env', '$scope', '$window', function (__env, $scope, $window) {
       var vm = this;
-      vm.supportEmail = 'jknight@lunenfeld.ca';
+      vm.supportEmail = __env.email;
       vm.reportError = function(subject) {
-        $window.open("mailto:"+ vm.supportEmail + "?subject=" + subject, "_self");
+				vm.windowLocation = 'mailto:'+ vm.supportEmail + '?subject=' + subject;
+        window.location.href = vm.windowLocation;
       };
     }])
   ;
@@ -144,9 +165,7 @@
         });
       };
 		}])
-    .run(['signoutUnload', function(signoutUnload) {
-      // Must invoke the service at least once
-    }])
+    .run(['signoutUnload', function(signoutUnload) {}])
   ;
 })();
 
@@ -235,8 +254,9 @@
 	'use strict';
 
 	angular.module('app')
-		.controller('signin', ['$scope', 'credentials', function ($scope, credentials) {
+		.controller('signin', ['__env', '$scope', function (__env, $scope) {
       var vm = this;
+			vm.clientID = __env.clientID;
       vm.signedIn = false;
 			vm.signedInText = 'Sign in';
       //watch for credential changes

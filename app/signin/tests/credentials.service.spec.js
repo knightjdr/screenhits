@@ -1,11 +1,10 @@
-var assert = chai.assert;
-
 describe('service: credentials', function() {
+  var assert = chai.assert;
   var credentials;
   var testUser;
 
   beforeEach(module('app'));
-  beforeEach(inject(function($rootScope, _credentials_) {
+  beforeEach(inject(function(_credentials_, $rootScope) {
     credentials = _credentials_;
     sinon.spy($rootScope, '$broadcast');
   }));
@@ -22,7 +21,7 @@ describe('service: credentials', function() {
       assert.equal(credentials.get().token, 'some token');
     });
 
-    it('broadcasts the event', inject(function($rootScope){
+    it('broadcasts credentials updated event', inject(function($rootScope){
       assert.isTrue($rootScope.$broadcast.calledWith('credentials:updated'));
     }));
   });

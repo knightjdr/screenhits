@@ -1,7 +1,5 @@
-var assert = chai.assert;
-
 describe('directive: google-signin', function() {
-  var auth;
+  var assert = chai.assert;
   var element;
   var link;
   var scope;
@@ -9,11 +7,13 @@ describe('directive: google-signin', function() {
 
   beforeEach(module('app'));
   beforeEach(inject(function($rootScope, $compile) {
+    scope = $rootScope.$new();
+    //create link element for prepending font css
     link = document.createElement("link");
     document.head.appendChild(link);
-    scope = $rootScope.$new();
+    //create directive for testing
     element = '<div id="google-signin" google-signin clientid="{{clientId}}"></div>';
-    scope.clientId = '498894175021-2v85kl2dnmnsqsaqo94a5ls6gsjbj7u4';
+    scope.clientId = 'xxxxx';
     element = $compile(element)(scope);
     scope.$digest();
   }));

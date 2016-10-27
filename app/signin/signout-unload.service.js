@@ -9,8 +9,6 @@
         });
       };
 		}])
-    .run(['signoutUnload', function(signoutUnload) {
-      // Must invoke the service at least once
-    }])
+    .run(['signoutUnload', function(signoutUnload) {}])
   ;
 })();

@@ -17,6 +17,7 @@ module.exports = function(config) {
     files: [
       'assets/js/assets.min.js',
       'node_modules/angular-mocks/angular-mocks.js',
+      'node_modules/promise-polyfill/promise.js',
       'app/bundle.min.js',
       'app/**/tests/*.spec.js'
     ],
@@ -49,7 +50,7 @@ module.exports = function(config) {
 
     // level of logging
     // possible values: config.LOG_DISABLE || config.LOG_ERROR || config.LOG_WARN || config.LOG_INFO || config.LOG_DEBUG
-    logLevel: config.LOG_INFO,
+    logLevel: config.LOG_DEBUG,
 
 
     // enable / disable watching file and executing tests whenever any file changes

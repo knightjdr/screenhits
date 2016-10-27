@@ -13,11 +13,13 @@ var appSASS = [
 	'layout/_palette.scss',
 	'layout/layout.scss',
 	'404/404.scss',
-	'treasure/treasure.scss',
+	'404/close.scss',
+	'404/treasure.scss',
 	'home/home.scss',
 	'signin/signin.scss'
 ];
 var appJS = [
+		'env.js',
 		'app.module.js',
 		'app.config.js',
 		'app.routes.js',

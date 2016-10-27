@@ -2,8 +2,9 @@
 	'use strict';
 
 	angular.module('app')
-		.controller('signin', ['$scope', 'credentials', function ($scope, credentials) {
+		.controller('signin', ['__env', '$scope', function (__env, $scope) {
       var vm = this;
+			vm.clientID = __env.clientID;
       vm.signedIn = false;
 			vm.signedInText = 'Sign in';
       //watch for credential changes
