@@ -29,6 +29,9 @@
 						'home': {
 							templateUrl: 'app/home/home.html'
 						},
+						'profile': {
+							templateUrl: 'app/profile/profile.html'
+						},
 						'treasure': {
 							templateUrl: 'app/404/treasure.html'
 						}
@@ -45,6 +48,9 @@
 				})
 				.state('root.home', {
 					url: ''
+				})
+				.state('root.profile', {
+					url: 'profile'
 				})
 				.state('root.treasure', {
          	url: '0111010001110010011001010110000101110011011101010111001001100101'

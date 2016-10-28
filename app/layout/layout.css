@@ -16,7 +16,8 @@
 
 body {
   background-color: #607d8b;
-  font-family: 'Lato', Calibri, Arial, sans-serif; }
+  font-family: 'Lato', Calibri, Arial, sans-serif;
+  overflow-y: hidden; }
 
 a {
   color: #ffa726;
@@ -44,7 +45,7 @@ a:hover, a:focus {
   position: fixed;
   top: 0px; }
 
-/*tooltips*/
+/*material design*/
 md-tooltip {
   color: #455a64;
   font-weight: 500;
@@ -55,16 +56,34 @@ md-tooltip {
 md-tooltip.opaque .md-content {
   opacity: 1; }
 
+.md-button.md-small {
+  min-height: 0px;
+  height: 25px;
+  width: 25px;
+  line-height: 25px; }
+
+.md-button.no-margins {
+  margin: 0px 0px 0px 0px; }
+
 /*cursors*/
 .pointer {
   cursor: pointer; }
 
 /*margins and positioning*/
+.m-l-1 {
+  margin-left: 1px; }
+
 .m-l-2 {
   margin-left: 2px; }
 
 .m-l-3 {
   margin-left: 3px; }
+
+.m-t-6 {
+  margin-top: 6px; }
+
+.m-t-10 {
+  margin-top: 10px; }
 
 .m-t-30 {
   margin-top: 30px; }

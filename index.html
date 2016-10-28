@@ -15,9 +15,9 @@
   <body perspective-view-navigation="movedown" ng-app="app">
     <div perspective-view>
       <div class="navbar">
-        <md-button class="md-fab md-mini md-accent" aria-label="Show menu" ng-click="showMenu()" md-autohide="true">
+        <md-button class="md-fab md-mini md-accent" aria-label="Show menu" ng-click="showMenu()">
           <i class="fa fa-lg fa-list-ul primary-h700"></i>
-          <md-tooltip md-direction="right">
+          <md-tooltip md-direction="right" md-autohide="true">
             Menu
           </md-tooltip>
         </md-button>
@@ -25,6 +25,7 @@
       <div ui-view="close" ng-show="$state.includes('root.close')"></div>
       <div ui-view="error" ng-show="$state.includes('root.error')"></div>
       <div ui-view="home" ng-show="$state.current.name == 'root' || $state.current.name == 'root.home'"></div>
+      <div ui-view="profile" ng-show="$state.includes('root.profile')"></div>
       <div ui-view="treasure" ng-show="$state.includes('root.treasure')"></div>
     </div>
     <div perspective-view-menu>
@@ -32,15 +33,23 @@
         <a ui-sref="root.home">
           <md-button class="md-fab md-mini md-accent" aria-label="Home">
             <i class="fa fa-home fa-lg primary-h700"></i>
-            <md-tooltip md-direction="bottom">
+            <md-tooltip md-direction="bottom" md-autohide="true">
               Home
+            </md-tooltip>
+          </md-button>
+        </a>
+        <a ui-sref="root.profile">
+          <md-button class="md-fab md-mini md-accent" aria-label="Profile">
+            <i class="fa fa-user fa-lg primary-h700 m-l-2"></i>
+            <md-tooltip md-direction="bottom" md-autohide="true">
+              Your personal page
             </md-tooltip>
           </md-button>
         </a>
         <a ui-sref="root.admin">
           <md-button class="md-fab md-mini md-accent" aria-label="Administration">
             <i class="fa fa-tachometer fa-lg primary-h700 m-l-2"></i>
-            <md-tooltip md-direction="bottom">
+            <md-tooltip md-direction="bottom" md-autohide="true">
               Administration
             </md-tooltip>
           </md-button>
@@ -48,7 +57,7 @@
         <a ui-sref="root.home">
           <md-button class="md-fab md-mini md-accent google-sign-out" aria-label="Sign out" google-signout ng-controller="signin as vm" ng-show="vm.signedIn">
             <i class="fa fa-sign-out fa-lg primary-h700 m-l-3"></i>
-            <md-tooltip md-direction="bottom">
+            <md-tooltip md-direction="bottom" md-autohide="true">
               Sign out
             </md-tooltip>
           </md-button>

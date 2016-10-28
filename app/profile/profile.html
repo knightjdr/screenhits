@@ -1,0 +1,63 @@
+<div class="profile" ng-controller="profile as vm">
+  <div class="profile-row-100">
+    <div class="profile-column-100 profile-justify">
+      <div class="profile-item">
+        <div class="profile-row">
+          <div class="profile-item">
+            <md-button class="md-fab md-mini md-accent" aria-label="Projects" flip-menu="projects" flip-menu-height="200px">
+              <i class="fa fa-lg fa-folder primary-h700"></i>
+              <md-tooltip md-direction="right" md-autohide="true">
+                Projects
+              </md-tooltip>
+            </md-button>
+          </div>
+          <div class="profile-item">
+            <div id="projects" class="project-menu m-t-10">
+              <div class="profile-row project-header">
+                <div class="profile-item project-title">
+                  Projects
+                </div>
+                <div class="profile-item project-icons">
+                  <md-button class="md-fab md-small md-accent no-margins" aria-label="New project" ng-click="">
+                    <i class="fa fa-plus primary-h700"></i>
+                    <md-tooltip md-direction="top" md-autohide="true">
+                      New project
+                    </md-tooltip>
+                  </md-button>
+                </div>
+              </div>
+              <ul>
+                <li>
+                  Project 1
+                </li>
+                <li>
+                  Project 2
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="profile-item">
+        <div class="profile-row">
+          <div class="profile-item">
+            <md-button class="md-fab md-mini md-accent" aria-label="Search" flip-menu="search" flip-menu-height="60px">
+              <i class="fa fa-lg fa-search primary-h700"></i>
+              <md-tooltip md-direction="right" md-autohide="true">
+                Search
+              </md-tooltip>
+            </md-button>
+          </div>
+          <div class="profile-item">
+            <div id="search" class="project-search m-t-10">
+              <md-input-container>
+                <label>Gene</label>
+                <input ng-model="vm.query" required type="text">
+              </md-input-container>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
