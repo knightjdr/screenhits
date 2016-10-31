@@ -34,6 +34,7 @@ a:hover, a:focus {
 .navbar {
 	position: fixed;
 	top: 0px;
+	z-index: 3;
 }
 
 /*material design*/
@@ -65,6 +66,58 @@ md-tooltip.opaque {
 	cursor: pointer;
 }
 
+/*flex box*/
+.flex-row {
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-direction: row;
+  flex-direction: row;
+}
+.flex-row-100 {
+  @extend .flex-row;
+  width: 100vw;
+}
+.flex-column {
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-direction: column;
+  flex-direction: column;
+}
+.flex-column-100 {
+  @extend .flex-column;
+  height: 100vh;
+}
+.flex-align {
+  -webkit-align-items: center;
+  align-items: center;
+}
+.flex-justify {
+  -webkit-justify-content: center;
+  justify-content: center;
+}
+
+/*lists*/
+ul.no-bullets {
+  list-style-type: none;
+  padding: 0px 4px 0px 4px;
+  margin: 0;
+}
+ul.hover-style li {
+  padding: 0px 2px 2px 2px;
+  border-radius: 2px;
+  cursor: pointer;
+}
+ul.hover-style li:hover {
+  color: $primary-h700;
+  background-color: $accent-h400;
+}
+ul.hover-style li:active {
+  border-color: $accent-h400;
+}
+ul.hover-style li:focus {
+	outline: 0;
+}
+
 /*margins and positioning*/
 .m-l-1 {
 	margin-left: 1px;
@@ -74,6 +127,12 @@ md-tooltip.opaque {
 }
 .m-l-3 {
 	margin-left: 3px;
+}
+.m-l-20 {
+	margin-left: 20px;
+}
+.m-l-40 {
+	margin-left: 40px;
 }
 .m-t-6 {
 	margin-top: 6px;

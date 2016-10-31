@@ -1,5 +1,6 @@
 var cleanCSS = require('gulp-clean-css');
 var concat = require('gulp-concat');
+var del = require('del');
 var expect = require('gulp-expect-file');
 var gulp = require('gulp');
 var jshint = require('gulp-jshint');
@@ -10,7 +11,6 @@ var uglify = require('gulp-uglify');
 
 var appDirectory = 'app/';
 var appSASS = [
-	'layout/_palette.scss',
 	'layout/layout.scss',
 	'404/404.scss',
 	'404/close.scss',
@@ -67,14 +67,14 @@ gulp.task('assets-css-minify', function() {
 	;
 });
 //concat asset css
-gulp.task('assets-css-concat', ['assets-css-minify'], function() {
+gulp.task('assets-css-concat', function() {
 	return gulp.src(assetsDirectory + "css/*.min.css")
 		.pipe(concat('assets.min.css'))
     .pipe(gulp.dest(assetsDirectory + 'css/'))
 	;
 });
 //build asset css
-gulp.task('build-assets-css', ['assets-css-minify', 'assets-css-concat']);
+gulp.task('build-assets-css', gulp.series('assets-css-minify', 'assets-css-concat'));
 
 //minify and bundle app css
 appCSS = [];
@@ -84,18 +84,18 @@ for(var i = 0, iLen = appSASS.length; i < iLen; i++) {
 	appCSS.push(currFile + '.css');
 }
 gulp.task('sass-convert', function() {
-	gulp.src(appSASS, {base: "./"})
+	return gulp.src(appSASS, {base: "./"})
   	.pipe(sass())
     .pipe(gulp.dest("./"))
 	;
 });
-gulp.task('css-concat', ['sass-convert'], function() {
+gulp.task('css-concat', function() {
 	return gulp.src(appCSS)
 		.pipe(concat('bundle.css'))
     .pipe(gulp.dest(appDirectory))
 	;
 });
-gulp.task('css-minify', ['sass-convert', 'css-concat'], function() {
+gulp.task('css-minify', function() {
 	return gulp.src(appDirectory + 'bundle.css')
     .pipe(rename(function (path) {
     	path.basename += ".min";
@@ -104,8 +104,11 @@ gulp.task('css-minify', ['sass-convert', 'css-concat'], function() {
     .pipe(gulp.dest(appDirectory))
 	;
 });
+gulp.task('del-css', function() {
+	return del([appDirectory + '**/*.css', '!' + appDirectory + 'bundle.min.css']);
+});
 //build app css
-gulp.task('build-css', ['sass-convert', 'css-concat', 'css-minify']);
+gulp.task('build-css', gulp.series('sass-convert', 'css-concat', 'css-minify', 'del-css'));
 
 //jshint
 gulp.task('jshint', function() {
@@ -130,7 +133,7 @@ gulp.task('assets-js-bundle', function() {
 for(var i = 0, iLen = appJS.length; i < iLen; i++) {
 	appJS[i] = appDirectory + appJS[i];
 }
-gulp.task('js-minify', ['jshint'], function() {
+gulp.task('js-minify', gulp.series('jshint', function() {
 	return gulp.src(appJS)
 		.pipe(concat('bundle.js'))
     .pipe(gulp.dest(appDirectory))
@@ -138,7 +141,7 @@ gulp.task('js-minify', ['jshint'], function() {
     .pipe(uglify())
     .pipe(gulp.dest(appDirectory))
 	;
-});
+}));
 
 //check test JS
 gulp.task('test-jshint', function() {
@@ -155,9 +158,9 @@ gulp.task('dev', function() {
    }).on('restart', function() {
    	gulp.src('server/index.js')
   });*/
-	gulp.watch(appSASS, ['build-css']);
-	gulp.watch(appJS, ['js-minify']);
-	gulp.watch(testJS, ['test-jshint']);
+	gulp.watch(appSASS, gulp.parallel('build-css'));
+	gulp.watch(appJS, gulp.parallel('js-minify'));
+	gulp.watch(testJS, gulp.parallel('test-jshint'));
 });
 
 gulp.task('build', function() {

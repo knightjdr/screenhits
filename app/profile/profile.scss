@@ -4,48 +4,41 @@
   font-size: 2em;
   font-weight: 500;
 }
-.profile-row {
-  display: -webkit-flex;
-  display: flex;
-  -webkit-flex-direction: row;
-  flex-direction: row;
+
+.profile-side-menu {
+  position: fixed;
+  width: 100px;
+  z-index: 2;
 }
-.profile-row-100 {
-  @extend .profile-row;
+.profile-main {
+  padding-left: 100px;
   width: 100vw;
-}
-.profile-column {
-  display: -webkit-flex;
-  display: flex;
-  -webkit-flex-direction: column;
-  flex-direction: column;
-}
-.profile-column-100 {
-  @extend .profile-column;
-  height: 100vh;
-}
-.profile-justify {
-  -webkit-justify-content: center;
-  justify-content: center;
+  color: #fff;
+  font-size: 16px;
 }
 
-.project-menu {
-  height: auto;
-  min-width: 150px;
+.menu-backdrop {
   background-color: #fff;
   border-radius: 4px;
-  font-size: 16px;
-  font-weight: 800;
   border: 2px solid $primary-h700;
   -webkit-box-shadow: 0 0 2px $accent-h400;
   box-shadow: 0 0 2px $accent-h400;
+  opacity: 0.9;
+}
+
+.project-menu {
+  @extend .menu-backdrop;
+  height: auto;
+  font-size: 16px;
+  font-weight: 800;
+  padding-bottom: 5px;
 }
 .project-header {
   padding-left: 5px;
   padding-right: 5px;
   margin-bottom: 6px;
   height: 34px;
-  border-bottom: 3px double $primary-h700;
+  border-bottom: 1px solid $primary;
 }
 .project-title {
   text-align: center;
@@ -62,21 +55,9 @@
   -webkit-flex: 1 0 0;
   flex: 1 0 0;
 }
-.project-menu ul {
-  list-style-type: none;
-  padding: 2px 4px 2px 4px;
-  margin: 0;
-}
 .project-menu ul li {
-  padding: 2px 2px 2px 2px;
-  border-radius: 2px;
   font-size: 14px;
   font-weight: 500;
-  cursor: pointer;
-}
-.project-menu ul li:hover {
-  color: $primary-h700;
-  background-color: $accent-h400;
 }
 
 .project-search {
@@ -89,4 +70,41 @@
   border: 2px solid $primary-h700;
   -webkit-box-shadow: 0 0 2px $accent-h400;
   box-shadow: 0 0 2px $accent-h400;
+}
+
+.profile-close {
+  visibility: hidden;
+  position: absolute;
+  right: -8px;
+  top: -8px;
+}
+
+.container-backdrop {
+  background-color: $primary-h600;
+  border-radius: 4px;
+  -webkit-box-shadow: 0 0 2px $accent-h400;
+  box-shadow: 0 0 2px $accent-h400;
+}
+
+.screen-container {
+  @extend .container-backdrop;
+  max-width: 500px;
+  padding: 10px 10px 10px 10px;
+  position: relative;
+}
+.screen-container .flex-row {
+  margin-bottom: 5px;
+}
+.screen-overview {
+  @extend .container-backdrop;
+  max-width: 500px;
+  padding: 10px 10px 10px 10px;
+  position: relative;
+}
+.screen-overview .flex-row {
+  margin-bottom: 5px;
+}
+.screen-container:hover .profile-close,
+.screen-overview:hover .profile-close {
+  visibility: visible;
 }

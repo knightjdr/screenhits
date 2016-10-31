@@ -25,6 +25,8 @@
     "angular": "^1.5.8",
     "angular-mocks": "^1.5.8",
     "chai": "^3.5.0",
+    "del": "^2.2.2",
+    "gulp": "github:gulpjs/gulp#4.0",
     "gulp-nodemon": "^2.2.1",
     "gulp-sass": "^2.3.2",
     "jshint-stylish": "^2.2.1",

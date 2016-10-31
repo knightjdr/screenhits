@@ -1,10 +1,11 @@
 <div class="profile" ng-controller="profile as vm">
-  <div class="profile-row-100">
-    <div class="profile-column-100 profile-justify">
+  <div class="flex-row-100">
+    <!--side menu-->
+    <div class="profile-side-menu flex-column-100 flex-justify">
       <div class="profile-item">
-        <div class="profile-row">
+        <div class="flex-row">
           <div class="profile-item">
-            <md-button class="md-fab md-mini md-accent" aria-label="Projects" flip-menu="projects" flip-menu-height="200px">
+            <md-button id="projects-button" class="md-fab md-mini md-accent" aria-label="Projects" flip-menu="projects" flip-menu-height="200px" flip-menu-width="150px">
               <i class="fa fa-lg fa-folder primary-h700"></i>
               <md-tooltip md-direction="right" md-autohide="true">
                 Projects
@@ -13,7 +14,7 @@
           </div>
           <div class="profile-item">
             <div id="projects" class="project-menu m-t-10">
-              <div class="profile-row project-header">
+              <div class="flex-row project-header">
                 <div class="profile-item project-title">
                   Projects
                 </div>
@@ -26,12 +27,9 @@
                   </md-button>
                 </div>
               </div>
-              <ul>
-                <li>
-                  Project 1
-                </li>
-                <li>
-                  Project 2
+              <ul class="no-bullets hover-style">
+                <li ng-repeat="project in vm.projects" ng-click="vm.selectProject(project)">
+                  {{project.title}}
                 </li>
               </ul>
             </div>
@@ -39,7 +37,7 @@
         </div>
       </div>
       <div class="profile-item">
-        <div class="profile-row">
+        <div class="flex-row">
           <div class="profile-item">
             <md-button class="md-fab md-mini md-accent" aria-label="Search" flip-menu="search" flip-menu-height="60px">
               <i class="fa fa-lg fa-search primary-h700"></i>
@@ -48,12 +46,89 @@
               </md-tooltip>
             </md-button>
           </div>
-          <div class="profile-item">
-            <div id="search" class="project-search m-t-10">
-              <md-input-container>
-                <label>Gene</label>
-                <input ng-model="vm.query" required type="text">
-              </md-input-container>
+        </div>
+      </div>
+    </div>
+    <!--main view-->
+    <div class="profile-main flex-column-100 flex-justify">
+      <div class="flex-row flex-justify" ng-show="vm.introduction">
+        Select or create a project using the button on the left to begin.
+      </div>
+      <div class="flex-row" ng-show="vm.project">
+        <div class="flex-column">
+          <div class="screen-container">
+            <md-button class="md-fab md-small md-accent no-margins profile-close" aria-label="Close" ng-click="vm.project = ''; vm.screen = '';">
+              <i class="fa fa-times primary-h700"></i>
+              <md-tooltip md-direction="top" md-autohide="true">
+                Close
+              </md-tooltip>
+            </md-button>
+            <div class="flex-row">
+              Project: {{vm.project.title}}
+            </div>
+            <div class="flex-row">
+              Creator: {{vm.project.creator}}
+            </div>
+            <div class="flex-row">
+              Description: {{vm.project.description}}
+            </div>
+            <div class="flex-row">
+              <div class="flex-column">
+                Screens:
+              </div>
+              <div class="flex-column">
+                <ul class="no-bullets hover-style">
+                  <li ng-repeat="screen in vm.project.screens" ng-click="vm.screen = screen">
+                    {{screen.title}}
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="flex-column m-l-40" ng-show="vm.screen">
+          <div class="screen-overview">
+            <md-button class="md-fab md-small md-accent no-margins profile-close" aria-label="Close" ng-click="vm.screen = ''";>
+              <i class="fa fa-times primary-h700"></i>
+              <md-tooltip md-direction="top" md-autohide="true">
+                Close
+              </md-tooltip>
+            </md-button>
+            <div class="flex-row">
+              Screen: {{vm.screen.title}}
+            </div>
+            <div class="flex-row">
+              Creator: {{vm.screen.creator}}
+            </div>
+            <div class="flex-row">
+              Library: {{vm.screen.library}}
+            </div>
+            <div class="flex-row">
+              Type: {{vm.screen.type}}
+            </div>
+            <div class="flex-row">
+              Species: {{vm.screen.species}}
+            </div>
+            <div class="flex-row">
+              Cell line: {{vm.screen.cellLine}}
+            </div>
+            <div class="flex-row">
+              Approach: {{vm.screen.approach}}
+            </div>
+            <div class="flex-row">
+              Condition: {{vm.screen.condition}}
+            </div>
+            <div class="flex-row">
+              <div class="flex-column">
+                Experiments:
+              </div>
+              <div class="flex-column">
+                <ul class="no-bullets hover-style">
+                  <li ng-repeat="experiment in vm.screen.experiments" ng-click="vm.experiment = experiment">
+                    {{experiment.details}}
+                  </li>
+                </ul>
+              </div>
             </div>
           </div>
         </div>
