@@ -24,7 +24,7 @@
             //attach click
             element.bind('click', function() {
               if(targetElement.style.webkitTransform === 'rotateY(90deg)') {
-                targetElement.style.transition = 'all 750ms';
+								targetElement.style.transition = 'all 500ms';
                 targetElement.style.maxHeight = height;
 								targetElement.style.minWidth = width;
                 targetElement.style.transform = 'rotateY(0deg)';

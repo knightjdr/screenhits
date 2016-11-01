@@ -32,6 +32,7 @@ var appJS = [
 		'signin/signout.directive.js',
 		'signin/signin.controller.js',
 		'profile/profile.controller.js',
+		'profile/collapse.directive.js',
 		'profile/flip.directive.js'
 ];
 var assetsDirectory = 'assets/'

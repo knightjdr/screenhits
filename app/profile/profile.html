@@ -29,7 +29,7 @@
               </div>
               <ul class="no-bullets hover-style">
                 <li ng-repeat="project in vm.projects" ng-click="vm.selectProject(project)">
-                  {{project.title}}
+                  [{{project.projectid}}] {{project.title}}
                 </li>
               </ul>
             </div>
@@ -39,7 +39,7 @@
       <div class="profile-item">
         <div class="flex-row">
           <div class="profile-item">
-            <md-button class="md-fab md-mini md-accent" aria-label="Search" flip-menu="search" flip-menu-height="60px">
+            <md-button class="md-fab md-mini md-accent" aria-label="Search">
               <i class="fa fa-lg fa-search primary-h700"></i>
               <md-tooltip md-direction="right" md-autohide="true">
                 Search
@@ -48,88 +48,319 @@
           </div>
         </div>
       </div>
+      <div class="profile-item">
+        <div class="flex-row">
+          <div class="profile-item">
+            <md-button class="md-fab md-mini md-accent" aria-label="Analysis">
+              <i class="fa fa-lg fa-pie-chart primary-h700 m-l-2"></i>
+              <md-tooltip md-direction="right" md-autohide="true">
+                Analysis
+              </md-tooltip>
+            </md-button>
+          </div>
+        </div>
+      </div>
     </div>
     <!--main view-->
     <div class="profile-main flex-column-100 flex-justify">
-      <div class="flex-row flex-justify" ng-show="vm.introduction">
-        Select or create a project using the button on the left to begin.
+      <div ng-show="vm.introduction">
+        <div class="flex-row flex-justify">
+          Select or create a project using the&nbsp
+          <md-button class="md-fab md-small no-margins md-accent" aria-label="Projects">
+            <i class="fa fa-folder primary-h700"></i>
+          </md-button>
+          &nbspbutton on the left to begin.
+        </div>
+        <div class="flex-row flex-justify m-t-10">
+          Search for genes using&nbsp
+          <md-button class="md-fab md-small no-margins md-accent" aria-label="Projects">
+            <i class="fa fa-search primary-h700"></i>
+          </md-button>
+        </div>
+        <div class="flex-row flex-justify m-t-10">
+          Or peform analysis by clicking the&nbsp
+          <md-button class="md-fab md-small no-margins md-accent" aria-label="Projects">
+            <i class="fa fa-pie-chart primary-h700"></i>
+          </md-button>
+          &nbsp button.
+        </div>
       </div>
+
+      <!--content-->
       <div class="flex-row" ng-show="vm.project">
+        <!--project details-->
         <div class="flex-column">
           <div class="screen-container">
-            <md-button class="md-fab md-small md-accent no-margins profile-close" aria-label="Close" ng-click="vm.project = ''; vm.screen = '';">
-              <i class="fa fa-times primary-h700"></i>
-              <md-tooltip md-direction="top" md-autohide="true">
-                Close
-              </md-tooltip>
-            </md-button>
-            <div class="flex-row">
-              Project: {{vm.project.title}}
+            <div class="profile-container-buttons">
+              <md-button class="md-fab md-small md-accent no-margins" aria-label="Minimize" collapse="screen-container">
+                <i class="collapse-icon fa fa-window-minimize primary-h700"></i>
+                <md-tooltip md-direction="top" md-autohide="true">
+                  <span class="collapse-text">Minimize</span>
+                </md-tooltip>
+              </md-button>
+              <md-button class="md-fab md-small md-accent no-margins" aria-label="Maximize" expand="screen-container">
+                <i class="collapse-icon fa fa-window-maximize primary-h700"></i>
+                <md-tooltip md-direction="top" md-autohide="true">
+                  <span class="collapse-text">Maximize</span>
+                </md-tooltip>
+              </md-button>
+              <span class="collapse-icons-other">
+                <md-button class="md-fab md-small md-accent no-margins" aria-label="Manage" ng-click="">
+                  <i class="fa fa-wrench primary-h700"></i>
+                  <md-tooltip md-direction="top" md-autohide="true">
+                    Manage
+                  </md-tooltip>
+                </md-button>
+                <md-button class="md-fab md-small md-accent no-margins" aria-label="Edit" ng-click="">
+                  <i class="fa fa-pencil-square-o primary-h700"></i>
+                  <md-tooltip md-direction="top" md-autohide="true">
+                    Edit
+                  </md-tooltip>
+                </md-button>
+                <md-button class="md-fab md-small md-accent no-margins" aria-label="Close" ng-click="vm.project = ''; vm.screen = ''; vm.experiment = ''">
+                  <i class="fa fa-times primary-h700"></i>
+                  <md-tooltip md-direction="top" md-autohide="true">
+                    Close
+                  </md-tooltip>
+                </md-button>
+              </span>
             </div>
-            <div class="flex-row">
-              Creator: {{vm.project.creator}}
+            <div class="collapse-header">
+              Projects
             </div>
-            <div class="flex-row">
-              Description: {{vm.project.description}}
-            </div>
-            <div class="flex-row">
-              <div class="flex-column">
-                Screens:
-              </div>
-              <div class="flex-column">
-                <ul class="no-bullets hover-style">
-                  <li ng-repeat="screen in vm.project.screens" ng-click="vm.screen = screen">
-                    {{screen.title}}
-                  </li>
-                </ul>
-              </div>
+            <div class="collapse-container">
+              <table>
+                <tbody>
+                  <tr>
+                    <td align="right" valign="top">
+                      Project:
+                    </td>
+                    <td class="p-l-10">
+                      [{{vm.project.projectid}}] {{vm.project.title}}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td align="right" valign="top">
+                      Created:
+                    </td>
+                    <td class="p-l-10">
+                      {{vm.project.created * 1000  | date: 'dd-MM-yyyy'}}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td align="right" valign="top">
+                      Creator:
+                    </td>
+                    <td class="p-l-10">
+                      {{vm.project.creator}}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td align="right" valign="top">
+                      Description:
+                    </td>
+                    <td class="p-l-10">
+                      {{vm.project.description}}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="p-t-10" align="right" valign="top">
+                      Screens:
+                    </td>
+                    <td class="p-t-10 p-l-10">
+                      <ul class="no-bullets hover-style">
+                        <li class="m-l-m6" ng-repeat="screen in vm.project.screens" ng-click="vm.screen = screen">
+                          [{{screen.screenid}}] {{screen.title}}
+                        </li>
+                        <li class="m-l-m3" ng-click="">
+                          <i class="fa fa-plus-circle"></i> add screen
+                        </li>
+                      </ul>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
           </div>
         </div>
-        <div class="flex-column m-l-40" ng-show="vm.screen">
+        <!--screen details-->
+        <div class="flex-column" ng-show="vm.screen">
           <div class="screen-overview">
-            <md-button class="md-fab md-small md-accent no-margins profile-close" aria-label="Close" ng-click="vm.screen = ''";>
-              <i class="fa fa-times primary-h700"></i>
-              <md-tooltip md-direction="top" md-autohide="true">
-                Close
-              </md-tooltip>
-            </md-button>
-            <div class="flex-row">
-              Screen: {{vm.screen.title}}
+            <div class="profile-container-buttons">
+              <md-button class="md-fab md-small md-accent no-margins" aria-label="Edit" ng-click="">
+                <i class="fa fa-pencil-square-o primary-h700"></i>
+                <md-tooltip md-direction="top" md-autohide="true">
+                  Edit
+                </md-tooltip>
+              </md-button>
+              <md-button class="md-fab md-small md-accent no-margins" aria-label="Close" ng-click="vm.screen = ''; vm.experiment = ''">
+                <i class="fa fa-times primary-h700"></i>
+                <md-tooltip md-direction="top" md-autohide="true">
+                  Close
+                </md-tooltip>
+              </md-button>
             </div>
-            <div class="flex-row">
-              Creator: {{vm.screen.creator}}
+            <table>
+              <tbody>
+                <tr>
+                  <td align="right" valign="top">
+                    Screen:
+                  </td>
+                  <td class="p-l-10">
+                    [{{vm.screen.screenid}}] {{vm.screen.title}}
+                  </td>
+                </tr>
+                <tr>
+                  <td align="right" valign="top">
+                    Created:
+                  </td>
+                  <td class="p-l-10">
+                    {{vm.screen.created * 1000  | date: 'dd-MM-yyyy'}}
+                  </td>
+                </tr>
+                <tr>
+                  <td align="right" valign="top">
+                    Creator:
+                  </td>
+                  <td class="p-l-10">
+                    {{vm.screen.creator}}
+                  </td>
+                </tr>
+                <tr>
+                  <td align="right" valign="top">
+                    Library:
+                  </td>
+                  <td class="p-l-10">
+                    {{vm.screen.library}}
+                  </td>
+                </tr>
+                <tr>
+                  <td align="right" valign="top">
+                    Type:
+                  </td>
+                  <td class="p-l-10">
+                    {{vm.screen.type}}
+                  </td>
+                </tr>
+                <tr>
+                  <td align="right" valign="top">
+                    Species:
+                  </td>
+                  <td class="p-l-10">
+                    {{vm.screen.species}}
+                  </td>
+                </tr>
+                <tr>
+                  <td align="right" valign="top">
+                    Cell line:
+                  </td>
+                  <td class="p-l-10">
+                    {{vm.screen.cellLine}}
+                  </td>
+                </tr>
+                <tr>
+                  <td align="right" valign="top">
+                    Approach:
+                  </td>
+                  <td class="p-l-10">
+                    {{vm.screen.approach}}
+                  </td>
+                </tr>
+                <tr>
+                  <td align="right" valign="top">
+                    Condition:
+                  </td>
+                  <td class="p-l-10">
+                    {{vm.screen.condition}}
+                  </td>
+                </tr>
+                <tr>
+                  <td class="p-t-10" align="right" valign="top">
+                    Experiments:
+                  </td>
+                  <td class="p-l-10 p-t-10">
+                    <ul class="no-bullets hover-style">
+                      <li class="m-l-m6" ng-repeat="experiment in vm.screen.experiments" ng-click="vm.experiment = experiment">
+                        [{{experiment.experimentid}}] {{experiment.details}}
+                      </li>
+                      <li class="m-l-m3" ng-click="">
+                        <i class="fa fa-plus-circle"></i> add experiment
+                      </li>
+                    </ul>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <!--experiment details-->
+        <div class="flex-column" ng-show="vm.experiment">
+          <div class="experiment-overview">
+            <div class="profile-container-buttons">
+              <md-button class="md-fab md-small md-accent no-margins" aria-label="Edit" ng-click="">
+                <i class="fa fa-pencil-square-o primary-h700"></i>
+                <md-tooltip md-direction="top" md-autohide="true">
+                  Edit
+                </md-tooltip>
+              </md-button>
+              <md-button class="md-fab md-small md-accent no-margins" aria-label="Close" ng-click="vm.experiment = ''">
+                <i class="fa fa-times primary-h700"></i>
+                <md-tooltip md-direction="top" md-autohide="true">
+                  Close
+                </md-tooltip>
+              </md-button>
             </div>
-            <div class="flex-row">
-              Library: {{vm.screen.library}}
-            </div>
-            <div class="flex-row">
-              Type: {{vm.screen.type}}
-            </div>
-            <div class="flex-row">
-              Species: {{vm.screen.species}}
-            </div>
-            <div class="flex-row">
-              Cell line: {{vm.screen.cellLine}}
-            </div>
-            <div class="flex-row">
-              Approach: {{vm.screen.approach}}
-            </div>
-            <div class="flex-row">
-              Condition: {{vm.screen.condition}}
-            </div>
-            <div class="flex-row">
-              <div class="flex-column">
-                Experiments:
-              </div>
-              <div class="flex-column">
-                <ul class="no-bullets hover-style">
-                  <li ng-repeat="experiment in vm.screen.experiments" ng-click="vm.experiment = experiment">
-                    {{experiment.details}}
-                  </li>
-                </ul>
-              </div>
-            </div>
+            <table>
+              <tbody>
+                <tr>
+                  <td align="right" valign="top">
+                    Experiment:
+                  </td>
+                  <td class="p-l-10">
+                    [{{vm.experiment.experimentid}}] {{vm.experiment.details}}
+                  </td>
+                </tr>
+                <tr>
+                  <td align="right" valign="top">
+                    Created:
+                  </td>
+                  <td class="p-l-10">
+                    {{vm.experiment.created * 1000 | date: 'dd-MM-yyyy'}}
+                  </td>
+                </tr>
+                <tr>
+                  <td align="right" valign="top">
+                    Experimenter:
+                  </td>
+                  <td class="p-l-10">
+                    {{vm.experiment.experimenter}}
+                  </td>
+                </tr>
+                <tr>
+                  <td align="right" valign="top">
+                    Protocols:
+                  </td>
+                  <td class="p-l-10">
+
+                  </td>
+                </tr>
+                <tr>
+                  <td class="p-t-10" align="right" valign="top">
+                    Samples:
+                  </td>
+                  <td class="p-l-10 p-t-10">
+                    <ul class="no-bullets hover-style">
+                      <li class="m-l-m6" ng-repeat="samples in vm.experiment.samples" ng-click="vm.sample = sample">
+                        [{{sample.sampleid}}] {{sample.details}}
+                      </li>
+                      <li class="m-l-m3" ng-click="">
+                        <i class="fa fa-plus-circle"></i> add sample
+                      </li>
+                    </ul>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </div>
       </div>

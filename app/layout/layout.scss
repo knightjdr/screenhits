@@ -91,9 +91,17 @@ md-tooltip.opaque {
   -webkit-align-items: center;
   align-items: center;
 }
+.flex-align-end {
+	-webkit-align-items: flex-end;
+  align-items: flex-end;
+}
 .flex-justify {
   -webkit-justify-content: center;
   justify-content: center;
+}
+.flex-justify-end {
+  -webkit-justify-content: flex-end;
+  justify-content: flex-end;
 }
 
 /*lists*/
@@ -128,11 +136,23 @@ ul.hover-style li:focus {
 .m-l-3 {
 	margin-left: 3px;
 }
+.m-l-10 {
+	margin-left: 10px;
+}
 .m-l-20 {
 	margin-left: 20px;
 }
+.m-l-25 {
+	margin-left: 25px;
+}
 .m-l-40 {
 	margin-left: 40px;
+}
+.m-l-m3 {
+	margin-left: -3px;
+}
+.m-l-m6 {
+	margin-left: -6px;
 }
 .m-t-6 {
 	margin-top: 6px;
@@ -140,6 +160,15 @@ ul.hover-style li:focus {
 .m-t-10 {
 	margin-top: 10px;
 }
+.m-t-20 {
+	margin-top: 20px;
+}
 .m-t-30 {
 	margin-top: 30px;
+}
+.p-l-10 {
+	padding-left: 10px;
+}
+.p-t-10 {
+	padding-top: 10px;
 }

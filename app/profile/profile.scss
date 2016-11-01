@@ -12,6 +12,7 @@
 }
 .profile-main {
   padding-left: 100px;
+  padding-right: 20px;
   width: 100vw;
   color: #fff;
   font-size: 16px;
@@ -72,11 +73,17 @@
   box-shadow: 0 0 2px $accent-h400;
 }
 
-.profile-close {
+hr.accent {
+  border: 0px;
+  -webkit-box-shadow: 0 -2px 2px -2px $accent-h400;
+  box-shadow: 0 -2px 2px -2px $accent-h400;
+}
+
+.profile-container-buttons {
   visibility: hidden;
   position: absolute;
   right: -8px;
-  top: -8px;
+  top: -12px;
 }
 
 .container-backdrop {
@@ -84,6 +91,7 @@
   border-radius: 4px;
   -webkit-box-shadow: 0 0 2px $accent-h400;
   box-shadow: 0 0 2px $accent-h400;
+  padding-top: 5px;
 }
 
 .screen-container {
@@ -104,7 +112,21 @@
 .screen-overview .flex-row {
   margin-bottom: 5px;
 }
-.screen-container:hover .profile-close,
-.screen-overview:hover .profile-close {
+.experiment-overview {
+  @extend .container-backdrop;
+  max-width: 500px;
+  padding: 10px 10px 10px 10px;
+  position: relative;
+}
+.experiment-overview .flex-row {
+  margin-bottom: 5px;
+}
+.screen-container:hover .profile-container-buttons,
+.screen-overview:hover .profile-container-buttons,
+.experiment-overview:hover .profile-container-buttons {
   visibility: visible;
+}
+
+.collapse-header {
+  display: none;
 }
