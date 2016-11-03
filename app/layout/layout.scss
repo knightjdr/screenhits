@@ -57,6 +57,12 @@ md-tooltip.opaque {
 	width: 25px;
 	line-height: 25px;
 }
+.md-button.md-medium {
+	min-height: 0px;
+	height: 45px;
+	width: 45px;
+	line-height: 45px;
+}
 .md-button.no-margins {
 	margin: 0px 0px 0px 0px;
 }
@@ -102,6 +108,10 @@ md-tooltip.opaque {
 .flex-justify-end {
   -webkit-justify-content: flex-end;
   justify-content: flex-end;
+}
+.flex-wrap {
+	-webkit-flex-wrap: wrap;
+	flex-wrap: wrap;
 }
 
 /*lists*/
@@ -171,4 +181,37 @@ ul.hover-style li:focus {
 }
 .p-t-10 {
 	padding-top: 10px;
+}
+
+/*angular transitions*/
+.animate-100ms {
+	-webkit-transition: all linear 0.1s;
+	transition: all linear 0.1s;
+}
+.animate-200ms {
+	-webkit-transition: all linear 0.2s;
+	transition: all linear 0.2s;
+
+}
+.animate-500ms {
+	-webkit-transition: all linear 0.5s;
+	transition: all linear 0.5s;
+}
+.animate-fade.ng-hide {
+	opacity: 0;
+}
+.animate-slide-up {
+	position: relative;
+	top: 0%;
+	-webkit-transform: translateY(0%);
+	transform: translateY(0%);
+	-webkit-transition-timing-function: ease-out;
+	transition-timing-function: ease-out;
+}
+.animate-slide-up.ng-hide {
+	top: 100%;
+	-webkit-transform: translateY(-100%);
+	transform: translateY(-100%);
+	-webkit-transition-timing-function: ease-in;
+	transition-timing-function: ease-in;
 }

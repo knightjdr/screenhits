@@ -5,6 +5,7 @@
 		.controller('profile', ['$scope', function ($scope) {
       var vm = this;
 			vm.introduction = true;
+			vm.location = 'main';
 			vm.user = 'Someone';
 			vm.projects = [{
 				title: 'Project 1',

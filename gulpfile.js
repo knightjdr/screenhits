@@ -24,6 +24,9 @@ var appJS = [
 		'app.module.js',
 		'app.config.js',
 		'app.routes.js',
+		'layout/collapse-expand.directive.js',
+		'layout/flip.directive.js',
+		'layout/md-tooltip-destroy.directive.js',
 		'404/404.controller.js',
 		'signin/credentials.service.js',
 		'signin/signin-callbacks.service.js',
@@ -31,9 +34,7 @@ var appJS = [
 		'signin/signin.directive.js',
 		'signin/signout.directive.js',
 		'signin/signin.controller.js',
-		'profile/profile.controller.js',
-		'profile/collapse.directive.js',
-		'profile/flip.directive.js'
+		'profile/profile.controller.js'
 ];
 var assetsDirectory = 'assets/'
 var assetsCSS = [

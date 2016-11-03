@@ -6,16 +6,30 @@
 }
 
 .profile-side-menu {
+  padding-top: 100px;
   position: fixed;
   width: 100px;
   z-index: 2;
 }
 .profile-main {
+  color: #fff;
+  font-size: 16px;
+  padding-left: 100px;
+  padding-right: 20px;
+  position: relative;
+  width: 100vw;
+}
+.profile-main-child {
+  padding-top: 100px;
+  position: absolute;
+  top: 0;
+}
+.profile-introduction {
+  color: #fff;
+  font-size: 16px;
   padding-left: 100px;
   padding-right: 20px;
   width: 100vw;
-  color: #fff;
-  font-size: 16px;
 }
 
 .menu-backdrop {
@@ -91,11 +105,13 @@ hr.accent {
   border-radius: 4px;
   -webkit-box-shadow: 0 0 2px $accent-h400;
   box-shadow: 0 0 2px $accent-h400;
+  margin-top: 10px;
   padding-top: 5px;
 }
 
 .screen-container {
   @extend .container-backdrop;
+  margin-right: 2px;
   max-width: 500px;
   padding: 10px 10px 10px 10px;
   position: relative;
@@ -105,6 +121,7 @@ hr.accent {
 }
 .screen-overview {
   @extend .container-backdrop;
+  margin-right: 1px;
   max-width: 500px;
   padding: 10px 10px 10px 10px;
   position: relative;

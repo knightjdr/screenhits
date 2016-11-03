@@ -4,7 +4,6 @@ describe('directive: flip', function() {
   var element;
   var scope;
   var checkDiv;
-  var tooltip;
 
   beforeEach(module('app'));
   beforeEach(inject(function($rootScope, $compile) {
@@ -13,9 +12,6 @@ describe('directive: flip', function() {
     div = document.createElement('div');
     div.id = 'target';
     document.body.appendChild(div);
-    //dummy tooltip
-    tooltip = document.createElement('md-tooltip');
-    document.body.appendChild(tooltip);
     //create directive for testing
     element = '<md-button flip-menu="target" flip-menu-height="100px" flip-menu-width="100px"></md-button>';
     element = $compile(element)(scope);
@@ -44,7 +40,7 @@ describe('directive: flip', function() {
       assert.equal(checkDiv.style.maxHeight, '100px');
       assert.equal(checkDiv.style.minWidth, '100px');
       assert.equal(checkDiv.style.transform, 'rotateY(0deg)');
-      assert.equal(checkDiv.style.transition, 'all 750ms');
+      assert.equal(checkDiv.style.transition, 'all 500ms');
       assert.equal(checkDiv.style.visibility, 'visible');
       assert.equal(checkDiv.style.webkitTransform, 'rotateY(0deg)');
       assert.equal(checkDiv.style.width, 'auto');
@@ -57,9 +53,6 @@ describe('directive: flip', function() {
       assert.equal(checkDiv.style.visibility, 'hidden');
       assert.equal(checkDiv.style.webkitTransform, 'rotateY(90deg)');
       assert.equal(checkDiv.style.width, '0px');
-    });
-    it('all clicks should destroy md-tooltips', function() {
-      should.equal(document.getElementsByTagName('md-tooltip').length, 0);
     });
   });
 });

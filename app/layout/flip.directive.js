@@ -39,11 +39,6 @@
                 targetElement.style.webkitTransform = 'rotateY(90deg)';
 								targetElement.style.width = '0px';
               }
-              //destroy md-tooltip in case its new position is wrong
-              var tooltip = document.getElementsByTagName('md-tooltip')[0];
-              if(tooltip) {
-                tooltip.remove();
-              }
             });
           }
         }
