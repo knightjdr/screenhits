@@ -65,8 +65,14 @@
 				]
 			}];
 			vm.selectProject = function(project) {
-				vm.project = project;
+				if(!vm.project || vm.project !== project) {
+					vm.experiment = '';
+					vm.project = project;
+					vm.sample = '';
+					vm.screen = '';
+				}
 				vm.introduction = false;
+				vm.location = 'main';
 				angular.element(document.getElementById('projects-button')).triggerHandler('click');
 			};
     }])

@@ -23,6 +23,7 @@
   padding-top: 100px;
   position: absolute;
   top: 0;
+  width: calc(100% - 120px);
 }
 .profile-introduction {
   color: #fff;
@@ -30,6 +31,13 @@
   padding-left: 100px;
   padding-right: 20px;
   width: 100vw;
+}
+.profile-main-buttons {
+  position: absolute;
+  right: 10px;
+}
+.profile-main-other {
+  padding-top: 10px;
 }
 
 .menu-backdrop {

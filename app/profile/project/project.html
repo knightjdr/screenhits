@@ -16,7 +16,7 @@
           </md-tooltip>
         </md-button>
         <span class="collapse-icons-other">
-          <md-button class="md-fab md-small md-accent no-margins" aria-label="Manage" ng-click="vm.location = 'management'" md-tooltip-destroy>
+          <md-button class="md-fab md-small md-accent no-margins" aria-label="Manage" ng-click="vm.location = 'project-management'" md-tooltip-destroy>
             <i class="fa fa-wrench primary-h700"></i>
             <md-tooltip md-direction="top" md-autohide="true">
               Manage
@@ -83,7 +83,7 @@
                   <li class="m-l-m6" ng-repeat="screen in vm.project.screens" ng-click="vm.screen = screen">
                     [{{screen.screenid}}] {{screen.title}}
                   </li>
-                  <li class="m-l-m3" ng-click="">
+                  <li class="m-l-m3" ng-click="vm.location = 'screen-creation'">
                     <i class="fa fa-plus-circle"></i> add screen
                   </li>
                 </ul>
@@ -212,7 +212,7 @@
                   <li class="m-l-m6" ng-repeat="experiment in vm.screen.experiments" ng-click="vm.experiment = experiment">
                     [{{experiment.experimentid}}] {{experiment.details}}
                   </li>
-                  <li class="m-l-m3" ng-click="">
+                  <li class="m-l-m3" ng-click="vm.location = 'experiment-creation'">
                     <i class="fa fa-plus-circle"></i> add experiment
                   </li>
                 </ul>
@@ -301,7 +301,7 @@
                   <li class="m-l-m6" ng-repeat="samples in vm.experiment.samples" ng-click="vm.sample = sample">
                     [{{sample.sampleid}}] {{sample.details}}
                   </li>
-                  <li class="m-l-m3" ng-click="">
+                  <li class="m-l-m3" ng-click="vm.location = 'sample-creation'">
                     <i class="fa fa-plus-circle"></i> add sample
                   </li>
                 </ul>

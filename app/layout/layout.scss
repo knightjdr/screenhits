@@ -66,6 +66,12 @@ md-tooltip.opaque {
 .md-button.no-margins {
 	margin: 0px 0px 0px 0px;
 }
+.md-button.no-hover-accent.md-accent.md-fab:not([disabled]):hover {
+	background-color: $accent-h400;
+}
+.md-form-font {
+	font-weight: 500;
+}
 
 /*cursors*/
 .pointer {

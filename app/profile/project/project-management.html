@@ -1,0 +1,67 @@
+<div class="flex-row" ng-controller="projectManagement as vm">
+  <div class="flex-column">
+    <div class="flex-row">
+      Project owner:
+    </div>
+    <div class="flex-row">
+      Permissions:
+      <table>
+        <thead>
+          <tr>
+            <th>
+              Write
+            </th>
+            <th>
+              Read
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+
+          </tr>
+          <tr>
+
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="flex-row m-t-20">
+      <div class="button-container">
+        <md-button class="md-fab md-mini md-accent no-margins" aria-label="Add user" ng-click="vm.showForm = 'add-user'">
+          <i class="fa fa-lg fa-plus primary-h700"></i>
+          <md-tooltip md-direction="bottom" md-autohide="true">
+            Add user
+          </md-tooltip>
+        </md-button>
+      </div>
+      <div class="button-container m-l-10">
+        <md-button class="md-fab md-mini md-accent no-margins" aria-label="Manage users" ng-click="vm.showForm = 'manage-users'">
+          <i class="fa fa-lg fa-user-circle primary-h700"></i>
+          <md-tooltip md-direction="bottom" md-autohide="true">
+            Manage users
+          </md-tooltip>
+        </md-button>
+      </div>
+    </div>
+    <div class="flex-row m-t-20">
+      <div class="form-container" ng-show="vm.showForm === 'add-user'">
+        <md-input-container class="md-icon-float md-block md-form-font">
+          <label>Name</label>
+          <md-icon md-font-icon="fa-user-circle" class="fa md-accent"></md-icon>
+          <input ng-model="vm.form.addUser.name" type="text">
+        </md-input-container>
+        <md-input-container class="md-icon-float md-block">
+          <label>e-mail</label>
+          <md-icon md-font-icon="fa-envelope " class="fa md-accent"></md-icon>
+          <input ng-model="vm.form.addUser.email" type="text">
+        </md-input-container>
+      </div>
+    </div>
+    <div class="flex-row m-t-20">
+      <div class="form-container" ng-show="vm.showForm === 'manage-users'">
+
+      </div>
+    </div>
+  </div>
+</div>

@@ -7,7 +7,8 @@
     .config(['$mdThemingProvider', function($mdThemingProvider) {
       $mdThemingProvider.theme('default')
       .primaryPalette('blue-grey')
-      .accentPalette('orange');
+      .accentPalette('orange')
+			.foregroundPalette['3'] = '#455a64';
     }])
 	;
 })();

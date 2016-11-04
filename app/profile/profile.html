@@ -68,9 +68,27 @@
     <!--main view-->
     <div class="profile-main flex-column-100" ng-show="vm.project">
       <!--project content-->
-      <ng-include class="animate-200ms animate-fade profile-main-child" src="'/app/profile/projects/projects.html'" ng-show="vm.location === 'main'"></ng-include>
-      <!--project management-->
-      <ng-include class="animate-500ms animate-fade animate-slide-up profile-main-child" src="'/app/profile/projects/project-management.html'" ng-show="vm.location === 'management'"></ng-include>
+      <ng-include class="animate-200ms animate-fade profile-main-child" src="'/app/profile/project/project.html'" ng-show="vm.location === 'main'"></ng-include>
+      <div class="animate-500ms animate-fade animate-slide-up profile-main-child" ng-show="vm.location !== 'main'">
+        <div class="profile-main-buttons">
+          <md-button class="md-fab md-mini md-accent" aria-label="Back to rojects" ng-click="vm.location = 'main'" md-tooltip-destroy>
+            <i class="fa fa-lg fa-arrow-circle-down primary-h700"></i>
+            <md-tooltip md-direction="top" md-autohide="true">
+              Back to projects
+            </md-tooltip>
+          </md-button>
+        </div>
+        <div class="profile-main-other">
+          <!--project management-->
+          <ng-include src="'/app/profile/project/project-management.html'" ng-show="vm.location === 'project-management'"></ng-include>
+          <!--screen creation-->
+          <ng-include class="animate-500ms animate-fade animate-slide-up" src="'/app/profile/screen/screen-creation.html'" ng-show="vm.location === 'screen-creation'"></ng-include>
+          <!--experiment creation-->
+          <ng-include class="animate-500ms animate-fade animate-slide-up" src="'/app/profile/experiment/experiment-creation.html'" ng-show="vm.location === 'experiment-creation'"></ng-include>
+          <!--sample creation-->
+          <ng-include class="animate-500ms animate-fade animate-slide-up" src="'/app/profile/sample/sample-creation.html'" ng-show="vm.location === 'sample-creation'"></ng-include>
+        </div>
+      </div>
     </div>
   </div>
 </div>

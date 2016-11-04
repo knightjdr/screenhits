@@ -17,7 +17,8 @@ var appSASS = [
 	'404/treasure.scss',
 	'home/home.scss',
 	'signin/signin.scss',
-	'profile/profile.scss'
+	'profile/profile.scss',
+	'profile/project/project.scss'
 ];
 var appJS = [
 		'env.js',
@@ -34,7 +35,8 @@ var appJS = [
 		'signin/signin.directive.js',
 		'signin/signout.directive.js',
 		'signin/signin.controller.js',
-		'profile/profile.controller.js'
+		'profile/profile.controller.js',
+		'profile/project/project-management.controller.js'
 ];
 var assetsDirectory = 'assets/'
 var assetsCSS = [
