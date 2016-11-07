@@ -5,6 +5,18 @@
   border: 2px solid $primary-h700;
   border-radius: 5px;
   padding: 5px 10px 5px 10px;
+  position: relative;
   -webkit-box-shadow: 0 0 2px $accent-h400;
   box-shadow: 0 0 2px $accent-h400;
+}
+
+.form-description {
+  color: $primary-h700;
+  padding: 10px 10px 10px 10px;
+}
+
+.form-buttons {
+  bottom: -12px;
+  right: 5px;
+  position: absolute;
 }

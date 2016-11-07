@@ -1,0 +1,15 @@
+<md-dialog aria-label="Alert dialog">
+  <md-dialog-content>
+    <div class="dialog-title">
+      {{vm.title}}
+    </div>
+    <div class="dialog-body">
+      {{vm.message}}
+    </div>
+  </md-dialog-content>
+  <md-dialog-actions>
+    <md-button aria-label="Close" class="md-fab md-small md-accent" ng-click="vm.close()">
+      <i class="fa fa-times"></i>
+    </md-button>
+  </md-dialog-actions>
+</md-dialog>

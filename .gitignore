@@ -2,3 +2,5 @@ node_modules/*
 bower_components/*
 **/.DS_Store
 app/env.js
+server/config.js
+server/node_modules/*

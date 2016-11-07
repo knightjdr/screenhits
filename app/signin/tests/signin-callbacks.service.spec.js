@@ -3,12 +3,17 @@ describe('service: signin-callbacks', function() {
   var auth = {ab: {access_token: 'some token'}, cd: {ig: 'user', U3: 'user@somewhere.com'}};
   var credentials;
   var signinCallbacks;
+  var successObject = {email: 'user@somewhere.com', name: 'user', permissions: 'some', token: 'some token'};
 
   beforeEach(module('app'));
-  beforeEach(inject(function(_credentials_, $rootScope, _signinCallbacks_) {
+  beforeEach(inject(function(_credentials_, _helperHTTP_, $rootScope, _signinCallbacks_) {
     credentials = _credentials_;
+    helperHTTP = _helperHTTP_
     signinCallbacks = _signinCallbacks_;
     sinon.spy($rootScope, '$broadcast');
+    sinon.stub(helperHTTP, 'set', function() {
+      signinSuccess(successObject);
+    });
   }));
 
   describe('when success called', function() {

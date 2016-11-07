@@ -2,6 +2,6 @@
 	'use strict';
 
 	angular
-		.module('app', ['ngAnimate', 'ct.ui.router.extras', 'ngMaterial', 'PPVN', 'ui.router'])
+		.module('app', ['ct.ui.router.extras', 'ngAnimate', 'ngMaterial', 'ngMessages', 'PPVN', 'ui.router'])
 	;
 })();

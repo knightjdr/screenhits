@@ -15,7 +15,7 @@
 	'use strict';
 
 	angular
-		.module('app', ['ngAnimate', 'ct.ui.router.extras', 'ngMaterial', 'PPVN', 'ui.router'])
+		.module('app', ['ct.ui.router.extras', 'ngAnimate', 'ngMaterial', 'ngMessages', 'PPVN', 'ui.router'])
 	;
 })();
 
@@ -24,13 +24,13 @@
 
 	angular
     .module('app')
-		.constant('__env', window.__env)
-    .config(['$mdThemingProvider', function($mdThemingProvider) {
+		.config(['$mdThemingProvider', function($mdThemingProvider) {
       $mdThemingProvider.theme('default')
       .primaryPalette('blue-grey')
       .accentPalette('orange')
 			.foregroundPalette['3'] = '#455a64';
     }])
+		.constant('__env', window.__env)
 	;
 })();
 
@@ -40,7 +40,7 @@
 	angular
     .module('app')
     .run(['$state', '$rootScope', function($state, $rootScope) {
-  	  		$rootScope.$state = $state;
+			$rootScope.$state = $state;
 		}])
     .config(['$locationProvider', '$stateProvider', '$urlRouterProvider', function($locationProvider, $stateProvider, $urlRouterProvider) {
 			$urlRouterProvider
@@ -256,7 +256,56 @@
 	'use strict';
 
 	angular.module('app')
-    .service('signinCallbacks', ['credentials', '$rootScope', function(credentials, $rootScope) {
+    .service('helperDialog', ['$http', '$mdDialog', function($http, $mdDialog) {
+			this.alert = function(title, message) {
+       	$mdDialog.show({
+      		clickOutsideToClose: true,
+					controller: 'alert',
+					controllerAs: 'vm',
+					locals: {
+						message: message,
+          	title: title
+         	},
+        	parent: angular.element(document.body),
+         	templateUrl: 'app/dialogs/alert/alert.html'
+      	});
+			};
+		}])
+  ;
+})();
+
+(function() {
+	'use strict';
+
+	angular.module('app')
+    .service('helperHTTP', ['credentials', 'helperDialog', '$http', '__env', function(credentials, helperDialog, $http, __env) {
+			this.set = function(endpoint, object, successCallback, errorCallback) {
+        var user = credentials.get();
+        $http({
+					method: 'POST',
+					url: __env.apiUrl + '/' + endpoint,
+					headers: {'Content-Type': 'application/json', user: user},
+          data: object
+				})
+				.then(function successPost(response) {
+					if(!response.data.status) {
+						successCallback(response);
+					} else {
+						errorCallback(response);
+					}
+				}, function errorCallback() {
+          helperDialog.alert('Connection error', 'The server could not be reached.');
+				});
+			};
+		}])
+  ;
+})();
+
+(function() {
+	'use strict';
+
+	angular.module('app')
+    .service('signinCallbacks', ['credentials', 'helperDialog', 'helperHTTP', '$rootScope', function(credentials, helperDialog, helperHTTP, $rootScope) {
       var data = {};
 			this.success = function(authResult) {
         for(var key in authResult) {
@@ -272,8 +321,16 @@
              }
            }
          }
-         credentials.set(data);
-         $rootScope.$broadcast('signin:updated', {text: 'Signed in'});
+				 var signinFailure = function(response) {
+					 var auth2 = gapi.auth2.getAuthInstance();
+					 auth2.disconnect();
+					 helperDialog.alert('Sign-in failed', response.data.message);
+				 };
+				 var signinSuccess = function(response) {
+					 credentials.set(response.data.user);
+					 $rootScope.$broadcast('signin:updated', {text: 'Signed in'});
+				 };
+				 helperHTTP.set('login', data, signinSuccess, signinFailure);
 			};
 			this.failure = function(err) {
 				credentials.set({});
@@ -412,6 +469,21 @@
 	'use strict';
 
 	angular.module('app')
+		.controller('alert', ['$mdDialog', '$scope', 'message', 'title', function($mdDialog, $scope, message, title) {
+      var vm = this;
+      vm.close = function() {
+        $mdDialog.hide();
+      };
+      vm.message = message;
+      vm.title = title;
+    }])
+  ;
+})();
+
+(function() {
+	'use strict';
+
+	angular.module('app')
 		.controller('profile', ['$scope', function ($scope) {
       var vm = this;
 			vm.introduction = true;
@@ -499,6 +571,25 @@
 				addUser: {
 					email: '',
 					name: ''
+				}
+			};
+			vm.reset = function () {
+				$scope.addUserForm.email = '';
+				$scope.addUserForm.name = '';
+				$scope.addUserForm.$setPristine();
+				$scope.addUserForm.$setUntouched();
+				vm.form.addUser.email = '';
+				vm.form.addUser.name = '';
+			};
+			vm.submit = function(form) {
+				if((form.email && form.email.match(/^.+@.+\..+$/)) || form.name) {
+					var formToSubmit = {};
+					if(form.name) {
+						formToSubmit.name = form.name;
+					}
+					if((form.email && form.email.match(/^.+@.+\..+$/))) {
+						formToSubmit.name = form.email;
+					}
 				}
 			};
     }])

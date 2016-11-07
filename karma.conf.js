@@ -27,6 +27,8 @@ module.exports = function(config) {
   		'app/layout/flip.directive.js',
   		'app/layout/md-tooltip-destroy.directive.js',
   		'app/404/404.controller.js',
+      'app/helpers/helper-dialog.service.js',
+  		'app/helpers/helper-http.service.js',
   		'app/signin/credentials.service.js',
   		'app/signin/signin-callbacks.service.js',
   		'app/signin/signout-unload.service.js',

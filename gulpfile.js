@@ -17,6 +17,7 @@ var appSASS = [
 	'404/treasure.scss',
 	'home/home.scss',
 	'signin/signin.scss',
+	'dialogs/dialog.scss',
 	'profile/profile.scss',
 	'profile/project/project.scss'
 ];
@@ -30,11 +31,14 @@ var appJS = [
 		'layout/md-tooltip-destroy.directive.js',
 		'404/404.controller.js',
 		'signin/credentials.service.js',
+		'helpers/helper-dialog.service.js',
+		'helpers/helper-http.service.js',
 		'signin/signin-callbacks.service.js',
 		'signin/signout-unload.service.js',
 		'signin/signin.directive.js',
 		'signin/signout.directive.js',
 		'signin/signin.controller.js',
+		'dialogs/alert/alert.controller.js',
 		'profile/profile.controller.js',
 		'profile/project/project-management.controller.js'
 ];
@@ -50,6 +54,7 @@ var assetsJS = [
 	'angular-animate.min.js',
 	'angular-aria.min.js',
 	'angular-material.min.js',
+	'angular-messages.min.js',
 	'angular-ui-router.min.js',
 	'ct-ui-router-extras.min.js',
 	'ppvn-angular.min.js'

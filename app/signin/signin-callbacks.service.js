@@ -2,7 +2,7 @@
 	'use strict';
 
 	angular.module('app')
-    .service('signinCallbacks', ['credentials', '$rootScope', function(credentials, $rootScope) {
+    .service('signinCallbacks', ['credentials', 'helperDialog', 'helperHTTP', '$rootScope', function(credentials, helperDialog, helperHTTP, $rootScope) {
       var data = {};
 			this.success = function(authResult) {
         for(var key in authResult) {
@@ -18,8 +18,16 @@
              }
            }
          }
-         credentials.set(data);
-         $rootScope.$broadcast('signin:updated', {text: 'Signed in'});
+				 var signinFailure = function(response) {
+					 var auth2 = gapi.auth2.getAuthInstance();
+					 auth2.disconnect();
+					 helperDialog.alert('Sign-in failed', response.data.message);
+				 };
+				 var signinSuccess = function(response) {
+					 credentials.set(response.data.user);
+					 $rootScope.$broadcast('signin:updated', {text: 'Signed in'});
+				 };
+				 helperHTTP.set('login', data, signinSuccess, signinFailure);
 			};
 			this.failure = function(err) {
 				credentials.set({});

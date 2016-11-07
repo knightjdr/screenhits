@@ -72,6 +72,9 @@ md-tooltip.opaque {
 .md-form-font {
 	font-weight: 500;
 }
+md-input-container.md-small-margin {
+	margin-bottom: 5px !important;
+}
 
 /*cursors*/
 .pointer {
@@ -169,6 +172,9 @@ ul.hover-style li:focus {
 }
 .m-l-m6 {
 	margin-left: -6px;
+}
+.m-t-5 {
+	margin-top: 5px;
 }
 .m-t-6 {
 	margin-top: 6px;

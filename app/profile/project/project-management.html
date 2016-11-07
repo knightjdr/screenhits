@@ -45,17 +45,43 @@
       </div>
     </div>
     <div class="flex-row m-t-20">
-      <div class="form-container" ng-show="vm.showForm === 'add-user'">
-        <md-input-container class="md-icon-float md-block md-form-font">
-          <label>Name</label>
-          <md-icon md-font-icon="fa-user-circle" class="fa md-accent"></md-icon>
-          <input ng-model="vm.form.addUser.name" type="text">
-        </md-input-container>
-        <md-input-container class="md-icon-float md-block">
-          <label>e-mail</label>
-          <md-icon md-font-icon="fa-envelope " class="fa md-accent"></md-icon>
-          <input ng-model="vm.form.addUser.email" type="text">
-        </md-input-container>
+      <div class="form-container md-form-font" ng-show="vm.showForm === 'add-user'">
+        <form name="addUserForm" ng-submit="vm.submit(vm.form.addUser)" novalidate>
+          <div class="form-description">
+            &#x2022; Search for users by name or Gmail address
+          </div>
+          <md-input-container class="md-icon-float md-block md-small-margin">
+            <label>Name</label>
+            <md-icon md-font-icon="fa-user-circle" class="fa md-accent"></md-icon>
+            <input ng-model="vm.form.addUser.name" type="text">
+          </md-input-container>
+          <md-input-container class="md-icon-float md-block md-small-margin">
+            <label>e-mail</label>
+            <md-icon md-font-icon="fa-envelope " class="fa md-accent"></md-icon>
+            <input name="email" ng-model="vm.form.addUser.email" ng-pattern="/^.+@.+\..+$/" type="email">
+            <div ng-messages="addUserForm.email.$error" role="alert">
+              <div ng-message="pattern">Please enter a valid e-mail</div>
+            </div>
+          </md-input-container>
+          <div class="flex-row form-buttons">
+            <div class="button-container">
+              <md-button class="md-fab md-small md-accent no-margins" aria-label="Reset form" ng-click="vm.reset()">
+                <i class="fa fa-refresh primary-h700"></i>
+                <md-tooltip md-direction="bottom" md-autohide="true">
+                  Reset
+                </md-tooltip>
+              </md-button>
+            </div>
+            <div class="button-container m-l-10">
+              <md-button class="md-fab md-small md-accent no-margins" aria-label="Submit" type="submit">
+                <i class="fa fa-arrow-circle-right primary-h700"></i>
+                <md-tooltip md-direction="bottom" md-autohide="true">
+                  Submit
+                </md-tooltip>
+              </md-button>
+            </div>
+          </div>
+        </form>
       </div>
     </div>
     <div class="flex-row m-t-20">
