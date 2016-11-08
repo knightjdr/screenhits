@@ -2,8 +2,8 @@
 	'use strict';
 
 	angular.module('app')
-    .service('helperHTTP', ['credentials', 'helperDialog', '$http', '__env', function(credentials, helperDialog, $http, __env) {
-			this.set = function(endpoint, object, successCallback, errorCallback) {
+    .service('helperHTTP', ['credentials', '__env', 'helperDialog', '$http', function(credentials, __env, helperDialog, $http) {
+			this.set = function(endpoint, object, successCallback, failureCallback) {
         var user = credentials.get();
         $http({
 					method: 'POST',
@@ -15,9 +15,9 @@
 					if(!response.data.status) {
 						successCallback(response);
 					} else {
-						errorCallback(response);
+						failureCallback(response);
 					}
-				}, function errorCallback() {
+				}, function errorPost() {
           helperDialog.alert('Connection error', 'The server could not be reached.');
 				});
 			};

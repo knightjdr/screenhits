@@ -5,7 +5,7 @@ module.exports = {
 
 		//authenticate users
 		app.post('/login', function(req, res) {
-			login.check(req.body.token, res)
+			login.verify(req.body.token, res)
     });
   }
 };

@@ -31,8 +31,10 @@ var appJS = [
 		'layout/md-tooltip-destroy.directive.js',
 		'404/404.controller.js',
 		'signin/credentials.service.js',
+		'helpers/helper-compile.directive.js',
 		'helpers/helper-dialog.service.js',
 		'helpers/helper-http.service.js',
+		'helpers/helper-report.service.js',
 		'signin/signin-callbacks.service.js',
 		'signin/signout-unload.service.js',
 		'signin/signin.directive.js',
@@ -55,6 +57,7 @@ var assetsJS = [
 	'angular-aria.min.js',
 	'angular-material.min.js',
 	'angular-messages.min.js',
+	'angular-sanitize.min.js',
 	'angular-ui-router.min.js',
 	'ct-ui-router-extras.min.js',
 	'ppvn-angular.min.js'

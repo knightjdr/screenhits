@@ -5,7 +5,9 @@
   //base url
   window.__env.baseUrl = '/';
   //support e-mail
-  window.__env.email = 'jknight@lunenfeld.ca';
+  window.__env.supportEmail = 'jknight@lunenfeld.ca';
+  //support name
+  window.__env.supportName = 'James Knight';
   //gapi client ID
   window.__env.clientID = '498894175021-2v85kl2dnmnsqsaqo94a5ls6gsjbj7u4';
 
@@ -15,7 +17,7 @@
 	'use strict';
 
 	angular
-		.module('app', ['ct.ui.router.extras', 'ngAnimate', 'ngMaterial', 'ngMessages', 'PPVN', 'ui.router'])
+		.module('app', ['ct.ui.router.extras', 'ngAnimate', 'ngMaterial', 'ngMessages', 'ngSanitize', 'PPVN', 'ui.router'])
 	;
 })();
 
@@ -224,13 +226,12 @@
 	'use strict';
 
 	angular.module('app')
-		.controller('404', ['__env', '$scope', '$window', function (__env, $scope, $window) {
+		.controller('404', ['__env', 'helperReport', '$scope', '$window', function (__env, helperReport, $scope, $window) {
       var vm = this;
-      vm.supportEmail = __env.email;
+			vm.supportName = __env.supportName;
       vm.reportError = function(subject) {
-				vm.windowLocation = 'mailto:'+ vm.supportEmail + '?subject=' + subject;
-        window.location.href = vm.windowLocation;
-      };
+				helperReport.mail(subject);
+			};
     }])
   ;
 })();
@@ -248,6 +249,28 @@
 				user = data;
 				$rootScope.$broadcast('credentials:updated', user);
 			};
+		}])
+  ;
+})();
+
+(function() {
+	'use strict';
+
+	angular.module('app')
+    .directive('compile', ['$compile', function($compile) {
+			//tweaked from here http://stackoverflow.com/questions/17417607/angular-ng-bind-html-and-directive-within-it
+      return function(scope, element, attrs) {
+        var ensureCompileRunsOnce = scope.$watch(
+          function(scope) {
+            return scope.$eval(attrs.compile);
+          },
+          function(value) {
+            element.html(value);
+            $compile(element.contents())(scope);
+            ensureCompileRunsOnce();
+          }
+        );
+      };
 		}])
   ;
 })();
@@ -278,8 +301,8 @@
 	'use strict';
 
 	angular.module('app')
-    .service('helperHTTP', ['credentials', 'helperDialog', '$http', '__env', function(credentials, helperDialog, $http, __env) {
-			this.set = function(endpoint, object, successCallback, errorCallback) {
+    .service('helperHTTP', ['credentials', '__env', 'helperDialog', '$http', function(credentials, __env, helperDialog, $http) {
+			this.set = function(endpoint, object, successCallback, failureCallback) {
         var user = credentials.get();
         $http({
 					method: 'POST',
@@ -291,11 +314,24 @@
 					if(!response.data.status) {
 						successCallback(response);
 					} else {
-						errorCallback(response);
+						failureCallback(response);
 					}
-				}, function errorCallback() {
+				}, function errorPost() {
           helperDialog.alert('Connection error', 'The server could not be reached.');
 				});
+			};
+		}])
+  ;
+})();
+
+(function() {
+	'use strict';
+
+	angular.module('app')
+    .service('helperReport', ['__env', '$window', function(__env, $window) {
+			this.mail = function(subject) {
+        var windowLocation = 'mailto:'+ __env.supportEmail + '?subject=' + subject;
+        window.location.href = windowLocation;
 			};
 		}])
   ;
@@ -308,19 +344,15 @@
     .service('signinCallbacks', ['credentials', 'helperDialog', 'helperHTTP', '$rootScope', function(credentials, helperDialog, helperHTTP, $rootScope) {
       var data = {};
 			this.success = function(authResult) {
+				//process google authResult for token
         for(var key in authResult) {
            if(typeof(authResult[key]) === 'object') {
-             if(authResult[key].hasOwnProperty('U3')) {
-               data.email = authResult[key].U3;
-             }
-             if(authResult[key].hasOwnProperty('ig')) {
-               data.name = authResult[key].ig;
-             }
              if(authResult[key].hasOwnProperty('access_token')) {
                data.token = authResult[key].access_token;
              }
            }
          }
+				 //signinCallbacks
 				 var signinFailure = function(response) {
 					 var auth2 = gapi.auth2.getAuthInstance();
 					 auth2.disconnect();
@@ -330,6 +362,7 @@
 					 credentials.set(response.data.user);
 					 $rootScope.$broadcast('signin:updated', {text: 'Signed in'});
 				 };
+				 //check user is authorized
 				 helperHTTP.set('login', data, signinSuccess, signinFailure);
 			};
 			this.failure = function(err) {
@@ -439,7 +472,7 @@
 	'use strict';
 
 	angular.module('app')
-		.controller('signin', ['__env', '$scope', function (__env, $scope) {
+		.controller('signin', ['__env', '$scope', '$state', '$timeout', function (__env, $scope, $state, $timeout) {
       var vm = this;
 			vm.clientID = __env.clientID;
       vm.signedIn = false;
@@ -448,17 +481,25 @@
       $scope.$on('credentials:updated', function(event, data) {
         if(data.name) {
           vm.signedIn = true;
-          $scope.$digest();
+					vm.user = data.name;
+					$timeout(function() {
+          	$scope.$digest();
+						$state.go('root.profile');
+					});
         } else {
           vm.signedIn = false;
-          $scope.$digest();
+					$timeout(function() {
+          	$scope.$digest();
+					});
         }
       });
 			//watch for text changes
 			$scope.$on('signin:updated', function(event, data) {
         if(data.text) {
           vm.signedInText = data.text;
-          $scope.$digest();
+          $timeout(function() {
+						$scope.$digest();
+					});
         }
       });
     }])
@@ -469,12 +510,16 @@
 	'use strict';
 
 	angular.module('app')
-		.controller('alert', ['$mdDialog', '$scope', 'message', 'title', function($mdDialog, $scope, message, title) {
+		.controller('alert', ['__env', 'helperReport', '$mdDialog', '$scope', 'message', 'title', function(__env, helperReport, $mdDialog, $scope, message, title) {
       var vm = this;
       vm.close = function() {
         $mdDialog.hide();
       };
       vm.message = message;
+			vm.reportError = function(subject) {
+				helperReport.mail(subject);
+			};
+			vm.supportName = __env.supportName;
       vm.title = title;
     }])
   ;

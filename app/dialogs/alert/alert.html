@@ -1,10 +1,9 @@
 <md-dialog aria-label="Alert dialog">
-  <md-dialog-content>
+  <md-dialog-content class="alert-dialog">
     <div class="dialog-title">
       {{vm.title}}
     </div>
-    <div class="dialog-body">
-      {{vm.message}}
+    <div class="dialog-body" compile="vm.message">
     </div>
   </md-dialog-content>
   <md-dialog-actions>

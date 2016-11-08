@@ -2,13 +2,12 @@
 	'use strict';
 
 	angular.module('app')
-		.controller('404', ['__env', '$scope', '$window', function (__env, $scope, $window) {
+		.controller('404', ['__env', 'helperReport', '$scope', '$window', function (__env, helperReport, $scope, $window) {
       var vm = this;
-      vm.supportEmail = __env.email;
+			vm.supportName = __env.supportName;
       vm.reportError = function(subject) {
-				vm.windowLocation = 'mailto:'+ vm.supportEmail + '?subject=' + subject;
-        window.location.href = vm.windowLocation;
-      };
+				helperReport.mail(subject);
+			};
     }])
   ;
 })();

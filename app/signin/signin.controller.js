@@ -2,7 +2,7 @@
 	'use strict';
 
 	angular.module('app')
-		.controller('signin', ['__env', '$scope', function (__env, $scope) {
+		.controller('signin', ['__env', '$scope', '$state', '$timeout', function (__env, $scope, $state, $timeout) {
       var vm = this;
 			vm.clientID = __env.clientID;
       vm.signedIn = false;
@@ -11,17 +11,25 @@
       $scope.$on('credentials:updated', function(event, data) {
         if(data.name) {
           vm.signedIn = true;
-          $scope.$digest();
+					vm.user = data.name;
+					$timeout(function() {
+          	$scope.$digest();
+						$state.go('root.profile');
+					});
         } else {
           vm.signedIn = false;
-          $scope.$digest();
+					$timeout(function() {
+          	$scope.$digest();
+					});
         }
       });
 			//watch for text changes
 			$scope.$on('signin:updated', function(event, data) {
         if(data.text) {
           vm.signedInText = data.text;
-          $scope.$digest();
+          $timeout(function() {
+						$scope.$digest();
+					});
         }
       });
     }])

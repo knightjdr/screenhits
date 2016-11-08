@@ -15,6 +15,9 @@ a {
 a:hover, a:focus {
 	outline: none;
 }
+a.dark {
+	color: $accent-h600;
+}
 
 /*ppvn styling*/
 .ppvn-container {
@@ -204,6 +207,10 @@ ul.hover-style li:focus {
 	-webkit-transition: all linear 0.2s;
 	transition: all linear 0.2s;
 
+}
+.animate-300ms {
+	-webkit-transition: all linear 0.3s;
+	transition: all linear 0.3s;
 }
 .animate-500ms {
 	-webkit-transition: all linear 0.5s;

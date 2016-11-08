@@ -2,23 +2,38 @@ describe('service: signin-callbacks', function() {
   var assert = chai.assert;
   var auth = {ab: {access_token: 'some token'}, cd: {ig: 'user', U3: 'user@somewhere.com'}};
   var credentials;
+  var __env;
+  var headers = {'Content-Type': 'application/json', user: {}};
+  var $http;
+  var httpResponse;
   var signinCallbacks;
   var successObject = {email: 'user@somewhere.com', name: 'user', permissions: 'some', token: 'some token'};
+  var token = {token: 'some token'};
 
   beforeEach(module('app'));
-  beforeEach(inject(function(_credentials_, _helperHTTP_, $rootScope, _signinCallbacks_) {
-    credentials = _credentials_;
-    helperHTTP = _helperHTTP_
-    signinCallbacks = _signinCallbacks_;
+  beforeEach(module(function($urlRouterProvider) {
+    $urlRouterProvider.deferIntercept();
+  }));
+  beforeEach(inject(function($injector) {
+    credentials = $injector.get('credentials');
+    __env = $injector.get('__env');
+    $http = $injector.get('$http');
+    $httpBackend = $injector.get('$httpBackend');
+    $httpBackend.when('POST', __env.apiUrl + '/login')
+      .respond(function() {
+        return [200, {status: 0, user: successObject}];
+      })
+    ;
+    $rootScope = $injector.get('$rootScope');
+    signinCallbacks = $injector.get('signinCallbacks');
     sinon.spy($rootScope, '$broadcast');
-    sinon.stub(helperHTTP, 'set', function() {
-      signinSuccess(successObject);
-    });
   }));
 
   describe('when success called', function() {
     beforeEach(function() {
+      $httpBackend.expect('POST', __env.apiUrl + '/login');
       signinCallbacks.success(auth);
+      $httpBackend.flush();
     });
 
     it('should populate credentials object', function() {
