@@ -1,13 +1,14 @@
 var config = require('../../config');
+var database = require(config.connectionsDir + config.database.name);
 var google = require('googleapis');
 var plus = google.plus('v1');
 var OAuth2 = google.auth.OAuth2;
 var oauth2Client = new OAuth2(config.clientID + '.apps.googleusercontent.com');
-var database = require(config.connectionsDir + config.database.name);
+var tokenManagement = require('./token-management');
 
-function Login () {
+var Login = {
 
-  this.verify = function(token, res) {
+  verify: function(token, res) {
 		oauth2Client.setCredentials({
       access_token: token,
 		});
@@ -22,7 +23,9 @@ function Login () {
              '<a class="pointer dark" ng-click="vm.reportError(\'Sign-in failure\')">{{vm.supportName}}</a> for assistance.'});
           } else {
             if(document) {
-              res.send({status: 0, user: {email: document.email, name: document.name, permission: document.priveleges, token: token}});
+              var newToken = tokenManagement.create();
+              tokenManagement.set(document.email, newToken);
+              res.send({status: 0, user: {email: document.email, name: document.name, permission: document.priveleges, token: newToken}});
             } else {
               res.send({status: 1, message: 'You do not have access to ScreenHits.'});
             }
@@ -30,7 +33,6 @@ function Login () {
         })
       }
 		});
-	};
-
+	}
 }
-module.exports = new Login();
+module.exports = Login;

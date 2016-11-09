@@ -307,7 +307,7 @@
         $http({
 					method: 'POST',
 					url: __env.apiUrl + '/' + endpoint,
-					headers: {'Content-Type': 'application/json', user: user},
+					headers: {'Content-Type': 'application/json', 'user': JSON.stringify(user)},
           data: object
 				})
 				.then(function successPost(response) {
@@ -376,8 +376,9 @@
 	'use strict';
 
 	angular.module('app')
-    .service('signoutUnload', ['$window', function($window) {
+    .service('signoutUnload', ['helperHTTP', '$window', function(helperHTTP, $window) {
       $window.onbeforeunload = function (e) {
+				helperHTTP.set('logout', {}, function(){}, function(){});
         var auth2 = gapi.auth2.getAuthInstance();
         auth2.disconnect().then(function () {
         });
@@ -531,65 +532,74 @@
 	angular.module('app')
 		.controller('profile', ['$scope', function ($scope) {
       var vm = this;
+			vm.checkLocation = function(location, response) {
+				if(!location || /^main-*/.test(location)) {
+					return response;
+				}
+				return !response;
+			};
 			vm.introduction = true;
-			vm.location = 'main';
-			vm.user = 'Someone';
+			vm.newProject = function() {
+				vm.introduction = false;
+				vm.location = 'main-project-new';
+				angular.element(document.getElementById('projects-button')).triggerHandler('click');
+			};
 			vm.projects = [{
-				title: 'Project 1',
-				created: 1478030151,
-				creator: 'Someone A',
-				description: 'a project description',
-				projectid: 1,
-				screens: [
-					{
-						approach: 'dropout',
-						cellLine: 'HeLa',
-						condition: 'drug treatment',
-						created: 1478030151,
-						creator: 'Someone A',
-						experiments: [{
-							created: 1478030151,
-							details: 'time points and drug concentrations',
-							experimenter: 'Someone C',
-							experimentid: 1,
-							projectid: 1,
-							protocols: {
-								type: 'protocol.pdf'
-							},
-							screenid: 1
-						}],
-						library: 'library 1',
-						projectid: 1,
-						screenid: 1,
-						species: 'Homo sapiens',
-						title: 'Screen 1',
-						type: 'knockout'
-					},
-					{
-						approach: 'positive selection',
-						cellLine: 'U2OS',
-						condition: 'genetic alteraion',
-						created: 1478030151,
-						creator: 'Someone B',
-						experiments: [{
-							created: 1478030151,
-							details: 'time points and drug concentrations',
-							experimenter: 'Someone D',
-							experimentid: 2,
-							projectid: 1,
-							protocols: {
-								type: 'protocol.pdf'
-							},
-							screenid: 2
-						}],
-						library: 'library 2',
-						projectid: 1,
-						screenid: 2,
-						species: 'Homo sapiens',
-						title: 'Screen 2',
-						type: 'overexpression'
-					}
-				]
+			  title: 'Project 1',
+			  created: 1478030151,
+			  creator: 'Someone A',
+			  description: 'a project description',
+			  projectid: 1,
+			  screens: [
+			    {
+			      approach: 'dropout',
+			      cellLine: 'HeLa',
+			      condition: 'drug treatment',
+			      created: 1478030151,
+			      creator: 'Someone A',
+			      experiments: [{
+			        created: 1478030151,
+			        details: 'time points and drug concentrations',
+			        experimenter: 'Someone C',
+			        experimentid: 1,
+			        projectid: 1,
+			        protocols: {
+			          type: 'protocol.pdf'
+			        },
+			        screenid: 1
+			      }],
+			      library: 'library 1',
+			      projectid: 1,
+			      screenid: 1,
+			      species: 'Homo sapiens',
+			      title: 'Screen 1',
+			      type: 'knockout'
+			    },
+			    {
+			      approach: 'positive selection',
+			      cellLine: 'U2OS',
+			      condition: 'genetic alteraion',
+			      created: 1478030151,
+			      creator: 'Someone B',
+			      experiments: [{
+			        created: 1478030151,
+			        details: 'time points and drug concentrations',
+			        experimenter: 'Someone D',
+			        experimentid: 2,
+			        projectid: 1,
+			        protocols: {
+			          type: 'protocol.pdf'
+			        },
+			        screenid: 2
+			      }],
+			      library: 'library 2',
+			      projectid: 1,
+			      screenid: 2,
+			      species: 'Homo sapiens',
+			      title: 'Screen 2',
+			      type: 'overexpression'
+			    }
+			  ]
 			}];
 			vm.selectProject = function(project) {
 				if(!vm.project || vm.project !== project) {
@@ -599,8 +609,46 @@
 					vm.screen = '';
 				}
 				vm.introduction = false;
-				vm.location = 'main';
+				vm.location = 'main-project';
 				angular.element(document.getElementById('projects-button')).triggerHandler('click');
+			};
+			vm.user = 'Someone';
+    }])
+  ;
+})();
+
+(function() {
+	'use strict';
+
+	angular.module('app')
+		.controller('projectNew', ['credentials', 'helperHTTP', '$scope', function (credentials, helperHTTP, $scope) {
+      var vm = this;
+      vm.form = {};
+			vm.reset = function () {
+				$scope.form.name = '';
+				$scope.form.$setPristine();
+				$scope.form.$setUntouched();
+        vm.form = {};
+        vm.message = '';
+			};
+			vm.submit = function(valid, form) {
+        vm.message = '';
+        if(valid) {
+          var user = credentials.get();
+          var formObject = {};
+          formObject.created = Date.now();
+          formObject.creator = user.name;
+          formObject.description = form.description;
+          formObject.title = form.name;
+          var success = function(response) {
+            vm.message = response.data.message;
+            vm.reset();
+          };
+          var failure = function(response) {
+            vm.message = response.data.message;
+          };
+          helperHTTP.set('project', formObject, success, failure);
+        }
 			};
     }])
   ;

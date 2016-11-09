@@ -42,6 +42,7 @@ var appJS = [
 		'signin/signin.controller.js',
 		'dialogs/alert/alert.controller.js',
 		'profile/profile.controller.js',
+		'profile/project/project-new.controller.js',
 		'profile/project/project-management.controller.js'
 ];
 var assetsDirectory = 'assets/'
@@ -163,13 +164,13 @@ gulp.task('test-jshint', function() {
 });
 
 gulp.task('dev', function() {
-	/*nodemon({
+	nodemon({
   	script: 'server/index.js',
     watch: ["server/index.js", "server/config.js", "server/app/"],
     ext: 'js'
    }).on('restart', function() {
    	gulp.src('server/index.js')
-  });*/
+  });
 	gulp.watch(appSASS, gulp.parallel('build-css'));
 	gulp.watch(appJS, gulp.parallel('js-minify'));
 	gulp.watch(testJS, gulp.parallel('test-jshint'));

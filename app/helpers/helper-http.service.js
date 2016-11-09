@@ -8,7 +8,7 @@
         $http({
 					method: 'POST',
 					url: __env.apiUrl + '/' + endpoint,
-					headers: {'Content-Type': 'application/json', user: user},
+					headers: {'Content-Type': 'application/json', 'user': JSON.stringify(user)},
           data: object
 				})
 				.then(function successPost(response) {

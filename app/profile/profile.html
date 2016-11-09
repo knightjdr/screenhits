@@ -19,7 +19,7 @@
                   Projects
                 </div>
                 <div class="profile-item project-icons">
-                  <md-button class="md-fab md-small md-accent no-margins" aria-label="New project" ng-click="">
+                  <md-button class="md-fab md-small md-accent no-margins" aria-label="New project" ng-click="vm.newProject()">
                     <i class="fa fa-plus primary-h700"></i>
                     <md-tooltip md-direction="top" md-autohide="true">
                       New project
@@ -66,12 +66,26 @@
       <ng-include src="'/app/profile/introduction.html'"></ng-include>
     </div>
     <!--main view-->
-    <div class="profile-main flex-column-100" ng-show="vm.project">
+    <div class="profile-main flex-column-100" ng-show="!vm.introduction">
       <!--project content-->
-      <ng-include class="animate-200ms animate-fade profile-main-child" src="'/app/profile/project/project.html'" ng-show="vm.location === 'main'"></ng-include>
-      <div class="animate-500ms animate-fade animate-slide-up profile-main-child" ng-show="vm.location !== 'main'">
+      <ng-include class="animate-500ms animate-fade profile-main-child" src="'/app/profile/project/project.html'" ng-show="vm.location === 'main-project'"></ng-include>
+      <!--project creation-->
+      <ng-include class="animate-500ms animate-fade profile-main-child" src="'/app/profile/project/project-new.html'" ng-show="vm.location === 'main-project-new'"></ng-include>
+      <!--Close button-->
+      <div class="animate-500ms animate-fade profile-main-child" ng-show="vm.checkLocation(vm.location, true)">
         <div class="profile-main-buttons">
-          <md-button class="md-fab md-mini md-accent" aria-label="Back to rojects" ng-click="vm.location = 'main'" md-tooltip-destroy>
+          <md-button class="md-fab md-mini md-accent" aria-label="Close" ng-click="vm.introduction = true; vm.location = 'main-project'" md-tooltip-destroy>
+            <i class="fa fa-lg fa-times primary-h700"></i>
+            <md-tooltip md-direction="top" md-autohide="true">
+              Close
+            </md-tooltip>
+          </md-button>
+        </div>
+      </div>
+      <!--Back button-->
+      <div class="animate-500ms animate-fade animate-slide-up profile-main-child" ng-show="vm.checkLocation(vm.location, false)">
+        <div class="profile-main-buttons">
+          <md-button class="md-fab md-mini md-accent" aria-label="Back to projects" ng-click="vm.location = 'main-project'" md-tooltip-destroy>
             <i class="fa fa-lg fa-arrow-circle-down primary-h700"></i>
             <md-tooltip md-direction="top" md-autohide="true">
               Back to projects
@@ -82,11 +96,11 @@
           <!--project management-->
           <ng-include src="'/app/profile/project/project-management.html'" ng-show="vm.location === 'project-management'"></ng-include>
           <!--screen creation-->
-          <ng-include class="animate-500ms animate-fade animate-slide-up" src="'/app/profile/screen/screen-creation.html'" ng-show="vm.location === 'screen-creation'"></ng-include>
+          <ng-include src="'/app/profile/screen/screen-creation.html'" ng-show="vm.location === 'screen-creation'"></ng-include>
           <!--experiment creation-->
-          <ng-include class="animate-500ms animate-fade animate-slide-up" src="'/app/profile/experiment/experiment-creation.html'" ng-show="vm.location === 'experiment-creation'"></ng-include>
+          <ng-include src="'/app/profile/experiment/experiment-creation.html'" ng-show="vm.location === 'experiment-creation'"></ng-include>
           <!--sample creation-->
-          <ng-include class="animate-500ms animate-fade animate-slide-up" src="'/app/profile/sample/sample-creation.html'" ng-show="vm.location === 'sample-creation'"></ng-include>
+          <ng-include src="'/app/profile/sample/sample-creation.html'" ng-show="vm.location === 'sample-creation'"></ng-include>
         </div>
       </div>
     </div>
