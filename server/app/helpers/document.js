@@ -3,17 +3,20 @@ var database = require(config.connectionsDir + config.database.name);
 
 var Document = {
 
-  counter: function(collection, name) {
-    var entry = database.acquire().collection(collection).findAndModify(
-      {
-        { _id: name },
-        { $inc: { sequence: 1 } },
-        new: true
-      }, function(err, result) {
-        console.log(err, result);
+  counter: function(name, callback) {
+    database.acquire().collection('counters').findAndModify(
+      {_id: name},
+      [],
+      {$inc: { sequence: 1}},
+      {new: true},
+      function(err, doc) {
+        if(err) {
+          callback(true, 0);
+        } else {
+          callback(false, doc.value.sequence);
+        }
       }
    );
-   return entry.sequence;
 	}
 }
 module.exports = Document;

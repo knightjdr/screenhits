@@ -1,25 +1,27 @@
 describe('controller: 404', function() {
   var assert = chai.assert;
-  var controller;
-  var scope;
+  var $controller;
+  var errorController;
+  var helperReport;
+  var report;
+  var $rootScope;
 
   beforeEach(module('app'));
-  beforeEach(inject(function ($controller, $rootScope) {
-    scope = $rootScope.$new();
-    controller = $controller('404', {
-      $scope: scope
+  beforeEach(inject(function($injector) {
+    $controller = $injector.get('$controller');
+    helperReport = $injector.get('helperReport');
+    $rootScope = $injector.get('$rootScope');
+    errorController = $controller('404', {
+      $scope: $rootScope
     });
+    report = sinon.stub(helperReport, "mail");
   }));
 
-  describe('when created', function() {
-    beforeEach(function() {
-      controller.supportEmail = 'user@somewhere.com';
-      scope.$digest();
-      controller.reportError('test');
-    });
+  describe('report error', function() {
 
-    it('report error should open mailto window', function() {
-      assert.equal(controller.windowLocation, 'mailto:'+ controller.supportEmail + '?subject=' + 'test');
+    it('should call mailto helper', function() {
+      errorController.reportError('test');
+      assert.isTrue(report.calledOnce);
     });
   });
 

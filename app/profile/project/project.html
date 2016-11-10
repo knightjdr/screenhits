@@ -47,7 +47,7 @@
                 Project:
               </td>
               <td class="p-l-10">
-                [{{vm.project.projectid}}] {{vm.project.title}}
+                [{{vm.project._id}}] {{vm.project.title}}
               </td>
             </tr>
             <tr>
@@ -55,7 +55,7 @@
                 Created:
               </td>
               <td class="p-l-10">
-                {{vm.project.created * 1000  | date: 'dd-MM-yyyy'}}
+                {{vm.project.created  | date: 'dd-MM-yyyy'}}
               </td>
             </tr>
             <tr>

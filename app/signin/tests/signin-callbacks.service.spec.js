@@ -3,7 +3,6 @@ describe('service: signin-callbacks', function() {
   var auth = {ab: {access_token: 'some token'}, cd: {ig: 'user', U3: 'user@somewhere.com'}};
   var credentials;
   var __env;
-  var headers = {'Content-Type': 'application/json', user: {}};
   var $http;
   var httpResponse;
   var signinCallbacks;

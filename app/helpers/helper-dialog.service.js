@@ -2,7 +2,7 @@
 	'use strict';
 
 	angular.module('app')
-    .service('helperDialog', ['$http', '$mdDialog', function($http, $mdDialog) {
+    .service('helperDialog', ['$mdDialog', function($mdDialog) {
 			this.alert = function(title, message) {
        	$mdDialog.show({
       		clickOutsideToClose: true,

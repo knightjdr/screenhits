@@ -29,7 +29,7 @@ module.exports = {
 
 		//project creation
 		app.post('/project', authenticate, function(req, res) {
-			project.add(req.body);
+			project.add(req.body, res);
     });
   }
 };

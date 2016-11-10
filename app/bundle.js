@@ -279,7 +279,7 @@
 	'use strict';
 
 	angular.module('app')
-    .service('helperDialog', ['$http', '$mdDialog', function($http, $mdDialog) {
+    .service('helperDialog', ['$mdDialog', function($mdDialog) {
 			this.alert = function(title, message) {
        	$mdDialog.show({
       		clickOutsideToClose: true,
@@ -330,8 +330,7 @@
 	angular.module('app')
     .service('helperReport', ['__env', '$window', function(__env, $window) {
 			this.mail = function(subject) {
-        var windowLocation = 'mailto:'+ __env.supportEmail + '?subject=' + subject;
-        window.location.href = windowLocation;
+        $window.location.href = 'mailto:'+ __env.supportEmail + '?subject=' + subject;
 			};
 		}])
   ;
@@ -341,7 +340,7 @@
 	'use strict';
 
 	angular.module('app')
-    .service('signinCallbacks', ['credentials', 'helperDialog', 'helperHTTP', '$rootScope', function(credentials, helperDialog, helperHTTP, $rootScope) {
+    .service('signinCallbacks', ['credentials', 'helperDialog', 'helperHTTP', 'projects', '$rootScope', function(credentials, helperDialog, helperHTTP, projects, $rootScope) {
       var data = {};
 			this.success = function(authResult) {
 				//process google authResult for token
@@ -361,6 +360,7 @@
 				 var signinSuccess = function(response) {
 					 credentials.set(response.data.user);
 					 $rootScope.$broadcast('signin:updated', {text: 'Signed in'});
+					 projects.set(response.data.projects);
 				 };
 				 //check user is authorized
 				 helperHTTP.set('login', data, signinSuccess, signinFailure);
@@ -530,7 +530,28 @@
 	'use strict';
 
 	angular.module('app')
-		.controller('profile', ['$scope', function ($scope) {
+    .service('projects', ['$rootScope', function($rootScope) {
+      var projects = [];
+      this.add = function(data) {
+				projects.push(data);
+				$rootScope.$broadcast('projects:updated', projects);
+			};
+			this.get = function() {
+				return projects;
+			};
+      this.set = function(data) {
+        projects = JSON.parse(JSON.stringify(data));
+        $rootScope.$broadcast('projects:updated', projects);
+      };
+		}])
+  ;
+})();
+
+(function() {
+	'use strict';
+
+	angular.module('app')
+		.controller('profile', ['$scope', '$timeout', function ($scope, $timeout) {
       var vm = this;
 			vm.checkLocation = function(location, response) {
 				if(!location || /^main-*/.test(location)) {
@@ -544,63 +565,7 @@
 				vm.location = 'main-project-new';
 				angular.element(document.getElementById('projects-button')).triggerHandler('click');
 			};
-			vm.projects = [{
-			  title: 'Project 1',
-			  created: 1478030151,
-			  creator: 'Someone A',
-			  description: 'a project description',
-			  projectid: 1,
-			  screens: [
-			    {
-			      approach: 'dropout',
-			      cellLine: 'HeLa',
-			      condition: 'drug treatment',
-			      created: 1478030151,
-			      creator: 'Someone A',
-			      experiments: [{
-			        created: 1478030151,
-			        details: 'time points and drug concentrations',
-			        experimenter: 'Someone C',
-			        experimentid: 1,
-			        projectid: 1,
-			        protocols: {
-			          type: 'protocol.pdf'
-			        },
-			        screenid: 1
-			      }],
-			      library: 'library 1',
-			      projectid: 1,
-			      screenid: 1,
-			      species: 'Homo sapiens',
-			      title: 'Screen 1',
-			      type: 'knockout'
-			    },
-			    {
-			      approach: 'positive selection',
-			      cellLine: 'U2OS',
-			      condition: 'genetic alteraion',
-			      created: 1478030151,
-			      creator: 'Someone B',
-			      experiments: [{
-			        created: 1478030151,
-			        details: 'time points and drug concentrations',
-			        experimenter: 'Someone D',
-			        experimentid: 2,
-			        projectid: 1,
-			        protocols: {
-			          type: 'protocol.pdf'
-			        },
-			        screenid: 2
-			      }],
-			      library: 'library 2',
-			      projectid: 1,
-			      screenid: 2,
-			      species: 'Homo sapiens',
-			      title: 'Screen 2',
-			      type: 'overexpression'
-			    }
-			  ]
-			}];
+			vm.projects = [];
 			vm.selectProject = function(project) {
 				if(!vm.project || vm.project !== project) {
 					vm.experiment = '';
@@ -613,6 +578,12 @@
 				angular.element(document.getElementById('projects-button')).triggerHandler('click');
 			};
 			vm.user = 'Someone';
+			$scope.$on('projects:updated', function(event, data) {
+				vm.projects = data;
+				$timeout(function() {
+					$scope.$digest();
+				});
+			});
     }])
   ;
 })();
@@ -621,11 +592,19 @@
 	'use strict';
 
 	angular.module('app')
-		.controller('projectNew', ['credentials', 'helperHTTP', '$scope', function (credentials, helperHTTP, $scope) {
+		.controller('projectNew', ['credentials', 'helperHTTP', 'projects', '$scope', '$timeout', function (credentials, helperHTTP, projects, $scope, $timeout) {
       var vm = this;
       vm.form = {};
+			vm.partialReset = function () {
+				$scope.form.name = '';
+				$scope.form.description = '';
+				$scope.form.$setPristine();
+				$scope.form.$setUntouched();
+        vm.form = {};
+			};
 			vm.reset = function () {
 				$scope.form.name = '';
+				$scope.form.description = '';
 				$scope.form.$setPristine();
 				$scope.form.$setUntouched();
         vm.form = {};
@@ -641,11 +620,18 @@
           formObject.description = form.description;
           formObject.title = form.name;
           var success = function(response) {
-            vm.message = response.data.message;
             vm.reset();
+						vm.message = response.data.message;
+						projects.add(response.data.project);
+						$timeout(function() {
+							vm.message = '';
+						}, 10000);
           };
           var failure = function(response) {
             vm.message = response.data.message;
+						$timeout(function() {
+							vm.message = '';
+						}, 10000);
           };
           helperHTTP.set('project', formObject, success, failure);
         }

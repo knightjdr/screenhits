@@ -2,7 +2,7 @@
 	'use strict';
 
 	angular.module('app')
-    .service('signinCallbacks', ['credentials', 'helperDialog', 'helperHTTP', '$rootScope', function(credentials, helperDialog, helperHTTP, $rootScope) {
+    .service('signinCallbacks', ['credentials', 'helperDialog', 'helperHTTP', 'projects', '$rootScope', function(credentials, helperDialog, helperHTTP, projects, $rootScope) {
       var data = {};
 			this.success = function(authResult) {
 				//process google authResult for token
@@ -22,6 +22,7 @@
 				 var signinSuccess = function(response) {
 					 credentials.set(response.data.user);
 					 $rootScope.$broadcast('signin:updated', {text: 'Signed in'});
+					 projects.set(response.data.projects);
 				 };
 				 //check user is authorized
 				 helperHTTP.set('login', data, signinSuccess, signinFailure);

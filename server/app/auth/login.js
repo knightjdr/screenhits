@@ -4,6 +4,7 @@ var google = require('googleapis');
 var plus = google.plus('v1');
 var OAuth2 = google.auth.OAuth2;
 var oauth2Client = new OAuth2(config.clientID + '.apps.googleusercontent.com');
+var project = require('../project/project');
 var tokenManagement = require('./token-management');
 
 var Login = {
@@ -25,7 +26,9 @@ var Login = {
             if(document) {
               var newToken = tokenManagement.create();
               tokenManagement.set(document.email, newToken);
-              res.send({status: 0, user: {email: document.email, name: document.name, permission: document.priveleges, token: newToken}});
+              project.get({creator: document.name}, function(projects) {
+                res.send({status: 0, user: {email: document.email, name: document.name, permission: document.priveleges, token: newToken}, projects: projects});
+              });
             } else {
               res.send({status: 1, message: 'You do not have access to ScreenHits.'});
             }

@@ -27,9 +27,14 @@
                   </md-button>
                 </div>
               </div>
-              <ul class="no-bullets hover-style">
+              <ul class="no-bullets hover-style" ng-show="vm.projects.length > 0">
                 <li ng-repeat="project in vm.projects" ng-click="vm.selectProject(project)">
-                  [{{project.projectid}}] {{project.title}}
+                  [{{project._id}}] {{project.title}}
+                </li>
+              </ul>
+              <ul class="no-bullets" ng-show="vm.projects.length === 0">
+                <li>
+                  None available
                 </li>
               </ul>
             </div>
