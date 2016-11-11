@@ -1,18 +1,20 @@
 describe('directive: md-tooltip-destroy', function() {
   var assert = chai.assert;
+  var $compile;
   var element;
-  var scope;
+  var $rootScope;
   var tooltip;
 
   beforeEach(module('app'));
-  beforeEach(inject(function($rootScope, $compile) {
-    scope = $rootScope.$new();
+  beforeEach(inject(function($injector) {
+    $compile = $injector.get('$compile');
+    $rootScope = $injector.get('$rootScope');
     //dummy tooltip
     tooltip = document.createElement('md-tooltip');
     document.body.appendChild(tooltip);
     //create directive for testing
     element = '<md-button md-tooltip-destroy></md-button>';
-    element = $compile(element)(scope);
+    element = $compile(element)($rootScope);
   }));
 
   describe('when clicked', function() {

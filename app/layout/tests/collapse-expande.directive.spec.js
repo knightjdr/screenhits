@@ -3,15 +3,16 @@ describe('directive: collapse-expand', function() {
   var closeIcons;
   var collapseButton;
   var collapseTarget;
+  var $compile;
   var containerHeader;
   var div;
   var expandButton;
-  var scope;
-  var checkDiv;
+  var $rootScope;
 
   beforeEach(module('app'));
-  beforeEach(inject(function($compile, $rootScope) {
-    scope = $rootScope.$new();
+  beforeEach(inject(function($injector) {
+    $compile = $injector.get('$compile');
+    $rootScope = $injector.get('$rootScope');
     div = document.createElement('div');
     div.id = 'test';
     div.className = 'parent-container';
@@ -31,8 +32,8 @@ describe('directive: collapse-expand', function() {
     expandButton = document.createElement('md-button');
     expandButton.setAttribute('expand', 'parent-container');
     expandButton = div.appendChild(expandButton);
-    collapseButton = $compile(collapseButton)(scope);
-    expandButton = $compile(expandButton)(scope);
+    collapseButton = $compile(collapseButton)($rootScope);
+    expandButton = $compile(expandButton)($rootScope);
   }));
 
   describe('directive: collapse', function() {

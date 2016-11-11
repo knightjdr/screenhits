@@ -1,20 +1,22 @@
 describe('directive: flip', function() {
   var assert = chai.assert;
+  var checkDiv;
+  var $compile;
   var div;
   var element;
-  var scope;
-  var checkDiv;
+  var $rootScope;
 
   beforeEach(module('app'));
-  beforeEach(inject(function($rootScope, $compile) {
-    scope = $rootScope.$new();
+  beforeEach(inject(function($injector) {
+    $compile = $injector.get('$compile');
+    $rootScope = $injector.get('$rootScope');
     //dummy div to watch
     div = document.createElement('div');
     div.id = 'target';
     document.body.appendChild(div);
     //create directive for testing
     element = '<md-button flip-menu="target" flip-menu-height="100px" flip-menu-width="100px"></md-button>';
-    element = $compile(element)(scope);
+    element = $compile(element)($rootScope);
   }));
 
   describe('when invoked', function() {

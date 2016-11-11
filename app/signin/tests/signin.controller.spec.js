@@ -1,38 +1,42 @@
 describe('controller: signin', function() {
   var assert = chai.assert;
-  var controller;
-  var data;
-  var scope;
+  var $controller;
+  var $rootScope;
+  var signin;
 
   beforeEach(module('app'));
-  beforeEach(inject(function ($controller, $rootScope) {
-    scope = $rootScope.$new();
-    controller = $controller('signin', {
-      $scope: scope
+  beforeEach(inject(function($injector) {
+    $controller = $injector.get('$controller');
+    $rootScope = $injector.get('$rootScope');
+    signin = $controller('signin', {
+      $scope: $rootScope
     });
   }));
 
-  describe('when signed in', function() {
-    beforeEach(function() {
-      data = {name: 'something'};
-      scope.$broadcast('credentials:updated', data);
-    });
+  describe('when signed in correctly', function() {
 
-    it('signin should be true', function() {
-      assert.isTrue(controller.signedIn);
+    it('signin should be true and name set', function() {
+      $rootScope.$broadcast('credentials:updated', {name: 'something'});
+      assert.isTrue(signin.signedIn);
+      assert.equal(signin.user, 'something');
+    });
+  });
+
+  describe('when signed in incorrectly', function() {
+
+    it('signin should be false', function() {
+      $rootScope.$broadcast('credentials:updated', {});
+      assert.isFalse(signin.signedIn);
     });
   });
 
   describe('when signed out', function() {
-    beforeEach(function() {
-      data = {text: 'something'};
-      scope.$broadcast('credentials:updated', data);
-      scope.$broadcast('signin:updated', data);
-    });
 
     it('signin should be false', function() {
-      assert.isNotTrue(controller.signedIn);
-      assert.equal(controller.signedInText, 'something');
+      $rootScope.$broadcast('credentials:updated', {});
+      $rootScope.$broadcast('signin:updated', {text: 'something'});
+      assert.isFalse(signin.signedIn);
+      assert.equal(signin.signedInText, 'something');
     });
   });
 

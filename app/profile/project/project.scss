@@ -1,5 +1,54 @@
 @import '../../layout/palette';
 
+.container-backdrop {
+  background-color: $primary-h600;
+  border-radius: 4px;
+  -webkit-box-shadow: 0 0 2px $accent-h400;
+  box-shadow: 0 0 2px $accent-h400;
+  margin-top: 10px;
+  margin-right: 20px;
+  padding-top: 5px;
+}
+
+.screen-container {
+  @extend .container-backdrop;
+  //margin-right: 2px;
+  //max-width: 500px;
+  padding: 10px 10px 10px 10px;
+  position: relative;
+}
+.screen-container .flex-row {
+  margin-bottom: 5px;
+}
+.screen-overview {
+  @extend .container-backdrop;
+  //margin-right: 1px;
+  //max-width: 500px;
+  padding: 10px 10px 10px 10px;
+  position: relative;
+}
+.screen-overview .flex-row {
+  margin-bottom: 5px;
+}
+.experiment-overview {
+  @extend .container-backdrop;
+  //max-width: 500px;
+  padding: 10px 10px 10px 10px;
+  position: relative;
+}
+.experiment-overview .flex-row {
+  margin-bottom: 5px;
+}
+.screen-container:hover .profile-container-buttons,
+.screen-overview:hover .profile-container-buttons,
+.experiment-overview:hover .profile-container-buttons {
+  visibility: visible;
+}
+
+.collapse-header {
+  display: none;
+}
+
 .form-container {
   background-color: #fff;
   border: 2px solid $primary-h700;

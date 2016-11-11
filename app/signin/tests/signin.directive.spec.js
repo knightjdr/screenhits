@@ -1,21 +1,21 @@
 describe('directive: google-signin', function() {
   var assert = chai.assert;
+  var $compile;
   var element;
   var link;
-  var scope;
+  var $rootScope;
   var script;
 
   beforeEach(module('app'));
-  beforeEach(inject(function($rootScope, $compile) {
-    scope = $rootScope.$new();
+  beforeEach(inject(function($injector) {
+    $compile = $injector.get('$compile');
+    $rootScope = $injector.get('$rootScope');
     //create link element for prepending font css
     link = document.createElement("link");
     document.head.appendChild(link);
     //create directive for testing
-    element = '<div id="google-signin" google-signin clientid="{{clientId}}"></div>';
-    scope.clientId = 'xxxxx';
-    element = $compile(element)(scope);
-    scope.$digest();
+    element = '<div id="google-signin" google-signin clientid="testid"></div>';
+    element = $compile(element)($rootScope);
   }));
 
   describe('when invoked', function() {

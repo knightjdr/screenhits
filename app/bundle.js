@@ -226,20 +226,6 @@
 	'use strict';
 
 	angular.module('app')
-		.controller('404', ['__env', 'helperReport', '$scope', '$window', function (__env, helperReport, $scope, $window) {
-      var vm = this;
-			vm.supportName = __env.supportName;
-      vm.reportError = function(subject) {
-				helperReport.mail(subject);
-			};
-    }])
-  ;
-})();
-
-(function() {
-	'use strict';
-
-	angular.module('app')
     .service('credentials', ['$rootScope', function($rootScope) {
       var user = {};
 			this.get = function() {
@@ -340,6 +326,60 @@
 	'use strict';
 
 	angular.module('app')
+		.controller('alert', ['__env', 'helperReport', '$mdDialog', '$scope', 'message', 'title', function(__env, helperReport, $mdDialog, $scope, message, title) {
+      var vm = this;
+      vm.close = function() {
+        $mdDialog.hide();
+      };
+      vm.message = message;
+			vm.reportError = function(subject) {
+				helperReport.mail(subject);
+			};
+			vm.supportName = __env.supportName;
+      vm.title = title;
+    }])
+  ;
+})();
+
+(function() {
+	'use strict';
+
+	angular.module('app')
+		.controller('404', ['__env', 'helperReport', '$scope', '$window', function (__env, helperReport, $scope, $window) {
+      var vm = this;
+			vm.supportName = __env.supportName;
+      vm.reportError = function(subject) {
+				helperReport.mail(subject);
+			};
+    }])
+  ;
+})();
+
+(function() {
+	'use strict';
+
+	angular.module('app')
+    .service('projects', ['$rootScope', function($rootScope) {
+      var projects = [];
+      this.add = function(data) {
+				projects.push(data);
+				$rootScope.$broadcast('projects:updated', projects);
+			};
+			this.get = function() {
+				return projects;
+			};
+      this.set = function(data) {
+        projects = JSON.parse(JSON.stringify(data));
+        $rootScope.$broadcast('projects:updated', projects);
+      };
+		}])
+  ;
+})();
+
+(function() {
+	'use strict';
+
+	angular.module('app')
     .service('signinCallbacks', ['credentials', 'helperDialog', 'helperHTTP', 'projects', '$rootScope', function(credentials, helperDialog, helperHTTP, projects, $rootScope) {
       var data = {};
 			this.success = function(authResult) {
@@ -377,7 +417,7 @@
 
 	angular.module('app')
     .service('signoutUnload', ['helperHTTP', '$window', function(helperHTTP, $window) {
-      $window.onbeforeunload = function (e) {
+      $window.onbeforeunload = function () {
 				helperHTTP.set('logout', {}, function(){}, function(){});
         var auth2 = gapi.auth2.getAuthInstance();
         auth2.disconnect().then(function () {
@@ -511,46 +551,6 @@
 	'use strict';
 
 	angular.module('app')
-		.controller('alert', ['__env', 'helperReport', '$mdDialog', '$scope', 'message', 'title', function(__env, helperReport, $mdDialog, $scope, message, title) {
-      var vm = this;
-      vm.close = function() {
-        $mdDialog.hide();
-      };
-      vm.message = message;
-			vm.reportError = function(subject) {
-				helperReport.mail(subject);
-			};
-			vm.supportName = __env.supportName;
-      vm.title = title;
-    }])
-  ;
-})();
-
-(function() {
-	'use strict';
-
-	angular.module('app')
-    .service('projects', ['$rootScope', function($rootScope) {
-      var projects = [];
-      this.add = function(data) {
-				projects.push(data);
-				$rootScope.$broadcast('projects:updated', projects);
-			};
-			this.get = function() {
-				return projects;
-			};
-      this.set = function(data) {
-        projects = JSON.parse(JSON.stringify(data));
-        $rootScope.$broadcast('projects:updated', projects);
-      };
-		}])
-  ;
-})();
-
-(function() {
-	'use strict';
-
-	angular.module('app')
 		.controller('profile', ['$scope', '$timeout', function ($scope, $timeout) {
       var vm = this;
 			vm.checkLocation = function(location, response) {
@@ -565,7 +565,63 @@
 				vm.location = 'main-project-new';
 				angular.element(document.getElementById('projects-button')).triggerHandler('click');
 			};
-			vm.projects = [];
+			vm.projects = [{
+  			title: 'Project 1',
+  			created: 1478030151,
+  			creator: 'Someone A',
+  			description: 'a project description',
+  			_id: 1,
+  			screens: [
+    			{
+      			approach: 'dropout',
+      			cellLine: 'HeLa',
+      			condition: 'drug treatment',
+      			created: 1478030151,
+      			creator: 'Someone A',
+      			experiments: [{
+        			created: 1478030151,
+        			details: 'time points and drug concentrations',
+        			experimenter: 'Someone C',
+        			experimentid: 1,
+        			projectid: 1,
+        			protocols: {
+          			type: 'protocol.pdf'
+        			},
+        			screenid: 1
+      			}],
+      			library: 'library 1',
+      			projectid: 1,
+      			screenid: 1,
+      			species: 'Homo sapiens',
+      			title: 'Screen 1',
+      			type: 'knockout'
+    			},
+    			{
+      			approach: 'positive selection',
+      			cellLine: 'U2OS',
+      			condition: 'genetic alteraion',
+      			created: 1478030151,
+      			creator: 'Someone B',
+      			experiments: [{
+        			created: 1478030151,
+        			details: 'time points and drug concentrations',
+        			experimenter: 'Someone D',
+        			experimentid: 2,
+        			projectid: 1,
+        			protocols: {
+          			type: 'protocol.pdf'
+        			},
+        			screenid: 2
+      			}],
+      			library: 'library 2',
+      			projectid: 1,
+      			screenid: 2,
+      			species: 'Homo sapiens',
+      			title: 'Screen 2',
+      			type: 'overexpression'
+    			}
+  			]
+			}];
 			vm.selectProject = function(project) {
 				if(!vm.project || vm.project !== project) {
 					vm.experiment = '';

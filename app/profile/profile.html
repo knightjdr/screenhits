@@ -73,7 +73,7 @@
     <!--main view-->
     <div class="profile-main flex-column-100" ng-show="!vm.introduction">
       <!--project content-->
-      <ng-include class="animate-500ms animate-fade profile-main-child" src="'/app/profile/project/project.html'" ng-show="vm.location === 'main-project'"></ng-include>
+      <ng-include class="animate-500ms animate-fade profile-main-child profile-main-overflow" src="'/app/profile/project/project.html'" ng-show="vm.location === 'main-project'"></ng-include>
       <!--project creation-->
       <ng-include class="animate-500ms animate-fade profile-main-child" src="'/app/profile/project/project-new.html'" ng-show="vm.location === 'main-project-new'"></ng-include>
       <!--Close button-->
