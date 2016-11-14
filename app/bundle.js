@@ -306,6 +306,44 @@
           helperDialog.alert('Connection error', 'The server could not be reached.');
 				});
 			};
+			this.get = function(endpoint, object, successCallback, failureCallback) {
+        var user = credentials.get();
+				var params = '?';
+				for(var key in object) {
+					params += key + '=' + object[key] + '&';
+				}
+        $http({
+					method: 'GET',
+					url: __env.apiUrl + '/' + endpoint + '/' + params,
+					headers: {'Content-Type': 'application/json', 'user': JSON.stringify(user)}
+				})
+				.then(function successPost(response) {
+					if(!response.data.status) {
+						successCallback(response);
+					} else {
+						failureCallback(response);
+					}
+				}, function errorPost() {
+          helperDialog.alert('Connection error', 'The server could not be reached.');
+				});
+			};
+		}])
+  ;
+})();
+
+(function() {
+	'use strict';
+
+	angular.module('app')
+    .service('helperObject', [function() {
+			this.notEmpty = function(object) {
+        for(var prop in object) {
+          if(object.hasOwnProperty(prop)) {
+            return true;
+          }
+        }
+        return false;
+			};
 		}])
   ;
 })();
@@ -370,6 +408,10 @@
 			};
       this.set = function(data) {
         projects = JSON.parse(JSON.stringify(data));
+        $rootScope.$broadcast('projects:updated', projects);
+      };
+			this.update = function(key, data) {
+        projects[key] = data;
         $rootScope.$broadcast('projects:updated', projects);
       };
 		}])
@@ -565,10 +607,10 @@
 				vm.location = 'main-project-new';
 				angular.element(document.getElementById('projects-button')).triggerHandler('click');
 			};
-			vm.projects = [{
+			/*vm.projects = [{
   			title: 'Project 1',
   			created: 1478030151,
-  			creator: 'Someone A',
+  			creator: 'Someone',
   			description: 'a project description',
   			_id: 1,
   			screens: [
@@ -621,7 +663,9 @@
       			type: 'overexpression'
     			}
   			]
-			}];
+			}];*/
+			//vm.user = 'Someone';
+			vm.projects = [];
 			vm.selectProject = function(project) {
 				if(!vm.project || vm.project !== project) {
 					vm.experiment = '';
@@ -633,9 +677,17 @@
 				vm.location = 'main-project';
 				angular.element(document.getElementById('projects-button')).triggerHandler('click');
 			};
-			vm.user = 'Someone';
+			$scope.$on('credentials:updated', function(event, data) {
+				if(data.name) {
+					vm.user = data.name;
+					$timeout(function() {
+						$scope.$digest();
+					});
+				}
+			});
 			$scope.$on('projects:updated', function(event, data) {
 				vm.projects = data;
+				console.log(vm.projects);
 				$timeout(function() {
 					$scope.$digest();
 				});
@@ -700,33 +752,72 @@
 	'use strict';
 
 	angular.module('app')
-		.controller('projectManagement', ['$scope', function ($scope) {
+		.controller('projectManagement', ['helperHTTP', 'helperObject', 'projects', '$scope', '$timeout', function (helperHTTP, helperObject, projects, $scope, $timeout) {
       var vm = this;
-			vm.form = {
-				addUser: {
-					email: '',
-					name: ''
+			vm.addUsers = function(project, currentUsers, newUsers) {
+				var toAdd = [];
+				if(currentUsers) {
+					toAdd = currentUsers;
 				}
+				for(var i = 0, iLen = vm.searchResults.length; i < iLen; i++) {
+					if(newUsers[i]) {
+						toAdd.push({name: vm.searchResults[i].name, lab: vm.searchResults[i].lab});
+					}
+				}
+				var success = function(response) {
+					projects.update('users', toAdd);
+					vm.addUsersMessage = response.data.message;
+					$timeout(function() {
+						vm.addUsersMessage = '';
+					}, 10000);
+				};
+				var failure = function(response) {
+					vm.addUsersMessage = response.data.message;
+					$timeout(function() {
+						vm.addUsersMessage = '';
+					}, 10000);
+				};
+				helperHTTP.set('project/users', {project: project, users: toAdd}, success, failure);
 			};
+			vm.searchUser = {};
+			vm.newUsers = [];
 			vm.reset = function () {
-				$scope.addUserForm.email = '';
-				$scope.addUserForm.name = '';
-				$scope.addUserForm.$setPristine();
-				$scope.addUserForm.$setUntouched();
-				vm.form.addUser.email = '';
-				vm.form.addUser.name = '';
+				$scope.form.email = '';
+				$scope.form.$setPristine();
+				$scope.form.$setUntouched();
+				vm.searchUser = {};
 			};
-			vm.submit = function(form) {
-				if((form.email && form.email.match(/^.+@.+\..+$/)) || form.name) {
-					var formToSubmit = {};
-					if(form.name) {
-						formToSubmit.name = form.name;
-					}
-					if((form.email && form.email.match(/^.+@.+\..+$/))) {
-						formToSubmit.name = form.email;
-					}
-				}
+			//vm.searchResults = [{name: 'James Knight', lab: 'Gingras'}, {name: 'Someone', lab: 'Gingras'}];
+			vm.submit = function(valid, form) {
+        if(valid && helperObject.notEmpty(form)) {
+					vm.message = '';
+					var formObject = form;
+          var success = function(response) {
+            vm.reset();
+						if(response.data.users.length > 0) {
+							vm.searchResults = response.data.users;
+						} else {
+							vm.message = 'No users matched your search.';
+							$timeout(function() {
+								vm.message = '';
+							}, 10000);
+						}
+          };
+          var failure = function(response) {
+						vm.message = response.data.message;
+						$timeout(function() {
+							vm.message = '';
+						}, 10000);
+          };
+          helperHTTP.get('project/users', formObject, success, failure);
+        }
 			};
+			$scope.$on('projects:updated', function(event, data) {
+				console.log('here');
+				$timeout(function() {
+					$scope.$digest();
+				});
+			});
     }])
   ;
 })();

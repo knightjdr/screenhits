@@ -17,7 +17,7 @@
             </md-tooltip>
           </md-button>
           <span class="collapse-icons-other">
-            <md-button class="md-fab md-small md-accent no-margins" aria-label="Manage" ng-click="vm.location = 'project-management'" md-tooltip-destroy>
+            <md-button class="md-fab md-small md-accent no-margins" aria-label="Manage" ng-click="vm.location = 'project-management'" ng-show="vm.project.creator === vm.user" md-tooltip-destroy>
               <i class="fa fa-wrench primary-h700"></i>
               <md-tooltip md-direction="top" md-autohide="true">
                 Manage

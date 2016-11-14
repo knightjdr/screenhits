@@ -1,34 +1,42 @@
-<div class="flex-row" ng-controller="projectManagement as vm">
+<div class="flex-row" ng-controller="projectManagement as projectManagementVm">
   <div class="flex-column">
     <div class="flex-row">
-      Project owner:
+      Project owner: {{vm.project.creator}}
     </div>
-    <div class="flex-row">
+    <div class="flex-row" ng-show="vm.project.users">
       Permissions:
       <table>
         <thead>
           <tr>
             <th>
-              Write
+              User
             </th>
             <th>
-              Read
+              Lab
+            </th>
+            <th>
+              Permissions
             </th>
           </tr>
         </thead>
-        <tbody>
+        <tbody ng-repeat="user in vm.project.users">
           <tr>
-
-          </tr>
-          <tr>
-
+            <td>
+              {{user.name}}
+            </td>
+            <td>
+              {{user.lab}}
+            </td>
+            <td>
+              {{user.permissions}}
+            </td>
           </tr>
         </tbody>
       </table>
     </div>
     <div class="flex-row m-t-20">
       <div class="button-container">
-        <md-button class="md-fab md-mini md-accent no-margins" aria-label="Add user" ng-click="vm.showForm = 'add-user'">
+        <md-button class="md-fab md-mini md-accent no-margins" aria-label="Add user" ng-click="projectManagementVm.showForm = 'add-user'">
           <i class="fa fa-lg fa-plus primary-h700"></i>
           <md-tooltip md-direction="bottom" md-autohide="true">
             Add user
@@ -36,7 +44,7 @@
         </md-button>
       </div>
       <div class="button-container m-l-10">
-        <md-button class="md-fab md-mini md-accent no-margins" aria-label="Manage users" ng-click="vm.showForm = 'manage-users'">
+        <md-button class="md-fab md-mini md-accent no-margins" aria-label="Manage users" ng-click="projectManagementVm.showForm = 'manage-users'">
           <i class="fa fa-lg fa-user-circle primary-h700"></i>
           <md-tooltip md-direction="bottom" md-autohide="true">
             Manage users
@@ -44,28 +52,36 @@
         </md-button>
       </div>
     </div>
-    <div class="flex-row m-t-20">
-      <div class="form-container md-form-font" ng-show="vm.showForm === 'add-user'">
-        <form name="addUserForm" ng-submit="vm.submit(vm.form.addUser)" novalidate>
+    <div class="flex-row m-t-20" ng-show="projectManagementVm.showForm === 'add-user'">
+      <div class="flex-column form-container md-form-font">
+        <form name="form" ng-submit="projectManagementVm.submit(form.$valid, projectManagementVm.searchUser)" novalidate>
           <div class="form-description">
-            &#x2022; Search for users by name or Gmail address
+            &#x2022; Search for users by name, lab or Gmail address
           </div>
           <md-input-container class="md-icon-float md-block md-small-margin">
             <label>Name</label>
             <md-icon md-font-icon="fa-user-circle" class="fa md-accent"></md-icon>
-            <input ng-model="vm.form.addUser.name" type="text">
+            <input ng-model="projectManagementVm.searchUser.name" type="text">
+          </md-input-container>
+          <md-input-container class="md-icon-float md-block md-small-margin">
+            <label>Lab</label>
+            <md-icon md-font-icon="fa-flask" class="fa md-accent"></md-icon>
+            <input ng-model="projectManagementVm.searchUser.lab" type="text">
           </md-input-container>
           <md-input-container class="md-icon-float md-block md-small-margin">
             <label>e-mail</label>
             <md-icon md-font-icon="fa-envelope " class="fa md-accent"></md-icon>
-            <input name="email" ng-model="vm.form.addUser.email" ng-pattern="/^.+@.+\..+$/" type="email">
-            <div ng-messages="addUserForm.email.$error" role="alert">
+            <input name="email" ng-model="projectManagementVm.searchUser.email" ng-pattern="/^.+@.+\..+$/" type="email">
+            <div ng-messages="form.email.$error" role="alert">
               <div ng-message="pattern">Please enter a valid e-mail</div>
             </div>
           </md-input-container>
+          <div class="form-warning" ng-show="projectManagementVm.message">
+            &#x2022; {{projectManagementVm.message}}
+          </div>
           <div class="flex-row form-buttons">
             <div class="button-container">
-              <md-button class="md-fab md-small md-accent no-margins" aria-label="Reset form" ng-click="vm.reset()">
+              <md-button class="md-fab md-small md-accent no-margins" aria-label="Reset form" ng-click="projectManagementVm.reset()">
                 <i class="fa fa-refresh primary-h700"></i>
                 <md-tooltip md-direction="bottom" md-autohide="true">
                   Reset
@@ -83,10 +99,56 @@
           </div>
         </form>
       </div>
+      <div class="flex-column form-container md-form-font m-l-10" ng-show="projectManagementVm.searchResults">
+        <div class="form-description">
+          Results:
+        </div>
+        <table class="results-table">
+          <thead>
+            <tr>
+              <th>
+                User
+              </th>
+              <th>
+                Lab
+              </th>
+              <th>
+                Add
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr ng-repeat="user in projectManagementVm.searchResults track by $index">
+              <td>
+                {{user.name}}
+              </td>
+              <td>
+                {{user.lab}}
+              </td>
+              <td>
+                <md-checkbox aria-label="Add user" class="md-accent no-margins" ng-model="projectManagementVm.newUsers[$index]">
+                </md-checkbox>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="form-warning" ng-show="projectManagementVm.addUsersMessage">
+          &#x2022; {{projectManagementVm.addUsersMessage}}
+        </div>
+        <div class="flex-row form-buttons">
+          <div class="button-container m-l-10">
+            <md-button class="md-fab md-small md-accent no-margins" aria-label="Add" ng-click="projectManagementVm.addUsers(vm.project._id, vm.project.users, projectManagementVm.newUsers)">
+              <i class="fa fa-plus primary-h700"></i>
+              <md-tooltip md-direction="bottom" md-autohide="true">
+                Add users
+              </md-tooltip>
+            </md-button>
+          </div>
+        </div>
+      </div>
     </div>
-    <div class="flex-row m-t-20">
-      <div class="form-container" ng-show="vm.showForm === 'manage-users'">
-
+    <div class="flex-row m-t-20" ng-show="projectManagementVm.showForm === 'manage-users'">
+      <div class="form-container">
       </div>
     </div>
   </div>

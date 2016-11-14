@@ -15,6 +15,10 @@
         projects = JSON.parse(JSON.stringify(data));
         $rootScope.$broadcast('projects:updated', projects);
       };
+			this.update = function(key, data) {
+        projects[key] = data;
+        $rootScope.$broadcast('projects:updated', projects);
+      };
 		}])
   ;
 })();

@@ -2,6 +2,7 @@ var validate = require('./auth/validate');
 var login = require('./auth/login');
 var project = require('./project/project')
 var tokenManagement = require('./auth/token-management');
+var user = require('./user/user')
 
 module.exports = {
 	configure: function(app) {
@@ -26,6 +27,14 @@ module.exports = {
 		app.post('/logout', function(req, res) {
 			tokenManagement.revoke(JSON.parse(req.get('user')), res);
     });
+		//user search
+		app.get('/project/users', authenticate, function(req, res) {
+			user.search(req.query, res);
+		});
+		//user addition to project
+		app.post('/project/users', authenticate, function(req, res) {
+			user.add(req.body, res);
+		});
 
 		//project creation
 		app.post('/project', authenticate, function(req, res) {

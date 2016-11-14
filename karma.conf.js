@@ -30,6 +30,7 @@ module.exports = function(config) {
       'app/helpers/helper-compile.directive.js',
       'app/helpers/helper-dialog.service.js',
   		'app/helpers/helper-http.service.js',
+      'app/helpers/helper-object.service.js',
       'app/helpers/helper-report.service.js',
       'app/dialogs/alert/alert.controller.js',
   		'app/404/404.controller.js',

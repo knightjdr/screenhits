@@ -33,6 +33,7 @@ var appJS = [
 		'helpers/helper-compile.directive.js',
 		'helpers/helper-dialog.service.js',
 		'helpers/helper-http.service.js',
+		'helpers/helper-object.service.js',
 		'helpers/helper-report.service.js',
 		'dialogs/alert/alert.controller.js',
 		'404/404.controller.js',

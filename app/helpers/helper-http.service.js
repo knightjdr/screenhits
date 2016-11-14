@@ -21,6 +21,27 @@
           helperDialog.alert('Connection error', 'The server could not be reached.');
 				});
 			};
+			this.get = function(endpoint, object, successCallback, failureCallback) {
+        var user = credentials.get();
+				var params = '?';
+				for(var key in object) {
+					params += key + '=' + object[key] + '&';
+				}
+        $http({
+					method: 'GET',
+					url: __env.apiUrl + '/' + endpoint + '/' + params,
+					headers: {'Content-Type': 'application/json', 'user': JSON.stringify(user)}
+				})
+				.then(function successPost(response) {
+					if(!response.data.status) {
+						successCallback(response);
+					} else {
+						failureCallback(response);
+					}
+				}, function errorPost() {
+          helperDialog.alert('Connection error', 'The server could not be reached.');
+				});
+			};
 		}])
   ;
 })();

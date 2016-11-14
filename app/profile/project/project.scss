@@ -72,3 +72,20 @@
   right: 5px;
   position: absolute;
 }
+
+.results-table {
+  color: $primary-h700;
+}
+.results-table th {
+  border-bottom: 1px solid $primary-h700;
+}
+.results-table th,
+.results-table td {
+  padding: 5px 10px 5px 10px;
+  text-align: center;
+  vertical-align: middle;
+}
+/*.results-table tbody tr:hover {
+  color: $primary-h700;
+  background-color: $accent-h400;
+}*/

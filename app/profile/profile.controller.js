@@ -16,10 +16,10 @@
 				vm.location = 'main-project-new';
 				angular.element(document.getElementById('projects-button')).triggerHandler('click');
 			};
-			vm.projects = [{
+			/*vm.projects = [{
   			title: 'Project 1',
   			created: 1478030151,
-  			creator: 'Someone A',
+  			creator: 'Someone',
   			description: 'a project description',
   			_id: 1,
   			screens: [
@@ -72,7 +72,9 @@
       			type: 'overexpression'
     			}
   			]
-			}];
+			}];*/
+			//vm.user = 'Someone';
+			vm.projects = [];
 			vm.selectProject = function(project) {
 				if(!vm.project || vm.project !== project) {
 					vm.experiment = '';
@@ -84,9 +86,17 @@
 				vm.location = 'main-project';
 				angular.element(document.getElementById('projects-button')).triggerHandler('click');
 			};
-			vm.user = 'Someone';
+			$scope.$on('credentials:updated', function(event, data) {
+				if(data.name) {
+					vm.user = data.name;
+					$timeout(function() {
+						$scope.$digest();
+					});
+				}
+			});
 			$scope.$on('projects:updated', function(event, data) {
 				vm.projects = data;
+				console.log(vm.projects);
 				$timeout(function() {
 					$scope.$digest();
 				});

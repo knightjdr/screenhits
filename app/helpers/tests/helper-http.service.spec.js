@@ -18,6 +18,16 @@ describe('service: helper-http', function() {
     helperHTTP = $injector.get('helperHTTP');
     $http = $injector.get('$http');
     $httpBackend = $injector.get('$httpBackend');
+    $httpBackend.when('GET', testApiUrl + '/' + endpoint + '/?trigger=success&')
+      .respond(function() {
+        return [200, {status: 0, data: 'something'}];
+      })
+    ;
+    $httpBackend.when('GET', testApiUrl + '/' + endpoint + '/?trigger=failure&')
+      .respond(function() {
+        return [200, {status: 1, data: 'something'}];
+      })
+    ;
     $httpBackend.when('POST', testApiUrl + '/' + endpoint, {trigger: 'success'})
       .respond(function() {
         return [200, {status: 0, data: 'something'}];
@@ -36,7 +46,7 @@ describe('service: helper-http', function() {
     __env.apiUrl = testApiUrl;
   }));
 
-  describe('when called', function() {
+  describe('when POST', function() {
 
     it('successfully, should trigger success callback', function() {
       $httpBackend.expect('POST', testApiUrl + '/' + endpoint, {trigger: 'success'});
@@ -48,6 +58,23 @@ describe('service: helper-http', function() {
     it('unsuccessfully, should trigger failure callback', function() {
       $httpBackend.expect('POST', testApiUrl + '/' + endpoint, {trigger: 'failure'});
       helperHTTP.set(endpoint, {trigger: 'failure'}, successCallback, failureCallback);
+      $httpBackend.flush();
+      assert.isTrue(failureCallback.calledOnce);
+    });
+  });
+
+  describe('when GET', function() {
+
+    it('successfully, should trigger success callback', function() {
+      $httpBackend.expect('GET', testApiUrl + '/' + endpoint + '/?trigger=success&');
+      helperHTTP.get(endpoint, {trigger: 'success'}, successCallback, failureCallback);
+      $httpBackend.flush();
+      assert.isTrue(successCallback.calledOnce);
+    });
+
+    it('unsuccessfully, should trigger failure callback', function() {
+      $httpBackend.expect('GET', testApiUrl + '/' + endpoint + '/?trigger=failure&');
+      helperHTTP.get(endpoint, {trigger: 'failure'}, successCallback, failureCallback);
       $httpBackend.flush();
       assert.isTrue(failureCallback.calledOnce);
     });
