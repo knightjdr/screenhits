@@ -8,9 +8,10 @@ var Object = {
     }
     return false;
 	},
+  //converts object values to lowercase and wraps in wildcards for generic search
   regexKeys: function(obj) {
     for(var key in obj) {
-      obj[key] = {'$regex': obj[key]};
+      obj[key] = {'$regex': new RegExp(obj[key], 'i')};
     }
     return obj;
 	}

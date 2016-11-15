@@ -30,6 +30,7 @@ describe('directive: flip', function() {
       assert.equal(checkDiv.style.visibility, 'hidden');
       assert.equal(checkDiv.style.webkitTransform, 'rotateY(90deg)');
       assert.equal(checkDiv.style.width, '0px');
+      assert.equal(checkDiv.style.whiteSpace, 'nowrap');
     });
   });
 
@@ -55,6 +56,7 @@ describe('directive: flip', function() {
       assert.equal(checkDiv.style.visibility, 'hidden');
       assert.equal(checkDiv.style.webkitTransform, 'rotateY(90deg)');
       assert.equal(checkDiv.style.width, '0px');
+      assert.equal(checkDiv.style.whiteSpace, 'nowrap');
     });
   });
 });

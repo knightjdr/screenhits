@@ -11,9 +11,9 @@ var User = {
         {$set: {users: data.users}},
         function(err) {
           if(err) {
-            res.send({status: 1, message: 'There was an error adding new users.'})
+            res.send({status: 1, message: 'There was an error adding/updating users.'})
           } else {
-            res.send({status: 0, message: 'User(s) succesfully added.'});
+            res.send({status: 0, message: 'User(s) succesfully added/updated.'});
           }
         }
       );

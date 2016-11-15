@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 		<title>ScreenHits</title>
 		<meta name="description" content="LIMS for screens">
-		<link rel="shortcut icon" href="app/images/favicon.ico"/>
+		<link rel="shortcut icon" href="app/images/favicon/favicon.ico"/>
     <link rel="stylesheet" type="text/css" href="assets/css/assets.min.css"/>
     <link rel="stylesheet" type="text/css" href="app/bundle.min.css"/>
     <script src="assets/js/assets.min.js"></script>
@@ -22,9 +22,14 @@
           </md-tooltip>
         </md-button>
       </div>
+      <div class="animate-fade animate-300ms flex-justify flex-row-100 header">
+        <img src="app/images/headers/analysis.png" ng-show="$state.includes('root.analysis')" height="50px" width="378px" />
+        <img src="app/images/headers/profile.png" ng-show="$state.includes('root.profile')" height="50px" width="352px" />
+        <img src="app/images/headers/search.png" ng-show="$state.includes('root.search')" height="50px" width="352px" />
+      </div>
       <div class="animate-fade animate-300ms" ng-show="$state.includes('root.close')" ui-view="close" ></div>
       <div class="animate-fade animate-300ms" ng-show="$state.includes('root.error')" ui-view="error"></div>
-      <div class="animate-fade animate-300ms" ng-show="$state.current.name == 'root' || $state.current.name == 'root.home'" ui-view="home"></div>
+      <div class="animate-fade animate-300ms" ng-show="$state.current.name === 'root' || $state.current.name === 'root.home'" ui-view="home"></div>
       <div class="animate-fade animate-300ms" ng-show="$state.includes('root.profile')" ui-view="profile"></div>
       <div class="animate-fade animate-300ms" ng-show="$state.includes('root.treasure')" ui-view="treasure"></div>
     </div>

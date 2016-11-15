@@ -74,7 +74,13 @@
 }
 
 .results-table {
+  display: inline-table;
+}
+.results-table.primary {
   color: $primary-h700;
+}
+.results-table.white {
+  border-color: white;
 }
 .results-table th {
   border-bottom: 1px solid $primary-h700;

@@ -3,54 +3,74 @@
     <div class="flex-row">
       Project owner: {{vm.project.creator}}
     </div>
-    <div class="flex-row" ng-show="vm.project.users">
-      Permissions:
-      <table>
-        <thead>
-          <tr>
-            <th>
-              User
-            </th>
-            <th>
-              Lab
-            </th>
-            <th>
-              Permissions
-            </th>
-          </tr>
-        </thead>
-        <tbody ng-repeat="user in vm.project.users">
-          <tr>
-            <td>
-              {{user.name}}
-            </td>
-            <td>
-              {{user.lab}}
-            </td>
-            <td>
-              {{user.permissions}}
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-    <div class="flex-row m-t-20">
-      <div class="button-container">
-        <md-button class="md-fab md-mini md-accent no-margins" aria-label="Add user" ng-click="projectManagementVm.showForm = 'add-user'">
-          <i class="fa fa-lg fa-plus primary-h700"></i>
-          <md-tooltip md-direction="bottom" md-autohide="true">
-            Add user
-          </md-tooltip>
-        </md-button>
-      </div>
-      <div class="button-container m-l-10">
-        <md-button class="md-fab md-mini md-accent no-margins" aria-label="Manage users" ng-click="projectManagementVm.showForm = 'manage-users'">
-          <i class="fa fa-lg fa-user-circle primary-h700"></i>
+    <div class="flex-row m-t-5">
+      <span class="flex-container" ng-show="vm.project.users">
+        Access:
+        <table class="results-table white m-l-20">
+          <thead>
+            <tr>
+              <th>
+                User
+              </th>
+              <th>
+                Lab
+              </th>
+              <th>
+                Permissions
+              </th>
+              <th ng-show="projectManagementVm.manage">
+                Remove
+              </th>
+            </tr>
+          </thead>
+          <tbody ng-repeat="user in vm.project.users">
+            <tr>
+              <td>
+                {{user.name}}
+              </td>
+              <td>
+                {{user.lab}}
+              </td>
+              <td>
+                <span ng-show="!projectManagementVm.manage">
+                  {{user.permission}}
+                </span>
+                <md-select class="md-no-underline no-margins white" ng-init="projectManagementVm.currentPermissions[$index] = user.permission" ng-model="projectManagementVm.currentPermissions[$index]" ng-show="projectManagementVm.manage" placeholder="Permissions">
+                  <md-option value="read">Read</md-option>
+                  <md-option value="write">Write</md-option>
+                </md-select>
+              </td>
+              <td>
+                <md-checkbox aria-label="Remove user" class="md-accent no-margins white" ng-model="projectManagementVm.removeUsers[$index]" ng-show="projectManagementVm.manage">
+                </md-checkbox>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </span>
+      <div class="flex-container m-l-10 m-t-10">
+        <md-button class="md-fab md-small md-accent no-margins" aria-label="Manage users" ng-click="projectManagementVm.manage = !projectManagementVm.manage" ng-show="vm.project.users">
+          <i class="fa fa fa-user-circle primary-h700"></i>
           <md-tooltip md-direction="bottom" md-autohide="true">
             Manage users
           </md-tooltip>
         </md-button>
+        <md-button class="md-fab md-small md-accent no-margins" aria-label="Add user" ng-click="projectManagementVm.showForm = 'add-user'">
+          <i class="fa fa-plus primary-h700"></i>
+          <md-tooltip md-direction="bottom" md-autohide="true">
+            Add user
+          </md-tooltip>
+        </md-button>
+        <md-button class="md-fab md-small md-accent no-margins m-l-10" aria-label="Update users" ng-click="projectManagementVm.updateUsers(vm.project._id, vm.project.users, projectManagementVm.currentPermissions, projectManagementVm.removeUsers)" ng-show="projectManagementVm.manage">
+          <i class="fa fa fa-arrow-circle-right primary-h700"></i>
+          <md-tooltip md-direction="bottom" md-autohide="true">
+            Update users
+          </md-tooltip>
+        </md-button>
       </div>
+    </div>
+    <div class="flex-row m-t-10 form-warning" ng-show="projectManagementVm.updateUsersMessage">
+      &#x2022; {{projectManagementVm.updateUsersMessage}}
     </div>
     <div class="flex-row m-t-20" ng-show="projectManagementVm.showForm === 'add-user'">
       <div class="flex-column form-container md-form-font">
@@ -81,6 +101,14 @@
           </div>
           <div class="flex-row form-buttons">
             <div class="button-container">
+              <md-button class="md-fab md-small md-accent no-margins" aria-label="Close" ng-click="projectManagementVm.showForm = ''">
+                <i class="fa fa-times primary-h700"></i>
+                <md-tooltip md-direction="bottom" md-autohide="true">
+                  Close
+                </md-tooltip>
+              </md-button>
+            </div>
+            <div class="button-container m-l-10">
               <md-button class="md-fab md-small md-accent no-margins" aria-label="Reset form" ng-click="projectManagementVm.reset()">
                 <i class="fa fa-refresh primary-h700"></i>
                 <md-tooltip md-direction="bottom" md-autohide="true">
@@ -103,7 +131,7 @@
         <div class="form-description">
           Results:
         </div>
-        <table class="results-table">
+        <table class="results-table primary">
           <thead>
             <tr>
               <th>
@@ -111,6 +139,9 @@
               </th>
               <th>
                 Lab
+              </th>
+              <th>
+                Permissions
               </th>
               <th>
                 Add
@@ -126,6 +157,12 @@
                 {{user.lab}}
               </td>
               <td>
+                <md-select class="md-no-underline no-margins" ng-model="projectManagementVm.newPermissions[$index]" placeholder="Permissions">
+                  <md-option value="read" selected>Read</md-option>
+                  <md-option value="write">Write</md-option>
+                </md-select>
+              </td>
+              <td>
                 <md-checkbox aria-label="Add user" class="md-accent no-margins" ng-model="projectManagementVm.newUsers[$index]">
                 </md-checkbox>
               </td>
@@ -136,19 +173,23 @@
           &#x2022; {{projectManagementVm.addUsersMessage}}
         </div>
         <div class="flex-row form-buttons">
-          <div class="button-container m-l-10">
-            <md-button class="md-fab md-small md-accent no-margins" aria-label="Add" ng-click="projectManagementVm.addUsers(vm.project._id, vm.project.users, projectManagementVm.newUsers)">
-              <i class="fa fa-plus primary-h700"></i>
+          <div class="button-container">
+            <md-button class="md-fab md-small md-accent no-margins" aria-label="Close" ng-click="projectManagementVm.searchResults = ''">
+              <i class="fa fa-times primary-h700"></i>
               <md-tooltip md-direction="bottom" md-autohide="true">
-                Add users
+                Close
+              </md-tooltip>
+            </md-button>
+          </div>
+          <div class="button-container m-l-10">
+            <md-button class="md-fab md-small md-accent no-margins" aria-label="Add users" ng-click="projectManagementVm.addUsers(vm.project._id, vm.project.users, projectManagementVm.newUsers, projectManagementVm.newPermissions)">
+              <i class="fa fa-arrow-circle-right primary-h700"></i>
+              <md-tooltip md-direction="bottom" md-autohide="true">
+                Submit
               </md-tooltip>
             </md-button>
           </div>
         </div>
-      </div>
-    </div>
-    <div class="flex-row m-t-20" ng-show="projectManagementVm.showForm === 'manage-users'">
-      <div class="form-container">
       </div>
     </div>
   </div>

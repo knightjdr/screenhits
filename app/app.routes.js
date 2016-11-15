@@ -20,6 +20,9 @@
 						'admin': {
 							templateUrl: 'app/admin/admin.html'
 						},
+						'analysis': {
+							templateUrl: 'app/analysis/analysis.html'
+						},
 						'close': {
 							templateUrl: 'app/404/close.html'
 						},
@@ -32,6 +35,9 @@
 						'profile': {
 							templateUrl: 'app/profile/profile.html'
 						},
+						'search': {
+							templateUrl: 'app/search/search.html'
+						},
 						'treasure': {
 							templateUrl: 'app/404/treasure.html'
 						}
@@ -39,6 +45,9 @@
        	})
 				.state('root.admin', {
          	url: 'admin'
+       	})
+				.state('root.analysis', {
+         	url: 'analysis'
        	})
 				.state('root.close', {
          	url: 'treasure'
@@ -51,6 +60,9 @@
 				})
 				.state('root.profile', {
 					url: 'profile'
+				})
+				.state('root.search', {
+					url: 'search'
 				})
 				.state('root.treasure', {
          	url: '0111010001110010011001010110000101110011011101010111001001100101'

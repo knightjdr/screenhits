@@ -33,6 +33,12 @@ a.dark {
 	font-weight: 300;
 }
 
+/*header*/
+.header {
+	height: 100px;
+	padding: 15px 0px 15px 0px;
+	position: fixed;
+}
 /*nav bar*/
 .navbar {
 	position: fixed;
@@ -72,6 +78,21 @@ md-checkbox.no-margins {
 }
 md-checkbox {
 	width: 20px;
+}
+md-checkbox.white .md-icon {
+	border: 1px solid white;
+}
+md-select.no-margins {
+	margin: 0px 0px 2px 0px;
+}
+md-select-menu md-content {
+	padding: 0px 0px 0px 0px !important;
+}
+md-select.white md-select-value span {
+	color: white;
+}
+md-option {
+	padding: 0px 0px 0px 5px;
 }
 .md-button.no-hover-accent.md-accent.md-fab:not([disabled]):hover {
 	background-color: $accent-h400;

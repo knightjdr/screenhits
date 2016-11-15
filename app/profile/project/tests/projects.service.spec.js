@@ -2,7 +2,7 @@ describe('service: projects', function() {
   var assert = chai.assert;
   var projects;
   var $rootScope;
-  var testData = [{id: 1, value: 'something'}];
+  var testData = [{_id: 1, value: 'something'}];
 
   beforeEach(module('app'));
   beforeEach(inject(function($injector) {
@@ -31,6 +31,14 @@ describe('service: projects', function() {
       it('projects array should increase in size', function() {
         projects.add(testData);
         assert.equal(projects.get().length, testData.length * 2);
+      });
+    });
+
+    describe('and project is updated', function() {
+
+      it('projects array should increase in size', function() {
+        projects.update(1, 'value', 'something else');
+        assert.equal(projects.get()[0].value, 'something else');
       });
     });
   });
