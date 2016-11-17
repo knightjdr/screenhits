@@ -20,9 +20,6 @@
 						'admin': {
 							templateUrl: 'app/admin/admin.html'
 						},
-						'analysis': {
-							templateUrl: 'app/analysis/analysis.html'
-						},
 						'close': {
 							templateUrl: 'app/404/close.html'
 						},
@@ -32,11 +29,8 @@
 						'home': {
 							templateUrl: 'app/home/home.html'
 						},
-						'profile': {
+						'projects': {
 							templateUrl: 'app/profile/profile.html'
-						},
-						'search': {
-							templateUrl: 'app/search/search.html'
 						},
 						'treasure': {
 							templateUrl: 'app/404/treasure.html'
@@ -45,9 +39,6 @@
        	})
 				.state('root.admin', {
          	url: 'admin'
-       	})
-				.state('root.analysis', {
-         	url: 'analysis'
        	})
 				.state('root.close', {
          	url: 'treasure'
@@ -58,11 +49,43 @@
 				.state('root.home', {
 					url: ''
 				})
-				.state('root.profile', {
-					url: 'profile'
+				.state('root.projects', {
+					url: 'projects',
+					views: {
+						'analysis': {
+							templateUrl: 'app/profile/analysis/analysis.html'
+						},
+						'details': {
+							templateUrl: 'app/profile/project/project.html'
+						},
+						'help': {
+							templateUrl: 'app/profile/help/help.html'
+						},
+						'introduction': {
+							templateUrl: 'app/profile/introduction.html'
+						},
+						'new': {
+							templateUrl: 'app/profile/project/project-new.html'
+						},
+						'search': {
+							templateUrl: 'app/profile/search/search.html'
+						}
+					}
 				})
-				.state('root.search', {
-					url: 'search'
+				.state('root.projects.analysis', {
+					url: '/analysis'
+				})
+				.state('root.projects.details', {
+					url: '/details?project'
+				})
+				.state('root.projects.help', {
+					url: '/help'
+				})
+				.state('root.projects.new', {
+					url: '/new'
+				})
+				.state('root.projects.search', {
+					url: '/search'
 				})
 				.state('root.treasure', {
          	url: '0111010001110010011001010110000101110011011101010111001001100101'

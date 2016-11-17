@@ -2,20 +2,37 @@
 	'use strict';
 
 	angular.module('app')
-		.controller('profile', ['$scope', '$timeout', function ($scope, $timeout) {
+		.controller('profile', ['$scope', '$state', '$timeout', function ($scope, $state, $timeout) {
       var vm = this;
-			vm.checkLocation = function(location, response) {
-				if(!location || /^main-*/.test(location)) {
-					return response;
-				}
-				return !response;
-			};
-			vm.introduction = true;
 			vm.newProject = function() {
-				vm.introduction = false;
-				vm.location = 'main-project-new';
+				$state.go('root.projects.new');
 				angular.element(document.getElementById('projects-button')).triggerHandler('click');
 			};
+			//vm.projects = [];
+			vm.selectProject = function(project) {
+				if(!vm.project || vm.project !== project) {
+					vm.experiment = '';
+					vm.project = project;
+					vm.sample = '';
+					vm.screen = '';
+				}
+				$state.go('root.projects.details', {project: project._id});
+				angular.element(document.getElementById('projects-button')).triggerHandler('click');
+			};
+			$scope.$on('credentials:updated', function(event, data) {
+				if(data.name) {
+					//vm.user = data.name;
+					$timeout(function() {
+						$scope.$digest();
+					});
+				}
+			});
+			$scope.$on('projects:updated', function(event, data) {
+				vm.projects = data;
+				$timeout(function() {
+					$scope.$digest();
+				});
+			});
 			vm.projects = [{
   			title: 'Project 1',
   			created: 1478030151,
@@ -74,32 +91,6 @@
   			]
 			}];
 			vm.user = 'Someone';
-			//vm.projects = [];
-			vm.selectProject = function(project) {
-				if(!vm.project || vm.project !== project) {
-					vm.experiment = '';
-					vm.project = project;
-					vm.sample = '';
-					vm.screen = '';
-				}
-				vm.introduction = false;
-				vm.location = 'main-project';
-				angular.element(document.getElementById('projects-button')).triggerHandler('click');
-			};
-			$scope.$on('credentials:updated', function(event, data) {
-				if(data.name) {
-					//vm.user = data.name;
-					$timeout(function() {
-						$scope.$digest();
-					});
-				}
-			});
-			$scope.$on('projects:updated', function(event, data) {
-				vm.projects = data;
-				$timeout(function() {
-					$scope.$digest();
-				});
-			});
     }])
   ;
 })();

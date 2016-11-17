@@ -58,9 +58,6 @@
 						'admin': {
 							templateUrl: 'app/admin/admin.html'
 						},
-						'analysis': {
-							templateUrl: 'app/analysis/analysis.html'
-						},
 						'close': {
 							templateUrl: 'app/404/close.html'
 						},
@@ -70,11 +67,8 @@
 						'home': {
 							templateUrl: 'app/home/home.html'
 						},
-						'profile': {
+						'projects': {
 							templateUrl: 'app/profile/profile.html'
-						},
-						'search': {
-							templateUrl: 'app/search/search.html'
 						},
 						'treasure': {
 							templateUrl: 'app/404/treasure.html'
@@ -83,9 +77,6 @@
        	})
 				.state('root.admin', {
          	url: 'admin'
-       	})
-				.state('root.analysis', {
-         	url: 'analysis'
        	})
 				.state('root.close', {
          	url: 'treasure'
@@ -96,11 +87,43 @@
 				.state('root.home', {
 					url: ''
 				})
-				.state('root.profile', {
-					url: 'profile'
+				.state('root.projects', {
+					url: 'projects',
+					views: {
+						'analysis': {
+							templateUrl: 'app/profile/analysis/analysis.html'
+						},
+						'details': {
+							templateUrl: 'app/profile/project/project.html'
+						},
+						'help': {
+							templateUrl: 'app/profile/help/help.html'
+						},
+						'introduction': {
+							templateUrl: 'app/profile/introduction.html'
+						},
+						'new': {
+							templateUrl: 'app/profile/project/project-new.html'
+						},
+						'search': {
+							templateUrl: 'app/profile/search/search.html'
+						}
+					}
 				})
-				.state('root.search', {
-					url: 'search'
+				.state('root.projects.analysis', {
+					url: '/analysis'
+				})
+				.state('root.projects.details', {
+					url: '/details?project'
+				})
+				.state('root.projects.help', {
+					url: '/help'
+				})
+				.state('root.projects.new', {
+					url: '/new'
+				})
+				.state('root.projects.search', {
+					url: '/search'
 				})
 				.state('root.treasure', {
          	url: '0111010001110010011001010110000101110011011101010111001001100101'
@@ -611,20 +634,37 @@
 	'use strict';
 
 	angular.module('app')
-		.controller('profile', ['$scope', '$timeout', function ($scope, $timeout) {
+		.controller('profile', ['$scope', '$state', '$timeout', function ($scope, $state, $timeout) {
       var vm = this;
-			vm.checkLocation = function(location, response) {
-				if(!location || /^main-*/.test(location)) {
-					return response;
-				}
-				return !response;
-			};
-			vm.introduction = true;
 			vm.newProject = function() {
-				vm.introduction = false;
-				vm.location = 'main-project-new';
+				$state.go('root.projects.new');
 				angular.element(document.getElementById('projects-button')).triggerHandler('click');
 			};
+			//vm.projects = [];
+			vm.selectProject = function(project) {
+				if(!vm.project || vm.project !== project) {
+					vm.experiment = '';
+					vm.project = project;
+					vm.sample = '';
+					vm.screen = '';
+				}
+				$state.go('root.projects.details', {project: project._id});
+				angular.element(document.getElementById('projects-button')).triggerHandler('click');
+			};
+			$scope.$on('credentials:updated', function(event, data) {
+				if(data.name) {
+					//vm.user = data.name;
+					$timeout(function() {
+						$scope.$digest();
+					});
+				}
+			});
+			$scope.$on('projects:updated', function(event, data) {
+				vm.projects = data;
+				$timeout(function() {
+					$scope.$digest();
+				});
+			});
 			vm.projects = [{
   			title: 'Project 1',
   			created: 1478030151,
@@ -683,32 +723,17 @@
   			]
 			}];
 			vm.user = 'Someone';
-			//vm.projects = [];
-			vm.selectProject = function(project) {
-				if(!vm.project || vm.project !== project) {
-					vm.experiment = '';
-					vm.project = project;
-					vm.sample = '';
-					vm.screen = '';
-				}
-				vm.introduction = false;
-				vm.location = 'main-project';
-				angular.element(document.getElementById('projects-button')).triggerHandler('click');
-			};
-			$scope.$on('credentials:updated', function(event, data) {
-				if(data.name) {
-					//vm.user = data.name;
-					$timeout(function() {
-						$scope.$digest();
-					});
-				}
-			});
-			$scope.$on('projects:updated', function(event, data) {
-				vm.projects = data;
-				$timeout(function() {
-					$scope.$digest();
-				});
-			});
+    }])
+  ;
+})();
+
+(function() {
+	'use strict';
+
+	angular.module('app')
+		.controller('project', [function () {
+      var vm = this;
+      vm.show = '';
     }])
   ;
 })();

@@ -1,49 +1,52 @@
-<div class="flex-row" ng-controller="projectNew as vm">
-  <div class="flex-column">
-    <div class="flex-row">
-      <div class="form-container md-form-font">
-        <form name="form" ng-submit="vm.submit(form.$valid, vm.form)" novalidate>
-          <div class="form-description">
-            &#x2022; Create a new project using this form. All fields are required.
-          </div>
-          <md-input-container class="md-icon-float md-block md-small-margin">
-            <label>project name</label>
-            <md-icon md-font-icon="fa-tag " class="fa md-accent"></md-icon>
-            <input name="name" ng-model="vm.form.name" type="text" required>
-            <div ng-messages="form.name.$error" role="alert">
-              <div ng-message="required">Please give the project a name</div>
+<div class="flex-column-body">
+  <!--creation details-->
+  <div class="flex-row" ng-controller="projectNew as vm">
+    <div class="flex-column">
+      <div class="flex-row">
+        <div class="form-container md-form-font">
+          <form name="form" ng-submit="vm.submit(form.$valid, vm.form)" novalidate>
+            <div class="form-description">
+              &#x2022; Create a new project using this form. All fields are required.
             </div>
-          </md-input-container>
-          <md-input-container class="md-icon-float md-block md-small-margin">
-            <label>description</label>
-            <md-icon md-font-icon="fa-tag " class="fa md-accent"></md-icon>
-            <input name="description" ng-model="vm.form.description" type="text" required>
-            <div ng-messages="form.description.$error" role="alert">
-              <div ng-message="required">Please describe the project</div>
+            <md-input-container class="md-icon-float md-block md-small-margin">
+              <label>project name</label>
+              <md-icon md-font-icon="fa-tag " class="fa md-accent"></md-icon>
+              <input name="name" ng-model="vm.form.name" type="text" required>
+              <div ng-messages="form.name.$error" role="alert">
+                <div ng-message="required">Please give the project a name</div>
+              </div>
+            </md-input-container>
+            <md-input-container class="md-icon-float md-block md-small-margin">
+              <label>description</label>
+              <md-icon md-font-icon="fa-tag " class="fa md-accent"></md-icon>
+              <input name="description" ng-model="vm.form.description" type="text" required>
+              <div ng-messages="form.description.$error" role="alert">
+                <div ng-message="required">Please describe the project</div>
+              </div>
+            </md-input-container>
+            <div class="form-warning" ng-show="vm.message">
+              &#x2022; {{vm.message}}
             </div>
-          </md-input-container>
-          <div class="form-warning" ng-show="vm.message">
-            &#x2022; {{vm.message}}
-          </div>
-          <div class="flex-row form-buttons">
-            <div class="button-container">
-              <md-button class="md-fab md-small md-accent no-margins" aria-label="Reset form" ng-click="vm.reset()">
-                <i class="fa fa-refresh primary-h700"></i>
-                <md-tooltip md-direction="bottom" md-autohide="true">
-                  Reset
-                </md-tooltip>
-              </md-button>
+            <div class="flex-row form-buttons">
+              <div class="button-container">
+                <md-button class="md-fab md-small md-accent no-margins" aria-label="Reset form" ng-click="vm.reset()">
+                  <i class="fa fa-refresh primary-h700"></i>
+                  <md-tooltip md-direction="bottom" md-autohide="true">
+                    Reset
+                  </md-tooltip>
+                </md-button>
+              </div>
+              <div class="button-container m-l-10">
+                <md-button class="md-fab md-small md-accent no-margins" aria-label="Submit" type="submit">
+                  <i class="fa fa-arrow-circle-right primary-h700"></i>
+                  <md-tooltip md-direction="bottom" md-autohide="true">
+                    Submit
+                  </md-tooltip>
+                </md-button>
+              </div>
             </div>
-            <div class="button-container m-l-10">
-              <md-button class="md-fab md-small md-accent no-margins" aria-label="Submit" type="submit">
-                <i class="fa fa-arrow-circle-right primary-h700"></i>
-                <md-tooltip md-direction="bottom" md-autohide="true">
-                  Submit
-                </md-tooltip>
-              </md-button>
-            </div>
-          </div>
-        </form>
+          </form>
+        </div>
       </div>
     </div>
   </div>

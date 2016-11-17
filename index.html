@@ -22,16 +22,11 @@
           </md-tooltip>
         </md-button>
       </div>
-      <div class="animate-fade animate-300ms flex-justify flex-row-100 header">
-        <img src="app/images/headers/analysis.png" ng-show="$state.includes('root.analysis')" height="50px" width="378px" />
-        <img src="app/images/headers/profile.png" ng-show="$state.includes('root.profile')" height="50px" width="352px" />
-        <img src="app/images/headers/search.png" ng-show="$state.includes('root.search')" height="50px" width="352px" />
-      </div>
-      <div class="animate-fade animate-300ms" ng-show="$state.includes('root.close')" ui-view="close" ></div>
-      <div class="animate-fade animate-300ms" ng-show="$state.includes('root.error')" ui-view="error"></div>
+      <div class="animate-fade animate-300ms" ng-show="$state.is('root.close')" ui-view="close" ></div>
+      <div class="animate-fade animate-300ms" ng-show="$state.is('root.error')" ui-view="error"></div>
       <div class="animate-fade animate-300ms" ng-show="$state.current.name === 'root' || $state.current.name === 'root.home'" ui-view="home"></div>
-      <div class="animate-fade animate-300ms" ng-show="$state.includes('root.profile')" ui-view="profile"></div>
-      <div class="animate-fade animate-300ms" ng-show="$state.includes('root.treasure')" ui-view="treasure"></div>
+      <div class="animate-fade animate-300ms" ng-show="$state.includes('root.projects')" ui-view="projects"></div>
+      <div class="animate-fade animate-300ms" ng-show="$state.is('root.treasure')" ui-view="treasure"></div>
     </div>
     <div perspective-view-menu>
       <nav class="outer-nav" ng-controller="signin as vm">
@@ -43,7 +38,7 @@
             </md-tooltip>
           </md-button>
         </a>
-        <a ui-sref="root.profile">
+        <a ui-sref="root.projects">
           <md-button class="md-fab md-mini md-accent" aria-label="Profile">
             <i class="fa fa-user fa-lg primary-h700 m-l-1"></i>
             <md-tooltip md-direction="bottom" md-autohide="true">

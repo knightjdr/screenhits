@@ -42,7 +42,7 @@
         </div>
       </div>
       <div class="profile-item">
-        <md-button class="md-fab md-mini md-accent" aria-label="Search" ui-sref="root.projects.search">
+        <md-button class="md-fab md-mini md-accent" aria-label="Search" ng-click="vm.performSearch()">
           <i class="fa fa-lg fa-search primary-h700"></i>
           <md-tooltip md-direction="right" md-autohide="true">
             Search
@@ -50,55 +50,66 @@
         </md-button>
       </div>
       <div class="profile-item">
-        <md-button class="md-fab md-mini md-accent" aria-label="Analysis" ui-sref="root.projects.analysis">
-          <i class="fa fa-lg fa-pie-chart primary-h700"></i>
+        <md-button class="md-fab md-mini md-accent" aria-label="Analysis" ng-click="vm.performAnalysis()">
+          <i class="fa fa-lg fa-pie-chart primary-h700 m-l-2"></i>
           <md-tooltip md-direction="right" md-autohide="true">
             Analysis
           </md-tooltip>
         </md-button>
       </div>
       <div class="profile-item">
-        <md-button class="md-fab md-mini md-accent" aria-label="Help" ui-sref="root.projects.help">
-          <i class="fa fa-lg fa-life-ring primary-h700"></i>
+        <md-button class="md-fab md-mini md-accent" aria-label="Help" ng-click="">
+          <i class="fa fa-lg fa-life-ring primary-h700 m-l-2"></i>
           <md-tooltip md-direction="right" md-autohide="true">
             Help
           </md-tooltip>
         </md-button>
       </div>
     </div>
+    <!--introduction-->
+    <div class="profile-introduction flex-column-100 flex-justify" ng-show="vm.location === 'introduction'">
+      <ng-include src="'/app/profile/introduction.html'"></ng-include>
+    </div>
     <!--main view-->
-    <div class="profile-main flex-column-100">
-      <!--headers for blurring scroll content-->
+    <div class="profile-main flex-column-100" ng-show="vm.location !== 'introduction'">
       <div class="animate-200ms animate-fade profile-main-border-top"></div>
       <div class="animate-200ms animate-fade profile-main-border-bottom"></div>
-      <!--headers-->
-      <div class="flex-justify flex-row-100 profile-header">
-        <img class="animate-500ms animate-fade profile-header-image" src="app/images/headers/analysis.png" ng-show="$state.is('root.projects.analysis')" height="50px" width="378px" />
-        <img class="animate-500ms animate-fade profile-header-image" src="app/images/headers/projects.png" ng-show="$state.is('root.projects.details') || $state.is('root.projects.new')" height="50px" width="382px" />
-        <img class="animate-500ms animate-fade profile-header-image" src="app/images/headers/help.png" ng-show="$state.is('root.projects.help')" height="50px" width="310px" />
-        <img class="animate-500ms animate-fade profile-header-image" src="app/images/headers/search.png" ng-show="$state.is('root.projects.search')" height="50px" width="352px" />
-      </div>
-      <!--introduction-->
-      <div class="animate-500ms animate-fade flex-column-100 flex-justify profile-introduction" ng-show="$state.is('root.projects')" ui-view="introduction"></div>
       <!--project content-->
-      <div class="animate-500ms animate-fade profile-main-child profile-main-overflow" ng-show="$state.is('root.projects.details')" ui-view="details"></div>
+      <ng-include class="animate-500ms animate-fade profile-main-child profile-main-overflow" src="'/app/profile/project/project.html'" ng-show="vm.location === 'main-project'"></ng-include>
       <!--project creation-->
-      <div class="animate-500ms animate-fade profile-main-child profile-main-overflow" ng-show="$state.is('root.projects.new')" ui-view="new"></div>
+      <ng-include class="animate-500ms animate-fade profile-main-child" src="'/app/profile/project/project-new.html'" ng-show="vm.location === 'main-project-new'"></ng-include>
       <!--search content-->
-      <div class="animate-500ms animate-fade profile-main-child profile-main-overflow" ng-show="$state.is('root.projects.search')" ui-view="search"></div>
-      <!--analysis content-->
-      <div class="animate-500ms animate-fade profile-main-child profile-main-overflow" ng-show="$state.is('root.projects.analysis')" ui-view="analysis"></div>
-      <!--analysis content-->
-      <div class="animate-500ms animate-fade profile-main-child profile-main-overflow" ng-show="$state.is('root.projects.help')" ui-view="help"></div>
+      <ng-include class="animate-500ms animate-fade profile-main-child" src="'/app/profile/search/search.html'" ng-show="$state.is('root.project.search')"></ng-include>
       <!--Close button-->
-      <div class="animate-500ms animate-fade profile-main-child" ng-show="!$state.is('root.projects') && !vm.hideClose">
+      <div class="animate-500ms animate-fade profile-main-child" ng-show="vm.checkLocation(vm.location, true)">
         <div class="profile-main-buttons">
-          <md-button class="md-fab md-mini md-accent" aria-label="Close" ui-sref="root.projects" md-tooltip-destroy>
+          <md-button class="md-fab md-mini md-accent" aria-label="Close" ng-click="vm.location = 'introduction'" md-tooltip-destroy>
             <i class="fa fa-lg fa-times primary-h700"></i>
             <md-tooltip md-direction="top" md-autohide="true">
               Close
             </md-tooltip>
           </md-button>
+        </div>
+      </div>
+      <!--Back button-->
+      <div class="animate-500ms animate-fade animate-slide-up profile-main-child" ng-show="vm.checkLocation(vm.location, false)">
+        <div class="profile-main-buttons">
+          <md-button class="md-fab md-mini md-accent" aria-label="Back to projects" ng-click="vm.location = 'main-project'" md-tooltip-destroy>
+            <i class="fa fa-lg fa-arrow-circle-down primary-h700"></i>
+            <md-tooltip md-direction="top" md-autohide="true">
+              Back to projects
+            </md-tooltip>
+          </md-button>
+        </div>
+        <div class="profile-main-other">
+          <!--project management-->
+          <ng-include src="'/app/profile/project/project-management.html'" ng-show="vm.location === 'project-management'"></ng-include>
+          <!--screen creation-->
+          <ng-include src="'/app/profile/screen/screen-creation.html'" ng-show="vm.location === 'screen-creation'"></ng-include>
+          <!--experiment creation-->
+          <ng-include src="'/app/profile/experiment/experiment-creation.html'" ng-show="vm.location === 'experiment-creation'"></ng-include>
+          <!--sample creation-->
+          <ng-include src="'/app/profile/sample/sample-creation.html'" ng-show="vm.location === 'sample-creation'"></ng-include>
         </div>
       </div>
     </div>

@@ -44,6 +44,7 @@ var appJS = [
 		'signin/signout.directive.js',
 		'signin/signin.controller.js',
 		'profile/profile.controller.js',
+		'profile/project/project.controller.js',
 		'profile/project/project-new.controller.js',
 		'profile/project/project-management.controller.js'
 ];

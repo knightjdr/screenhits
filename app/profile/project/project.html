@@ -1,6 +1,27 @@
-<div class="flex-column-body">
-  <div class="">
-    <!--project details-->
+<div class="flex-column-body project-main" ng-controller="project as projectVm">
+  <!--management and creation-->
+  <div class="animate-500ms animate-fade animate-slide-up project-main-child" ng-show="projectVm.show">
+    <div class="profile-main-buttons">
+      <md-button class="md-fab md-mini md-accent" aria-label="Back to projects" ng-click="projectVm.show = ''; vm.hideClose = false;" md-tooltip-destroy>
+        <i class="fa fa-lg fa-arrow-circle-down primary-h700"></i>
+        <md-tooltip md-direction="top" md-autohide="true">
+          Back
+        </md-tooltip>
+      </md-button>
+    </div>
+    <div class="profile-main-other">
+      <!--project management-->
+      <ng-include src="'/app/profile/project/project-management.html'" ng-show="projectVm.show === 'management'"></ng-include>
+      <!--screen creation-->
+      <ng-include src="'/app/profile/screen/screen-creation.html'" ng-show="projectVm.show === 'screen-creation'"></ng-include>
+      <!--experiment creation-->
+      <ng-include src="'/app/profile/experiment/experiment-creation.html'" ng-show="projectVm.show === 'experiment-creation'"></ng-include>
+      <!--sample creation-->
+      <ng-include src="'/app/profile/sample/sample-creation.html'" ng-show="projectVm.show === 'sample-creation'"></ng-include>
+    </div>
+  </div>
+  <!--project details-->
+  <div class="animate-500ms animate-fade project-main-child" ng-show="!projectVm.show">
     <div class="flex-row">
       <div class="screen-container">
         <div class="profile-container-buttons">
@@ -17,7 +38,7 @@
             </md-tooltip>
           </md-button>
           <span class="collapse-icons-other">
-            <md-button class="md-fab md-small md-accent no-margins" aria-label="Manage" ng-click="vm.location = 'project-management'" ng-show="vm.project.creator === vm.user" md-tooltip-destroy>
+            <md-button class="md-fab md-small md-accent no-margins" aria-label="Manage" ng-click="projectVm.show = 'management'; vm.hideClose = true;" ng-show="vm.project.creator === vm.user" md-tooltip-destroy>
               <i class="fa fa-wrench primary-h700"></i>
               <md-tooltip md-direction="top" md-autohide="true">
                 Manage
@@ -84,7 +105,7 @@
                     <li class="m-l-m6" ng-repeat="screen in vm.project.screens" ng-click="vm.screen = screen">
                       [{{screen.screenid}}] {{screen.title}}
                     </li>
-                    <li class="m-l-m3" ng-click="vm.location = 'screen-creation'">
+                    <li class="m-l-m3" ng-click="projectVm.show = 'screen-creation'; vm.hideClose = true;">
                       <i class="fa fa-plus-circle"></i> add screen
                     </li>
                   </ul>
@@ -213,7 +234,7 @@
                     <li class="m-l-m6" ng-repeat="experiment in vm.screen.experiments" ng-click="vm.experiment = experiment">
                       [{{experiment.experimentid}}] {{experiment.details}}
                     </li>
-                    <li class="m-l-m3" ng-click="vm.location = 'experiment-creation'">
+                    <li class="m-l-m3" ng-click="projectVm.show = 'experiment-creation'; vm.hideClose = true;">
                       <i class="fa fa-plus-circle"></i> add experiment
                     </li>
                   </ul>
@@ -302,7 +323,7 @@
                     <li class="m-l-m6" ng-repeat="samples in vm.experiment.samples" ng-click="vm.sample = sample">
                       [{{sample.sampleid}}] {{sample.details}}
                     </li>
-                    <li class="m-l-m3" ng-click="vm.location = 'sample-creation'">
+                    <li class="m-l-m3" ng-click="projectVm.show = 'sample-creation'; vm.hideClose = true;">
                       <i class="fa fa-plus-circle"></i> add sample
                     </li>
                   </ul>
