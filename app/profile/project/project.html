@@ -59,60 +59,67 @@
           </span>
         </div>
         <div class="collapse-header">
-          Projects
+          Project
         </div>
-        <div class="collapse-container">
-          <table>
-            <tbody>
-              <tr>
-                <td align="right" valign="top">
-                  Project:
-                </td>
-                <td class="p-l-10">
-                  [{{vm.project._id}}] {{vm.project.title}}
-                </td>
-              </tr>
-              <tr>
-                <td align="right" valign="top">
-                  Created:
-                </td>
-                <td class="p-l-10">
-                  {{vm.project.created  | date: 'dd-MM-yyyy'}}
-                </td>
-              </tr>
-              <tr>
-                <td align="right" valign="top">
-                  Creator:
-                </td>
-                <td class="p-l-10">
-                  {{vm.project.creator}}
-                </td>
-              </tr>
-              <tr>
-                <td align="right" valign="top">
-                  Description:
-                </td>
-                <td class="p-l-10">
-                  {{vm.project.description}}
-                </td>
-              </tr>
-              <tr>
-                <td class="p-t-10" align="right" valign="top">
-                  Screens:
-                </td>
-                <td class="p-t-10 p-l-10">
-                  <ul class="no-bullets hover-style">
-                    <li class="m-l-m6" ng-repeat="screen in vm.project.screens" ng-click="vm.screen = screen">
-                      [{{screen.screenid}}] {{screen.title}}
-                    </li>
-                    <li class="m-l-m3" ng-click="projectVm.show = 'screen-creation'; vm.hideClose = true;">
-                      <i class="fa fa-plus-circle"></i> add screen
-                    </li>
-                  </ul>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+        <div class="collapse-container project-container-wrapper">
+          <div class="project-container-sidebar">
+            <div class="project-container-sidebar-text">
+              Project
+            </div>
+          </div>
+          <div class="project-container-content">
+            <table>
+              <tbody>
+                <tr>
+                  <td align="right" valign="top">
+                    Name:
+                  </td>
+                  <td class="p-l-10">
+                    [{{vm.project._id}}] {{vm.project.title}}
+                  </td>
+                </tr>
+                <tr>
+                  <td align="right" valign="top">
+                    Created:
+                  </td>
+                  <td class="p-l-10">
+                    {{vm.project.created  | date: 'dd-MM-yyyy'}}
+                  </td>
+                </tr>
+                <tr>
+                  <td align="right" valign="top">
+                    Creator:
+                  </td>
+                  <td class="p-l-10">
+                    {{vm.project.creator}}
+                  </td>
+                </tr>
+                <tr>
+                  <td align="right" valign="top">
+                    Description:
+                  </td>
+                  <td class="p-l-10">
+                    {{vm.project.description}}
+                  </td>
+                </tr>
+                <tr>
+                  <td class="p-t-10" align="right" valign="top">
+                    Screens:
+                  </td>
+                  <td class="p-t-10 p-l-10">
+                    <ul class="no-bullets hover-style">
+                      <li class="m-l-m6" ng-repeat="screen in vm.project.screens" ng-click="vm.screen = screen">
+                        [{{screen.screenid}}] {{screen.title}}
+                      </li>
+                      <li class="m-l-m3" ng-click="projectVm.show = 'screen-creation'; vm.hideClose = true;">
+                        <i class="fa fa-plus-circle"></i> add screen
+                      </li>
+                    </ul>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>
@@ -150,98 +157,105 @@
         <div class="collapse-header">
           Screen
         </div>
-        <div class="collapse-container">
-          <table>
-            <tbody>
-              <tr>
-                <td align="right" valign="top">
-                  Screen:
-                </td>
-                <td class="p-l-10">
-                  [{{vm.screen.screenid}}] {{vm.screen.title}}
-                </td>
-              </tr>
-              <tr>
-                <td align="right" valign="top">
-                  Created:
-                </td>
-                <td class="p-l-10">
-                  {{vm.screen.created * 1000  | date: 'dd-MM-yyyy'}}
-                </td>
-              </tr>
-              <tr>
-                <td align="right" valign="top">
-                  Creator:
-                </td>
-                <td class="p-l-10">
-                  {{vm.screen.creator}}
-                </td>
-              </tr>
-              <tr>
-                <td align="right" valign="top">
-                  Library:
-                </td>
-                <td class="p-l-10">
-                  {{vm.screen.library}}
-                </td>
-              </tr>
-              <tr>
-                <td align="right" valign="top">
-                  Type:
-                </td>
-                <td class="p-l-10">
-                  {{vm.screen.type}}
-                </td>
-              </tr>
-              <tr>
-                <td align="right" valign="top">
-                  Species:
-                </td>
-                <td class="p-l-10">
-                  {{vm.screen.species}}
-                </td>
-              </tr>
-              <tr>
-                <td align="right" valign="top">
-                  Cell line:
-                </td>
-                <td class="p-l-10">
-                  {{vm.screen.cellLine}}
-                </td>
-              </tr>
-              <tr>
-                <td align="right" valign="top">
-                  Approach:
-                </td>
-                <td class="p-l-10">
-                  {{vm.screen.approach}}
-                </td>
-              </tr>
-              <tr>
-                <td align="right" valign="top">
-                  Condition:
-                </td>
-                <td class="p-l-10">
-                  {{vm.screen.condition}}
-                </td>
-              </tr>
-              <tr>
-                <td class="p-t-10" align="right" valign="top">
-                  Experiments:
-                </td>
-                <td class="p-l-10 p-t-10">
-                  <ul class="no-bullets hover-style">
-                    <li class="m-l-m6" ng-repeat="experiment in vm.screen.experiments" ng-click="vm.experiment = experiment">
-                      [{{experiment.experimentid}}] {{experiment.details}}
-                    </li>
-                    <li class="m-l-m3" ng-click="projectVm.show = 'experiment-creation'; vm.hideClose = true;">
-                      <i class="fa fa-plus-circle"></i> add experiment
-                    </li>
-                  </ul>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+        <div class="collapse-container project-container-wrapper">
+          <div class="project-container-sidebar">
+            <div class="project-container-sidebar-text">
+              Screen
+            </div>
+          </div>
+          <div class="project-container-content">
+            <table>
+              <tbody>
+                <tr>
+                  <td align="right" valign="top">
+                    Name:
+                  </td>
+                  <td class="p-l-10">
+                    [{{vm.screen.screenid}}] {{vm.screen.title}}
+                  </td>
+                </tr>
+                <tr>
+                  <td align="right" valign="top">
+                    Created:
+                  </td>
+                  <td class="p-l-10">
+                    {{vm.screen.created * 1000  | date: 'dd-MM-yyyy'}}
+                  </td>
+                </tr>
+                <tr>
+                  <td align="right" valign="top">
+                    Creator:
+                  </td>
+                  <td class="p-l-10">
+                    {{vm.screen.creator}}
+                  </td>
+                </tr>
+                <tr>
+                  <td align="right" valign="top">
+                    Library:
+                  </td>
+                  <td class="p-l-10">
+                    {{vm.screen.library}}
+                  </td>
+                </tr>
+                <tr>
+                  <td align="right" valign="top">
+                    Type:
+                  </td>
+                  <td class="p-l-10">
+                    {{vm.screen.type}}
+                  </td>
+                </tr>
+                <tr>
+                  <td align="right" valign="top">
+                    Species:
+                  </td>
+                  <td class="p-l-10">
+                    {{vm.screen.species}}
+                  </td>
+                </tr>
+                <tr>
+                  <td align="right" valign="top">
+                    Cell line:
+                  </td>
+                  <td class="p-l-10">
+                    {{vm.screen.cellLine}}
+                  </td>
+                </tr>
+                <tr>
+                  <td align="right" valign="top">
+                    Approach:
+                  </td>
+                  <td class="p-l-10">
+                    {{vm.screen.approach}}
+                  </td>
+                </tr>
+                <tr>
+                  <td align="right" valign="top">
+                    Condition:
+                  </td>
+                  <td class="p-l-10">
+                    {{vm.screen.condition}}
+                  </td>
+                </tr>
+                <tr>
+                  <td class="p-t-10" align="right" valign="top">
+                    Experiments:
+                  </td>
+                  <td class="p-l-10 p-t-10">
+                    <ul class="no-bullets hover-style">
+                      <li class="m-l-m6" ng-repeat="experiment in vm.screen.experiments" ng-click="vm.experiment = experiment">
+                        [{{experiment.experimentid}}] {{experiment.details}}
+                      </li>
+                      <li class="m-l-m3" ng-click="projectVm.show = 'experiment-creation'; vm.hideClose = true;">
+                        <i class="fa fa-plus-circle"></i> add experiment
+                      </li>
+                    </ul>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>
@@ -279,58 +293,65 @@
         <div class="collapse-header">
           Experiment
         </div>
-        <div class="collapse-container">
-          <table>
-            <tbody>
-              <tr>
-                <td align="right" valign="top">
-                  Experiment:
-                </td>
-                <td class="p-l-10">
-                  [{{vm.experiment.experimentid}}] {{vm.experiment.details}}
-                </td>
-              </tr>
-              <tr>
-                <td align="right" valign="top">
-                  Created:
-                </td>
-                <td class="p-l-10">
-                  {{vm.experiment.created * 1000 | date: 'dd-MM-yyyy'}}
-                </td>
-              </tr>
-              <tr>
-                <td align="right" valign="top">
-                  Experimenter:
-                </td>
-                <td class="p-l-10">
-                  {{vm.experiment.experimenter}}
-                </td>
-              </tr>
-              <tr>
-                <td align="right" valign="top">
-                  Protocols:
-                </td>
-                <td class="p-l-10">
+        <div class="collapse-container project-container-wrapper">
+          <div class="project-container-sidebar">
+            <div class="project-container-sidebar-text">
+              Screen
+            </div>
+          </div>
+          <div class="project-container-content">
+            <table>
+              <tbody>
+                <tr>
+                  <td align="right" valign="top">
+                    Experiment:
+                  </td>
+                  <td class="p-l-10">
+                    [{{vm.experiment.experimentid}}] {{vm.experiment.details}}
+                  </td>
+                </tr>
+                <tr>
+                  <td align="right" valign="top">
+                    Created:
+                  </td>
+                  <td class="p-l-10">
+                    {{vm.experiment.created * 1000 | date: 'dd-MM-yyyy'}}
+                  </td>
+                </tr>
+                <tr>
+                  <td align="right" valign="top">
+                    Experimenter:
+                  </td>
+                  <td class="p-l-10">
+                    {{vm.experiment.experimenter}}
+                  </td>
+                </tr>
+                <tr>
+                  <td align="right" valign="top">
+                    Protocols:
+                  </td>
+                  <td class="p-l-10">
 
-                </td>
-              </tr>
-              <tr>
-                <td class="p-t-10" align="right" valign="top">
-                  Samples:
-                </td>
-                <td class="p-l-10 p-t-10">
-                  <ul class="no-bullets hover-style">
-                    <li class="m-l-m6" ng-repeat="samples in vm.experiment.samples" ng-click="vm.sample = sample">
-                      [{{sample.sampleid}}] {{sample.details}}
-                    </li>
-                    <li class="m-l-m3" ng-click="projectVm.show = 'sample-creation'; vm.hideClose = true;">
-                      <i class="fa fa-plus-circle"></i> add sample
-                    </li>
-                  </ul>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="p-t-10" align="right" valign="top">
+                    Samples:
+                  </td>
+                  <td class="p-l-10 p-t-10">
+                    <ul class="no-bullets hover-style">
+                      <li class="m-l-m6" ng-repeat="samples in vm.experiment.samples" ng-click="vm.sample = sample">
+                        [{{sample.sampleid}}] {{sample.details}}
+                      </li>
+                      <li class="m-l-m3" ng-click="projectVm.show = 'sample-creation'; vm.hideClose = true;">
+                        <i class="fa fa-plus-circle"></i> add sample
+                      </li>
+                    </ul>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>

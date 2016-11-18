@@ -16,14 +16,43 @@
   box-shadow: 0 0 2px $accent-h400;
   margin-top: 10px;
   margin-right: 20px;
-  padding-top: 5px;
+}
+.project-container-wrapper {
+  position: relative;
+}
+.project-container-sidebar {
+  background-color: $accent-h300;
+  border-bottom-left-radius: 4px;
+  border-top-left-radius: 4px;
+  color: $primary-h700;
+  height: 100%;
+  padding: 10px 0px 10px 0px;
+  position: absolute;
+  width: 30px;
+}
+.project-container-sidebar-text {
+  -webkit-transform-origin: 0 50%;
+  -webkit-transform: rotate(-90deg) translate(-50%, 50%);
+  transform-origin: 0 50%;
+  transform: rotate(-90deg) translate(-50%, 50%);
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  height: 30px; /* line-height of .wrapper div:first-child span */
+  margin: auto;
+  font-weight: bold;
+  font-size: 1em;
+  line-height: 30px; /* Copy to other locations */
+}
+.project-container-content {
+  padding: 10px 10px 10px 35px;
+  padding-left: 35px;
 }
 
 .screen-container {
   @extend .container-backdrop;
   //margin-right: 2px;
   //max-width: 500px;
-  padding: 10px 10px 10px 10px;
   position: relative;
 }
 .screen-container .flex-row {
@@ -33,7 +62,6 @@
   @extend .container-backdrop;
   //margin-right: 1px;
   //max-width: 500px;
-  padding: 10px 10px 10px 10px;
   position: relative;
 }
 .screen-overview .flex-row {
@@ -42,7 +70,6 @@
 .experiment-overview {
   @extend .container-backdrop;
   //max-width: 500px;
-  padding: 10px 10px 10px 10px;
   position: relative;
 }
 .experiment-overview .flex-row {
@@ -55,7 +82,12 @@
 }
 
 .collapse-header {
+  background-color: $accent-h300;
+  border-radius: 4px;
+  color: $primary-h700;
   display: none;
+  font-weight: bold;
+  padding: 10px 10px 10px 10px;
 }
 
 .form-container {

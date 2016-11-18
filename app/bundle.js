@@ -158,7 +158,7 @@
 						closeIcons.style.display = 'none';
             collapseTarget.style.display = 'none';
             containerHeader.style.display = 'block';
-            element[0].style.display = 'none';	
+            element[0].style.display = 'none';
             expandButton.style.display = 'inline';
           });
         }
@@ -178,7 +178,7 @@
 						var containerHeader = container.querySelector('.collapse-header');
 						closeIcons.style.display = 'inline';
             collapseButton.style.display = 'inline';
-            collapseTarget.style.display = 'inline';
+            collapseTarget.style.display = 'block';
             containerHeader.style.display = 'none';
             element[0].style.display = 'none';
           });
