@@ -14,7 +14,7 @@
 					vm.user = data.name;
 					$timeout(function() {
           	$scope.$digest();
-						$state.go('root.profile');
+						$state.go('root.projects');
 					});
         } else {
           vm.signedIn = false;

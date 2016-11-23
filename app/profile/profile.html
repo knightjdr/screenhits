@@ -85,17 +85,17 @@
       <!--introduction-->
       <div class="animate-500ms animate-fade flex-column-100 flex-justify profile-introduction" ng-show="$state.is('root.projects')" ui-view="introduction"></div>
       <!--project content-->
-      <div class="animate-500ms animate-fade profile-main-child profile-main-overflow" ng-show="$state.is('root.projects.details')" ui-view="details"></div>
+      <div class="animate-500ms animate-fade profile-main-child" custom-scrollbar ng-show="$state.is('root.projects.details')" ui-view="details"></div>
       <!--project creation-->
-      <div class="animate-500ms animate-fade profile-main-child profile-main-overflow" ng-show="$state.is('root.projects.new')" ui-view="new"></div>
+      <div class="animate-500ms animate-fade profile-main-child" custom-scrollbar ng-show="$state.is('root.projects.new')" ui-view="new"></div>
       <!--search content-->
-      <div class="animate-500ms animate-fade profile-main-child profile-main-overflow" ng-show="$state.is('root.projects.search')" ui-view="search"></div>
+      <div class="animate-500ms animate-fade profile-main-child" custom-scrollbar ng-show="$state.is('root.projects.search')" ui-view="search"></div>
       <!--analysis content-->
-      <div class="animate-500ms animate-fade profile-main-child profile-main-overflow" ng-show="$state.is('root.projects.analysis')" ui-view="analysis"></div>
+      <div class="animate-500ms animate-fade profile-main-child" custom-scrollbar ng-show="$state.is('root.projects.analysis')" ui-view="analysis"></div>
       <!--analysis content-->
-      <div class="animate-500ms animate-fade profile-main-child profile-main-overflow" ng-show="$state.is('root.projects.help')" ui-view="help"></div>
+      <div class="animate-500ms animate-fade profile-main-child" custom-scrollbar ng-show="$state.is('root.projects.help')" ui-view="help"></div>
       <!--Close button-->
-      <div class="animate-500ms animate-fade profile-main-child" ng-show="!$state.is('root.projects') && !vm.hideClose">
+      <div class="animate-500ms animate-fade profile-main-child" custom-scrollbar ng-show="!$state.is('root.projects') && !vm.hideClose">
         <div class="profile-main-buttons">
           <md-button class="md-fab md-mini md-accent" aria-label="Close" ui-sref="root.projects" md-tooltip-destroy>
             <i class="fa fa-lg fa-times primary-h700"></i>

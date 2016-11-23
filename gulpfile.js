@@ -23,6 +23,7 @@ var appSASS = [
 ];
 var appJS = [
 		'env.js',
+		'layout/custom-scrollbar.module.js',
 		'app.module.js',
 		'app.config.js',
 		'app.routes.js',
