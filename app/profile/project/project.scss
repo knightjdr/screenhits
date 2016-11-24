@@ -1,11 +1,11 @@
 @import '../../layout/palette';
 
 .project-main {
-  height: calc(100vh - 140px);
+  height: auto;
   position: relative;
 }
 .project-main-child {
-  position: absolute;
+  position: relative;
   width: 100%;
 }
 

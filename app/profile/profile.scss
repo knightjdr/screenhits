@@ -51,7 +51,7 @@
   height: 10px;
   position: absolute;
   bottom: 15px;
-  width: calc(100% - 105px - 12px);
+  width: calc(100% - 105px - 15px);
   z-index: 2;
 }
 .profile-main-border-top {
@@ -60,11 +60,11 @@
   height: 10px;
   position: absolute;
   top: 100px;
-  width: calc(100% - 105px - 12px);
+  width: calc(100% - 105px - 15px);
   z-index: 2;
 }
 .profile-main-overflow {
-  overflow-y: auto;
+  overflow-y: hidden;
 }
 .profile-introduction {
   color: #fff;

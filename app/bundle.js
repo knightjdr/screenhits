@@ -25,7 +25,6 @@ angular.module('custom.scrollbar', [])
       display: 'none',
       offsetRight: 12,
       rightOffset: 2,
-      topOffset: 2,
       width: 12
     };
     var config = angular.extend({}, defaultConfig);
@@ -39,36 +38,42 @@ angular.module('custom.scrollbar', [])
         display: config.display,
         offsetRight: config.offsetRight,
         rightOffset: config.rightOffset,
-        topOffset: config.topOffset,
         width: config.width
       };
     }];
   })
-  .directive('customScrollbar', ['$document', 'scrollbarConfig', '$window', function($document, scrollbarConfig, $window) {
+  .directive('customScrollbar', ['$document', 'scrollbarConfig', '$timeout', '$window', function($document, scrollbarConfig, $timeout, $window) {
     return {
       restrict: 'A',
       link: function(scope, element, attr) {
-        var container;
+        var container = element[0].firstChild;
+        var containerHeight;
+        var heightStable;
+        var init = false;
+        var paddingBottom = parseInt($window.getComputedStyle(element[0]).getPropertyValue('padding-bottom').replace(/px/, ''));
+        var paddingTop = parseInt($window.getComputedStyle(element[0]).getPropertyValue('padding-top').replace(/px/, ''));
         var parentHeight;
-        var parentTop;
+        var parentHeightNoPadding;
+        var resizeStable;
+        var scalingFactor;
         var scrollButton;
         var scrollbarElement;
         var scrollbarHeight;
-        var scrollbartopOffset = scrollbarConfig.topOffset;
         var scrollButtonHeight;
         var scrollButtonSpacer;
         var setParentDetails = function() {
+          containerHeight = container.offsetHeight;
           parentHeight = element[0].offsetHeight;
-          parentTop = element[0].getBoundingClientRect().top;
+          parentHeightNoPadding = parentHeight - paddingBottom - paddingTop;
+          scalingFactor = containerHeight / parentHeightNoPadding;
         };
         var setScrollbarSettings = function() {
-          scrollbarHeight = $window.innerHeight - parentTop - (4 * scrollbartopOffset);
-          scrollButtonHeight = scrollbarHeight * (($window.innerHeight  - parentTop) / parentHeight);
+          scrollbarHeight = parentHeight - paddingBottom - paddingTop;
+          scrollButtonHeight = scrollbarHeight * (scrollbarHeight / containerHeight);
           scrollButtonSpacer = scrollbarHeight - scrollButtonHeight;
         };
         var adjustScrollDetails = function() {
           scrollbarElement.style.height = scrollbarHeight + 'px';
-          scrollbarElement.style.top = scrollbartopOffset + 'px';
           scrollButton.style.height = scrollButtonHeight + 'px';
           var containerTop = parseInt(container.style.top.replace(/px/, ''));
           var currentTop = parseInt(scrollButton.style.top.replace(/px/, ''));
@@ -80,17 +85,8 @@ angular.module('custom.scrollbar', [])
         var initialize = function() {
           setParentDetails();
           setScrollbarSettings();
-          //set parent details
-          element[0].style.position = 'relative';
-          element[0].style.overflowY = 'hidden';
-          //create container
-          container = document.createElement('div');
-          container.className = 'scroll-container';
-          container.style.position = 'absolute';
+          //set container defaults
           container.style.top = '0px';
-          container.innerHTML = element[0].innerHTML;
-          element[0].innerHTML = null;
-          element[0].insertBefore(container, null);
           //create scrollbar
           scrollbarElement = document.createElement('div');
           scrollbarElement.className = 'custom-scrollbar';
@@ -102,7 +98,7 @@ angular.module('custom.scrollbar', [])
           scrollbarElement.style.height = scrollbarHeight + 'px';
           scrollbarElement.style.position = 'absolute';
           scrollbarElement.style.right = scrollbarConfig.rightOffset + 'px';
-          scrollbarElement.style.top = scrollbartopOffset + 'px';
+          scrollbarElement.style.top = paddingTop + 'px';
           scrollbarElement.style.width = scrollbarConfig.width + 'px';
           element[0].appendChild(scrollbarElement);
           //create scrollbutton
@@ -123,29 +119,36 @@ angular.module('custom.scrollbar', [])
         var position = {};
         var mouseoverFunction = function() {
           mouseover = true;
-          scrollbarElement.style.display = 'inline';
+          if(containerHeight > parentHeightNoPadding) {
+            scrollbarElement.style.display = 'inline';
+          } else {
+            scrollbarElement.style.display = 'none';
+          }
+          scope.$apply();
         };
         var mouseoutFunction = function() {
           mouseover = false;
           if(!mousedown) {
             scrollbarElement.style.display = 'none';
           }
+          scope.$apply();
         };
         var mousemoveFunction = function($event) {
         	var dy = $event.clientY - position.mouseY;
           position.mouseY = $event.clientY;
-          var containerNewPosition = (parseInt(container.style.top.replace(/px/, '')) - dy);
-          var newPosition = (parseInt(scrollButton.style.top.replace(/px/, '')) + dy);
+          var containerNewPosition = parseInt(container.style.top.replace(/px/, '')) - (scalingFactor * dy);
+          var newPosition = parseInt(scrollButton.style.top.replace(/px/, '')) + dy;
           if(newPosition < 0) {
             newPosition = 0;
             containerNewPosition = 0;
           }
           if(newPosition > scrollButtonSpacer) {
             newPosition = scrollButtonSpacer;
-            containerNewPosition = -scrollButtonSpacer;
+            containerNewPosition = -(scalingFactor * scrollButtonSpacer);
           }
           scrollButton.style.top = newPosition  + 'px';
           container.style.top = containerNewPosition + 'px';
+          scope.$apply();
         	return false;
         };
         var mouseupFunction = function() {
@@ -155,27 +158,30 @@ angular.module('custom.scrollbar', [])
           if(!mouseover) {
             scrollbarElement.style.display = 'none';
           }
+          scope.$apply();
         };
         var mousedownFunction = function($event) {
           position.mouseY = $event.clientY;
           mousedown = true;
           $document.bind('mousemove', mousemoveFunction);
           $document.bind('mouseup', mouseupFunction);
+          scope.$apply();
           return false;
         };
         var wheelFunction = function($event) {
-          var containerNewPosition = (parseInt(container.style.top.replace(/px/, '')) - $event.deltaY);
-          var newPosition = (parseInt(scrollButton.style.top.replace(/px/, '')) + $event.deltaY);
+          var containerNewPosition = parseInt(container.style.top.replace(/px/, '')) - (scalingFactor * $event.deltaY);
+          var newPosition = parseInt(scrollButton.style.top.replace(/px/, '')) + $event.deltaY;
           if(newPosition < 0) {
             newPosition = 0;
             containerNewPosition = 0;
           }
           if(newPosition > scrollButtonSpacer) {
             newPosition = scrollButtonSpacer;
-            containerNewPosition = -scrollButtonSpacer;
+            containerNewPosition = -(scalingFactor * scrollButtonSpacer);
           }
           scrollButton.style.top = newPosition  + 'px';
           container.style.top = containerNewPosition  + 'px';
+          scope.$apply();
         };
         var bindBehaviours = function(bind) {
           if(bind) {
@@ -188,30 +194,44 @@ angular.module('custom.scrollbar', [])
             element.unbind('mouseout', mouseoutFunction);
             element.unbind('wheel', wheelFunction);
             scrollButton.removeEventListener('mousedown', mousedownFunction);
-          }
-        };
-        //check if scrollbar should be displayed
-        var checkSize = function() {
-          if(parentHeight + parentTop >= $window.innerHeight) {
-            setScrollbarSettings();
-            adjustScrollDetails();
-            bindBehaviours(true);
-          } else {
-            bindBehaviours(false);
             container.style.top = '0px';
             scrollbarElement.style.display = 'none';
           }
         };
+        //check if scrollbar should be displayed
+        var checkSize = function() {
+          setParentDetails();
+          setScrollbarSettings();
+          adjustScrollDetails();
+          if(containerHeight > parentHeightNoPadding) {
+            bindBehaviours(true);
+          } else {
+            bindBehaviours(false);
+          }
+        };
         //check if visisble
         scope.$watch(function() { return element.attr('class'); }, function(classes) {
-          if(classes.match(/ng-hide/) !== null) {
-            initialize();
+          if(classes.match(/ng-hide/) === null) {
+            if(!init) {
+              initialize();
+              init = true;
+            }
+          }
+        });
+        //watch container size
+        scope.$watch(function() { return container.offsetHeight; }, function() {
+          if(init) {
             checkSize();
           }
         });
         //on resize
         angular.element($window).bind('resize', function() {
-          checkSize();
+          if(init) {
+            $timeout.cancel(resizeStable);
+						resizeStable = $timeout(function() {
+							checkSize();
+						}, 500);
+          }
         });
       }
     };
