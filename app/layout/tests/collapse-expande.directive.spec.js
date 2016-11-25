@@ -76,7 +76,7 @@ describe('directive: collapse-expand', function() {
       it('style parameters should be set on various targets', function() {
         expandButton.triggerHandler('click');
         assert.equal(closeIcons.style.display, 'inline');
-        assert.equal(collapseTarget.style.display, 'inline');
+        assert.equal(collapseTarget.style.display, 'block');
         assert.equal(containerHeader.style.display, 'none');
         assert.equal(collapseButton[0].style.display, 'inline');
         assert.equal(expandButton[0].style.display, 'none');

@@ -82,6 +82,9 @@ md-select.no-margins {
 md-select-menu md-content {
 	padding: 0px 0px 0px 0px !important;
 }
+md-select.primary md-select-value span {
+	color: $primary-h700;
+}
 md-select.white md-select-value span {
 	color: white;
 }
@@ -96,6 +99,9 @@ md-option {
 }
 md-input-container.md-small-margin {
 	margin-bottom: 5px !important;
+}
+md-input-container.no-margins {
+	margin: 0px 0px 2px 0px;
 }
 
 /*cursors*/
@@ -239,15 +245,15 @@ ul.hover-style li:focus {
 	opacity: 0;
 }
 .animate-slide-up {
-	position: relative;
-	top: 0%;
+	//position: absolute;
+	//top: 0%;
 	-webkit-transform: translateY(0%);
 	transform: translateY(0%);
 	-webkit-transition-timing-function: ease-out;
 	transition-timing-function: ease-out;
 }
 .animate-slide-up.ng-hide {
-	top: 100%;
+	//top: 100%;
 	-webkit-transform: translateY(-100%);
 	transform: translateY(-100%);
 	-webkit-transition-timing-function: ease-in;
@@ -255,7 +261,7 @@ ul.hover-style li:focus {
 }
 
 /*scrollbars*/
-::-webkit-scrollbar {
+/*::-webkit-scrollbar {
 	width: 12px;
 }
 ::-webkit-scrollbar-track {
@@ -267,4 +273,4 @@ ul.hover-style li:focus {
 	border-radius: 10px;
 	-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5);
 	opacity: 0;
-}
+}*/

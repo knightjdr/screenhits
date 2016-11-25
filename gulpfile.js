@@ -47,7 +47,9 @@ var appJS = [
 		'profile/profile.controller.js',
 		'profile/project/project.controller.js',
 		'profile/project/project-new.controller.js',
-		'profile/project/project-management.controller.js'
+		'profile/project/project-management.controller.js',
+		'profile/experiment/experiment-creation.controller.js',
+		'profile/screen/screen-creation.controller.js'
 ];
 var assetsDirectory = 'assets/'
 var assetsCSS = [

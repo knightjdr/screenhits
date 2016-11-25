@@ -21,7 +21,7 @@
 			};
 			$scope.$on('credentials:updated', function(event, data) {
 				if(data.name) {
-					//vm.user = data.name;
+					vm.user = data.name;
 					$timeout(function() {
 						$scope.$digest();
 					});
@@ -41,7 +41,7 @@
   			_id: 1,
   			screens: [
     			{
-      			approach: 'dropout',
+						approach: 'Negative selection',
       			cellLine: 'HeLa',
       			condition: 'drug treatment',
       			created: 1478030151,
@@ -57,15 +57,15 @@
         			},
         			screenid: 1
       			}],
+						_id: 1,
       			library: 'library 1',
       			projectid: 1,
-      			screenid: 1,
       			species: 'Homo sapiens',
       			title: 'Screen 1',
-      			type: 'knockout'
+      			type: 'CRISPR'
     			},
     			{
-      			approach: 'positive selection',
+      			approach: 'Positive selection',
       			cellLine: 'U2OS',
       			condition: 'genetic alteraion',
       			created: 1478030151,
@@ -81,12 +81,12 @@
         			},
         			screenid: 2
       			}],
+						_id: 2,
       			library: 'library 2',
       			projectid: 1,
-      			screenid: 2,
       			species: 'Homo sapiens',
       			title: 'Screen 2',
-      			type: 'overexpression'
+      			type: 'CRISPR'
     			}
   			]
 			}];

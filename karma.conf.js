@@ -20,6 +20,7 @@ module.exports = function(config) {
       'node_modules/element-closest/element-closest.js',
       'node_modules/promise-polyfill/promise.js',
       'app/env.js',
+      'app/layout/custom-scrollbar.module.js',
       'app/app.module.js',
       'app/app.config.js',
       'app/app.routes.js',

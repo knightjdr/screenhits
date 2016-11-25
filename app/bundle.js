@@ -219,7 +219,7 @@ angular.module('custom.scrollbar', [])
           }
         });
         //watch container size
-        scope.$watch(function() { return container.offsetHeight; }, function() {
+        scope.$watch(function() { if(container) { return container.offsetHeight; } }, function() {
           if(init) {
             checkSize();
           }
@@ -878,7 +878,7 @@ angular.module('custom.scrollbar', [])
 			};
 			$scope.$on('credentials:updated', function(event, data) {
 				if(data.name) {
-					//vm.user = data.name;
+					vm.user = data.name;
 					$timeout(function() {
 						$scope.$digest();
 					});
@@ -898,7 +898,7 @@ angular.module('custom.scrollbar', [])
   			_id: 1,
   			screens: [
     			{
-      			approach: 'dropout',
+						approach: 'Negative selection',
       			cellLine: 'HeLa',
       			condition: 'drug treatment',
       			created: 1478030151,
@@ -914,15 +914,15 @@ angular.module('custom.scrollbar', [])
         			},
         			screenid: 1
       			}],
+						_id: 1,
       			library: 'library 1',
       			projectid: 1,
-      			screenid: 1,
       			species: 'Homo sapiens',
       			title: 'Screen 1',
-      			type: 'knockout'
+      			type: 'CRISPR'
     			},
     			{
-      			approach: 'positive selection',
+      			approach: 'Positive selection',
       			cellLine: 'U2OS',
       			condition: 'genetic alteraion',
       			created: 1478030151,
@@ -938,12 +938,12 @@ angular.module('custom.scrollbar', [])
         			},
         			screenid: 2
       			}],
+						_id: 2,
       			library: 'library 2',
       			projectid: 1,
-      			screenid: 2,
       			species: 'Homo sapiens',
       			title: 'Screen 2',
-      			type: 'overexpression'
+      			type: 'CRISPR'
     			}
   			]
 			}];
@@ -1104,6 +1104,162 @@ angular.module('custom.scrollbar', [])
 				};
 				helperHTTP.set('project/users', {project: project, users: currentUsers}, success, failure);
 			};
+    }])
+  ;
+})();
+
+(function() {
+	'use strict';
+
+	angular.module('app')
+		.controller('experimentManagement', ['helperDialog', 'helperHTTP', 'helperObject', '$http', '$scope', '$timeout', function (helperDialog, helperHTTP, helperObject, $http, $scope, $timeout) {
+      var vm = this;
+			vm.form = {};
+      vm.protocolDetails = false;
+      vm.protocolCreation = false;
+			vm.reset = function() {
+        $scope.form.comment = '';
+        $scope.form.description = '';
+        $scope.form.protocol = '';
+				$scope.form.$setPristine();
+				$scope.form.$setUntouched();
+				vm.form = {};
+			};
+			vm.submit = function(valid, form, project, screen) {
+        if(valid && helperObject.notEmpty(form)) {
+					vm.message = '';
+					var formObject = form;
+          formObject.project = project;
+          formObject.screen = screen;
+          var success = function(response) {
+            vm.reset();
+            vm.message = response.data.message;
+						$timeout(function() {
+							vm.message = '';
+						}, 10000);
+          };
+          var failure = function(response) {
+						vm.message = response.data.message;
+						$timeout(function() {
+							vm.message = '';
+						}, 10000);
+          };
+          //helperHTTP.get('project/screen', formObject, success, failure);
+        }
+			};
+      vm.protocols = {
+        CRISPR: {
+          viralProduction: ['Durocher 1', 'Durocher 2'],
+          cellLine: ['Durocher 1', 'Durocher 2'],
+          sequencing: ['Durocher 1', 'Durocher 2']
+        }
+      };
+      /*vm.protocols = {
+        CRISPR: [
+          {
+            description: 'Production of viral library',
+            options: [ {
+                name: 'Durocher protocol (November 25, 2016)',
+                details: {
+                  cell: {
+                    cell: 'HEK293T',
+                    description: 'Packaging cell line',
+                    links: []
+                  },
+                  cellnumber: {
+                    description: 'Cell number, flask size and flask number',
+                    flasks: 'T75',
+                    flaskNumber: '10',
+                    number: '4x10^6'
+                  },
+                  confluency: {
+                    description: 'Cell confluency at transfection',
+                    confluency: '75%'
+                  },
+                  growth: {
+                    description: 'Growth/cell culture conditions used to generate viral library',
+                    details: 'Propagation Medium was prepared by adding 50 mL FBS to 500 mL of DMEM medium ( final concentration: 10% FBS). Medium was mixed thoroughly and stored at 4 degree_C. Cells were propagated up to a maximum of 10 passages before transfection. For splitting, cells were washed once with 1X PBS and incubated with 1X Trypsin at 37 degree_C until detachment of cells. Propagation medium was added to each flask and the cells were resuspended by gently pipetting the solution up and down. The cell suspension was distributed into new T25 or T75 flasks and incubated at 37 degree_C in a 5% CO2 incubator. Cells were splitted when a confluency of approximately 80% was reached. Cell lines were split twice a week at a ratio of 1:8'
+                  },
+                  plasmid: {
+                    description: 'Packaging plasmids',
+                    links: ['www.addgene.org/12260', 'www.addgene.org/8454'],
+                    plasmids: ['psPAX2, p-CMV-VSV-g']
+                  },
+                  supernatent: {
+                    description: 'Viral supernatent procedure',
+                    details: 'following transfectioin with library plasmids and packaging vectors, cells were incubated for overnight. The next day DNAase I treatment was carried out to prevent undesired carryover of plasmid to virus library. At 48 post-transfection, virus-containing supernatant was harvested and filtered through a 0.22 PES filter. Virus-containing medim was snap-frozen in liquid nitrogen and stored @ -80 degrees_C.'
+                  },
+                  transfection: {
+                    description: 'Transfection procedure',
+                    details: '24 h post transfection, using TRANS-IT'
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      };*/
+    }])
+  ;
+})();
+
+(function() {
+	'use strict';
+
+	angular.module('app')
+		.controller('screenManagement', ['helperDialog', 'helperHTTP', 'helperObject', '$http', '$scope', '$timeout', function (helperDialog, helperHTTP, helperObject, $http, $scope, $timeout) {
+      var vm = this;
+			vm.form = {};
+			vm.reset = function() {
+        $scope.form.approach = '';
+        $scope.form.cell = '';
+        $scope.form.comment = '';
+        $scope.form.condition = '';
+        $scope.form.description = '';
+        $scope.form.library = '';
+				$scope.form.name = '';
+        $scope.form.species = '';
+        $scope.form.type = '';
+				$scope.form.$setPristine();
+				$scope.form.$setUntouched();
+				vm.form = {};
+			};
+			vm.submit = function(valid, form, project) {
+        if(valid && helperObject.notEmpty(form)) {
+					vm.message = '';
+					var formObject = form;
+          formObject.project = project;
+          var success = function(response) {
+            vm.reset();
+            vm.message = response.data.message;
+						$timeout(function() {
+							vm.message = '';
+						}, 10000);
+          };
+          var failure = function(response) {
+						vm.message = response.data.message;
+						$timeout(function() {
+							vm.message = '';
+						}, 10000);
+          };
+          //helperHTTP.get('project/screen', formObject, success, failure);
+        }
+			};
+      //get libaries
+      $http.get('app/profile/screen/resources/options.json')
+				.then(function successCallback(response) {
+          vm.approaches = response.data.approaches;
+          vm.cells = response.data.cells;
+					vm.libraries = response.data.libraries;
+          vm.species = response.data.species;
+          vm.types = response.data.types;
+          $timeout(function() {
+          	$scope.$digest();
+					});
+				}, function errorCallback(response) {
+					helperDialog.alert('Resource error', 'Library information could not be retrieved.');
+				})
+			;
     }])
   ;
 })();

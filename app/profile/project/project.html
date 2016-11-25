@@ -1,9 +1,9 @@
 <div class="flex-column-body project-main" ng-controller="project as projectVm">
   <!--management and creation-->
-  <div class="animate-500ms animate-fade animate-slide-up project-main-child" ng-show="projectVm.show">
+  <div class="project-main-child" ng-show="projectVm.show">
     <div class="profile-main-buttons">
       <md-button class="md-fab md-mini md-accent" aria-label="Back to projects" ng-click="projectVm.show = ''; vm.hideClose = false;" md-tooltip-destroy>
-        <i class="fa fa-lg fa-arrow-circle-down primary-h700"></i>
+        <i class="fa fa-lg fa-arrow-circle-left primary-h700"></i>
         <md-tooltip md-direction="top" md-autohide="true">
           Back
         </md-tooltip>
@@ -21,7 +21,7 @@
     </div>
   </div>
   <!--project details-->
-  <div class="animate-500ms animate-fade project-main-child" ng-show="!projectVm.show && vm.project">
+  <div class="project-main-child" ng-show="!projectVm.show && vm.project">
     <div class="flex-row">
       <div class="screen-container">
         <div class="profile-container-buttons">
@@ -109,7 +109,7 @@
                   <td class="p-t-10 p-l-10">
                     <ul class="no-bullets hover-style">
                       <li class="m-l-m6" ng-repeat="screen in vm.project.screens" ng-click="vm.screen = screen">
-                        [{{screen.screenid}}] {{screen.title}}
+                        [{{screen._id}}] {{screen.title}}
                       </li>
                       <li class="m-l-m3" ng-click="projectVm.show = 'screen-creation'; vm.hideClose = true;">
                         <i class="fa fa-plus-circle"></i> add screen
@@ -171,7 +171,7 @@
                     Name:
                   </td>
                   <td class="p-l-10">
-                    [{{vm.screen.screenid}}] {{vm.screen.title}}
+                    [{{vm.screen._id}}] {{vm.screen.title}}
                   </td>
                 </tr>
                 <tr>
@@ -192,18 +192,18 @@
                 </tr>
                 <tr>
                   <td align="right" valign="top">
-                    Library:
-                  </td>
-                  <td class="p-l-10">
-                    {{vm.screen.library}}
-                  </td>
-                </tr>
-                <tr>
-                  <td align="right" valign="top">
                     Type:
                   </td>
                   <td class="p-l-10">
                     {{vm.screen.type}}
+                  </td>
+                </tr>
+                <tr>
+                  <td align="right" valign="top">
+                    Library:
+                  </td>
+                  <td class="p-l-10">
+                    {{vm.screen.library}}
                   </td>
                 </tr>
                 <tr>
@@ -304,7 +304,7 @@
               <tbody>
                 <tr>
                   <td align="right" valign="top">
-                    Experiment:
+                    Details:
                   </td>
                   <td class="p-l-10">
                     [{{vm.experiment.experimentid}}] {{vm.experiment.details}}

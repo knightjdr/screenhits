@@ -204,7 +204,7 @@ angular.module('custom.scrollbar', [])
           }
         });
         //watch container size
-        scope.$watch(function() { return container.offsetHeight; }, function() {
+        scope.$watch(function() { if(container) { return container.offsetHeight; } }, function() {
           if(init) {
             checkSize();
           }

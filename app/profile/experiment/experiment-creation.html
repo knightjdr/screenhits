@@ -1,5 +1,94 @@
-<div class="flex-row">
-  <div class="flex-column">
-    Experiment creation
+<div class="flex-column-body">
+  <!--creation details-->
+  <div class="flex-row" ng-controller="experimentManagement as experimentManagementVm">
+    <div class="flex-column">
+      <div class="flex-row">
+        <div class="form-container md-form-font">
+          <form name="form" ng-submit="experimentManagementVm.submit(form.$valid, experimentManagementVm.form, vm.project._id, vm.screen._id)" novalidate>
+            <div class="form-description">
+              &#x2022; Create a new experiment using this form. Fields marked with a * are required.
+            </div>
+            <md-input-container class="md-icon-float md-block md-small-margin">
+              <label>description</label>
+              <md-icon md-font-icon="fa-file-text" class="fa md-accent"></md-icon>
+              <textarea name="description" ng-model="experimentManagementVm.form.description" required></textarea>
+              <md-icon md-font-icon="fa-question-circle" class="fa md-primary">
+                <md-tooltip md-direction="top" md-autohide="true">
+                  A description of the experiment (e.g., time points and drug concentration).
+                </md-tooltip>
+              </md-icon>
+              <div ng-messages="form.description.$error" role="alert">
+                <div ng-message="required">Please give the screen a name</div>
+              </div>
+            </md-input-container>
+            <md-input-container class="md-icon-float md-block md-small-margin">
+              <label>comments</label>
+              <md-icon md-font-icon="fa-comment" class="fa md-accent"></md-icon>
+              <textarea name="comment" ng-model="experimentManagementVm.form.comment"></textarea>
+              <md-icon md-font-icon="fa-question-circle" class="fa md-primary">
+                <md-tooltip md-direction="top" md-autohide="true">
+                  Add comments for anything not covered explicately in this form.
+                </md-tooltip>
+              </md-icon>
+            </md-input-container>
+            <md-input-container class="md-icon-float md-block md-small-margin">
+              <label>protocols</label>
+              <md-icon md-font-icon="fa-folder-open" class="fa md-accent"></md-icon>
+              <md-select class="primary" multiple name="protocol" ng-model="experimentManagementVm.form.protocol" required>
+                <md-option ng-repeat="protocol in experimentManagementVm.protocols" value="{{protocol.name}}">
+                  {{protocol.name}}
+                </md-option>
+              </md-select>
+              <md-icon md-font-icon="fa-question-circle" class="fa md-primary">
+                <md-tooltip md-direction="top" md-autohide="true">
+                  List all protocols used in this experiment
+                </md-tooltip>
+              </md-icon>
+              <div ng-messages="form.protocol.$error" role="alert">
+                <div ng-message="required">Please specify a full set of protocols</div>
+              </div>
+              <div class="md-errors-spacer"></div>
+            </md-input-container>
+            <div class="form-warning" ng-show="experimentManagementVm.message">
+              &#x2022; {{experimentManagementVm.message}}
+            </div>
+            <div class="flex-row form-buttons">
+              <div class="button-container">
+                <md-button class="md-fab md-small md-accent no-margins" aria-label="Reset form" ng-click="experimentManagementVm.reset()">
+                  <i class="fa fa-refresh primary-h700"></i>
+                  <md-tooltip md-direction="bottom" md-autohide="true">
+                    Reset
+                  </md-tooltip>
+                </md-button>
+              </div>
+              <div class="button-container m-l-10">
+                <md-button class="md-fab md-small md-accent no-margins" aria-label="Submit" type="submit">
+                  <i class="fa fa-arrow-circle-right primary-h700"></i>
+                  <md-tooltip md-direction="bottom" md-autohide="true">
+                    Submit
+                  </md-tooltip>
+                </md-button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="flex-row m-t-10">
+        <div class="flex-container">
+          <md-button class="md-fab md-small md-accent no-margins" aria-label="View protocol details" ng-click="experimentManagementVm.protocolDetails = !projectManagementVm.protocolDetails">
+            <i class="fa fa fa-folder-open primary-h700"></i>
+            <md-tooltip md-direction="bottom" md-autohide="true">
+              View protocol details
+            </md-tooltip>
+          </md-button>
+          <md-button class="md-fab md-small md-accent no-margins" aria-label="Add protocol" ng-click="experimentManagementVm.protocolCreation = !projectManagementVm.protocolCreation">
+            <i class="fa fa fa-plus primary-h700"></i>
+            <md-tooltip md-direction="bottom" md-autohide="true">
+              Add protocol
+            </md-tooltip>
+          </md-button>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
