@@ -7,6 +7,14 @@
 .project-main-child {
   width: 100%;
 }
+.project-main-buttons {
+  position: absolute;
+  right: 10px;
+}
+.project-main-other {
+  padding-top: 10px;
+  margin-right: 50px;
+}
 
 .container-backdrop {
   background-color: $primary-h600;
@@ -104,6 +112,9 @@
   color: $primary-h700;
   padding: 10px 10px 10px 10px;
 }
+.form-text {
+  color: $primary-h700;
+}
 .form-warning {
   color: $warning;
   padding: 0px 10px 20px 10px;
@@ -112,6 +123,12 @@
   bottom: -12px;
   right: 5px;
   position: absolute;
+}
+.form-right {
+  bottom: -12px;
+  right: 5px;
+  position: absolute;
+  width: 100%;
 }
 
 .results-table {

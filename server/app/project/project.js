@@ -10,6 +10,7 @@ var Project = {
         res.send({status: 1, message: 'There was an error adding this project.'})
       } else {
         data._id = id;
+        data.created = Date.now();
         database.acquire().collection('projects').insert(data, function(err, docs) {
           if(err) {
             res.send({status: 1, message: 'There was an error adding this project.'})

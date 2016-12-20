@@ -25,7 +25,6 @@
         if(valid) {
           var user = credentials.get();
           var formObject = {};
-          formObject.created = Date.now();
           formObject.creator = user.name;
           formObject.description = form.description;
           formObject.title = form.name;

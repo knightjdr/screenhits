@@ -1,7 +1,7 @@
 <div class="flex-column-body project-main" ng-controller="project as projectVm">
   <!--management and creation-->
   <div class="project-main-child" ng-show="projectVm.show">
-    <div class="profile-main-buttons">
+    <div class="project-main-buttons">
       <md-button class="md-fab md-mini md-accent" aria-label="Back to projects" ng-click="projectVm.show = ''; vm.hideClose = false;" md-tooltip-destroy>
         <i class="fa fa-lg fa-arrow-circle-left primary-h700"></i>
         <md-tooltip md-direction="top" md-autohide="true">
@@ -9,7 +9,7 @@
         </md-tooltip>
       </md-button>
     </div>
-    <div class="profile-main-other">
+    <div class="project-main-other">
       <!--project management-->
       <ng-include src="'/app/profile/project/project-management.html'" ng-show="projectVm.show === 'management'"></ng-include>
       <!--screen creation-->
@@ -83,7 +83,7 @@
                     Created:
                   </td>
                   <td class="p-l-10">
-                    {{vm.project.created  | date: 'dd-MM-yyyy'}}
+                    {{vm.project.created | date: 'dd-MM-yyyy'}}
                   </td>
                 </tr>
                 <tr>
@@ -108,8 +108,8 @@
                   </td>
                   <td class="p-t-10 p-l-10">
                     <ul class="no-bullets hover-style">
-                      <li class="m-l-m6" ng-repeat="screen in vm.project.screens" ng-click="vm.screen = screen">
-                        [{{screen._id}}] {{screen.title}}
+                      <li class="m-l-m6" ng-repeat="screen in vm.screens" ng-click="vm.screen = screen">
+                        [{{screen._id}}] {{screen.name}}
                       </li>
                       <li class="m-l-m3" ng-click="projectVm.show = 'screen-creation'; vm.hideClose = true;">
                         <i class="fa fa-plus-circle"></i> add screen
@@ -171,7 +171,7 @@
                     Name:
                   </td>
                   <td class="p-l-10">
-                    [{{vm.screen._id}}] {{vm.screen.title}}
+                    [{{vm.screen._id}}] {{vm.screen.name}}
                   </td>
                 </tr>
                 <tr>
@@ -179,7 +179,7 @@
                     Created:
                   </td>
                   <td class="p-l-10">
-                    {{vm.screen.created * 1000  | date: 'dd-MM-yyyy'}}
+                    {{vm.screen.created | date: 'dd-MM-yyyy'}}
                   </td>
                 </tr>
                 <tr>
@@ -219,7 +219,7 @@
                     Cell line:
                   </td>
                   <td class="p-l-10">
-                    {{vm.screen.cellLine}}
+                    {{vm.screen.cell}}
                   </td>
                 </tr>
                 <tr>

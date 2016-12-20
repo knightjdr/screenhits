@@ -39,6 +39,7 @@ var appJS = [
 		'dialogs/alert/alert.controller.js',
 		'404/404.controller.js',
 		'profile/project/projects.service.js',
+		'profile/screen/screens.service.js',
 		'signin/signin-callbacks.service.js',
 		'signin/signout-unload.service.js',
 		'signin/signin.directive.js',

@@ -35,7 +35,7 @@
               <label>protocols</label>
               <md-icon md-font-icon="fa-folder-open" class="fa md-accent"></md-icon>
               <md-select class="primary" multiple name="protocol" ng-model="experimentManagementVm.form.protocol" required>
-                <md-option ng-repeat="protocol in experimentManagementVm.protocols" value="{{protocol.name}}">
+                <md-option ng-repeat="protocol in experimentManagementVm.protocols" ng-value="protocol._id">
                   {{protocol.name}}
                 </md-option>
               </md-select>
@@ -75,18 +75,107 @@
       </div>
       <div class="flex-row m-t-10">
         <div class="flex-container">
-          <md-button class="md-fab md-small md-accent no-margins" aria-label="View protocol details" ng-click="experimentManagementVm.protocolDetails = !projectManagementVm.protocolDetails">
+          <md-button class="md-fab md-small md-accent no-margins" aria-label="View protocol details" ng-click="experimentManagementVm.protocolDetails = !experimentManagementVm.protocolDetails">
             <i class="fa fa fa-folder-open primary-h700"></i>
             <md-tooltip md-direction="bottom" md-autohide="true">
               View protocol details
             </md-tooltip>
           </md-button>
-          <md-button class="md-fab md-small md-accent no-margins" aria-label="Add protocol" ng-click="experimentManagementVm.protocolCreation = !projectManagementVm.protocolCreation">
+          <md-button class="md-fab md-small md-accent no-margins" aria-label="Add protocol" ng-click="experimentManagementVm.protocolCreation = !experimentManagementVm.protocolCreation">
             <i class="fa fa fa-plus primary-h700"></i>
             <md-tooltip md-direction="bottom" md-autohide="true">
               Add protocol
             </md-tooltip>
           </md-button>
+        </div>
+      </div>
+      <!--protocol details-->
+      <div class="flex-row m-t-20 form-container" ng-show="experimentManagementVm.protocolDetails">
+        <div class="flex-column">
+          <div class="flex-row">
+            <md-input-container class="md-icon-float md-block md-small-margin">
+              <label>Select protocol</label>
+              <md-icon md-font-icon="fa-folder-open" class="fa md-accent"></md-icon>
+              <md-select class="primary" ng-model="experimentManagementVm.currentProtocolDetails">
+                <md-option ng-repeat="protocol in experimentManagementVm.protocols" ng-value="protocol">
+                  {{protocol.name}}
+                </md-option>
+              </md-select>
+            </md-input-container>
+          </div>
+          <div class="flex-row form-text m-t-10" ng-repeat="field in experimentManagementVm.currentProtocolDetails.details">
+            <span>
+              <b>{{field.name}}:</b> {{field.details}}
+            </span>
+          </div>
+        </div>
+      </div>
+      <!--protocol creation-->
+      <div class="flex-row m-t-20" ng-show="experimentManagementVm.protocolCreation">
+        <div class="form-container md-form-font">
+          <form name="formProtocol" ng-submit="experimentManagementVm.submitProtocol(formProtocol.$valid, experimentManagementVm.formProtocol, vm.project._id)" novalidate>
+            <div class="form-description">
+              &#x2022; Create a new protocol using this form. Fields marked with a * are required.
+            </div>
+            <md-input-container class="md-icon-float md-block md-small-margin">
+              <label>Name</label>
+              <md-icon md-font-icon="fa-tag" class="fa md-accent"></md-icon>
+              <textarea name="name" ng-model="experimentManagementVm.formProtocol.name" required></textarea>
+              <md-icon md-font-icon="fa-question-circle" class="fa md-primary">
+                <md-tooltip md-direction="top" md-autohide="true">
+                  A name for the protocol (e.g., Viral library production, Gingras lab, 2016).
+                </md-tooltip>
+              </md-icon>
+              <div ng-messages="formProtocol.name.$error" role="alert">
+                <div ng-message="required">Please give the protocol a name</div>
+              </div>
+            </md-input-container>
+            <md-input-container class="md-icon-float md-block md-small-margin">
+              <label>Access</label>
+              <md-icon md-font-icon="fa-key" class="fa md-accent"></md-icon>
+              <md-select class="primary" name="access" ng-model="experimentManagementVm.formProtocol.access" required>
+                <md-option value="user">Only creator (you)</md-option>
+                <md-option value="project">Anyone with access to this project</md-option>
+                <md-option value="any">All users</md-option>
+              </md-select>
+              <md-icon md-font-icon="fa-question-circle" class="fa md-primary">
+                <md-tooltip md-direction="top" md-autohide="true">
+                  Specify who can use this protocol
+                </md-tooltip>
+              </md-icon>
+              <div ng-messages="formProtocol.name.$error" role="alert">
+                <div ng-message="required">Please specify access permissions</div>
+              </div>
+            </md-input-container>
+            <md-button class="md-fab md-small md-accent no-margins m-t-20 form-right" aria-label="Add protocol field" ng-click="experimentManagementVm.formProtocol.details.push({name: '', details: ''})">
+              <i class="fa fa fa-plus primary-h700"></i>
+              <md-tooltip md-direction="bottom" md-autohide="true">
+                Add protocol field
+              </md-tooltip>
+            </md-button>
+            <div ng-repeat="field in experimentManagementVm.formProtocol.details track by $index">
+              <md-input-container class="md-icon-float md-block md-small-margin">
+                <label>Field name</label>
+                <md-icon md-font-icon="fa-tag" class="fa md-accent"></md-icon>
+                <textarea ng-model="experimentManagementVm.formProtocol.details[$index].name"></textarea>
+                <md-icon md-font-icon="fa-question-circle" class="fa md-primary">
+                  <md-tooltip md-direction="top" md-autohide="true">
+                    A name for the field (e.g., "Cell number/flask size").
+                  </md-tooltip>
+                </md-icon>
+              </md-input-container>
+              <md-input-container class="md-icon-float md-block md-small-margin">
+                <label>Details</label>
+                <md-icon md-font-icon="fa-file-text" class="fa md-accent"></md-icon>
+                <textarea ng-model="experimentManagementVm.formProtocol.details[$index].details"></textarea>
+                <md-icon md-font-icon="fa-question-circle" class="fa md-primary">
+                  <md-tooltip md-direction="top" md-autohide="true">
+                    Enter the full protocol details for this field
+                  </md-tooltip>
+                </md-icon>
+              </md-input-container>
+            </div>
+          </form>
         </div>
       </div>
     </div>

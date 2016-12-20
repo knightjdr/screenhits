@@ -1,8 +1,10 @@
 var validate = require('./auth/validate');
 var login = require('./auth/login');
-var project = require('./project/project')
+var project = require('./project/project');
+var protocol = require('./protocol/protocol');
+var screen = require('./screen/screen');
 var tokenManagement = require('./auth/token-management');
-var user = require('./user/user')
+var user = require('./user/user');
 
 module.exports = {
 	configure: function(app) {
@@ -39,6 +41,19 @@ module.exports = {
 		//project creation
 		app.post('/project', authenticate, function(req, res) {
 			project.add(req.body, res);
+    });
+
+		//screen creation
+		app.get('/project/screen', authenticate, function(req, res) {
+			screen.get(req.query, res);
+    });
+		app.post('/project/screen', authenticate, function(req, res) {
+			screen.add(req.body, res);
+    });
+
+		//protocol routes
+		app.get('/project/protocols', authenticate, function(req, res) {
+			protocol.get(req.query, res);
     });
   }
 };

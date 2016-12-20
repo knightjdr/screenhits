@@ -43,4 +43,19 @@ describe('service: projects', function() {
     });
   });
 
+  describe('when project is selected', function() {
+    beforeEach(function() {
+      projects.setCurrent(testData[0]);
+    });
+
+    it('project variable should be set', function() {
+      assert.equal(projects.getCurrent(), testData[0]);
+    });
+
+    it('set event should be broadcast', function() {
+      assert.isTrue($rootScope.$broadcast.calledWith('project:set', testData[0]));
+    });
+
+  });
+
 });

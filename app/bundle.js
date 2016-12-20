@@ -663,6 +663,7 @@ angular.module('custom.scrollbar', [])
 
 	angular.module('app')
     .service('projects', ['$rootScope', function($rootScope) {
+			var currProject;
       var projects = [];
       this.add = function(data) {
 				projects.push(data);
@@ -671,14 +672,55 @@ angular.module('custom.scrollbar', [])
 			this.get = function() {
 				return projects;
 			};
+			this.getCurrent = function() {
+				return currProject;
+			};
       this.set = function(data) {
         projects = JSON.parse(JSON.stringify(data));
         $rootScope.$broadcast('projects:updated', projects);
       };
+			this.setCurrent = function(project) {
+				currProject = project;
+				$rootScope.$broadcast('project:set', currProject);
+			};
 			this.update = function(project, key, data) {
 				var index = projects.map(function(o) { return o._id; }).indexOf(project);
         projects[index][key] = data;
         $rootScope.$broadcast('projects:updated', projects);
+      };
+		}])
+  ;
+})();
+
+(function() {
+	'use strict';
+
+	angular.module('app')
+    .service('screens', ['$rootScope', function($rootScope) {
+			var currScreen;
+      var screens = [];
+      this.add = function(data) {
+				screens.push(data);
+				$rootScope.$broadcast('screens:updated', screens);
+			};
+			this.get = function() {
+				return screens;
+			};
+			this.getCurrent = function() {
+				return currScreen;
+			};
+      this.set = function(data) {
+        screens = data;
+        $rootScope.$broadcast('screens:updated', screens);
+      };
+			this.setCurrent = function(screen) {
+				currScreen = screen;
+				$rootScope.$broadcast('screen:set', currScreen);
+			};
+			this.update = function(screen, key, data) {
+				var index = screens.map(function(o) { return o._id; }).indexOf(screen);
+        screen[index][key] = data;
+        $rootScope.$broadcast('screens:updated', screens);
       };
 		}])
   ;
@@ -859,20 +901,35 @@ angular.module('custom.scrollbar', [])
 	'use strict';
 
 	angular.module('app')
-		.controller('profile', ['$scope', '$state', '$timeout', function ($scope, $state, $timeout) {
+		.controller('profile', ['credentials', 'helperHTTP', 'projects', '$scope', 'screens', '$state', '$timeout', function (credentials, helperHTTP, projects, $scope, screens, $state, $timeout) {
       var vm = this;
 			vm.newProject = function() {
 				$state.go('root.projects.new');
 				angular.element(document.getElementById('projects-button')).triggerHandler('click');
 			};
-			//vm.projects = [];
+			vm.projects = [];
+			vm.screens = [];
 			vm.selectProject = function(project) {
 				if(!vm.project || vm.project !== project) {
 					vm.experiment = '';
 					vm.project = project;
 					vm.sample = '';
 					vm.screen = '';
+					projects.setCurrent(project);
+					//get screen details
+					var screenSuccess = function(response) {
+						screens.set(response.data.screens);
+						vm.screens = response.data.screens;
+						$timeout(function() {
+							$scope.$digest();
+						});
+					};
+					var screenFailure = function(response) {
+						helperDialog.alert('Error', response.data.message);
+					};
+					helperHTTP.get('project/screen', {project: project._id}, screenSuccess, screenFailure);
 				}
+				//change state
 				$state.go('root.projects.details', {project: project._id});
 				angular.element(document.getElementById('projects-button')).triggerHandler('click');
 			};
@@ -884,13 +941,21 @@ angular.module('custom.scrollbar', [])
 					});
 				}
 			});
+			//after project added
 			$scope.$on('projects:updated', function(event, data) {
 				vm.projects = data;
 				$timeout(function() {
 					$scope.$digest();
 				});
 			});
-			vm.projects = [{
+			//get screen details
+			$scope.$on('screens:updated', function(event, data) {
+				vm.screens = data;
+				$timeout(function() {
+					$scope.$digest();
+				});
+			});
+			/*vm.projects = [{
   			title: 'Project 1',
   			created: 1478030151,
   			creator: 'Someone',
@@ -947,7 +1012,7 @@ angular.module('custom.scrollbar', [])
     			}
   			]
 			}];
-			vm.user = 'Someone';
+			vm.user = 'Someone';*/
     }])
   ;
 })();
@@ -990,7 +1055,6 @@ angular.module('custom.scrollbar', [])
         if(valid) {
           var user = credentials.get();
           var formObject = {};
-          formObject.created = Date.now();
           formObject.creator = user.name;
           formObject.description = form.description;
           formObject.title = form.name;
@@ -1112,9 +1176,10 @@ angular.module('custom.scrollbar', [])
 	'use strict';
 
 	angular.module('app')
-		.controller('experimentManagement', ['helperDialog', 'helperHTTP', 'helperObject', '$http', '$scope', '$timeout', function (helperDialog, helperHTTP, helperObject, $http, $scope, $timeout) {
+		.controller('experimentManagement', ['credentials', 'helperDialog', 'helperHTTP', 'helperObject', '$http', 'projects', '$scope', '$timeout', function (credentials, helperDialog, helperHTTP, helperObject, $http, projects, $scope, $timeout) {
       var vm = this;
 			vm.form = {};
+			vm.formProtocol = {details: []};
       vm.protocolDetails = false;
       vm.protocolCreation = false;
 			vm.reset = function() {
@@ -1144,61 +1209,20 @@ angular.module('custom.scrollbar', [])
 							vm.message = '';
 						}, 10000);
           };
-          //helperHTTP.get('project/screen', formObject, success, failure);
+          helperHTTP.get('project/screen', formObject, success, failure);
         }
 			};
-      vm.protocols = {
-        CRISPR: {
-          viralProduction: ['Durocher 1', 'Durocher 2'],
-          cellLine: ['Durocher 1', 'Durocher 2'],
-          sequencing: ['Durocher 1', 'Durocher 2']
-        }
-      };
-      /*vm.protocols = {
-        CRISPR: [
-          {
-            description: 'Production of viral library',
-            options: [ {
-                name: 'Durocher protocol (November 25, 2016)',
-                details: {
-                  cell: {
-                    cell: 'HEK293T',
-                    description: 'Packaging cell line',
-                    links: []
-                  },
-                  cellnumber: {
-                    description: 'Cell number, flask size and flask number',
-                    flasks: 'T75',
-                    flaskNumber: '10',
-                    number: '4x10^6'
-                  },
-                  confluency: {
-                    description: 'Cell confluency at transfection',
-                    confluency: '75%'
-                  },
-                  growth: {
-                    description: 'Growth/cell culture conditions used to generate viral library',
-                    details: 'Propagation Medium was prepared by adding 50 mL FBS to 500 mL of DMEM medium ( final concentration: 10% FBS). Medium was mixed thoroughly and stored at 4 degree_C. Cells were propagated up to a maximum of 10 passages before transfection. For splitting, cells were washed once with 1X PBS and incubated with 1X Trypsin at 37 degree_C until detachment of cells. Propagation medium was added to each flask and the cells were resuspended by gently pipetting the solution up and down. The cell suspension was distributed into new T25 or T75 flasks and incubated at 37 degree_C in a 5% CO2 incubator. Cells were splitted when a confluency of approximately 80% was reached. Cell lines were split twice a week at a ratio of 1:8'
-                  },
-                  plasmid: {
-                    description: 'Packaging plasmids',
-                    links: ['www.addgene.org/12260', 'www.addgene.org/8454'],
-                    plasmids: ['psPAX2, p-CMV-VSV-g']
-                  },
-                  supernatent: {
-                    description: 'Viral supernatent procedure',
-                    details: 'following transfectioin with library plasmids and packaging vectors, cells were incubated for overnight. The next day DNAase I treatment was carried out to prevent undesired carryover of plasmid to virus library. At 48 post-transfection, virus-containing supernatant was harvested and filtered through a 0.22 PES filter. Virus-containing medim was snap-frozen in liquid nitrogen and stored @ -80 degrees_C.'
-                  },
-                  transfection: {
-                    description: 'Transfection procedure',
-                    details: '24 h post transfection, using TRANS-IT'
-                  }
-                }
-              }
-            ]
-          }
-        ]
-      };*/
+			//get users protocols
+			$scope.$on('project:set', function() {
+				var protocolSuccess = function(response) {
+					console.log(response);
+					vm.protocols = response.data.protocols;
+				};
+				var protocolFailure = function(response) {
+					helperDialog.alert('Error', response.data.message);
+				};
+				helperHTTP.get('project/protocols', {user: credentials.get().name, project: projects.getCurrent()._id}, protocolSuccess, protocolFailure);
+			});
     }])
   ;
 })();
@@ -1207,7 +1231,7 @@ angular.module('custom.scrollbar', [])
 	'use strict';
 
 	angular.module('app')
-		.controller('screenManagement', ['helperDialog', 'helperHTTP', 'helperObject', '$http', '$scope', '$timeout', function (helperDialog, helperHTTP, helperObject, $http, $scope, $timeout) {
+		.controller('screenManagement', ['helperDialog', 'helperHTTP', 'helperObject', '$http', '$rootScope', '$scope', 'screens', '$timeout', function (helperDialog, helperHTTP, helperObject, $http, $rootScope, $scope, screens, $timeout) {
       var vm = this;
 			vm.form = {};
 			vm.reset = function() {
@@ -1224,14 +1248,16 @@ angular.module('custom.scrollbar', [])
 				$scope.form.$setUntouched();
 				vm.form = {};
 			};
-			vm.submit = function(valid, form, project) {
+			vm.submit = function(valid, form, project, user) {
         if(valid && helperObject.notEmpty(form)) {
 					vm.message = '';
 					var formObject = form;
+					formObject.creator = user;
           formObject.project = project;
           var success = function(response) {
             vm.reset();
             vm.message = response.data.message;
+						screens.add(response.data.screen);
 						$timeout(function() {
 							vm.message = '';
 						}, 10000);
@@ -1242,7 +1268,7 @@ angular.module('custom.scrollbar', [])
 							vm.message = '';
 						}, 10000);
           };
-          //helperHTTP.get('project/screen', formObject, success, failure);
+          helperHTTP.set('project/screen', formObject, success, failure);
         }
 			};
       //get libaries

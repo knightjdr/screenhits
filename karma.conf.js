@@ -36,6 +36,7 @@ module.exports = function(config) {
       'app/dialogs/alert/alert.controller.js',
   		'app/404/404.controller.js',
       'app/profile/project/projects.service.js',
+      'app/profile/screen/screens.service.js',
   		'app/signin/signin-callbacks.service.js',
   		'app/signin/signout-unload.service.js',
   		'app/signin/signin.directive.js',

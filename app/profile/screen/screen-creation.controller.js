@@ -2,7 +2,7 @@
 	'use strict';
 
 	angular.module('app')
-		.controller('screenManagement', ['helperDialog', 'helperHTTP', 'helperObject', '$http', '$scope', '$timeout', function (helperDialog, helperHTTP, helperObject, $http, $scope, $timeout) {
+		.controller('screenManagement', ['helperDialog', 'helperHTTP', 'helperObject', '$http', '$rootScope', '$scope', 'screens', '$timeout', function (helperDialog, helperHTTP, helperObject, $http, $rootScope, $scope, screens, $timeout) {
       var vm = this;
 			vm.form = {};
 			vm.reset = function() {
@@ -19,14 +19,16 @@
 				$scope.form.$setUntouched();
 				vm.form = {};
 			};
-			vm.submit = function(valid, form, project) {
+			vm.submit = function(valid, form, project, user) {
         if(valid && helperObject.notEmpty(form)) {
 					vm.message = '';
 					var formObject = form;
+					formObject.creator = user;
           formObject.project = project;
           var success = function(response) {
             vm.reset();
             vm.message = response.data.message;
+						screens.add(response.data.screen);
 						$timeout(function() {
 							vm.message = '';
 						}, 10000);
@@ -37,7 +39,7 @@
 							vm.message = '';
 						}, 10000);
           };
-          //helperHTTP.get('project/screen', formObject, success, failure);
+          helperHTTP.set('project/screen', formObject, success, failure);
         }
 			};
       //get libaries

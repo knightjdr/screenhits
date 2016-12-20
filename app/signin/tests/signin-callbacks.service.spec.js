@@ -9,7 +9,7 @@ describe('service: signin-callbacks', function() {
   var helperDialog;
   var helperDialogAlert;
   var $http;
-  var httpResponse;
+  var $httpBackend;
   var projects;
   var projectsSet;
   var signinCallbacks;
