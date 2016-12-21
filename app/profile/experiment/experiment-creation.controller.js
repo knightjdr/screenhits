@@ -41,7 +41,6 @@
 			//get users protocols
 			$scope.$on('project:set', function() {
 				var protocolSuccess = function(response) {
-					console.log(response);
 					vm.protocols = response.data.protocols;
 				};
 				var protocolFailure = function(response) {

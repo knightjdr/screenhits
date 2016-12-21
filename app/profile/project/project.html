@@ -2,7 +2,7 @@
   <!--management and creation-->
   <div class="project-main-child" ng-show="projectVm.show">
     <div class="project-main-buttons">
-      <md-button class="md-fab md-mini md-accent" aria-label="Back to projects" ng-click="projectVm.show = ''; vm.hideClose = false;" md-tooltip-destroy>
+      <md-button class="md-fab md-mini md-accent" aria-label="Back to projects" ng-click="projectVm.showChild(''); vm.hideClose = false;" md-tooltip-destroy>
         <i class="fa fa-lg fa-arrow-circle-left primary-h700"></i>
         <md-tooltip md-direction="top" md-autohide="true">
           Back
@@ -38,7 +38,7 @@
             </md-tooltip>
           </md-button>
           <span class="collapse-icons-other">
-            <md-button class="md-fab md-small md-accent no-margins" aria-label="Manage" ng-click="projectVm.show = 'management'; vm.hideClose = true;" ng-show="vm.project.creator === vm.user" md-tooltip-destroy>
+            <md-button class="md-fab md-small md-accent no-margins" aria-label="Manage" ng-click="projectVm.showChild('management'); vm.hideClose = true;" ng-show="vm.project.creator === vm.user" md-tooltip-destroy>
               <i class="fa fa-wrench primary-h700"></i>
               <md-tooltip md-direction="top" md-autohide="true">
                 Manage
@@ -111,7 +111,7 @@
                       <li class="m-l-m6" ng-repeat="screen in vm.screens" ng-click="vm.screen = screen">
                         [{{screen._id}}] {{screen.name}}
                       </li>
-                      <li class="m-l-m3" ng-click="projectVm.show = 'screen-creation'; vm.hideClose = true;">
+                      <li class="m-l-m3" ng-click="projectVm.showChild('screen-creation'); vm.hideClose = true;">
                         <i class="fa fa-plus-circle"></i> add screen
                       </li>
                     </ul>
@@ -247,7 +247,7 @@
                       <li class="m-l-m6" ng-repeat="experiment in vm.screen.experiments" ng-click="vm.experiment = experiment">
                         [{{experiment.experimentid}}] {{experiment.details}}
                       </li>
-                      <li class="m-l-m3" ng-click="projectVm.show = 'experiment-creation'; vm.hideClose = true;">
+                      <li class="m-l-m3" ng-click="projectVm.showChild('experiment-creation'); vm.hideClose = true;">
                         <i class="fa fa-plus-circle"></i> add experiment
                       </li>
                     </ul>
@@ -343,7 +343,7 @@
                       <li class="m-l-m6" ng-repeat="samples in vm.experiment.samples" ng-click="vm.sample = sample">
                         [{{sample.sampleid}}] {{sample.details}}
                       </li>
-                      <li class="m-l-m3" ng-click="projectVm.show = 'sample-creation'; vm.hideClose = true;">
+                      <li class="m-l-m3" ng-click="projectVm.showChild('sample-creation'); vm.hideClose = true;">
                         <i class="fa fa-plus-circle"></i> add sample
                       </li>
                     </ul>

@@ -130,7 +130,7 @@
                 <div ng-message="required">Please give the protocol a name</div>
               </div>
             </md-input-container>
-            <md-input-container class="md-icon-float md-block md-small-margin">
+            <md-input-container class="md-icon-float md-block m-b-30">
               <label>Access</label>
               <md-icon md-font-icon="fa-key" class="fa md-accent"></md-icon>
               <md-select class="primary" name="access" ng-model="experimentManagementVm.formProtocol.access" required>
@@ -147,14 +147,25 @@
                 <div ng-message="required">Please specify access permissions</div>
               </div>
             </md-input-container>
-            <md-button class="md-fab md-small md-accent no-margins m-t-20 form-right" aria-label="Add protocol field" ng-click="experimentManagementVm.formProtocol.details.push({name: '', details: ''})">
-              <i class="fa fa fa-plus primary-h700"></i>
-              <md-tooltip md-direction="bottom" md-autohide="true">
-                Add protocol field
-              </md-tooltip>
-            </md-button>
-            <div ng-repeat="field in experimentManagementVm.formProtocol.details track by $index">
-              <md-input-container class="md-icon-float md-block md-small-margin">
+            <div class="form-buttons">
+              <md-button class="md-fab md-small md-accent no-margins" aria-label="Remove protocol field" ng-click="experimentManagementVm.formProtocol.details.splice(-1, 1)">
+                <i class="fa fa fa-times primary-h700"></i>
+                <md-tooltip md-direction="bottom" md-autohide="true">
+                  Remove protocol field
+                </md-tooltip>
+              </md-button>
+              <md-button class="md-fab md-small md-accent no-margins" aria-label="Add protocol field" ng-click="experimentManagementVm.formProtocol.details.push({name: '', details: ''})">
+                <i class="fa fa fa-plus primary-h700"></i>
+                <md-tooltip md-direction="bottom" md-autohide="true">
+                  Add protocol field
+                </md-tooltip>
+              </md-button>
+            </div>
+            <div class="m-t-10" ng-repeat="field in experimentManagementVm.formProtocol.details track by $index">
+              <div class="form-text m-b-10">
+                <b>Field {{$index + 1}}</b>
+              </div>
+              <md-input-container class="md-icon-float md-block no-margins">
                 <label>Field name</label>
                 <md-icon md-font-icon="fa-tag" class="fa md-accent"></md-icon>
                 <textarea ng-model="experimentManagementVm.formProtocol.details[$index].name"></textarea>
@@ -164,7 +175,7 @@
                   </md-tooltip>
                 </md-icon>
               </md-input-container>
-              <md-input-container class="md-icon-float md-block md-small-margin">
+              <md-input-container class="md-icon-float md-block no-margins">
                 <label>Details</label>
                 <md-icon md-font-icon="fa-file-text" class="fa md-accent"></md-icon>
                 <textarea ng-model="experimentManagementVm.formProtocol.details[$index].details"></textarea>

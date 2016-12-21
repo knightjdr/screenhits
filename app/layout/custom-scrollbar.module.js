@@ -194,7 +194,7 @@ angular.module('custom.scrollbar', [])
             bindBehaviours(false);
           }
         };
-        //check if visisble
+        //check if visisble when initialized
         scope.$watch(function() { return element.attr('class'); }, function(classes) {
           if(classes.match(/ng-hide/) === null) {
             if(!init) {
@@ -209,7 +209,16 @@ angular.module('custom.scrollbar', [])
             checkSize();
           }
         });
-        //on resize
+        //update container size explicitely, as sometimes digests are not applied immediately
+        scope.$on('height:updated', function() {
+          var classes = element.attr('class');
+          if(classes.match(/ng-hide/) === null) {
+            $timeout(function() {
+              checkSize();
+            });
+          }
+        });
+        //on window resize
         angular.element($window).bind('resize', function() {
           if(init) {
             $timeout.cancel(resizeStable);
