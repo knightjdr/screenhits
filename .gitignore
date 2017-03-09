@@ -1,6 +1,18 @@
+# node modules, client and server side
 node_modules/*
-bower_components/*
-**/.DS_Store
-app/env.js
-server/config.js
 server/node_modules/*
+
+# Optional npm cache directory
+.npm
+
+# Mac folder
+**/.DS_Store
+
+#client side config
+src/env.js
+
+#server side config
+server/config.js
+
+#old site versions
+versions/*

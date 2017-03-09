@@ -1,0 +1,62 @@
+$navbar-background: #2c2d30;
+$navbar-a-hover: #56575d;
+$navbar-link-hover: #afb1b6;
+$navbar-text-color: #edeff2;
+
+.navbar {
+  background-color: $navbar-background;
+  color: $navbar-text-color;
+  height: 60px;
+  left: 0px;
+  position: fixed;
+  top: 0px;
+  width: 100%;
+}
+.navbar-icon {
+  //content:url('./logo-white-50px.png');
+  margin-left: 2%;
+  margin-top: 4px;
+}
+.navbar-list {
+  float: right;
+  margin-right: 2%;
+  margin-top: 20px;
+}
+.navbar-list .horizontal-list a {
+  color: $navbar-text-color;
+  font-family: Ostrich Sans Black;
+  font-size: 30px;
+}
+.navbar-list .horizontal-list a:hover {
+    text-shadow:
+      1px -1px 0 $navbar-a-hover,
+      -1px 2px 1px $navbar-a-hover,
+      -2px 4px 1px $navbar-a-hover
+    ;
+}
+.navbar-list .compact-menu {
+  background-color: $navbar-text-color;
+}
+.navbar-list .vertical-list a {
+  color: $navbar-background;
+  font-family: Ostrich Sans Black;
+  font-size: 22px;
+}
+.navbar-list .vertical-list li:hover {
+  background-color: $navbar-link-hover;
+}
+.navbar-title {
+  font-family: Ostrich Sans Black;
+  font-size: 42px;
+  line-height: 70px; //for v-centering: should be 60, but font has a bottom padding
+  margin-left: 2%;
+}
+
+@media screen and (max-width:680px) {
+  .navbar-list > .horizontal-list {
+    display: none;
+  }
+  .navbar-list > .compact-list {
+    display: inline-block;
+  }
+}

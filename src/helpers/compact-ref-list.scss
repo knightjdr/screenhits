@@ -1,0 +1,32 @@
+.compact-list {
+  cursor: pointer;
+  display: none;
+  margin-top: -5px;
+}
+.compact-list > a {
+  font-size: 30px;
+}
+.compact-menu {
+  border-radius: 2px;
+  position: absolute;
+}
+.compact-modal {
+  background-color: rgba(0, 0, 0, 0);
+  height: 100%;
+  left: 0;
+  top: 0;
+  position: fixed;
+  width: 100%;
+  z-index: 1;
+}
+ul.vertical-list {
+  list-style: none;
+  margin: 0px 0px 0px 0px;
+  padding: 0px 0px 0px 0px;
+}
+.vertical-list a {
+  text-decoration: none;
+}
+.vertical-list li {
+  padding: 5px 10px 0px 10px;
+}
