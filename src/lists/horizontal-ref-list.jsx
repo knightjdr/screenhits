@@ -1,6 +1,7 @@
+import { Link } from 'react-router';
 import React from 'react';
 
-import './horizontal-ref-list.scss';
+import 'root/lists/horizontal-ref-list.scss';
 
 export default class HorizontalRefList extends React.Component {
   constructor(props) {
@@ -12,6 +13,9 @@ export default class HorizontalRefList extends React.Component {
       <ul className="horizontal-list">
         {this.props.items.map((item) => (
           <li key={item.link}>
+            <Link to={item.link}>
+              {item.name}
+            </Link>
           </li>
         ))}
       </ul>

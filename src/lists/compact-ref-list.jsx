@@ -1,37 +1,38 @@
-import 'fontAwesome';
+import 'root/assets/font-awesome/font-awesome.css';
+import FontAwesome from 'react-fontawesome';
+import { Link } from 'react-router';
 import React from 'react';
 
-import './compact-ref-list.scss';
+import 'root/lists/compact-ref-list.scss';
 
 export default class CompactRefList extends React.Component {
   constructor(props) {
     super(props);
-    this.closeModal = this.closeModal.bind(this);
-    this.showMenu = this.showMenu.bind(this);
     this.state = {viewMenu: false};
-    if(this.props.anchor === 'topRight') {
-      this.state.menuPosition = {right: '5px', top: '5px'};
-    }
   }
-  closeModal() {
+  closeModal = () => {
     this.setState({
       viewMenu: false
     });
   }
-  showMenu() {
+  showMenu = () => {
     this.setState((prevState) => ({
       viewMenu: !prevState.viewMenu
     }));
   }
   render () {
+    let menuPosition = {right: '5px', top: '5px'};
+    if(this.props.anchor === 'topRight') {
+      menuPosition = {right: '5px', top: '5px'};
+    }
     return (
       <div className="compact-list">
         <a onClick={this.showMenu}>
-          <i className="fa fa-list"></i>
+          <FontAwesome name='list' />
         </a>
         { !this.state.viewMenu ? null :
           <div className="compact-modal" onClick={this.closeModal}>
-            <div className="compact-menu" style={this.state.menuPosition}>
+            <div className="compact-menu" style={menuPosition}>
               <ul className="vertical-list">
                 {this.props.items.map((item) => (
                   <Link key={item.link} to={item.link}>

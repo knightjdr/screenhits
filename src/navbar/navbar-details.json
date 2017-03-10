@@ -1,0 +1,17 @@
+{
+  "name": "ScreenHits",
+  "links": [
+    {
+      "link": "/",
+      "name": "Projects"
+    },
+    {
+      "link": "/analysis",
+      "name": "Analysis"
+    },
+    {
+      "link": "/help",
+      "name": "Help"
+    }
+  ]
+}

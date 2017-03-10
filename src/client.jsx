@@ -1,11 +1,15 @@
-import Navbar from './navbar/navbar.jsx';
+import Head from 'root/head/head.jsx';
 import React from 'react';
 import ReactDOM from 'react-dom';
+import Routing from './router/router.jsx';
 
 class Main extends React.Component {
   render() {
     return (
-      <Navbar/>
+      <div>
+        <Head />
+        <Routing />
+      </div>
     );
   }
 }

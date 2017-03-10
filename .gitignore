@@ -2,6 +2,9 @@
 node_modules/*
 server/node_modules/*
 
+# NPM
+npm-debug.log
+
 # Optional npm cache directory
 .npm
 

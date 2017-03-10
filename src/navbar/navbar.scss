@@ -1,7 +1,8 @@
-$navbar-background: #2c2d30;
-$navbar-a-hover: #56575d;
-$navbar-link-hover: #afb1b6;
-$navbar-text-color: #edeff2;
+@import '../style/palette';
+
+$navbar-background: $primary;
+$navbar-link-hover: $primary-h200;
+$navbar-text-color: $text-color;
 
 .navbar {
   background-color: $navbar-background;
@@ -13,31 +14,29 @@ $navbar-text-color: #edeff2;
   width: 100%;
 }
 .navbar-icon {
-  //content:url('./logo-white-50px.png');
+  content:url('../assets/logo/logo-white.png');
   margin-left: 2%;
   margin-top: 4px;
 }
 .navbar-list {
   float: right;
+  line-height: 60px;
   margin-right: 2%;
-  margin-top: 20px;
+  text-align: center;
 }
+.navbar-list .horizontal-list li,
 .navbar-list .horizontal-list a {
+  background-color: $navbar-background;
+  border-radius: 4px;
   color: $navbar-text-color;
   font-family: Ostrich Sans Black;
-  font-size: 30px;
-}
-.navbar-list .horizontal-list a:hover {
-    text-shadow:
-      1px -1px 0 $navbar-a-hover,
-      -1px 2px 1px $navbar-a-hover,
-      -2px 4px 1px $navbar-a-hover
-    ;
+  font-size: 26px;
+  cursor: pointer;
 }
 .navbar-list .compact-menu {
   background-color: $navbar-text-color;
 }
-.navbar-list .vertical-list a {
+.navbar-list .vertical-list li {
   color: $navbar-background;
   font-family: Ostrich Sans Black;
   font-size: 22px;
@@ -45,13 +44,16 @@ $navbar-text-color: #edeff2;
 .navbar-list .vertical-list li:hover {
   background-color: $navbar-link-hover;
 }
-.navbar-title {
-  font-family: Ostrich Sans Black;
-  font-size: 42px;
-  line-height: 70px; //for v-centering: should be 60, but font has a bottom padding
-  margin-left: 2%;
+
+//hover effects
+.navbar-list .horizontal-list li:hover,
+.navbar-list .horizontal-list a:hover {
+  background-color: $navbar-text-color;
+	color: $navbar-background;
+  transition: color 0.7s, background-color 0.7s;
 }
 
+//resizing
 @media screen and (max-width:680px) {
   .navbar-list > .horizontal-list {
     display: none;

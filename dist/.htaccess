@@ -1,0 +1,8 @@
+Options FollowSymLinks
+
+RewriteEngine On
+
+# redirect all to index
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^ index.html [L,NC]

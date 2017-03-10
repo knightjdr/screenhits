@@ -1,12 +1,9 @@
-import CompactRefList from '../helpers/compact-ref-list.jsx';
-import HorizontalRefList from '../helpers/horizontal-ref-list.jsx';
+import CompactRefList from 'root/lists/compact-ref-list.jsx';
+import Details from 'root/navbar/navbar-details.json';
+import HorizontalRefList from 'root/lists/horizontal-ref-list.jsx';
 import React from 'react';
 
-import './navbar.scss';
-
-const Details = {
-  links: ['Home', 'Help']
-}
+import 'root/navbar/navbar.scss';
 
 export default class Navbar extends React.Component {
   render () {
