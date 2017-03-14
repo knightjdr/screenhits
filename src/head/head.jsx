@@ -1,10 +1,14 @@
-import Favicon from 'root/assets/head/favicon.jsx';
+import Favicon from 'root/head/favicon.jsx';
+import Helmet from 'react-helmet';
 import React from 'react';
 
 export default class Head extends React.Component {
   render() {
     return (
-      <Favicon />
+      <div>
+        <Helmet title="ScreenHits" />
+        <Favicon />
+      </div>
     )
   }
 }

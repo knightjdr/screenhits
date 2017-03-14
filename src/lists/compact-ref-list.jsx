@@ -10,7 +10,7 @@ export default class CompactRefList extends React.Component {
     super(props);
     this.state = {viewMenu: false};
   }
-  closeModal = () => {
+  closeBackdrop = () => {
     this.setState({
       viewMenu: false
     });
@@ -31,7 +31,7 @@ export default class CompactRefList extends React.Component {
           <FontAwesome name='list' />
         </a>
         { !this.state.viewMenu ? null :
-          <div className="compact-modal" onClick={this.closeModal}>
+          <div className="compact-backdrop" onClick={this.closeBackdrop}>
             <div className="compact-menu" style={menuPosition}>
               <ul className="vertical-list">
                 {this.props.items.map((item) => (

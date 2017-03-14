@@ -1,4 +1,4 @@
-/*! normalize.css v5.0.0 | MIT License | github.com/necolas/normalize.css */
+@import url(https://fonts.googleapis.com/css?family=Roboto);/*! normalize.css v5.0.0 | MIT License | github.com/necolas/normalize.css */
 /**
  * 1. Change the default font family in all browsers (opinionated).
  * 2. Correct the line height in all browsers.
@@ -2770,7 +2770,7 @@ template {
   border-radius: 2px;
   position: absolute; }
 
-.compact-modal {
+.compact-backdrop {
   background-color: transparent;
   height: 100%;
   left: 0;
@@ -2822,14 +2822,15 @@ ul.horizontal-list {
   margin-right: 2%;
   text-align: center; }
 
-.navbar-list .horizontal-list li,
-.navbar-list .horizontal-list a {
+.navbar-list .horizontal-list li {
   background-color: #607d8b;
   border-radius: 4px;
-  color: #edeff2;
   font-family: Ostrich Sans Black;
   font-size: 26px;
   cursor: pointer; }
+
+.navbar-list .horizontal-list a {
+  color: #edeff2; }
 
 .navbar-list .compact-menu {
   background-color: #edeff2; }
@@ -2842,15 +2843,44 @@ ul.horizontal-list {
 .navbar-list .vertical-list li:hover {
   background-color: #b0bec5; }
 
-.navbar-list .horizontal-list li:hover,
+.navbar-list .horizontal-list li:hover {
+  background-color: rgba(237, 239, 242, 0.75);
+  -webkit-transition: background-color 0.7s;
+  transition: background-color 0.7s; }
+
 .navbar-list .horizontal-list a:hover {
-  background-color: #edeff2;
   color: #607d8b;
-  -webkit-transition: color 0.7s, background-color 0.7s;
-  transition: color 0.7s, background-color 0.7s; }
+  -webkit-transition: color 0.7s;
+  transition: color 0.7s; }
 
 @media screen and (max-width: 680px) {
   .navbar-list > .horizontal-list {
     display: none; }
   .navbar-list > .compact-list {
     display: inline-block; } }
+/*colors*/
+.project-selection {
+  margin: 2px 2px 2px 2px; }
+
+.project-selection-button > button > div > div:hover {
+  background-color: #ff5722 !important; }
+
+.project-selection-icon {
+  color: #37474f; }
+
+.project-selection-popover > div > div {
+  padding: 0px 0px 0px 0px !important; }
+.project-bar {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: row;
+          flex-direction: row;
+  -ms-flex-wrap: wrap;
+      flex-wrap: wrap;
+  -webkit-box-pack: start;
+      -ms-flex-pack: start;
+          justify-content: flex-start;
+  margin-top: 60px; }

@@ -2,14 +2,18 @@ import Head from 'root/head/head.jsx';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import Routing from './router/router.jsx';
+import Store from 'root/state/store.jsx';
+import Theme from 'root/style/theme.jsx';
 
 class Main extends React.Component {
   render() {
     return (
-      <div>
+      <Store>
         <Head />
-        <Routing />
-      </div>
+        <Theme>
+          <Routing />
+        </Theme>
+      </Store>
     );
   }
 }

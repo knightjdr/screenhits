@@ -24,14 +24,15 @@ $navbar-text-color: $text-color;
   margin-right: 2%;
   text-align: center;
 }
-.navbar-list .horizontal-list li,
-.navbar-list .horizontal-list a {
+.navbar-list .horizontal-list li {
   background-color: $navbar-background;
   border-radius: 4px;
-  color: $navbar-text-color;
   font-family: Ostrich Sans Black;
   font-size: 26px;
   cursor: pointer;
+}
+.navbar-list .horizontal-list a {
+  color: $navbar-text-color;
 }
 .navbar-list .compact-menu {
   background-color: $navbar-text-color;
@@ -46,11 +47,13 @@ $navbar-text-color: $text-color;
 }
 
 //hover effects
-.navbar-list .horizontal-list li:hover,
+.navbar-list .horizontal-list li:hover {
+  background-color: transparentize($navbar-text-color, 0.25);
+  transition: background-color 0.7s;
+}
 .navbar-list .horizontal-list a:hover {
-  background-color: $navbar-text-color;
 	color: $navbar-background;
-  transition: color 0.7s, background-color 0.7s;
+  transition: color 0.7s;
 }
 
 //resizing

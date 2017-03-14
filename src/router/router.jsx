@@ -6,7 +6,7 @@ import Analysis from 'root/analysis/analysis.jsx';
 import App from 'root/app.jsx';
 import Help from 'root/help/help.jsx'
 import NoMatch from 'root/404/no-match.jsx';
-import Projects from 'root/projects/projects.jsx';
+import Projects from 'root/projects/projects-container.js';
 
 export default class Routing extends React.Component {
   render () {
