@@ -2859,18 +2859,30 @@ ul.horizontal-list {
   .navbar-list > .compact-list {
     display: inline-block; } }
 /*colors*/
-.project-selection {
+.management-selection {
   margin: 2px 2px 2px 2px; }
 
-.project-selection-button > button > div > div:hover {
+.management-selection-button > button {
+  background-color: #ffa726 !important; }
+
+.management-selection-button > button > div > div:hover {
   background-color: #ff5722 !important; }
 
-.project-selection-icon {
-  color: #37474f; }
+.management-selection-button > button > div > div span {
+  color: #37474f !important; }
 
-.project-selection-popover > div > div {
+.management-selection-button-active > button {
+  background-color: #546e7a !important; }
+
+.management-selection-button-active > button > div > div:hover {
+  background-color: #37474f !important; }
+
+.management-selection-button-active > button > div > div span {
+  color: #ffa726 !important; }
+
+.management-selection-popover > div > div {
   padding: 0px 0px 0px 0px !important; }
-.project-bar {
+.management-bar {
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
@@ -2884,3 +2896,6 @@ ul.horizontal-list {
       -ms-flex-pack: start;
           justify-content: flex-start;
   margin-top: 60px; }
+
+.management-tab-wrapper {
+  margin-top: 2px; }

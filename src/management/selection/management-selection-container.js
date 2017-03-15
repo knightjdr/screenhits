@@ -1,6 +1,6 @@
 import { connect } from 'react-redux';
 import { setIndex } from 'root/state/actions.js';
-import ProjectSelection from 'root/projects/selection/project-selection.jsx';
+import ManagementSelection from 'root/management/selection/management-selection.jsx';
 
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
@@ -13,6 +13,6 @@ const mapDispatchToProps = (dispatch, ownProps) => {
 const Selection = connect(
   null,
   mapDispatchToProps
-)(ProjectSelection);
+)(ManagementSelection);
 
 export default Selection;

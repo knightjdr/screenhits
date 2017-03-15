@@ -1,7 +1,10 @@
-.project-bar {
+.management-bar {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
   justify-content: flex-start;
   margin-top: 60px;
+}
+.management-tab-wrapper {
+  margin-top: 2px;
 }

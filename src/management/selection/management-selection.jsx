@@ -6,7 +6,7 @@ import Popover, {PopoverAnimationVertical} from 'material-ui/Popover';
 import RaisedButton from 'material-ui/RaisedButton';
 import React from 'react';
 
-import 'root/projects/selection/project-selection.scss';
+import 'root/management/selection/management-selection.scss';
 
 const icons = {
   experiment: <FontAwesome name="bar-chart" />,
@@ -15,14 +15,16 @@ const icons = {
   screen: <FontAwesome name="braille" />
 };
 
-class ProjectSelection extends React.Component {
+class ManagementSelection extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      buttonClass: this.props.active ? 'management-selection-button-active ': 'management-selection-button',
       buttonName: this.buttonName(),
       showList: false,
-      toggleIcon: <FontAwesome className="project-selection-icon" name="angle-down" />
+      toggleIcon: <FontAwesome name="angle-down" />
     };
+    console.log(this.props.type, this.props.selected);
   }
   buttonName = () => {
     return window.innerWidth > 680 ? this.props.type : icons[this.props.type];
@@ -33,10 +35,17 @@ class ProjectSelection extends React.Component {
   componentWillUnmount = () => {
     window.removeEventListener('resize', this.updateButton);
   }
+  componentWillUpdate = (nextProps, nextState) => {
+    if(nextProps.active !== this.props.active) {
+      this.setState({
+        buttonClass: nextProps.active ? 'management-selection-button-active ': 'management-selection-button'
+      });
+    }
+  }
   hideList = () => {
     this.setState({
       showList: false,
-      toggleIcon: <FontAwesome className="project-selection-icon" name="angle-down" />
+      toggleIcon: <FontAwesome name="angle-down" />
     });
   }
   selectItem = (type, item) => {
@@ -44,11 +53,13 @@ class ProjectSelection extends React.Component {
     this.props.changeSelected(item);
   }
   showList = (event) => {
-    this.setState({
-      anchorEl: event.currentTarget,
-      showList: true,
-      toggleIcon: <FontAwesome className="project-selection-icon" name="angle-up" />
-    });
+    if(this.props.active) {
+      this.setState({
+        anchorEl: event.currentTarget,
+        showList: true,
+        toggleIcon: <FontAwesome name="angle-up" />
+      });
+    }
   }
   updateButton = () => {
     this.setState({
@@ -57,9 +68,9 @@ class ProjectSelection extends React.Component {
   }
   render () {
     return (
-      <span className="project-selection">
+      <span className="management-selection">
         <RaisedButton
-          className="project-selection-button"
+          className={this.state.buttonClass}
           icon={this.state.toggleIcon}
           label={createFragment({
             name: this.state.buttonName,
@@ -67,14 +78,12 @@ class ProjectSelection extends React.Component {
             _id: this.props.selected
           })}
           onClick={this.showList}
-          secondary={true}
-          style={{tapHighlightColor: '#ffffff'}}
         />
         <Popover
           anchorEl={this.state.anchorEl}
           anchorOrigin={{horizontal: 'left', vertical: 'bottom'}}
           animation={PopoverAnimationVertical}
-          className="project-selection-popover"
+          className="management-selection-popover"
           onRequestClose={this.hideList}
           open={this.state.showList}
           targetOrigin={{horizontal: 'left', vertical: 'top'}}>
@@ -93,8 +102,8 @@ class ProjectSelection extends React.Component {
   }
 }
 
-ProjectSelection.propTypes = {
+ManagementSelection.propTypes = {
    changeSelected: React.PropTypes.func.isRequired
 };
 
-export default ProjectSelection;
+export default ManagementSelection;

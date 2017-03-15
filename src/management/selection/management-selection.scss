@@ -1,0 +1,33 @@
+@import '../../style/palette';
+
+$button: $accent-h400;
+$button-active: $primary-h600;
+$button-hover: $accent-h500;
+$button-hover-active: $primary-h800;
+$text-color: $primary-h800;
+$text-color-active: $accent-h400;
+
+.management-selection {
+  margin: 2px 2px 2px 2px;
+}
+.management-selection-button > button  {
+  background-color: $button !important;
+}
+.management-selection-button > button > div > div:hover {
+  background-color: $button-hover !important;
+}
+.management-selection-button > button > div > div span {
+  color: $text-color !important;
+}
+.management-selection-button-active > button  {
+  background-color: $button-active !important;
+}
+.management-selection-button-active > button > div > div:hover {
+  background-color: $button-hover-active !important;
+}
+.management-selection-button-active > button > div > div span {
+  color: $text-color-active !important;
+}
+.management-selection-popover > div > div {
+    padding: 0px 0px 0px 0px !important;
+}

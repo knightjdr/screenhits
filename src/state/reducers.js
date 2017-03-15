@@ -1,4 +1,5 @@
 import { combineReducers } from 'redux';
+import { routerReducer } from 'react-router-redux';
 import {
   FILL_EXPERIMENTS,
   FILL_PROJECTS,
@@ -105,6 +106,7 @@ const App = combineReducers({
   samples,
   screens,
   selected,
+  routing: routerReducer,
   user
 });
 

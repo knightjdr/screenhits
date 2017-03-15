@@ -40,10 +40,10 @@
     }
   ],
   "selected": {
-    "experiment": 2,
+    "experiment": null,
     "project": 1,
-    "sample": 1,
-    "screen": 2
+    "sample": null,
+    "screen": null
   },
   "user": {
     "email": "knightjdr@gmail.com",
