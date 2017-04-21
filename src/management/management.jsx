@@ -1,5 +1,6 @@
 import { browserHistory } from 'react-router';
 import ManagementSelection from 'root/management/selection/management-selection-container.js';
+import ManagementContent from 'root/management/content/management-content-container.js';
 import React from 'react';
 
 import 'root/management/management.scss';
@@ -8,12 +9,7 @@ class Management extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      activeTab: {
-        experiment: false,
-        project: true,
-        sample: false,
-        screen: false
-      }
+      activeTab: 'project'
     }
   }
   componentWillReceiveProps = (nextProps) => {
@@ -30,90 +26,47 @@ class Management extends React.Component {
         }
       }
     }
-    console.log(path);
+    //console.log(path);
     //browserHistory.push(path)
   }
   setActive = (type) => {
-    let newTabState = {
-      experiment: false,
-      project: false,
-      sample: false,
-      screen: false
-    };
-    newTabState[type] = true;
-    this.setState({
-      activeTab: newTabState
-    });
+    this.setState({activeTab: type});
   }
   render () {
-    const experiments = [
-      {
-        _id: 1,
-        name: 'Some experiment'
-      },
-      {
-        _id: 2,
-        name: 'Some other experiment'
-      }
-    ];
-    const projects = [
-      {
-        _id: 1,
-        name: 'Some project'
-      },
-      {
-        _id: 2,
-        name: 'Some other project'
-      }
-    ];
-    const samples = [
-      {
-        _id: 1,
-        name: 'Some sample'
-      },
-      {
-        _id: 2,
-        name: 'Some other sample'
-      }
-    ];
-    const screens = [
-      {
-        _id: 1,
-        name: 'Some screen'
-      },
-      {
-        _id: 2,
-        name: 'Some other screen'
-      }
-    ];
     return (
-      <div className="management-bar">
-        { !this.props.selected.project ? null :
-          <span className="management-tab-wrapper" onClick={() => this.setActive('project')}>
-            <ManagementSelection active={this.state.activeTab.project} details={projects} type="project" selected={this.props.selected.project} />
-          </span>
-        }
-        { !this.props.selected.screen ? null :
-          <span className="management-tab-wrapper" onClick={() => this.setActive('screen')}>
-            <ManagementSelection active={this.state.activeTab.screen} details={screens} type="screen" selected={this.props.selected.screen} />
-          </span>
-        }
-        { !this.props.selected.experiment ? null :
-          <span className="management-tab-wrapper" onClick={() => this.setActive('experiment')}>
-            <ManagementSelection active={this.state.activeTab.experiment} details={experiments} type="experiment" selected={this.props.selected.experiment} />
-          </span>
-        }
-        { !this.props.selected.sample ? null :
-          <span className="management-tab-wrapper" onClick={() => this.setActive('sample')}>
-            <ManagementSelection active={this.state.activeTab.sample} details={samples} type="sample" selected={this.props.selected.sample} />
-          </span>
-        }
+      <div className="management-wrapper">
+        <div className="management-bar">
+          { this.props.available.projects.length === 0 ? null :
+            <span className="management-tab-wrapper" onClick={() => this.setActive('project')}>
+            <ManagementSelection active={this.state.activeTab} details={this.props.available.projects} type="project" selected={this.props.selected.project} />
+            </span>
+          }
+          { !this.props.selected.project ? null :
+            <span className="management-tab-wrapper" onClick={() => this.setActive('screen')}>
+            <ManagementSelection active={this.state.activeTab} details={this.props.available.screens} type="screen" selected={this.props.selected.screen} />
+            </span>
+          }
+          { !this.props.selected.screen ? null :
+            <span className="management-tab-wrapper" onClick={() => this.setActive('experiment')}>
+            <ManagementSelection active={this.state.activeTab} details={this.props.available.experiments} type="experiment" selected={this.props.selected.experiment} />
+            </span>
+          }
+          { !this.props.selected.experiment ? null :
+            <span className="management-tab-wrapper" onClick={() => this.setActive('sample')}>
+            <ManagementSelection active={this.state.activeTab} details={this.props.available.samples} type="sample" selected={this.props.selected.sample} />
+            </span>
+          }
+        </div>
+        <div className="management-content">
+          <ManagementContent active={this.state.activeTab} selected={this.props.selected[this.state.activeTab]}/>
+        </div>
       </div>
     );
   }
 }
 
 Management.propTypes = {
+  available: React.PropTypes.object.isRequired,
   selected: React.PropTypes.object.isRequired
 };
 

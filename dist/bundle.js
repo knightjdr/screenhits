@@ -19185,7 +19185,7 @@ var Favicon = function (_React$Component) {
     key: 'render',
     value: function render() {
       return _react2.default.createElement(_reactHelmet2.default, {
-        link: [{ rel: "apple-touch-icon", sizes: "180x180", href: "favicon/apple-touch-icon.png" }, { rel: "icon", sizes: "32x32", type: "image/png", href: "favicon/favicon-32x32.png" }, { rel: "icon", sizes: "16x16", type: "image/png", href: "favicon/favicon-16x16.png" }, { rel: "mask-icon", href: "/safari-pinned-tab.svg", color: "#5bbad5" }, { rel: "manifest", href: "favicon/manifest.json" }],
+        link: [{ rel: "apple-touch-icon", sizes: "180x180", href: "/favicon/apple-touch-icon.png" }, { rel: "icon", sizes: "32x32", type: "image/png", href: "/favicon/favicon-32x32.png" }, { rel: "icon", sizes: "16x16", type: "image/png", href: "/favicon/favicon-16x16.png" }, { rel: "mask-icon", href: "/safari-pinned-tab.svg", color: "#5bbad5" }, { rel: "manifest", href: "/favicon/manifest.json" }],
         meta: [{ name: "theme-color", content: "#ffffff" }]
       });
     }
@@ -19440,10 +19440,21 @@ var _management2 = _interopRequireDefault(_management);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var mapStateToProps = function mapStateToProps(state) {
-  return {
-    selected: state.selected
-  };
+var init = true;
+
+var mapStateToProps = function mapStateToProps(state, ownProps) {
+  console.log(state);
+  var availableObj = {};
+  var selectedObj = {};
+  if (init) {
+    for (var key in ownProps.params) {
+      selectedObj[key] = ownProps.params[key];
+    }
+    init = false;
+  } else {
+    selectedObj = state.selected;
+  }
+  return { available: availableObj, selected: selectedObj };
 };
 
 var Details = (0, _reactRedux.connect)(mapStateToProps)(_management2.default);
@@ -19491,22 +19502,21 @@ var Management = function (_React$Component) {
 
     var _this = _possibleConstructorReturn(this, (Management.__proto__ || Object.getPrototypeOf(Management)).call(this, props));
 
-    _this.componentWillMount = function () {
-      console.log(_this.props.params.project);
+    _this.componentWillReceiveProps = function (nextProps) {
       var path = 'management/';
-      if (_this.props.selected.project) {
-        path += 'project:' + _this.props.selected.project;
-        if (_this.props.selected.screen) {
-          path += '/screen:' + _this.props.selected.screen;
-          if (_this.props.selected.experiment) {
-            path += '/experiment:' + _this.props.selected.experiment;
-            if (_this.props.selected.sample) {
-              path += '/sample:' + _this.props.selected.sample;
+      if (nextProps.selected.project) {
+        path += 'project:' + nextProps.selected.project;
+        if (nextProps.selected.screen) {
+          path += '/screen:' + nextProps.selected.screen;
+          if (nextProps.selected.experiment) {
+            path += '/experiment:' + nextProps.selected.experiment;
+            if (nextProps.selected.sample) {
+              path += '/sample:' + nextProps.selected.sample;
             }
           }
         }
       }
-      console.log(path);
+      //console.log(path);
       //browserHistory.push(path)
     };
 
@@ -19526,7 +19536,7 @@ var Management = function (_React$Component) {
     _this.state = {
       activeTab: {
         experiment: false,
-        project: true,
+        project: false,
         sample: false,
         screen: false
       }
@@ -19539,65 +19549,42 @@ var Management = function (_React$Component) {
     value: function render() {
       var _this2 = this;
 
-      var experiments = [{
-        _id: 1,
-        name: 'Some experiment'
-      }, {
-        _id: 2,
-        name: 'Some other experiment'
-      }];
-      var projects = [{
-        _id: 1,
-        name: 'Some project'
-      }, {
-        _id: 2,
-        name: 'Some other project'
-      }];
-      var samples = [{
-        _id: 1,
-        name: 'Some sample'
-      }, {
-        _id: 2,
-        name: 'Some other sample'
-      }];
-      var screens = [{
-        _id: 1,
-        name: 'Some screen'
-      }, {
-        _id: 2,
-        name: 'Some other screen'
-      }];
       return _react2.default.createElement(
         'div',
-        { className: 'management-bar' },
-        !this.props.selected.project ? null : _react2.default.createElement(
-          'span',
-          { className: 'management-tab-wrapper', onClick: function onClick() {
-              return _this2.setActive('project');
-            } },
-          _react2.default.createElement(_managementSelectionContainer2.default, { active: this.state.activeTab.project, details: projects, type: 'project', selected: this.props.selected.project })
+        null,
+        _react2.default.createElement(
+          'div',
+          { className: 'management-bar' },
+          !this.props.selected.project ? null : _react2.default.createElement(
+            'span',
+            { className: 'management-tab-wrapper', onClick: function onClick() {
+                return _this2.setActive('project');
+              } },
+            _react2.default.createElement(_managementSelectionContainer2.default, { active: this.state.activeTab.project, details: projects, type: 'project', selected: this.props.selected.project })
+          ),
+          !this.props.selected.screen ? null : _react2.default.createElement(
+            'span',
+            { className: 'management-tab-wrapper', onClick: function onClick() {
+                return _this2.setActive('screen');
+              } },
+            _react2.default.createElement(_managementSelectionContainer2.default, { active: this.state.activeTab.screen, details: screens, type: 'screen', selected: this.props.selected.screen })
+          ),
+          !this.props.selected.experiment ? null : _react2.default.createElement(
+            'span',
+            { className: 'management-tab-wrapper', onClick: function onClick() {
+                return _this2.setActive('experiment');
+              } },
+            _react2.default.createElement(_managementSelectionContainer2.default, { active: this.state.activeTab.experiment, details: experiments, type: 'experiment', selected: this.props.selected.experiment })
+          ),
+          !this.props.selected.sample ? null : _react2.default.createElement(
+            'span',
+            { className: 'management-tab-wrapper', onClick: function onClick() {
+                return _this2.setActive('sample');
+              } },
+            _react2.default.createElement(_managementSelectionContainer2.default, { active: this.state.activeTab.sample, details: samples, type: 'sample', selected: this.props.selected.sample })
+          )
         ),
-        !this.props.selected.screen ? null : _react2.default.createElement(
-          'span',
-          { className: 'management-tab-wrapper', onClick: function onClick() {
-              return _this2.setActive('screen');
-            } },
-          _react2.default.createElement(_managementSelectionContainer2.default, { active: this.state.activeTab.screen, details: screens, type: 'screen', selected: this.props.selected.screen })
-        ),
-        !this.props.selected.experiment ? null : _react2.default.createElement(
-          'span',
-          { className: 'management-tab-wrapper', onClick: function onClick() {
-              return _this2.setActive('experiment');
-            } },
-          _react2.default.createElement(_managementSelectionContainer2.default, { active: this.state.activeTab.experiment, details: experiments, type: 'experiment', selected: this.props.selected.experiment })
-        ),
-        !this.props.selected.sample ? null : _react2.default.createElement(
-          'span',
-          { className: 'management-tab-wrapper', onClick: function onClick() {
-              return _this2.setActive('sample');
-            } },
-          _react2.default.createElement(_managementSelectionContainer2.default, { active: this.state.activeTab.sample, details: samples, type: 'sample', selected: this.props.selected.sample })
-        )
+        !this.props.selected.project && _react2.default.createElement('div', { className: 'management-intro' })
       );
     }
   }]);
@@ -19606,6 +19593,7 @@ var Management = function (_React$Component) {
 }(_react2.default.Component);
 
 Management.propTypes = {
+  available: _react2.default.PropTypes.object.isRequired,
   selected: _react2.default.PropTypes.object.isRequired
 };
 
@@ -19764,6 +19752,7 @@ var ManagementSelection = function (_React$Component) {
       showList: false,
       toggleIcon: _react2.default.createElement(_reactFontawesome2.default, { name: 'angle-down' })
     };
+    console.log(_this.props.type, _this.props.selected);
     return _this;
   }
 
@@ -48935,49 +48924,51 @@ module.exports = {
 /***/ (function(module, exports) {
 
 module.exports = {
-	"experiments": [
-		{
-			"_id": 1,
-			"name": "Some experiment"
-		},
-		{
-			"_id": 2,
-			"name": "Some other experiment"
-		}
-	],
-	"projects": [
-		{
-			"_id": 1,
-			"name": "Some project"
-		},
-		{
-			"_id": 2,
-			"name": "Some other project"
-		}
-	],
-	"samples": [
-		{
-			"_id": 1,
-			"name": "Some sample"
-		},
-		{
-			"_id": 2,
-			"name": "Some other sample"
-		}
-	],
-	"screens": [
-		{
-			"_id": 1,
-			"name": "Some screen"
-		},
-		{
-			"_id": 2,
-			"name": "Some other screen"
-		}
-	],
+	"available": {
+		"experiments": [
+			{
+				"_id": 1,
+				"name": "Some experiment"
+			},
+			{
+				"_id": 2,
+				"name": "Some other experiment"
+			}
+		],
+		"projects": [
+			{
+				"_id": 1,
+				"name": "Some project"
+			},
+			{
+				"_id": 2,
+				"name": "Some other project"
+			}
+		],
+		"samples": [
+			{
+				"_id": 1,
+				"name": "Some sample"
+			},
+			{
+				"_id": 2,
+				"name": "Some other sample"
+			}
+		],
+		"screens": [
+			{
+				"_id": 1,
+				"name": "Some screen"
+			},
+			{
+				"_id": 2,
+				"name": "Some other screen"
+			}
+		]
+	},
 	"selected": {
 		"experiment": null,
-		"project": 1,
+		"project": null,
 		"sample": null,
 		"screen": null
 	},

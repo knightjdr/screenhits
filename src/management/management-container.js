@@ -13,7 +13,7 @@ const mapStateToProps = (state, ownProps) => {
   } else {
     selectedObj = state.selected;
   }
-  return {selected: selectedObj};
+  return {available: state.available, selected: selectedObj};
 }
 
 const Details = connect(

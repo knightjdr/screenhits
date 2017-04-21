@@ -1,4 +1,3 @@
-import createFragment from 'react-addons-create-fragment'
 import FontAwesome from 'react-fontawesome';
 import Menu from 'material-ui/Menu';
 import MenuItem from 'material-ui/MenuItem';
@@ -19,14 +18,14 @@ class ManagementSelection extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      buttonClass: this.props.active ? 'management-selection-button-active ': 'management-selection-button',
+      buttonClass: this.props.active === this.props.type ? 'management-selection-button-active ': 'management-selection-button',
       buttonName: this.buttonName(),
       showList: false,
       toggleIcon: <FontAwesome name="angle-down" />
     };
-    console.log(this.props.type, this.props.selected);
   }
   buttonName = () => {
+    //const selected = this.props.selected ? this.props.selected : '&#8709;'
     return window.innerWidth > 680 ? this.props.type : icons[this.props.type];
   }
   componentDidMount = () => {
@@ -38,7 +37,7 @@ class ManagementSelection extends React.Component {
   componentWillUpdate = (nextProps, nextState) => {
     if(nextProps.active !== this.props.active) {
       this.setState({
-        buttonClass: nextProps.active ? 'management-selection-button-active ': 'management-selection-button'
+        buttonClass: nextProps.active === this.props.type ? 'management-selection-button-active ': 'management-selection-button'
       });
     }
   }
@@ -53,7 +52,7 @@ class ManagementSelection extends React.Component {
     this.props.changeSelected(item);
   }
   showList = (event) => {
-    if(this.props.active) {
+    if(this.props.active === this.props.type) {
       this.setState({
         anchorEl: event.currentTarget,
         showList: true,
@@ -72,11 +71,7 @@ class ManagementSelection extends React.Component {
         <RaisedButton
           className={this.state.buttonClass}
           icon={this.state.toggleIcon}
-          label={createFragment({
-            name: this.state.buttonName,
-            sep: ': ',
-            _id: this.props.selected
-          })}
+          label={this.state.buttonName + ': ' + (this.props.selected ? this.props.selected: '∅')}
           onClick={this.showList}
         />
         <Popover
@@ -92,7 +87,7 @@ class ManagementSelection extends React.Component {
               <MenuItem
                 key={item._id}
                 onClick={() => this.selectItem(this.props.type, item._id)}
-                primaryText={createFragment({_id: item._id, sep: ': ', name: item.name})}
+                primaryText={item._id + ': ' + item.name}
               />
             ))}
           </Menu>

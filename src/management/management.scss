@@ -3,8 +3,19 @@
   flex-direction: row;
   flex-wrap: wrap;
   justify-content: flex-start;
-  margin-top: 60px;
+}
+.management-content {
+  display: flex;
+  flex: 1 1 auto;
+  margin-top: 5px;
 }
 .management-tab-wrapper {
   margin-top: 2px;
+}
+.management-wrapper {
+  display: flex;
+  flex-flow: column;
+  height: calc(100vh - 65px);
+  padding: 0px 2px 5px 2px;
+  position: relative;
 }

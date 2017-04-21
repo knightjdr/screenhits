@@ -1,0 +1,15 @@
+@import '../../../style/palette';
+
+$text-color: $accent-h400;
+
+.management-menu-button > button > div > div > span {
+  color: $text-color !important;
+}
+
+.management-menu-popover > div > div {
+    padding: 0px 0px 0px 0px !important;
+}
+
+.management-menu-popover > div > div > div > span > div > div {
+    padding: 0px 10px 0px 10px !important;
+}

@@ -12,44 +12,23 @@ import {
   SET_USER
 } from 'root/state/actions.js';
 
-function experiments(state = [], action) {
+function available(state = {}, action) {
   switch (action.type) {
     case FILL_EXPERIMENTS:
       return Object.assign({}, state, {
-        experiments: action.arr
+        available: {experiments: action.arr}
       });
-    default:
-      return state
-  }
-}
-
-function projects(state = [], action) {
-  switch (action.type) {
     case FILL_PROJECTS:
       return Object.assign({}, state, {
-        projects: action.arr
+        available: {projects: action.arr}
       });
-    default:
-      return state
-  }
-}
-
-function samples(state = [], action) {
-  switch (action.type) {
     case FILL_SAMPLES:
       return Object.assign({}, state, {
-        samples: action.arr
+        available: {samples: action.arr}
       });
-    default:
-      return state
-  }
-}
-
-function screens(state = [], action) {
-  switch (action.type) {
     case FILL_SCREENS:
       return Object.assign({}, state, {
-        screens: action.arr
+        available: {screens: action.arr}
       });
     default:
       return state
@@ -101,10 +80,7 @@ function user(state = {}, action) {
 }
 
 const App = combineReducers({
-  experiments,
-  projects,
-  samples,
-  screens,
+  available,
   selected,
   routing: routerReducer,
   user
