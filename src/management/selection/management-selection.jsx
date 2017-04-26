@@ -8,10 +8,10 @@ import React from 'react';
 import 'root/management/selection/management-selection.scss';
 
 const icons = {
-  experiment: <FontAwesome name="bar-chart" />,
-  project: <FontAwesome name="folder-open" />,
-  sample: <FontAwesome name="flask" />,
-  screen: <FontAwesome name="braille" />
+  experiment: <FontAwesome key="experiment" name="bar-chart" />,
+  project: <FontAwesome key="project" name="folder-open" />,
+  sample: <FontAwesome key="sample" name="flask" />,
+  screen: <FontAwesome key="screen" name="braille" />
 };
 
 class ManagementSelection extends React.Component {
@@ -71,7 +71,7 @@ class ManagementSelection extends React.Component {
         <RaisedButton
           className={this.state.buttonClass}
           icon={this.state.toggleIcon}
-          label={this.state.buttonName + ': ' + (this.props.selected ? this.props.selected: '∅')}
+          label={[this.state.buttonName, ': ', this.props.selected ? this.props.selected: '∅']}
           onClick={this.showList}
         />
         <Popover
@@ -83,7 +83,7 @@ class ManagementSelection extends React.Component {
           open={this.state.showList}
           targetOrigin={{horizontal: 'left', vertical: 'top'}}>
           <Menu>
-            {this.props.details.map((item) => (
+            {this.props.details.items.map((item) => (
               <MenuItem
                 key={item._id}
                 onClick={() => this.selectItem(this.props.type, item._id)}

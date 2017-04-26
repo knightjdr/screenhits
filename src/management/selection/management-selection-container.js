@@ -1,5 +1,5 @@
 import { connect } from 'react-redux';
-import { setIndex } from 'root/state/actions.js';
+import { setIndex } from 'root/state/set/index-actions.js';
 import ManagementSelection from 'root/management/selection/management-selection.jsx';
 
 const mapDispatchToProps = (dispatch, ownProps) => {

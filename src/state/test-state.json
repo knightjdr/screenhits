@@ -1,18 +1,45 @@
 {
   "available": {
-    "experiments": [],
-    "projects": [
-      {
-        "_id": 1,
-        "name": "Some project"
-      },
-      {
-        "_id": 2,
-        "name": "Some other project"
-      }
-    ],
-    "samples": [],
-    "screens": []
+    "experiment": {
+      "didInvalidate": false,
+      "isFetching": false,
+      "items": [],
+      "message": null
+    },
+    "project": {
+      "didInvalidate": false,
+      "isFetching": false,
+      "items": [
+        {
+          "_id": 1,
+          "name": "Some project"
+        },
+        {
+          "_id": 2,
+          "name": "Some other project"
+        }
+      ],
+      "message": null
+    },
+    "sample": {
+      "didInvalidate": false,
+      "isFetching": false,
+      "items": [],
+      "message": null
+    },
+    "screen": {
+      "didInvalidate": false,
+      "isFetching": false,
+      "items": [],
+      "message": null
+    }
+  },
+  "post": {
+    "project": {
+      "didSubmitFail": false,
+      "message": null,
+      "isSubmitted": false
+    }
   },
   "selected": {
     "experiment": null,
@@ -22,6 +49,7 @@
   },
   "user": {
     "email": "knightjdr@gmail.com",
+    "lab": "Gingras",
     "name": "James Knight"
   }
 }

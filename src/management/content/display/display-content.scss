@@ -1,0 +1,58 @@
+@import '../../../style/palette';
+
+.display-buttons {
+  margin-top: 15px;
+}
+.display-button-cancel {
+  background-color: $warning !important;
+  color: $text-color !important;
+  margin: 0px 2px 0px 2px !important;
+}
+.display-button-reset {
+  background-color: $alert !important;
+  color: $text-color !important;
+  margin: 0px 2px 0px 2px !important;
+}
+.display-button-update {
+  background-color: $sucess !important;
+  color: $text-color !important;
+  margin: 0px 2px 0px 2px !important;
+}
+.display-button-cancel:hover {
+  background-color: $warning-hover !important;
+  color: $text-color !important;
+  margin: 0px 2px 0px 2px !important;
+}
+.display-button-reset:hover {
+  background-color: $alert-hover !important;
+  color: $text-color !important;
+  margin: 0px 2px 0px 2px !important;
+}
+.display-button-update:hover {
+  background-color: $sucess-hover !important;
+  color: $text-color !important;
+  margin: 0px 2px 0px 2px !important;
+}
+.display-container {
+  margin: 15px 15px 10px 15px;
+}
+.display-element-container {
+  display: flex;
+  height: 36px;
+  line-height: 36px;
+  margin: 5px 0px 5px 0px;
+}
+.display-element-key-container{
+  flex: 0 0 15%;
+  text-align: right;
+}
+.display-element-key {
+  background-color: $primary-h100;
+  border: 1px solid $primary-h200;
+  border-radius: 2px;
+  padding: 8px 5px 8px 5px;
+}
+.display-element-value {
+  flex: 1;
+  margin-left: 10px;
+}

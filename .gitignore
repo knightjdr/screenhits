@@ -1,6 +1,5 @@
 # node modules, client and server side
 node_modules/*
-server/node_modules/*
 
 # NPM
 npm-debug.log
@@ -19,3 +18,6 @@ server/config.js
 
 #old site versions
 versions/*
+
+#api
+api/config.js

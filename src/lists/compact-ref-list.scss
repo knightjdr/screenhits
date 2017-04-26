@@ -8,6 +8,7 @@
 .compact-menu {
   border-radius: 2px;
   position: absolute;
+  z-index: 11;
 }
 .compact-backdrop {
   background-color: rgba(0, 0, 0, 0);
@@ -16,7 +17,7 @@
   top: 0;
   position: fixed;
   width: 100%;
-  z-index: 1;
+  z-index: 10;
 }
 ul.vertical-list {
   list-style: none;

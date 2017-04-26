@@ -12,6 +12,7 @@ $navbar-text-color: $text-color;
   position: fixed;
   top: 0px;
   width: 100%;
+  z-index: 5;
 }
 .navbar-icon {
   content:url('../assets/logo/logo-white.png');
@@ -27,7 +28,8 @@ $navbar-text-color: $text-color;
 .navbar-list .horizontal-list li {
   background-color: $navbar-background;
   border-radius: 4px;
-  font-family: Ostrich Sans Black;
+  font-family: 'Lato', sans-serif;
+  font-kerning: none;
   font-size: 26px;
   cursor: pointer;
 }
@@ -39,7 +41,7 @@ $navbar-text-color: $text-color;
 }
 .navbar-list .vertical-list li {
   color: $navbar-background;
-  font-family: Ostrich Sans Black;
+  font-family: 'Lato', sans-serif;
   font-size: 22px;
 }
 .navbar-list .vertical-list li:hover {

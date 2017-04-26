@@ -1,8 +1,12 @@
+import ExperimentMenu from 'root/management/content/menu/experiment-menu.jsx';
 import FontAwesome from 'react-fontawesome';
 import FloatingActionButton from 'material-ui/FloatingActionButton';
 import Menu from 'material-ui/Menu';
 import MenuItem from 'material-ui/MenuItem';
 import Popover, {PopoverAnimationVertical} from 'material-ui/Popover';
+import ProjectMenu from 'root/management/content/menu/project-menu.jsx';
+import SampleMenu from 'root/management/content/menu/sample-menu.jsx';
+import ScreenMenu from 'root/management/content/menu/screen-menu.jsx';
 import React from 'react';
 
 import 'root/management/content/menu/management-menu.scss';
@@ -15,12 +19,24 @@ class ManagementMenu extends React.Component {
       showList: false
     };
   }
-  hideList = () => {
+  hideManagementList = () => {
     this.setState({
       showList: false,
     });
   }
-  showList = (event) => {
+  renderMenu = (type) => {
+    switch(type) {
+      case 'experiment':
+        return <ExperimentMenu />
+      case 'project':
+        return <ProjectMenu hideList={this.hideManagementList} funcs={this.props.funcs} selected={this.props.selected} />
+      case 'sample':
+        return <SampleMenu />
+      case 'screen':
+        return <ScreenMenu />
+    }
+  }
+  showManagementList = (event) => {
     this.setState({
       anchorEl: event.currentTarget,
       showList: true
@@ -32,7 +48,7 @@ class ManagementMenu extends React.Component {
         <FloatingActionButton
           className="management-menu-button"
           mini={true}
-          onClick={this.showList}>
+          onClick={this.showManagementList}>
           <FontAwesome name="bars" />
         </FloatingActionButton>
         <Popover
@@ -40,23 +56,10 @@ class ManagementMenu extends React.Component {
           anchorOrigin={{horizontal: 'middle', vertical: 'center'}}
           animation={PopoverAnimationVertical}
           className="management-menu-popover"
-          onRequestClose={this.hideList}
+          onRequestClose={this.hideManagementList}
           open={this.state.showList}
           targetOrigin={{horizontal: 'left', vertical: 'bottom'}}>
-          <Menu>
-            <MenuItem
-              key="manage"
-              primaryText={<FontAwesome name="user-plus" /> + ' Manage ' + this.props.active}
-            />
-            <MenuItem
-              key="edit"
-              primaryText={<FontAwesome name="pencil-square-o" /> + ' Edit ' + this.props.active}
-            />
-            <MenuItem
-              key="add"
-              primaryText={<FontAwesome name="plus" /> + ' Add new ' + this.props.active}
-            />
-          </Menu>
+          {this.renderMenu(this.props.active)}
         </Popover>
       </span>
     );
