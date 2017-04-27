@@ -38,7 +38,7 @@
 }
 .display-element-container {
   display: flex;
-  height: 36px;
+  min-height: 36px;
   line-height: 36px;
   margin: 5px 0px 5px 0px;
 }
@@ -55,4 +55,8 @@
 .display-element-value {
   flex: 1;
   margin-left: 10px;
+}
+.edit-submission {
+  color: $primary-h800;
+  margin: 10px 0px 0px 10px;
 }

@@ -64,7 +64,7 @@ class ManagementContent extends React.Component {
         : this.state.manageBoolean ?
           <ManageContent active={this.props.active} />
         : this.props.selected ?
-          <DisplayContent active={this.props.active} cancel={this.cancel} edit={this.state.editBoolean} item={this.state.item} key={this.props.selected}/>
+          <DisplayContent active={this.props.active} cancel={this.cancel} edit={this.state.editBoolean} item={this.state.item} key={this.props.selected} selected={this.props.selected}/>
         : this.props.available[this.props.active].length === 0 ?
           <div className="content-intro">
             Create a new {this.props.active} to begin

@@ -6,7 +6,7 @@ const validators = require('../helpers/validators');
 const permission = ['lr', 'lw', 'ar', 'aw'];
 
 const Validate = {
-  project: (obj) => {
+  project: (obj, dateType) => {
     return new Promise((resolve, reject) => {
       if(!obj['creator-email'] || !validators.email(obj['creator-email']) || !obj['owner-email'] || !validators.email(obj['owner-email'])) {
         reject('invalid email');
@@ -27,7 +27,7 @@ const Validate = {
         reject('missing or invalid permission');
       }
       delete obj.target;
-      obj['creation-date'] = moment().format('MMMM Do YYYY, h:mm a');
+      obj[dateType] = moment().format('MMMM Do YYYY, h:mm a');
       resolve(obj);
     });
   }

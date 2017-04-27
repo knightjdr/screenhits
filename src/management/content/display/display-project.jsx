@@ -20,9 +20,10 @@ class DisplayProject extends React.Component {
       const warning = ErrorCheck.notEmpty(errorText) ? false : true;
       this.setState({errorText: errorText, warning: warning});
     }
-    let stateObject = this.state.item;
-    stateObject[type] = e.target.value;
-    this.setState({item: stateObject});
+    let updateObject = this.state.item;
+    updateObject[type] = e.target.value;
+    this.setState({item: updateObject});
+    this.props.update(updateObject);
   }
   render () {
     return (
@@ -94,6 +95,18 @@ class DisplayProject extends React.Component {
             </div>
             <div className="display-element-value">
               {this.state.item['creation-date']}
+            </div>
+          </div>
+        }
+        {!this.props.edit && this.state.item && this.state.item['creation-date'] &&
+          <div className="display-element-container">
+            <div className="display-element-key-container">
+              <span className="display-element-key">
+                Details last updated:
+              </span>
+            </div>
+            <div className="display-element-value">
+              {this.state.item['update-date']}
             </div>
           </div>
         }

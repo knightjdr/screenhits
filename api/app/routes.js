@@ -3,6 +3,7 @@
 const auth = require('./modules/auth/validate');
 const available = require('./modules/available/available');
 const create = require('./modules/create/create');
+const update = require('./modules/update/update');
 
 const Routes = {
 	configure: (app) => {
@@ -16,6 +17,12 @@ const Routes = {
 			create[req.body.target](req.body, res);
 		});
 		app.post('/*', (req, res) => {
+			res.status(404).send({status: 404, error: 'ScreenHits - the route is not valid'});
+		});
+		app.put('/management', (req, res) => {
+			update.put(req.body, res);
+		});
+		app.put('/*', (req, res) => {
 			res.status(404).send({status: 404, error: 'ScreenHits - the route is not valid'});
 		});
 		app.use((req, res) => {

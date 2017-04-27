@@ -1,12 +1,8 @@
-import ExperimentMenu from 'root/management/content/menu/experiment-menu.jsx';
 import FontAwesome from 'react-fontawesome';
 import FloatingActionButton from 'material-ui/FloatingActionButton';
 import Menu from 'material-ui/Menu';
 import MenuItem from 'material-ui/MenuItem';
 import Popover, {PopoverAnimationVertical} from 'material-ui/Popover';
-import ProjectMenu from 'root/management/content/menu/project-menu.jsx';
-import SampleMenu from 'root/management/content/menu/sample-menu.jsx';
-import ScreenMenu from 'root/management/content/menu/screen-menu.jsx';
 import React from 'react';
 
 import 'root/management/content/menu/management-menu.scss';
@@ -19,22 +15,22 @@ class ManagementMenu extends React.Component {
       showList: false
     };
   }
+  create = () => {
+    this.hideManagementList();
+    this.props.funcs.create();
+  }
+  edit = () => {
+    this.hideManagementList();
+    this.props.funcs.edit();
+  }
   hideManagementList = () => {
     this.setState({
       showList: false,
     });
   }
-  renderMenu = (type) => {
-    switch(type) {
-      case 'experiment':
-        return <ExperimentMenu />
-      case 'project':
-        return <ProjectMenu hideList={this.hideManagementList} funcs={this.props.funcs} selected={this.props.selected} />
-      case 'sample':
-        return <SampleMenu />
-      case 'screen':
-        return <ScreenMenu />
-    }
+  manage = () => {
+    this.hideManagementList();
+    this.props.funcs.manage();
   }
   showManagementList = (event) => {
     this.setState({
@@ -59,7 +55,27 @@ class ManagementMenu extends React.Component {
           onRequestClose={this.hideManagementList}
           open={this.state.showList}
           targetOrigin={{horizontal: 'left', vertical: 'bottom'}}>
-          {this.renderMenu(this.props.active)}
+          <Menu>
+            {this.props.active === 'project' && this.props.selected &&
+              <MenuItem
+                key="manage"
+                onClick={this.manage}
+                primaryText={[<FontAwesome key="manage" name="user-plus" />, ' Manage ', this.props.active]}
+              />
+            }
+            {this.props.selected &&
+              <MenuItem
+                key="edit"
+                onClick={this.edit}
+                primaryText={[<FontAwesome key="edit" name="pencil-square-o" />, ' Edit ', this.props.active]}
+              />
+            }
+            <MenuItem
+              key="add"
+              onClick={this.create}
+              primaryText={[<FontAwesome key="add" name="plus" />, ' Add new ', this.props.active]}
+            />
+          </Menu>
         </Popover>
       </span>
     );

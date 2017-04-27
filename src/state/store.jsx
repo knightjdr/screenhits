@@ -5,11 +5,14 @@ import React from 'react';
 import stateApp from 'root/state/reducers';
 import thunkMiddleware from 'redux-thunk'
 
+const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 export let store = createStore(
   stateApp,
   initialState,
-  applyMiddleware(
+  composeEnhancers(
+    applyMiddleware(
     thunkMiddleware
+    )
   )
 );
 
