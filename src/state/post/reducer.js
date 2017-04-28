@@ -9,6 +9,7 @@ const Post = function(state = {
     project: {
       didSubmitFail: false,
       message: null,
+      _id: null,
       isSubmitted: false
     }
   }, action) {
@@ -16,29 +17,33 @@ const Post = function(state = {
     let updateObject = {};
     switch (action.type) {
       case 'FAIL_POST':
-        modifiedFields = state[action.target];
+        modifiedFields = Object.assign({}, state[action.target]);
         modifiedFields.didSubmitFail = true;
         modifiedFields.message = action.message;
+        modifiedFields._id = null;
         modifiedFields.isSubmitted = false;
         updateObject[action.target] = modifiedFields
         return Object.assign({}, state, updateObject);
       case 'REQUEST_POST':
-        modifiedFields = state[action.target];
+        modifiedFields = Object.assign({}, state[action.target]);
         modifiedFields.didSubmitFail = false;
+        modifiedFields._id = null;
         modifiedFields.isSubmitted = true;
         updateObject[action.target] = modifiedFields
         return Object.assign({}, state, updateObject);
       case 'RESET_POST':
-        modifiedFields = state[action.target];
+        modifiedFields = Object.assign({}, state[action.target]);
         modifiedFields.didSubmitFail = false;
         modifiedFields.message = null;
+        modifiedFields._id = null;
         modifiedFields.isSubmitted = false;
         updateObject[action.target] = modifiedFields
         return Object.assign({}, state, updateObject);
       case 'SUCCESS_POST':
-        modifiedFields = state[action.target];
+        modifiedFields = Object.assign({}, state[action.target]);
         modifiedFields.didSubmitFail = false;
         modifiedFields.message = action.message;
+        modifiedFields._id = action._id;
         modifiedFields.isSubmitted = false;
         updateObject[action.target] = modifiedFields
         return Object.assign({}, state, updateObject);

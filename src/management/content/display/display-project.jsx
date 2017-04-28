@@ -1,37 +1,36 @@
-import ErrorCheck from 'root/management/content/helpers/field-error-check.js';
+import { objectEmpty } from 'root/helpers/helpers.js';
 import React from 'react';
 import TextField from 'material-ui/TextField';
+import ValidateField from 'root/management/content/create/validate-fields.js';
 
 class DisplayProject extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      errorText: {
-        name: ''
-      },
-      item: JSON.parse(JSON.stringify(this.props.item)),
+      item: Object.assign({}, this.props.item),
       warning: ''
     }
   }
-  inputChange = (e, type) => {
-    if(this.state.errorText[type]) {
-      const errorText = this.state.errorText;
-      errorText[type] = '';
-      const warning = ErrorCheck.notEmpty(errorText) ? false : true;
-      this.setState({errorText: errorText, warning: warning});
-    }
-    let updateObject = this.state.item;
-    updateObject[type] = e.target.value;
+  inputChange = (field, value) => {
+    //check if field is valid and update errors object
+    const errors = Object.assign({}, this.props.errors);
+    const validate = ValidateField.project[field](value);
+    errors[field] = validate.error ? validate.message : null;
+    const warning = objectEmpty(errors) ? false : true;
+    this.props.updateErrors(errors, warning);
+    //update item state
+    let updateObject = Object.assign({}, this.state.item);
+    updateObject[field] = value;
     this.setState({item: updateObject});
-    this.props.update(updateObject);
+    this.props.updateItem(updateObject);
   }
   render () {
     return (
       <div>
         {!this.props.edit ?
           <div className="display-element-container">
-            <div className="display-element-key-container">
-              <span className="display-element-key">
+            <div className="display-element-key">
+              <span className="">
                 Project name:
               </span>
             </div>
@@ -41,11 +40,11 @@ class DisplayProject extends React.Component {
           </div>
           :
           <TextField
-            errorText={this.state.errorText.name}
+            errorText={this.props.errors.name}
             floatingLabelText="Project name (short)"
             fullWidth={true}
             multiLine={true}
-            onChange={(e) => this.inputChange(e, 'name')}
+            onChange={(e) => this.inputChange('name', e.target.value)}
             rows={1}
             rowsMax={2}
             value={this.state.item.name}
@@ -53,8 +52,8 @@ class DisplayProject extends React.Component {
         }
         {!this.props.edit ?
           <div className="display-element-container">
-            <div className="display-element-key-container">
-              <span className="display-element-key">
+            <div className="display-element-key">
+              <span className="">
                 Description:
               </span>
             </div>
@@ -64,11 +63,11 @@ class DisplayProject extends React.Component {
           </div>
           :
           <TextField
-            errorText={this.state.errorText.description}
+            errorText={this.props.errors.description}
             floatingLabelText="Project description"
             fullWidth={true}
             multiLine={true}
-            onChange={(e) => this.inputChange(e, 'description')}
+            onChange={(e) => this.inputChange('description', e.target.value)}
             rows={1}
             rowsMax={2}
             value={this.state.item.description}
@@ -76,8 +75,8 @@ class DisplayProject extends React.Component {
         }
         {!this.props.edit &&
           <div className="display-element-container">
-            <div className="display-element-key-container">
-              <span className="display-element-key">
+            <div className="display-element-key">
+              <span className="">
                 Creator:
               </span>
             </div>
@@ -88,8 +87,8 @@ class DisplayProject extends React.Component {
         }
         {!this.props.edit &&
           <div className="display-element-container">
-            <div className="display-element-key-container">
-              <span className="display-element-key">
+            <div className="display-element-key">
+              <span>
                 Creation Date:
               </span>
             </div>
@@ -98,10 +97,10 @@ class DisplayProject extends React.Component {
             </div>
           </div>
         }
-        {!this.props.edit && this.state.item && this.state.item['creation-date'] &&
+        {!this.props.edit && this.state.item && this.state.item['update-date'] &&
           <div className="display-element-container">
-            <div className="display-element-key-container">
-              <span className="display-element-key">
+            <div className="display-element-key">
+              <span className="">
                 Details last updated:
               </span>
             </div>

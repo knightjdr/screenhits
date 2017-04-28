@@ -16,10 +16,10 @@ class ManagementContent extends React.Component {
     }
   }
   componentWillReceiveProps(nextProps) {
+    const index = nextProps.available[nextProps.active].items.findIndex(obj => obj._id === nextProps.selected);
+    const item = index > -1 ? nextProps.available[nextProps.active].items[index] : {};
+    this.setState({item: item});
     if(nextProps.selected && nextProps.selected !== this.props.selected) {
-      const index = nextProps.available[nextProps.active].items.findIndex(obj => obj._id === nextProps.selected);
-      const item = nextProps.available[nextProps.active].items[index];
-      this.setState({item: item});
       if(this.state.createBoolean) {
         this.setState({createBoolean: false});
       }
@@ -33,6 +33,7 @@ class ManagementContent extends React.Component {
     });
   }
   create = () => {
+    this.props.resetPost();
     this.setState({
       createBoolean: true,
       editBoolean: false,
@@ -40,6 +41,7 @@ class ManagementContent extends React.Component {
     });
   }
   edit = () => {
+    this.props.resetPut(this.state.item._id);
     this.setState({
       createBoolean: false,
       editBoolean: true,
@@ -64,7 +66,7 @@ class ManagementContent extends React.Component {
         : this.state.manageBoolean ?
           <ManageContent active={this.props.active} />
         : this.props.selected ?
-          <DisplayContent active={this.props.active} cancel={this.cancel} edit={this.state.editBoolean} item={this.state.item} key={this.props.selected} selected={this.props.selected}/>
+          <DisplayContent active={this.props.active} cancel={this.cancel} edit={this.state.editBoolean} item={this.state.item} key={this.props.selected} selected={this.props.selected} />
         : this.props.available[this.props.active].length === 0 ?
           <div className="content-intro">
             Create a new {this.props.active} to begin
@@ -80,7 +82,9 @@ class ManagementContent extends React.Component {
 };
 
 ManagementContent.propTypes = {
-  available: React.PropTypes.object.isRequired
+  available: React.PropTypes.object.isRequired,
+  resetPost: React.PropTypes.func.isRequired,
+  resetPut: React.PropTypes.func.isRequired
 };
 
 export default ManagementContent;

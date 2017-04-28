@@ -28,8 +28,9 @@ export function resetPost(target) {
   }
 }
 
-export function successPost(target, message) {
+export function successPost(_id, message, target) {
   return {
+    _id,
     message,
     target,
     type: 'SUCCESS_POST',
@@ -53,7 +54,7 @@ export function submitPost(target, obj) {
       .then(response => response.json())
       .then(json => {
         if(json.status === 200) {
-          dispatch(successPost(target, json.message));
+          dispatch(successPost(json._id, json.message, target));
           dispatch(getData(target));
         } else {
           const error = 'Status code: ' + json.status + '; ' + json.message;

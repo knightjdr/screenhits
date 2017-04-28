@@ -39,6 +39,27 @@
 .create-header {
   color: $primary-h800;
 }
+.create-information {
+  background-color: white;
+  left: 0px;
+  position: absolute;
+  text-align: center;
+  width: 100%;
+}
+.create-message-text-enter {
+  opacity: 0.01;
+}
+.create-message-text-enter.create-message-text-enter-active {
+  opacity: 1;
+  transition: opacity 500ms ease-in;
+}
+.create-message-text-leave {
+  opacity: 1;
+}
+.create-message-text-leave.create-message-text-leave-active {
+  opacity: 0.01;
+  transition: opacity 500ms ease-in;
+}
 .create-submission {
   color: $primary-h800;
   margin: 10px 0px 0px 10px;

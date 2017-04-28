@@ -51,13 +51,12 @@ const Put = function(state = {
       case RESET_PUT:
         putState = state[action.target] ? state[action.target].slice() : [];
         index = putState.findIndex(obj => obj._id === action._id);
-        console.log(action._id, index);
         if(index > -1) {
           putState.splice(index, 1)
           updateObject[action.target] = putState;
           return Object.assign({}, state, updateObject);
         }
-        return;
+        return state;
       case SUCCESS_PUT:
         newPut = {
           _id: action._id,
