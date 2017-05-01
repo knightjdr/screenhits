@@ -18,8 +18,7 @@ class CreateContent extends React.Component {
   componentWillReceiveProps(nextProps) {
     const success = this.props.post[this.props.active].isSubmitted && !nextProps.post[this.props.active].isSubmitted && !nextProps.post[this.props.active].didSubmitFail ? true : false;
     if(success) {
-      console.log(nextProps.length);
-      this.props.setIndex(nextProps.length.available - 1);
+      this.props.setIndex(nextProps.post[this.props.active]._id, nextProps.active);
       this.props.cancel();
     }
   }
@@ -40,7 +39,7 @@ class CreateContent extends React.Component {
     this.setState({formData: stateObject});
   }
   resetForm = () => {
-    this.props.reset();
+    this.props.reset(this.props.active);
     this.setState(Format.blankState[this.props.active]);
   }
   submitForm = () => {
@@ -59,7 +58,7 @@ class CreateContent extends React.Component {
       this.setState({errors: errors, warning: true});
     } else {
       const submitObj = Format[this.props.active](this.state.formData, this.props);
-      this.props.create(submitObj);
+      this.props.create(this.props.active, submitObj);
     }
   }
   render () {
@@ -131,7 +130,6 @@ class CreateContent extends React.Component {
 
 CreateContent.propTypes = {
   create: React.PropTypes.func.isRequired,
-  length: React.PropTypes.object.isRequired,
   post: React.PropTypes.object.isRequired,
   reset: React.PropTypes.func.isRequired,
   setIndex: React.PropTypes.func.isRequired,

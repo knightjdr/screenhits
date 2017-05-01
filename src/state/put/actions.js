@@ -65,9 +65,10 @@ export function submitPut(_id, obj, target) {
           dispatch(failPut(_id, error, target));
         }
       })
-      .catch((error) =>
+      .catch((error) => {
+        console.log(error);
         dispatch(failPut(_id, error, target))
-      )
+      })
     ;
   }
 }

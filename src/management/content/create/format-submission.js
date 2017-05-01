@@ -27,5 +27,5 @@ const Format = {
     submitObj.target = 'project';
     return submitObj;
   }
-}
+};
 export default Format;

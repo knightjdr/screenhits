@@ -3,42 +3,42 @@ const Validate = {
     checkFields: [
       'description',
       'name',
-      'permission'
+      'permission',
     ],
     description: (value) => {
-      let errorObj = {
+      const errorObj = {
         error: false,
-        message: null
+        message: null,
       };
-      if(!value) {
+      if (!value) {
         errorObj.error = true;
         errorObj.message = 'This field is required';
       }
       return errorObj;
     },
     name: (value) => {
-      let errorObj = {
+      const errorObj = {
         error: false,
-        message: null
+        message: null,
       };
-      if(!value) {
+      if (!value) {
         errorObj.error = true;
         errorObj.message = 'This field is required';
       }
       return errorObj;
     },
     permission: (value) => {
-      let errorObj = {
+      const errorObj = {
         error: false,
-        message: null
+        message: null,
       };
       const valid = ['lr', 'lw', 'ar', 'aw', 'n'];
-      if(!value || valid.indexOf(value) < 0) {
+      if (!value || valid.indexOf(value) < 0) {
         errorObj.error = true;
         errorObj.message = 'Invalid permission type';
       }
       return errorObj;
-    }
-  }
-}
+    },
+  },
+};
 export default Validate;

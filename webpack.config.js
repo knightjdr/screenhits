@@ -37,6 +37,15 @@ module.exports = {
       },
       {
         test: /\.jsx?$/,
+        enforce: 'pre',
+        exclude: /(node_modules)/,
+        loader: 'eslint-loader',
+        options: {
+          formatter: require('eslint-friendly-formatter')
+        }
+      },
+      {
+        test: /\.jsx?$/,
         exclude: /(node_modules)/,
         loader: 'babel-loader'
       },
@@ -60,10 +69,5 @@ module.exports = {
   },
   plugins: [
     new ExtractTextPlugin({filename: 'bundle.css', allChunks: true})
-  ],
-  resolve: {
-    alias: {
-      root: path.resolve(__dirname, 'src/')
-    }
-  },
+  ]
 };
