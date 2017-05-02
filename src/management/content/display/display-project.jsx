@@ -23,7 +23,7 @@ class DisplayProject extends React.Component {
             floatingLabelText="Project name (short)"
             fullWidth={ true }
             multiLine={ true }
-            onChange={ e => this.props.inputChange('name', e.target.value) }
+            onChange={ (e) => { this.props.inputChange('name', e.target.value); } }
             rows={ 1 }
             rowsMax={ 2 }
             value={ this.props.item.name }
@@ -46,7 +46,7 @@ class DisplayProject extends React.Component {
             floatingLabelText="Project description"
             fullWidth={ true }
             multiLine={ true }
-            onChange={ e => this.props.inputChange('description', e.target.value) }
+            onChange={ (e) => { this.props.inputChange('description', e.target.value); } }
             rows={ 1 }
             rowsMax={ 2 }
             value={ this.props.item.description }
@@ -96,23 +96,23 @@ class DisplayProject extends React.Component {
 DisplayProject.propTypes = {
   edit: PropTypes.bool.isRequired,
   errors: PropTypes.shape({
-    description: null,
-    name: null,
-    permission: null,
+    description: PropTypes.string,
+    name: PropTypes.string,
+    permission: PropTypes.string,
   }).isRequired,
   inputChange: PropTypes.func.isRequired,
   item: PropTypes.shape({
-    _id: 1,
-    'creator-email': null,
-    'creator-name': null,
-    description: null,
-    lab: null,
-    name: null,
-    'owner-email': null,
-    'owner-name': null,
-    permission: null,
-    'creation-date': null,
-    'update-date': null,
+    _id: PropTypes.number,
+    'creator-email': PropTypes.string,
+    'creator-name': PropTypes.string,
+    description: PropTypes.string,
+    lab: PropTypes.string,
+    name: PropTypes.string,
+    'owner-email': PropTypes.string,
+    'owner-name': PropTypes.string,
+    permission: PropTypes.string,
+    'creation-date': PropTypes.string,
+    'update-date': PropTypes.string,
   }).isRequired,
 };
 

@@ -1,30 +1,30 @@
-import SET_INDEX from 'root/state/set/index-actions.js';
+import SET_INDEX from './index-actions';
 
 const targetChildren = {
   experiment: ['sample'],
   project: ['screen', 'experiment', 'sample'],
   sample: [],
-  screen: ['experiment', 'sample']
+  screen: ['experiment', 'sample'],
 };
 
-const Selected = function(state = {
-    experiment: null,
-    project: null,
-    sample: null,
-    screen: null
-  }, action) {
-  let modifiedFields = {};
+const Selected = (state = {
+  experiment: null,
+  project: null,
+  sample: null,
+  screen: null,
+}, action) => {
+  const modifiedFields = {};
   switch (action.type) {
-    case 'SET_INDEX':
+    case SET_INDEX:
       modifiedFields[action.target] = action._id;
-      if(action._id !== state[action.target]) {
-        targetChildren[action.target].forEach(function(child) {
+      if (action._id !== state[action.target]) {
+        targetChildren[action.target].forEach((child) => {
           modifiedFields[child] = null;
-        })
+        });
       }
       return Object.assign({}, state, modifiedFields);
     default:
-      return state
+      return state;
   }
-}
+};
 export default Selected;

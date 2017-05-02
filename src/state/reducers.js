@@ -1,12 +1,12 @@
 import { combineReducers } from 'redux';
 import { routerReducer } from 'react-router-redux';
 
-//reducers
-import available from 'root/state/data/reducer.js';
-import post from 'root/state/post/reducer.js';
-import put from 'root/state/put/reducer.js';
-import selected from 'root/state/set/index-reducer.js';
-import user from 'root/state/set/user-reducer.js';
+// reducers
+import available from './data/reducer';
+import post from './post/reducer';
+import put from './put/reducer';
+import selected from './set/index-reducer';
+import user from './set/user-reducer';
 
 const App = combineReducers({
   available,
@@ -14,7 +14,7 @@ const App = combineReducers({
   put,
   routing: routerReducer,
   selected,
-  user
+  user,
 });
 
 export default App;

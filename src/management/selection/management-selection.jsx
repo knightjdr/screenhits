@@ -1,95 +1,53 @@
-import FontAwesome from 'react-fontawesome';
 import Menu from 'material-ui/Menu';
 import MenuItem from 'material-ui/MenuItem';
-import Popover, {PopoverAnimationVertical} from 'material-ui/Popover';
+import Popover, { PopoverAnimationVertical } from 'material-ui/Popover';
+import PropTypes from 'prop-types';
 import RaisedButton from 'material-ui/RaisedButton';
 import React from 'react';
 
-import 'root/management/selection/management-selection.scss';
-
-const icons = {
-  experiment: <FontAwesome key="experiment" name="bar-chart" />,
-  project: <FontAwesome key="project" name="folder-open" />,
-  sample: <FontAwesome key="sample" name="flask" />,
-  screen: <FontAwesome key="screen" name="braille" />
-};
+import './management-selection.scss';
 
 class ManagementSelection extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      buttonClass: this.props.active === this.props.type ? 'management-selection-button-active ': 'management-selection-button',
-      buttonName: this.buttonName(),
-      showList: false,
-      toggleIcon: <FontAwesome name="angle-down" />
-    };
-  }
-  buttonName = () => {
-    //const selected = this.props.selected ? this.props.selected : '&#8709;'
-    return window.innerWidth > 680 ? this.props.type : icons[this.props.type];
-  }
   componentDidMount = () => {
-    window.addEventListener('resize', this.updateButton);
+    window.addEventListener('resize', this.props.updateButton);
   }
   componentWillUnmount = () => {
-    window.removeEventListener('resize', this.updateButton);
+    window.removeEventListener('resize', this.props.updateButton);
   }
-  componentWillUpdate = (nextProps, nextState) => {
-    if(nextProps.active !== this.props.active) {
-      this.setState({
-        buttonClass: nextProps.active === this.props.type ? 'management-selection-button-active ': 'management-selection-button'
-      });
-    }
-  }
-  hideList = () => {
-    this.setState({
-      showList: false,
-      toggleIcon: <FontAwesome name="angle-down" />
-    });
-  }
-  selectItem = (type, item) => {
-    this.hideList();
-    this.props.changeSelected(item);
-  }
-  showList = (event) => {
-    if(this.props.active === this.props.type) {
-      this.setState({
-        anchorEl: event.currentTarget,
-        showList: true,
-        toggleIcon: <FontAwesome name="angle-up" />
-      });
-    }
-  }
-  updateButton = () => {
-    this.setState({
-      buttonName: this.buttonName()
-    });
-  }
-  render () {
+  render() {
     return (
       <span className="management-selection">
         <RaisedButton
-          className={this.state.buttonClass}
-          icon={this.state.toggleIcon}
-          label={[this.state.buttonName, ': ', this.props.selected ? this.props.selected: '∅']}
-          onClick={this.showList}
+          className={ this.props.buttonClass }
+          icon={ this.props.toggleIcon }
+          label={ [this.props.buttonName, ': ', this.props.selected ? this.props.selected : '∅'] }
+          onClick={ this.props.showList }
         />
         <Popover
-          anchorEl={this.state.anchorEl}
-          anchorOrigin={{horizontal: 'left', vertical: 'bottom'}}
-          animation={PopoverAnimationVertical}
+          anchorEl={ this.props.anchorEl }
+          anchorOrigin={ {
+            horizontal: 'left',
+            vertical: 'bottom',
+          } }
+          animation={ PopoverAnimationVertical }
           className="management-selection-popover"
-          onRequestClose={this.hideList}
-          open={this.state.showList}
-          targetOrigin={{horizontal: 'left', vertical: 'top'}}>
+          onRequestClose={ this.props.hideList }
+          open={ this.props.showListBoolean }
+          targetOrigin={ {
+            horizontal: 'left',
+            vertical: 'top',
+          } }
+        >
           <Menu>
-            {this.props.details.items.map((item) => (
-              <MenuItem
-                key={item._id}
-                onClick={() => this.selectItem(this.props.type, item._id)}
-                primaryText={item._id + ': ' + item.name}
-              />
-            ))}
+            { this.props.details.items.map((item) => {
+              return (
+                <MenuItem
+                  key={ item._id }
+                  onClick={ () => { this.props.selectItem(this.props.type, item._id); } }
+                  primaryText={ `${item._id} : ${item.name}` }
+                />
+              );
+            })}
           </Menu>
         </Popover>
       </span>
@@ -97,8 +55,37 @@ class ManagementSelection extends React.Component {
   }
 }
 
+ManagementSelection.defaultProps = {
+  anchorEl: {},
+  selected: null,
+};
+
 ManagementSelection.propTypes = {
-   changeSelected: React.PropTypes.func.isRequired
+  anchorEl: PropTypes.shape({
+  }),
+  buttonClass: PropTypes.string.isRequired,
+  buttonName: PropTypes.oneOfType([
+    PropTypes.shape({
+    }),
+    PropTypes.string,
+  ]).isRequired,
+  hideList: PropTypes.func.isRequired,
+  details: PropTypes.shape({
+    items: PropTypes.arrayOf(
+      PropTypes.shape({
+        _id: PropTypes.number,
+        name: PropTypes.string,
+      }),
+    ),
+  }).isRequired,
+  selected: PropTypes.number,
+  selectItem: PropTypes.func.isRequired,
+  showList: PropTypes.func.isRequired,
+  showListBoolean: PropTypes.bool.isRequired,
+  toggleIcon: PropTypes.shape({
+  }).isRequired,
+  type: PropTypes.string.isRequired,
+  updateButton: PropTypes.func.isRequired,
 };
 
 export default ManagementSelection;

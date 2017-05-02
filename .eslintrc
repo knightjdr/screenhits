@@ -1,11 +1,18 @@
 {
   "extends": "airbnb",
+  "globals": {
+    "compose": true,
+    "document": true,
+    "Headers": true,
+    "window": true
+  },
   "parser": "babel-eslint",
   "rules": {
+    "arrow-body-style": [2, "always"],
     "react/jsx-boolean-value": [2, "always"],
     "react/jsx-curly-spacing": [2, "always"],
     "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }],
-    "no-underscore-dangle": ["error", { "allow": ["_id"] }],
+    "no-underscore-dangle": ["error", { "allow": ["_id", "__REDUX_DEVTOOLS_EXTENSION_COMPOSE__"] }],
     "react/prefer-stateless-function": [0]
   }
 }

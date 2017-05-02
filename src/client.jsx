@@ -1,9 +1,10 @@
-import Head from 'root/head/head.jsx';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import Routing from './router/router.jsx';
-import Store from 'root/state/store.jsx';
-import Theme from 'root/style/theme.jsx';
+
+import Head from './head/head';
+import Routing from './router/router';
+import Store from './state/store';
+import Theme from './style/theme';
 
 class Main extends React.Component {
   render() {

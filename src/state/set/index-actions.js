@@ -4,6 +4,6 @@ export function setIndex(target, _id) {
   return {
     _id,
     target,
-    type: 'SET_INDEX'
+    type: 'SET_INDEX',
   };
 }

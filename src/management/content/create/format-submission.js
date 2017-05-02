@@ -9,13 +9,13 @@ const Format = {
       errors: {
         description: null,
         name: null,
-        permission: null
+        permission: null,
       },
-      warning: false
-    }
+      warning: false,
+    },
   },
   project: (form, props) => {
-    let submitObj = {};
+    const submitObj = {};
     submitObj['creator-email'] = props.user.email;
     submitObj['creator-name'] = props.user.name;
     submitObj.description = form.description;
@@ -26,6 +26,6 @@ const Format = {
     submitObj.permission = form.permission;
     submitObj.target = 'project';
     return submitObj;
-  }
+  },
 };
 export default Format;

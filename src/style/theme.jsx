@@ -1,7 +1,7 @@
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import injectTapEventPlugin from 'react-tap-event-plugin';
-injectTapEventPlugin();
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+import PropTypes from 'prop-types';
 import React from 'react';
 
 import {
@@ -10,8 +10,10 @@ import {
   blueGrey800,
   orange400,
   orange600,
-  orange900
+  orange900,
 } from 'material-ui/styles/colors';
+
+injectTapEventPlugin();
 
 const muiTheme = getMuiTheme({
   palette: {
@@ -21,16 +23,20 @@ const muiTheme = getMuiTheme({
     alternateTextColor: blueGrey800,
     primary1Color: blueGrey500,
     primary2Color: blueGrey800,
-    primary3Color: blueGrey300
+    primary3Color: blueGrey300,
   },
 });
 
 export default class Theme extends React.Component {
   render() {
     return (
-      <MuiThemeProvider muiTheme={muiTheme}>
-        {this.props.children}
+      <MuiThemeProvider muiTheme={ muiTheme }>
+        { this.props.children }
       </MuiThemeProvider>
     );
   }
 }
+
+Theme.propTypes = {
+  children: PropTypes.node.isRequired,
+};

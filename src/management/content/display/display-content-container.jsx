@@ -34,7 +34,7 @@ class DisplayContentContainer extends React.Component {
     const index = !putState[active] ?
       -1
       :
-      putState[active].findIndex(obj => obj._id === selected)
+      putState[active].findIndex((obj) => { return obj._id === selected; })
     ;
     const editMessages = index > -1 ?
       Object.assign({}, putState[active][index])
@@ -50,7 +50,7 @@ class DisplayContentContainer extends React.Component {
       && !editMessages.didPutFail
     ;
     if (success) {
-      this.props.reset();
+      this.props.cancel();
     }
     this.setState({ editMessages });
     // check for post messages
@@ -68,15 +68,17 @@ class DisplayContentContainer extends React.Component {
   }
   cancel = () => {
     this.props.putReset(this.props.item._id, this.props.active);
-    this.props.reset();
+    this.props.cancel();
   }
   reset = () => {
-    this.setState(prevState => ({
-      errors: Format.blankError[this.props.active],
-      reset: prevState.reset + 1,
-      updateItem: prevState.originalItem,
-      warning: false,
-    }));
+    this.setState((prevState) => {
+      return {
+        errors: Format.blankError[this.props.active],
+        reset: prevState.reset + 1,
+        updateItem: prevState.originalItem,
+        warning: false,
+      };
+    });
   }
   update = () => {
     let error = false;
@@ -125,95 +127,107 @@ class DisplayContentContainer extends React.Component {
 
 DisplayContentContainer.propTypes = {
   active: PropTypes.string.isRequired,
+  cancel: PropTypes.func.isRequired,
   edit: PropTypes.bool.isRequired,
   item: PropTypes.shape({
-    _id: 1,
-    'creator-email': null,
-    'creator-name': null,
-    description: null,
-    lab: null,
-    name: null,
-    'owner-email': null,
-    'owner-name': null,
-    permission: null,
-    'creation-date': null,
-    'update-date': null,
+    _id: PropTypes.number,
+    'creator-email': PropTypes.string,
+    'creator-name': PropTypes.string,
+    description: PropTypes.string,
+    lab: PropTypes.string,
+    name: PropTypes.string,
+    'owner-email': PropTypes.string,
+    'owner-name': PropTypes.string,
+    permission: PropTypes.string,
+    'creation-date': PropTypes.string,
+    'update-date': PropTypes.string,
   }).isRequired,
   postReset: PropTypes.func.isRequired,
   putReset: PropTypes.func.isRequired,
   postState: PropTypes.shape({
-    experiment: {
-      didSubmitFail: false,
-      message: null,
-      _id: null,
-      isSubmitted: false,
-    },
-    project: {
-      didSubmitFail: false,
-      message: null,
-      _id: null,
-      isSubmitted: false,
-    },
-    sample: {
-      didSubmitFail: false,
-      message: null,
-      _id: null,
-      isSubmitted: false,
-    },
-    screen: {
-      didSubmitFail: false,
-      message: null,
-      _id: null,
-      isSubmitted: false,
-    },
+    experiment: PropTypes.shape({
+      didSubmitFail: PropTypes.bool,
+      message: PropTypes.string,
+      _id: PropTypes.number,
+      isSubmitted: PropTypes.bool,
+    }),
+    project: PropTypes.shape({
+      didSubmitFail: PropTypes.bool,
+      message: PropTypes.string,
+      _id: PropTypes.number,
+      isSubmitted: PropTypes.bool,
+    }),
+    sample: PropTypes.shape({
+      didSubmitFail: PropTypes.bool,
+      message: PropTypes.string,
+      _id: PropTypes.number,
+      isSubmitted: PropTypes.bool,
+    }),
+    screen: PropTypes.shape({
+      didSubmitFail: PropTypes.bool,
+      message: PropTypes.string,
+      _id: PropTypes.number,
+      isSubmitted: PropTypes.bool,
+    }),
   }).isRequired,
   putState: PropTypes.shape({
-    experiment: {
-      _id: null,
-      didPutFail: false,
-      message: null,
-      isPut: null,
-    },
-    project: {
-      _id: null,
-      didPutFail: false,
-      message: null,
-      isPut: null,
-    },
-    sample: {
-      _id: null,
-      didPutFail: false,
-      message: null,
-      isPut: null,
-    },
-    screen: {
-      _id: null,
-      didPutFail: false,
-      message: null,
-      isPut: null,
-    },
+    experiment: PropTypes.arrayOf(
+      PropTypes.shape({
+        _id: PropTypes.number,
+        didPutFail: PropTypes.bool,
+        message: PropTypes.string,
+        isPut: PropTypes.bool,
+      }),
+    ),
+    project: PropTypes.arrayOf(
+      PropTypes.shape({
+        _id: PropTypes.number,
+        didPutFail: PropTypes.bool,
+        message: PropTypes.string,
+        isPut: PropTypes.bool,
+      }),
+    ),
+    sample: PropTypes.arrayOf(
+      PropTypes.shape({
+        _id: PropTypes.number,
+        didPutFail: PropTypes.bool,
+        message: PropTypes.string,
+        isPut: PropTypes.bool,
+      }),
+    ),
+    screen: PropTypes.arrayOf(
+      PropTypes.shape({
+        _id: PropTypes.number,
+        didPutFail: PropTypes.bool,
+        message: PropTypes.string,
+        isPut: PropTypes.bool,
+      }),
+    ),
   }).isRequired,
-  reset: PropTypes.func.isRequired,
   selected: PropTypes.number.isRequired,
   update: PropTypes.func.isRequired,
 };
 
-const mapDispatchToProps = dispatch => ({
-  postReset: (active) => {
-    dispatch(resetPost(active));
-  },
-  putReset: (_id, active) => {
-    dispatch(resetPut(_id, active));
-  },
-  update: (_id, active, obj) => {
-    dispatch(submitPut(_id, obj, active));
-  },
-});
+const mapDispatchToProps = (dispatch) => {
+  return {
+    postReset: (active) => {
+      dispatch(resetPost(active));
+    },
+    putReset: (_id, active) => {
+      dispatch(resetPut(_id, active));
+    },
+    update: (_id, active, obj) => {
+      dispatch(submitPut(_id, obj, active));
+    },
+  };
+};
 
-const mapStateToProps = state => ({
-  postState: state.post,
-  putState: state.put,
-});
+const mapStateToProps = (state) => {
+  return {
+    postState: state.post,
+    putState: state.put,
+  };
+};
 
 const Container = connect(
   mapStateToProps,

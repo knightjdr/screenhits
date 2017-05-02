@@ -1,9 +1,18 @@
+@import '../style/palette';
+
 .compact-list {
-  cursor: pointer;
   display: none;
+  line-height: 60px;
+  vertical-align: middle;
 }
-.compact-list > a {
+.compact-list-button {
+  background: none;
+  border: none;
+  color: $text-color;
+  cursor: pointer;
   font-size: 30px;
+  margin: 0px;
+  padding: 0px;
 }
 .compact-menu {
   border-radius: 2px;
@@ -12,6 +21,7 @@
 }
 .compact-backdrop {
   background-color: rgba(0, 0, 0, 0);
+  border: none;
   height: 100%;
   left: 0;
   top: 0;

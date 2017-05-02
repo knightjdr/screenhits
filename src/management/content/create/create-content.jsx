@@ -1,74 +1,28 @@
-import CreateProject from 'root/management/content/create/create-project.jsx';
 import CSSTransitionGroup from 'react-transition-group/CSSTransitionGroup';
 import FlatButton from 'material-ui/FlatButton';
 import FontAwesome from 'react-fontawesome';
-import Format from 'root/management/content/create/format-submission.js';
-import { objectEmpty, uppercaseFirst } from 'root/helpers/helpers.js';
+import PropTypes from 'prop-types';
 import React from 'react';
 import ReactTooltip from 'react-tooltip';
-import ValidateField from 'root/management/content/create/validate-fields.js';
 
-import 'root/management/content/create/create-content.scss';
+import CreateProject from './create-project';
+import { uppercaseFirst } from '../../../helpers/helpers';
+
+import './create-content.scss';
 
 class CreateContent extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = Format.blankState[this.props.active];
-  }
-  componentWillReceiveProps(nextProps) {
-    const success = this.props.post[this.props.active].isSubmitted && !nextProps.post[this.props.active].isSubmitted && !nextProps.post[this.props.active].didSubmitFail ? true : false;
-    if(success) {
-      this.props.setIndex(nextProps.post[this.props.active]._id, nextProps.active);
-      this.props.cancel();
-    }
-  }
-  cancelForm = () => {
-    this.props.cancel();
-    this.setState(Format.blankState[this.props.active]);
-  }
-  inputChange = (field, value) => {
-    //check if field is valid and update errors object
-    const errors = Object.assign({}, this.state.errors);
-    const validate = ValidateField.project[field](value);
-    errors[field] = validate.error ? validate.message : null;
-    const warning = objectEmpty(errors) ? false : true;
-    this.setState({errors: errors, warning: warning});
-    //update item state
-    let stateObject = Object.assign({}, this.state.formData);
-    stateObject[field] = value;
-    this.setState({formData: stateObject});
-  }
-  resetForm = () => {
-    this.props.reset(this.props.active);
-    this.setState(Format.blankState[this.props.active]);
-  }
-  submitForm = () => {
-    let error = false;
-    let errors = {};
-    for(let field in this.state.formData) {
-      if(ValidateField[this.props.active].checkFields.indexOf(field) > -1) {
-        const validation = ValidateField[this.props.active][field](this.state.formData[field]);
-        if(validation.error) {
-          error = true;
-          errors[field] = validation.message;
-        }
-      }
-    }
-    if(error) {
-      this.setState({errors: errors, warning: true});
-    } else {
-      const submitObj = Format[this.props.active](this.state.formData, this.props);
-      this.props.create(this.props.active, submitObj);
-    }
-  }
-  render () {
+  render() {
     return (
       <div className="create-container">
-        {this.props.active === 'project' ?
-          <CreateProject errors={this.state.errors} formData={this.state.formData} inputChange={this.inputChange} />
+        { this.props.active === 'project' ?
+          <CreateProject
+            errors={ this.props.errors }
+            formData={ this.props.formData }
+            inputChange={ this.props.inputChange }
+          />
           : null
         }
-        {this.state.warning &&
+        { this.props.warning &&
           <div className="create-warning">
             <FontAwesome name="exclamation-triangle " /> There are errors in the form. Please correct before proceeding.
           </div>
@@ -77,47 +31,49 @@ class CreateContent extends React.Component {
           <FlatButton
             className="create-button-create"
             label="Create"
-            onClick={this.submitForm}
+            onClick={ this.props.submitForm }
           />
           <FlatButton
             className="create-button-reset"
-            data-tip
-            data-for='resetForm'
+            data-tip={ true }
+            data-for="resetForm"
             label="Reset"
-            onClick={this.resetForm}
+            onClick={ this.props.resetForm }
           />
-          <ReactTooltip id='resetForm' effect='solid' type='dark' place="top">
+          <ReactTooltip id="resetForm" effect="solid" type="dark" place="top">
             <span>Reset the form</span>
           </ReactTooltip>
           <FlatButton
             className="create-button-cancel"
-            data-tip
-            data-for='cancelForm'
+            data-tip={ true }
+            data-for="cancelForm"
             label="Cancel"
-            onClick={this.cancelForm}
+            onClick={ this.props.cancelForm }
           />
-          <ReactTooltip id='cancelForm' effect='solid' type='dark' place="top">
-            <span>Cancel {this.props.active} creation</span>
+          <ReactTooltip id="cancelForm" effect="solid" type="dark" place="top">
+            <span>Cancel { this.props.active } creation</span>
           </ReactTooltip>
           <div className="create-submission">
             <CSSTransitionGroup
               transitionName="create-message-text"
-              transitionEnterTimeout={500}
-              transitionLeaveTimeout={500}>
-              { this.props.post[this.props.active].isSubmitted &&
+              transitionEnterTimeout={ 500 }
+              transitionLeaveTimeout={ 500 }
+            >
+              { this.props.postState[this.props.active].isSubmitted &&
                 <div className="create-information" key="create-submit">
-                  <FontAwesome name="spinner" pulse={true} /> {uppercaseFirst(this.props.active)} submitted
+                  <FontAwesome name="spinner" pulse={ true } /> { uppercaseFirst(this.props.active) } submitted
                 </div>
               }
-              { this.props.post[this.props.active].didSubmitFail &&
-                <div className="create-information" key="create-fail" style={{zIndex: 2}}>
-                  <FontAwesome name="exclamation-triangle" /> {uppercaseFirst(this.props.active)} creation failed.{'\u00A0'}
-                  {this.props.post[this.props.active].message}.
+              { this.props.postState[this.props.active].didSubmitFail &&
+                <div className="create-information" key="create-fail" style={ { zIndex: 2 } }>
+                  <FontAwesome name="exclamation-triangle" /> { uppercaseFirst(this.props.active) } creation failed.{'\u00A0'}
+                  { this.props.postState[this.props.active].message }.
                 </div>
               }
-              { this.props.post[this.props.active].message && !this.props.post[this.props.active].didSubmitFail &&
-                <div className="create-information" key="create-message" style={{zIndex: 2}}>
-                  {this.props.post[this.props.active].message}.
+              { this.props.postState[this.props.active].message &&
+                !this.props.postState[this.props.active].didSubmitFail &&
+                <div className="create-information" key="create-message" style={ { zIndex: 2 } }>
+                  { this.props.postState[this.props.active].message }.
                 </div>
               }
             </CSSTransitionGroup>
@@ -126,14 +82,31 @@ class CreateContent extends React.Component {
       </div>
     );
   }
-};
+}
 
 CreateContent.propTypes = {
-  create: React.PropTypes.func.isRequired,
-  post: React.PropTypes.object.isRequired,
-  reset: React.PropTypes.func.isRequired,
-  setIndex: React.PropTypes.func.isRequired,
-  user: React.PropTypes.object.isRequired
+  active: PropTypes.string.isRequired,
+  cancelForm: PropTypes.func.isRequired,
+  errors: PropTypes.shape({
+    description: PropTypes.string,
+    name: PropTypes.string,
+    permission: PropTypes.string,
+  }).isRequired,
+  formData: PropTypes.shape({
+    description: PropTypes.string,
+    name: PropTypes.string,
+    permission: PropTypes.string,
+  }).isRequired,
+  inputChange: PropTypes.func.isRequired,
+  postState: PropTypes.shape({
+    didSubmitFail: PropTypes.bool,
+    _id: PropTypes.number,
+    isSubmitted: PropTypes.bool,
+    message: PropTypes.string,
+  }).isRequired,
+  resetForm: PropTypes.func.isRequired,
+  submitForm: PropTypes.func.isRequired,
+  warning: PropTypes.bool.isRequired,
 };
 
 export default CreateContent;

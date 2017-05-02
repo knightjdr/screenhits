@@ -1,6 +1,7 @@
-import Favicon from 'root/head/favicon.jsx';
 import Helmet from 'react-helmet';
 import React from 'react';
+
+import Favicon from './favicon';
 
 export default class Head extends React.Component {
   render() {
@@ -9,6 +10,6 @@ export default class Head extends React.Component {
         <Helmet title="ScreenHits" />
         <Favicon />
       </div>
-    )
+    );
   }
 }

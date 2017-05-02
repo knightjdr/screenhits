@@ -1,47 +1,44 @@
 import FontAwesome from 'react-fontawesome';
 import MenuItem from 'material-ui/MenuItem';
+import PropTypes from 'prop-types';
 import SelectField from 'material-ui/SelectField';
 import TextField from 'material-ui/TextField';
 import React from 'react';
-import ReactTooltip from 'react-tooltip';
 
-import 'root/management/content/create/create-content.scss';
+import './create-content.scss';
 
 class CreateProject extends React.Component {
-  constructor(props) {
-    super(props);
-  }
-  render () {
+  render() {
     return (
       <div>
         <span className="create-header">
           <FontAwesome name="info-circle" /> Name your project and provide a description.
         </span>
         <TextField
-          errorText={this.props.errors.name}
+          errorText={ this.props.errors.name }
           floatingLabelText="Project name (short)"
-          fullWidth={true}
-          multiLine={true}
-          onChange={(e) => this.props.inputChange('name', e.target.value)}
-          rows={1}
-          rowsMax={2}
-          value={this.props.formData.name}
+          fullWidth={ true }
+          multiLine={ true }
+          onChange={ (e) => { this.props.inputChange('name', e.target.value); } }
+          rows={ 1 }
+          rowsMax={ 2 }
+          value={ this.props.formData.name }
         />
         <TextField
-          errorText={this.props.errors.description}
+          errorText={ this.props.errors.description }
           floatingLabelText="Project description"
-          fullWidth={true}
-          multiLine={true}
-          onChange={(e) => this.props.inputChange('description', e.target.value)}
-          rows={1}
-          rowsMax={4}
-          value={this.props.formData.description}
+          fullWidth={ true }
+          multiLine={ true }
+          onChange={ (e) => { this.props.inputChange('description', e.target.value); } }
+          rows={ 1 }
+          rowsMax={ 4 }
+          value={ this.props.formData.description }
         />
         <SelectField
           floatingLabelText="Other user permissions"
-          fullWidth={true}
-          value={this.props.formData.permission}
-          onChange={(e, index, value) => this.props.inputChange('permission', value)}
+          fullWidth={ true }
+          value={ this.props.formData.permission }
+          onChange={ (e, index, value) => { this.props.inputChange('permission', value); } }
         >
           <MenuItem key="lr" value="lr" primaryText="Read - lab (all lab members can view this project)" />
           <MenuItem key="lw" value="lw" primaryText="Write - lab (all lab members can edit this project)" />
@@ -50,8 +47,22 @@ class CreateProject extends React.Component {
           <MenuItem key="n" value="n" primaryText="None (only you can view this project)" />
         </SelectField>
       </div>
-    )
+    );
   }
 }
+
+CreateProject.propTypes = {
+  errors: PropTypes.shape({
+    description: PropTypes.string,
+    name: PropTypes.string,
+    permission: PropTypes.string,
+  }).isRequired,
+  formData: PropTypes.shape({
+    description: PropTypes.string,
+    name: PropTypes.string,
+    permission: PropTypes.string,
+  }).isRequired,
+  inputChange: PropTypes.func.isRequired,
+};
 
 export default CreateProject;

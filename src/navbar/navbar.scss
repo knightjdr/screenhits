@@ -43,6 +43,7 @@ $navbar-text-color: $text-color;
   color: $navbar-background;
   font-family: 'Lato', sans-serif;
   font-size: 22px;
+  padding-bottom: 3px;
 }
 .navbar-list .vertical-list li:hover {
   background-color: $navbar-link-hover;

@@ -1,92 +1,78 @@
-import CreateContent from 'root/management/content/create/create-content-container.js';
-import DisplayContent from 'root/management/content/display/display-content-container.js';
-import ManagementMenu from 'root/management/content/menu/management-menu.jsx';
+import PropTypes from 'prop-types';
 import React from 'react';
 
-import 'root/management/content/management-content.scss';
+import CreateContent from './create/create-content-container';
+import DisplayContent from './display/display-content-container';
+import ManagementMenu from './menu/management-menu';
+
+import './management-content.scss';
 
 class ManagementContent extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      createBoolean: false,
-      editBoolean: false,
-      item: {},
-      manageBoolean: false
+  render() {
+    let content;
+    if (this.props.createBoolean) {
+      content = (<CreateContent
+        active={ this.props.active }
+        cancel={ this.props.cancel }
+      />);
+    } else if (this.props.manageBoolean) {
+      content = null;
+    } else if (this.props.selected) {
+      content = (<DisplayContent
+        active={ this.props.active }
+        cancel={ this.props.cancel }
+        edit={ this.props.editBoolean }
+        item={ this.props.item }
+        key={ this.props.selected }
+        selected={ this.props.selected }
+      />);
+    } else if (this.props.availableLength === 0) {
+      content = (<div className="content-intro">
+        Create a new { this.props.active } to begin
+      </div>);
+    } else {
+      content = (<div className="content-intro">
+        Select an existing { this.props.active } or create a new { this.props.active } to begin
+      </div>);
     }
-  }
-  componentWillReceiveProps(nextProps) {
-    const index = nextProps.available[nextProps.active].items.findIndex(obj => obj._id === nextProps.selected);
-    const item = index > -1 ? nextProps.available[nextProps.active].items[index] : {};
-    if(Object.keys(item).length > 0){
-      this.setState({item: item});
-    }
-    if(nextProps.selected && nextProps.selected !== this.props.selected) {
-      if(this.state.createBoolean) {
-        this.setState({createBoolean: false});
-      }
-    }
-  }
-  create = () => {
-    this.props.resetPost();
-    this.setState({
-      createBoolean: true,
-      editBoolean: false,
-      manageBoolean: false
-    });
-  }
-  edit = () => {
-    this.props.resetPut(this.state.item._id);
-    this.setState({
-      createBoolean: false,
-      editBoolean: true,
-      manageBoolean: false
-    });
-  }
-  manage = () => {
-    this.setState({
-      createBoolean: false,
-      editBoolean: false,
-      manageBoolean: true
-    });
-  }
-  reset = () => {
-    this.setState({
-      createBoolean: false,
-      editBoolean: false,
-      manageBoolean: false
-    });
-  }
-  render () {
     return (
       <div className="content-wrapper">
         <div className="content-menu">
-          <ManagementMenu active={this.props.active} funcs={{create: this.create, edit: this.edit, manage: this.manage}} selected={this.props.selected} />
+          <ManagementMenu
+            active={ this.props.active }
+            funcs={ {
+              create: this.props.funcs.create,
+              edit: this.props.funcs.edit,
+              manage: this.props.funcs.manage,
+            } }
+            selected={ this.props.selected }
+          />
         </div>
-        {this.state.createBoolean ?
-          <CreateContent active={this.props.active} reset={this.reset} />
-        : this.state.manageBoolean ?
-          <ManageContent active={this.props.active} />
-        : this.props.selected ?
-          <DisplayContent active={this.props.active} reset={this.reset} edit={this.state.editBoolean} item={this.state.item} key={this.props.selected} selected={this.props.selected} />
-        : this.props.available[this.props.active].length === 0 ?
-          <div className="content-intro">
-            Create a new {this.props.active} to begin
-          </div>
-        :
-          <div className="content-intro">
-            Select an existing {this.props.active} or create a new {this.props.active} to begin
-          </div>
-        }
+        { content }
       </div>
     );
   }
+}
+
+ManagementContent.defaultProps = {
+  selected: null,
 };
 
 ManagementContent.propTypes = {
-  available: React.PropTypes.object.isRequired,
-  resetPost: React.PropTypes.func.isRequired,
-  resetPut: React.PropTypes.func.isRequired
+  active: PropTypes.string.isRequired,
+  availableLength: PropTypes.number.isRequired,
+  cancel: PropTypes.func.isRequired,
+  createBoolean: PropTypes.bool.isRequired,
+  editBoolean: PropTypes.bool.isRequired,
+  funcs: PropTypes.shape({
+    create: PropTypes.func,
+    edit: PropTypes.func,
+    manage: PropTypes.func,
+  }).isRequired,
+  item: PropTypes.shape({
+  }).isRequired,
+  manageBoolean: PropTypes.bool.isRequired,
+  selected: PropTypes.number,
 };
 
 export default ManagementContent;

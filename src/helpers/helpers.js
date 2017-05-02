@@ -1,6 +1,6 @@
 const objectEmpty = (obj) => {
   let empty = true;
-  Object.values(obj).for((v) => {
+  Object.values(obj).forEach((v) => {
     if (v) {
       empty = false;
     }
@@ -8,6 +8,8 @@ const objectEmpty = (obj) => {
   return empty;
 };
 
-const uppercaseFirst = string => string.charAt(0).toUpperCase() + string.substring(1);
+const uppercaseFirst = (string) => {
+  return string.charAt(0).toUpperCase() + string.substring(1);
+};
 
 export { objectEmpty, uppercaseFirst };

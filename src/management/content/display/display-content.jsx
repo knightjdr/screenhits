@@ -104,35 +104,39 @@ class DisplayContent extends React.Component {
   }
 }
 
+DisplayContent.defaultProps = {
+  postMessage: null,
+};
+
 DisplayContent.propTypes = {
   active: PropTypes.string.isRequired,
   cancel: PropTypes.func.isRequired,
   edit: PropTypes.bool.isRequired,
   editMessages: PropTypes.shape({
-    didPutFail: false,
-    _id: null,
-    isPut: false,
-    message: null,
+    didPutFail: PropTypes.bool,
+    _id: PropTypes.number,
+    isPut: PropTypes.bool,
+    message: PropTypes.string,
   }).isRequired,
   errors: PropTypes.shape({
-    description: null,
-    name: null,
-    permission: null,
+    description: PropTypes.string,
+    name: PropTypes.string,
+    permission: PropTypes.string,
   }).isRequired,
   item: PropTypes.shape({
-    _id: 1,
-    'creator-email': null,
-    'creator-name': null,
-    description: null,
-    lab: null,
-    name: null,
-    'owner-email': null,
-    'owner-name': null,
-    permission: null,
-    'creation-date': null,
-    'update-date': null,
+    _id: PropTypes.number,
+    'creator-email': PropTypes.string,
+    'creator-name': PropTypes.string,
+    description: PropTypes.string,
+    lab: PropTypes.string,
+    name: PropTypes.string,
+    'owner-email': PropTypes.string,
+    'owner-name': PropTypes.string,
+    permission: PropTypes.string,
+    'creation-date': PropTypes.string,
+    'update-date': PropTypes.string,
   }).isRequired,
-  postMessage: PropTypes.string.isRequired,
+  postMessage: PropTypes.string,
   reset: PropTypes.func.isRequired,
   resetKey: PropTypes.number.isRequired,
   update: PropTypes.func.isRequired,

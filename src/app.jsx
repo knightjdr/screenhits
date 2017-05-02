@@ -1,8 +1,11 @@
-import 'root/style/normalize.css';
-import 'root/style/fonts.scss';
-import 'root/app.scss';
-import Navbar from 'root/navbar/navbar.jsx';
+import PropTypes from 'prop-types';
 import React from 'react';
+
+import Navbar from './navbar/navbar';
+
+import './style/normalize.css';
+import './style/fonts.scss';
+import './app.scss';
 
 export default class App extends React.Component {
   render() {
@@ -13,6 +16,10 @@ export default class App extends React.Component {
           {this.props.children}
         </div>
       </div>
-    )
+    );
   }
 }
+
+App.propTypes = {
+  children: PropTypes.node.isRequired,
+};

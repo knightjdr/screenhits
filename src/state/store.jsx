@@ -1,29 +1,35 @@
 import { createStore, applyMiddleware } from 'redux';
-import initialState from 'root/state/test-state.json';
+import PropTypes from 'prop-types';
 import { Provider } from 'react-redux';
 import React from 'react';
-import stateApp from 'root/state/reducers';
-import thunkMiddleware from 'redux-thunk'
+import thunkMiddleware from 'redux-thunk';
+
+import stateApp from './reducers';
+import initialState from './test-state.json';
 
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
-export let store = createStore(
+export const store = createStore(
   stateApp,
   initialState,
   composeEnhancers(
     applyMiddleware(
-    thunkMiddleware
-    )
-  )
+    thunkMiddleware,
+  ),
+  ),
 );
 
 export default class Store extends React.Component {
   render() {
     return (
-      <Provider store={store}>
+      <Provider store={ store }>
         <div>
-          {this.props.children}
+          { this.props.children }
         </div>
       </Provider>
     );
   }
 }
+
+Store.propTypes = {
+  children: PropTypes.node.isRequired,
+};

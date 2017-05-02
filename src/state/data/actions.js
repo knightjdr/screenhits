@@ -8,7 +8,7 @@ export function fillData(target, arr) {
   return {
     arr,
     target,
-    type: 'FILL_DATA'
+    type: 'FILL_DATA',
   };
 }
 
@@ -16,42 +16,43 @@ export function fillFailed(target, error) {
   return {
     message: error,
     target,
-    type: 'FILL_FAILED'
-
+    type: 'FILL_FAILED',
   };
 }
 
 export function isFilling(target) {
   return {
     target,
-    type: 'IS_FILLING'
+    type: 'IS_FILLING',
   };
 }
 
-//thunks
-export function getData(target) {
-  return function(dispatch) {
+// thunks
+const getData = (target) => {
+  return (dispatch) => {
     dispatch(isFilling(target));
-    let headers = new Headers();
+    const headers = new Headers();
     headers.append('Accept', 'application/json');
     headers.append('Auth', 'James Knight:knightjdr@gmail.com:Gingras:auth_token');
-    return fetch('http://localhost:8003/management?target=' + target, {
-        cache: 'default',
-        headers: headers,
-        mode: 'cors',
-      })
-      .then(response => response.json())
-      .then(json => {
-        if(json.status === 200) {
-          dispatch(fillData(target, json.data))
-        } else {
-          const error = 'Status code: ' + json.status + '; ' + json.message
-          dispatch(fillFailed(target, error))
-        }
-      })
-      .catch(error =>
-        dispatch(fillFailed(target, error))
-      )
-    ;
-  }
-}
+    return fetch(`http://localhost:8003/management?target=${target}`, {
+      cache: 'default',
+      headers,
+      mode: 'cors',
+    })
+    .then((response) => {
+      return response.json();
+    })
+    .then((json) => {
+      if (json.status === 200) {
+        dispatch(fillData(target, json.data));
+      } else {
+        const error = `Status code: ${json.status}; ${json.message}`;
+        dispatch(fillFailed(target, error));
+      }
+    })
+    .catch((error) => {
+      dispatch(fillFailed(target, error));
+    });
+  };
+};
+export { getData };

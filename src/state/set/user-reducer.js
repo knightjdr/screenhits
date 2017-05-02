@@ -1,19 +1,19 @@
-import SET_USER from 'root/state/set/user-actions.js';
+import SET_USER from './user-actions';
 
-const User = function(state = {
+const User = (state = {
   email: '',
   lab: '',
-  name: ''
-  }, action) {
+  name: '',
+}, action) => {
   switch (action.type) {
     case SET_USER:
       return Object.assign({}, state, {
         email: action.email,
         lab: action.lab,
-        name: action.name
+        name: action.name,
       });
     default:
-      return state
+      return state;
   }
-}
+};
 export default User;

@@ -1,5 +1,5 @@
 import fetch from 'isomorphic-fetch';
-import { getData } from 'root/state/data/actions.js';
+import { getData } from '../data/actions';
 
 export const FAIL_POST = 'FAIL_POST';
 export const REQUEST_POST = 'REQUEST_POST';
@@ -11,21 +11,21 @@ export function failPost(target, message) {
     message,
     target,
     type: 'FAIL_POST',
-  }
+  };
 }
 
 export function requestPost(target) {
   return {
     target,
     type: 'REQUEST_POST',
-  }
+  };
 }
 
 export function resetPost(target) {
   return {
     target,
     type: 'RESET_POST',
-  }
+  };
 }
 
 export function successPost(_id, message, target) {
@@ -34,36 +34,38 @@ export function successPost(_id, message, target) {
     message,
     target,
     type: 'SUCCESS_POST',
-  }
+  };
 }
 
-//thunks
-export function submitPost(target, obj) {
-  return function(dispatch) {
+// thunks
+const submitPost = (target, obj) => {
+  return (dispatch) => {
     dispatch(requestPost(target));
-    let headers = new Headers();
+    const headers = new Headers();
     headers.append('Accept', 'application/json');
     headers.append('Content-Type', 'application/json');
     return fetch('http://localhost:8003/creation/', {
-        body: JSON.stringify(obj),
-        cache: 'default',
-        headers: headers,
-        method: 'POST',
-        mode: 'cors',
-      })
-      .then(response => response.json())
-      .then(json => {
-        if(json.status === 200) {
-          dispatch(successPost(json._id, json.message, target));
-          dispatch(getData(target));
-        } else {
-          const error = 'Status code: ' + json.status + '; ' + json.message;
-          dispatch(failPost(target, error));
-        }
-      })
-      .catch(error =>
-        dispatch(failPost(target, error))
-      )
-    ;
-  }
-}
+      body: JSON.stringify(obj),
+      cache: 'default',
+      headers,
+      method: 'POST',
+      mode: 'cors',
+    })
+    .then((response) => {
+      return response.json();
+    })
+    .then((json) => {
+      if (json.status === 200) {
+        dispatch(successPost(json._id, json.message, target));
+        dispatch(getData(target));
+      } else {
+        const error = `Status code: ${json.status}; ${json.message}`;
+        dispatch(failPost(target, error));
+      }
+    })
+    .catch((error) => {
+      dispatch(failPost(target, error));
+    });
+  };
+};
+export { submitPost };

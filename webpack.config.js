@@ -8,7 +8,7 @@ module.exports = {
   devServer: {
     historyApiFallback: true
   },
-  entry: path.join(srcPath, 'client.jsx'),
+  entry: path.join(srcPath, 'client'),
   module: {
     loaders: [
       {
@@ -69,5 +69,8 @@ module.exports = {
   },
   plugins: [
     new ExtractTextPlugin({filename: 'bundle.css', allChunks: true})
-  ]
+  ],
+  resolve: {
+    extensions: ['.js', '.jsx']
+  }
 };

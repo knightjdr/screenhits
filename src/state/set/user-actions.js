@@ -5,6 +5,6 @@ export function setUser(email, lab, name) {
     email,
     lab,
     name,
-    type: 'SET_USER'
+    type: 'SET_USER',
   };
 }
