@@ -2,6 +2,7 @@ import {
   FILL_DATA,
   FILL_FAILED,
   IS_FILLING,
+  PUSH_DATA,
 } from './actions';
 
 const Available = (state = {
@@ -58,6 +59,11 @@ const Available = (state = {
         items: [],
         message: null,
       };
+      updateObject[action.target] = modifiedFields;
+      return Object.assign({}, state, updateObject);
+    case PUSH_DATA:
+      modifiedFields = Object.assign({}, state[action.target]);
+      modifiedFields.items.push(action.obj);
       updateObject[action.target] = modifiedFields;
       return Object.assign({}, state, updateObject);
     default:

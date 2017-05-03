@@ -16,13 +16,13 @@ class CreateContentContainer extends React.Component {
   }
   componentWillReceiveProps(nextProps) {
     const { active, postState } = nextProps;
-    const success = this.props.postState[this.props.active].isSubmitted &&
-      !postState[this.props.active].isSubmitted &&
-      !postState[this.props.active].didSubmitFail
+    const success = this.props.postState[active].isSubmitted &&
+      !postState[active].isSubmitted &&
+      !postState[active].didSubmitFail
     ;
     if (success) {
-      this.props.setIndex(postState[this.props.active]._id, active);
-      this.props.reset();
+      this.props.setIndex(postState[active]._id, active);
+      this.props.cancel();
     }
   }
   cancelForm = () => {

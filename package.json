@@ -60,6 +60,7 @@
     "material-ui": "^0.17.1",
     "moment": "^2.18.1",
     "mongodb": "^2.2.26",
+    "numeral": "^2.0.6",
     "prop-types": "^15.5.8",
     "react": "^15.4.2",
     "react-addons-create-fragment": "^15.4.2",
@@ -73,6 +74,7 @@
     "react-tooltip": "^3.3.0",
     "react-transition-group": "^1.1.2",
     "redux": "^3.6.0",
-    "redux-thunk": "^2.2.0"
+    "redux-thunk": "^2.2.0",
+    "scroll": "^2.0.0"
   }
 }

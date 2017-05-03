@@ -1,9 +1,10 @@
 import SET_USER from './user-actions';
 
 const User = (state = {
-  email: '',
-  lab: '',
-  name: '',
+  email: null,
+  lab: null,
+  name: null,
+  token: null,
 }, action) => {
   switch (action.type) {
     case SET_USER:
@@ -11,6 +12,7 @@ const User = (state = {
         email: action.email,
         lab: action.lab,
         name: action.name,
+        token: action.token,
       });
     default:
       return state;

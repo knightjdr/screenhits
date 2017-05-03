@@ -1,5 +1,5 @@
 import fetch from 'isomorphic-fetch';
-import { getData } from '../data/actions';
+import { pushData } from '../data/actions';
 
 export const FAIL_POST = 'FAIL_POST';
 export const REQUEST_POST = 'REQUEST_POST';
@@ -44,7 +44,7 @@ const submitPost = (target, obj) => {
     const headers = new Headers();
     headers.append('Accept', 'application/json');
     headers.append('Content-Type', 'application/json');
-    return fetch('http://localhost:8003/creation/', {
+    return fetch('http://localhost:8003/management/', {
       body: JSON.stringify(obj),
       cache: 'default',
       headers,
@@ -56,8 +56,8 @@ const submitPost = (target, obj) => {
     })
     .then((json) => {
       if (json.status === 200) {
+        dispatch(pushData(json.obj, target));
         dispatch(successPost(json._id, json.message, target));
-        dispatch(getData(target));
       } else {
         const error = `Status code: ${json.status}; ${json.message}`;
         dispatch(failPost(target, error));

@@ -30,14 +30,17 @@ class Management extends React.Component {
           </ReactTooltip>
           { this.props.viewType === 'hierarchy' ?
             <span>
-              { this.props.available.project.items.length === 0 ? null :
-              <ManagementSelection
-                active={ this.props.activeTab }
-                details={ this.props.available.project }
-                onClick={ () => { this.props.changeActive('project'); } }
-                type="project"
-                selected={ this.props.selected.project }
-              />
+              { this.props.available.project.items.length >= 0 ||
+                this.props.available.project.isFetching ?
+                  <ManagementSelection
+                    active={ this.props.activeTab }
+                    details={ this.props.available.project }
+                    onClick={ () => { this.props.changeActive('project'); } }
+                    type="project"
+                    selected={ this.props.selected.project }
+                  />
+                :
+                null
               }
               { !this.props.selected.project ? null :
               <ManagementSelection

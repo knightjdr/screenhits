@@ -27,6 +27,7 @@ const Available = {
         res.send({status: 200, data: documents});
       })
       .catch((error) => {
+        console.log(error);
         res.status(500).send({status: 500, message: 'There was an error performing this query: ' + error});
       })
     ;

@@ -1,0 +1,34 @@
+@import '../../../style/palette';
+
+.manage-content {
+  padding: 10px 5px 10px 5px;
+}
+.manage-header {
+  color: $primary-h800;
+}
+.manage-information {
+  background-color: white;
+}
+.manage-message-text-enter {
+  opacity: 0.01;
+}
+.manage-message-text-enter.manage-message-text-enter-active {
+  opacity: 1;
+  transition: opacity 500ms ease-in;
+}
+.manage-message-text-leave {
+  opacity: 1;
+}
+.manage-message-text-leave.manage-message-text-leave-active {
+  opacity: 0.01;
+  transition: opacity 500ms ease-in;
+}
+.manage-submission {
+  color: $primary-h800;
+  margin: 10px 0px 0px 10px;
+}
+.manage-user-get {
+  margin-top: 20px;
+  text-align: center;
+  width: 100%;
+}

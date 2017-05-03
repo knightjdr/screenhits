@@ -91,6 +91,7 @@ ManagementSelectionContainer.defaultProps = {
 ManagementSelectionContainer.propTypes = {
   active: PropTypes.string.isRequired,
   details: PropTypes.shape({
+    isFetching: PropTypes.bool,
     items: PropTypes.arrayOf(
       PropTypes.shape({
         _id: PropTypes.number,

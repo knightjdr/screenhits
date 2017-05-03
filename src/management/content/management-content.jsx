@@ -3,6 +3,7 @@ import React from 'react';
 
 import CreateContent from './create/create-content-container';
 import DisplayContent from './display/display-content-container';
+import ManageContent from './manage/manage-content-container';
 import ManagementMenu from './menu/management-menu';
 
 import './management-content.scss';
@@ -16,7 +17,13 @@ class ManagementContent extends React.Component {
         cancel={ this.props.cancel }
       />);
     } else if (this.props.manageBoolean) {
-      content = null;
+      content = (<ManageContent
+        cancel={ this.props.cancel }
+        lab={ this.props.item.lab }
+        name={ this.props.item.name }
+        permission={ this.props.item.permission }
+        selected={ this.props.selected }
+      />);
     } else if (this.props.selected) {
       content = (<DisplayContent
         active={ this.props.active }
@@ -70,6 +77,9 @@ ManagementContent.propTypes = {
     manage: PropTypes.func,
   }).isRequired,
   item: PropTypes.shape({
+    lab: PropTypes.string,
+    name: PropTypes.string,
+    permission: PropTypes.string,
   }).isRequired,
   manageBoolean: PropTypes.bool.isRequired,
   selected: PropTypes.number,

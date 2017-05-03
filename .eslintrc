@@ -12,6 +12,7 @@
     "react/jsx-boolean-value": [2, "always"],
     "react/jsx-curly-spacing": [2, "always"],
     "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }],
+    "no-console": [0],
     "no-underscore-dangle": ["error", { "allow": ["_id", "__REDUX_DEVTOOLS_EXTENSION_COMPOSE__"] }],
     "react/prefer-stateless-function": [0]
   }

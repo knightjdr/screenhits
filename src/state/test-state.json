@@ -52,6 +52,7 @@
   "user": {
     "email": "knightjdr@gmail.com",
     "lab": "Gingras",
-    "name": "James Knight"
+    "name": "James Knight",
+    "token": "aaaaaa"
   }
 }

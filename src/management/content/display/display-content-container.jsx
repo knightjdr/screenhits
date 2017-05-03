@@ -67,6 +67,7 @@ class DisplayContentContainer extends React.Component {
     }
   }
   cancel = () => {
+    this.reset();
     this.props.putReset(this.props.item._id, this.props.active);
     this.props.cancel();
   }

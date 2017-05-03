@@ -1,4 +1,6 @@
-import SET_INDEX from './index-actions';
+import {
+  SET_INDEX,
+} from './index-actions';
 
 const targetChildren = {
   experiment: ['sample'],

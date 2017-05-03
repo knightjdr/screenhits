@@ -3,6 +3,7 @@ import fetch from 'isomorphic-fetch';
 export const FILL_DATA = 'FILL_DATA';
 export const FILL_FAILED = 'FILL_FAILED';
 export const IS_FILLING = 'IS_FILLING';
+export const PUSH_DATA = 'PUSH_DATA';
 
 export function fillData(target, arr) {
   return {
@@ -24,6 +25,14 @@ export function isFilling(target) {
   return {
     target,
     type: 'IS_FILLING',
+  };
+}
+
+export function pushData(obj, target) {
+  return {
+    obj,
+    target,
+    type: 'PUSH_DATA',
   };
 }
 

@@ -1,3 +1,4 @@
+import FontAwesome from 'react-fontawesome';
 import Menu from 'material-ui/Menu';
 import MenuItem from 'material-ui/MenuItem';
 import Popover, { PopoverAnimationVertical } from 'material-ui/Popover';
@@ -39,6 +40,13 @@ class ManagementSelection extends React.Component {
           } }
         >
           <Menu>
+            { this.props.details.isFetching &&
+              <MenuItem
+                disabled={ true }
+                key="fetching"
+                primaryText={ [<FontAwesome key="fetching" name="spinner" pulse={ true } />, ' Fetching'] }
+              />
+            }
             { this.props.details.items.map((item) => {
               return (
                 <MenuItem
@@ -71,6 +79,7 @@ ManagementSelection.propTypes = {
   ]).isRequired,
   hideList: PropTypes.func.isRequired,
   details: PropTypes.shape({
+    isFetching: PropTypes.bool,
     items: PropTypes.arrayOf(
       PropTypes.shape({
         _id: PropTypes.number,

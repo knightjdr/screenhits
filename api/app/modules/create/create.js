@@ -17,10 +17,10 @@ const Create = {
         return create.insert('project', objCreate);
       })
       .then(() => {
-        res.send({status: 200, _id: objCreate._id, message: 'Project successfully created with ID ' + objCreate._id});
+        res.send({status: 200, _id: objCreate._id, message: `Project successfully created with ID ${objCreate._id}`, obj: objCreate});
       })
       .catch((error) => {
-        res.status(500).send({status: 500, message: 'There was an error creating this project: ' + error});
+        res.status(500).send({status: 500, message: `There was an error creating this project: ${error}`});
       })
     ;
   }

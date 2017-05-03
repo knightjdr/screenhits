@@ -1,3 +1,6 @@
+# data folder for tests
+data/*
+
 # node modules, client and server side
 node_modules/*
 
