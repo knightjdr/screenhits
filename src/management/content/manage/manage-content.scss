@@ -5,9 +5,11 @@
 }
 .manage-header {
   color: $primary-h800;
+  margin-top: 25px;
 }
 .manage-information {
   background-color: white;
+  margin-top: 20px;
 }
 .manage-message-text-enter {
   opacity: 0.01;
@@ -23,12 +25,48 @@
   opacity: 0.01;
   transition: opacity 500ms ease-in;
 }
+.manage-page-button {
+  background-color: $off-white !important;
+  border: 1px solid $primary-h800 !important;
+  color: $primary-h800 !important;
+  font-size: 20px !important;
+  height: 25px !important;
+  line-height: 12px !important;
+  margin: 0px 5px 0px 5px !important;
+  min-width: 25px !important;
+  vertical-align: center !important;
+  width: 25px !important;
+}
+.manage-page-button:hover {
+background-color: $off-white !important;
+color: $accent-h500 !important;
+}
+.manage-button > div {
+width: 25px !important;
+}
+.manage-permission-button > button  {
+  background-color: $primary-h600 !important;
+}
+.manage-permission-button > button > div > div:hover {
+  background-color: $primary-h700 !important;
+}
+.manage-permission-button > button > div > div span {
+  color: $accent-h400!important;
+}
+.manage-permission-popover > div > div > div > div {
+    padding: 0px 0px 0px 0px !important;
+}
+.manage-small-select {
+  font-size: 12px !important;
+  height: 50px !important;
+}
 .manage-submission {
   color: $primary-h800;
   margin: 10px 0px 0px 10px;
 }
-.manage-user-get {
+.manage-tabs {
   margin-top: 20px;
-  text-align: center;
-  width: 100%;
+}
+.manage-tabs > div > button > div > div {
+  color: $accent-h400 !important;
 }

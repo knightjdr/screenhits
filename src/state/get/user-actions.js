@@ -55,7 +55,7 @@ const userGet = (user, _id, lab, permission) => {
     })
     .then((json) => {
       if (json.status === 200) {
-        dispatch(successGet(json._id, json.message, json.users));
+        dispatch(successGet(_id, json.message, json.users));
       } else {
         const error = `Status code: ${json.status}; ${json.message}`;
         dispatch(failGet(_id, error));

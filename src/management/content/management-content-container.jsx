@@ -59,6 +59,9 @@ class ManagementContentContainer extends React.Component {
       manageBoolean: true,
     });
   }
+  top = () => {
+    return this.element ? this.element.getBoundingClientRect().top : 100;
+  }
   render() {
     return (
       <ManagementContent
@@ -70,7 +73,9 @@ class ManagementContentContainer extends React.Component {
         funcs={ { create: this.create, edit: this.edit, manage: this.manage } }
         item={ this.state.item }
         manageBoolean={ this.state.manageBoolean }
+        ref={ (element) => { this.element = element; } }
         selected={ this.props.selected }
+        top={ this.top }
       />
     );
   }

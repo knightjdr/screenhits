@@ -1,5 +1,3 @@
-'use strict';
-
 const create = require('../crud/create');
 const counter = require('../helpers/counter');
 const validate = require('../validation/validation');
@@ -14,15 +12,16 @@ const Create = {
       })
       .then((sequence) => {
         objCreate._id = sequence;
+        objCreate['user-permission'] = [];
         return create.insert('project', objCreate);
       })
       .then(() => {
-        res.send({status: 200, _id: objCreate._id, message: `Project successfully created with ID ${objCreate._id}`, obj: objCreate});
+        res.send({ status: 200, _id: objCreate._id, message: `Project successfully created with ID ${objCreate._id}`, obj: objCreate });
       })
       .catch((error) => {
-        res.status(500).send({status: 500, message: `There was an error creating this project: ${error}`});
+        res.status(500).send({ status: 500, message: `There was an error creating this project: ${error}` });
       })
     ;
-  }
+  },
 };
 module.exports = Create;

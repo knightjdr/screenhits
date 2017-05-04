@@ -23,6 +23,7 @@ class ManagementContent extends React.Component {
         name={ this.props.item.name }
         permission={ this.props.item.permission }
         selected={ this.props.selected }
+        top={ this.props.top }
       />);
     } else if (this.props.selected) {
       content = (<DisplayContent
@@ -83,6 +84,7 @@ ManagementContent.propTypes = {
   }).isRequired,
   manageBoolean: PropTypes.bool.isRequired,
   selected: PropTypes.number,
+  top: PropTypes.func.isRequired,
 };
 
 export default ManagementContent;
