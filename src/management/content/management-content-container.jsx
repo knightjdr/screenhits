@@ -60,23 +60,27 @@ class ManagementContentContainer extends React.Component {
     });
   }
   top = () => {
-    return this.element ? this.element.getBoundingClientRect().top : 100;
+    return this.element ? this.element.getBoundingClientRect().top : 105;
   }
   render() {
     return (
-      <ManagementContent
-        active={ this.props.active }
-        availableLength={ this.props.available[this.props.active].items.length }
-        cancel={ this.cancel }
-        createBoolean={ this.state.createBoolean }
-        editBoolean={ this.state.editBoolean }
-        funcs={ { create: this.create, edit: this.edit, manage: this.manage } }
-        item={ this.state.item }
-        manageBoolean={ this.state.manageBoolean }
+      <div
+        className="content-ref-container"
         ref={ (element) => { this.element = element; } }
-        selected={ this.props.selected }
-        top={ this.top }
-      />
+      >
+        <ManagementContent
+          active={ this.props.active }
+          availableLength={ this.props.available[this.props.active].items.length }
+          cancel={ this.cancel }
+          createBoolean={ this.state.createBoolean }
+          editBoolean={ this.state.editBoolean }
+          funcs={ { create: this.create, edit: this.edit, manage: this.manage } }
+          item={ this.state.item }
+          manageBoolean={ this.state.manageBoolean }
+          selected={ this.props.selected }
+          top={ this.top }
+        />
+      </div>
     );
   }
 }

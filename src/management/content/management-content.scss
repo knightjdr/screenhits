@@ -13,8 +13,13 @@
   position: absolute;
   width: 50px;
 }
+.content-ref-container {
+  width: 100%;
+}
 .content-wrapper {
   flex: 1 1 auto;
+  height: 100%;
   padding: 0px 5px 0px 5px;
   position: relative;
+  top: 0;
 }

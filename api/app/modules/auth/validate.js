@@ -1,5 +1,3 @@
-'use strict';
-
 const validators = require('../helpers/validators');
 
 const Auth = {

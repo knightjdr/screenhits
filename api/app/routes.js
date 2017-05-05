@@ -1,5 +1,3 @@
-'use strict';
-
 const auth = require('./modules/auth/validate');
 const available = require('./modules/available/available');
 const create = require('./modules/create/create');
@@ -20,6 +18,9 @@ const Routes = {
 		app.post('/management', (req, res) => {
 			create[req.body.target](req.body, res);
 		});
+		app.post('/users', auth.validate, (req, res) => {
+			users.post[req.body.type](req.body._id, req.body.list, res);
+		});
 		app.post('/*', (req, res) => {
 			res.status(404).send({status: 404, error: 'ScreenHits - the route is not valid'});
 		});
@@ -32,6 +33,6 @@ const Routes = {
 		app.use((req, res) => {
 			res.status(405).send({status: 405, error: 'ScreenHits - request method not supported'});
 		});
-  }
+  },
 };
 module.exports = Routes;

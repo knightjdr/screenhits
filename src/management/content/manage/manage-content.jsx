@@ -1,4 +1,4 @@
-// import CSSTransitionGroup from 'react-transition-group/CSSTransitionGroup';
+import CSSTransitionGroup from 'react-transition-group/CSSTransitionGroup';
 import FlatButton from 'material-ui/FlatButton';
 import FontAwesome from 'react-fontawesome';
 import Menu from 'material-ui/Menu';
@@ -7,6 +7,7 @@ import Popover from 'material-ui/Popover';
 import PropTypes from 'prop-types';
 import RaisedButton from 'material-ui/RaisedButton';
 import React from 'react';
+import ReactTooltip from 'react-tooltip';
 import SelectField from 'material-ui/SelectField';
 import {
   Tabs,
@@ -25,9 +26,19 @@ import {
 import './manage-content.scss';
 
 class ManageContent extends React.Component {
+  componentDidMount = () => {
+    window.addEventListener('resize', this.props.calcPageLength);
+    window.addEventListener('resize', this.props.tabNameFunc);
+  }
+  componentWillUnmount = () => {
+    this.props.resetPost();
+    window.removeEventListener('resize', this.props.calcPageLength);
+    window.removeEventListener('resize', this.props.tabNameFunc);
+  }
   permissionToText = (perm) => {
     const permConvert = {
       n: 'None',
+      o: 'Owner',
       r: 'Read',
       w: 'Write',
     };
@@ -40,7 +51,7 @@ class ManageContent extends React.Component {
           <FontAwesome name="info-circle" /> Manage user permissions for project { this.props.selected }: { this.props.name }.
         </span>
         <Tabs className="manage-tabs">
-          <Tab label="Current users" >
+          <Tab label={ this.props.tabNames.current } >
             { this.props.users.isGet &&
               this.props.users._id === this.props.selected &&
               <div className="manage-information" key="manage-get">
@@ -103,7 +114,9 @@ class ManageContent extends React.Component {
                           <RaisedButton
                             className="manage-permission-button"
                             label={ this.permissionToText(user.permission) }
-                            onTouchTap={ (event) => { this.props.openPopover(event, user.email); } }
+                            onTouchTap={ (event) => {
+                              this.props.openPopover(event, user.email, user.permission);
+                            } }
                           />
                           <Popover
                             anchorEl={ this.props.anchorEl }
@@ -145,6 +158,65 @@ class ManageContent extends React.Component {
                       colSpan="3"
                       style={ { textAlign: 'right' } }
                     >
+                      <span className="manage-footer-updates">
+                        <CSSTransitionGroup
+                          transitionName="manage-message-text"
+                          transitionEnterTimeout={ 500 }
+                          transitionLeaveTimeout={ 500 }
+                        >
+                          <span className="manage-post-information">
+                            { this.props.manageState._id === this.props.selected &&
+                              this.props.manageState.isPost &&
+                              <span>
+                                <FontAwesome name="spinner" pulse={ true } /> Updates submitted
+                              </span>
+                            }
+                            { this.props.manageState._id === this.props.selected &&
+                              this.props.manageState.didPostFail &&
+                              <span>
+                                <FontAwesome name="exclamation-triangle" /> Update failed.{'\u00A0'}
+                                { this.props.manageState.message }
+                              </span>
+                            }
+                            { this.props.manageState._id === this.props.selected &&
+                              this.props.manageState.message &&
+                              !this.props.manageState.didPostFail &&
+                              <span>
+                                { this.props.manageState.message }
+                              </span>
+                            }
+                          </span>
+                        </CSSTransitionGroup>
+                      </span>
+                      <span className="manage-footer-buttons">
+                        <FlatButton
+                          className="manage-footer-button-update"
+                          data-tip={ true }
+                          data-for="updateManage"
+                          label="Update"
+                          onClick={ () => { this.props.updateManage('current'); } }
+                        />
+                        <ReactTooltip id="updateManage" effect="solid" type="dark" place="top">
+                          <span>Update permissions</span>
+                        </ReactTooltip>
+                        <FlatButton
+                          className="manage-footer-button-reset"
+                          data-tip={ true }
+                          data-for="resetManage"
+                          label="Reset"
+                          onClick={ this.props.resetManage }
+                        />
+                        <ReactTooltip id="resetManage" effect="solid" type="dark" place="top">
+                          <span>Reset details to most recent save</span>
+                        </ReactTooltip>
+                        <FlatButton
+                          className="manage-footer-button-cancel"
+                          data-tip={ true }
+                          data-for="cancelManage"
+                          label="Cancel"
+                          onClick={ this.props.cancel }
+                        />
+                      </span>
                       { this.props.page > 0 &&
                         <FlatButton
                           className="manage-page-button"
@@ -152,7 +224,7 @@ class ManageContent extends React.Component {
                           onClick={ this.props.pageDown }
                         />
                       }
-                      Page { this.props.page + 1 } of { this.props.pageTotal + 1}
+                      Page { this.props.page + 1 }/{ this.props.pageTotal + 1}
                       { this.props.page < this.props.pageTotal &&
                         <FlatButton
                           className="manage-page-button"
@@ -166,7 +238,7 @@ class ManageContent extends React.Component {
               </Table>
             }
           </Tab>
-          <Tab label="Manage bulk permissions" >
+          <Tab label={ this.props.tabNames.manage } >
             <SelectField
               floatingLabelText="User permissions"
               fullWidth={ true }
@@ -191,35 +263,54 @@ ManageContent.defaultProps = {
 };
 
 ManageContent.propTypes = {
-  anchorEl: PropTypes.shape({
-  }),
+  anchorEl: PropTypes.shape({}),
+  calcPageLength: PropTypes.func.isRequired,
+  cancel: PropTypes.func.isRequired,
   closePopover: PropTypes.func.isRequired,
   formData: PropTypes.shape({
     permission: PropTypes.string.isRequired,
   }).isRequired,
-  name: PropTypes.string.isRequired,
+  manageState: PropTypes.shape({
+    didPostFail: PropTypes.bool,
+    message: PropTypes.string,
+    _id: PropTypes.number,
+    isPost: PropTypes.bool,
+  }).isRequired,
   menuClickPermission: PropTypes.func.isRequired,
+  name: PropTypes.string.isRequired,
   openPopover: PropTypes.func.isRequired,
   page: PropTypes.number.isRequired,
   pageDown: PropTypes.func.isRequired,
   pageTotal: PropTypes.number.isRequired,
   pageUp: PropTypes.func.isRequired,
+  resetManage: PropTypes.func.isRequired,
+  resetPost: PropTypes.func.isRequired,
   selected: PropTypes.number.isRequired,
+  tabNameFunc: PropTypes.func.isRequired,
+  tabNames: PropTypes.shape({
+    current: PropTypes.oneOfType([
+      PropTypes.shape({}),
+      PropTypes.string,
+    ]),
+    manage: PropTypes.oneOfType([
+      PropTypes.shape({}),
+      PropTypes.string,
+    ]),
+  }).isRequired,
+  updateManage: PropTypes.func.isRequired,
   users: PropTypes.shape({
     didGetFail: PropTypes.bool,
     message: PropTypes.string,
     _id: PropTypes.bool.number,
     isGet: PropTypes.bool,
     list: PropTypes.arrayOf(
-      PropTypes.shape({
-      }),
+      PropTypes.shape({}),
     ),
   }).isRequired,
   userPopover: PropTypes.shape({
   }).isRequired,
   usersPage: PropTypes.arrayOf(
-    PropTypes.shape({
-    }),
+    PropTypes.shape({}),
   ).isRequired,
 };
 
