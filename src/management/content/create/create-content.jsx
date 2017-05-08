@@ -1,10 +1,9 @@
 import CSSTransitionGroup from 'react-transition-group/CSSTransitionGroup';
-import FlatButton from 'material-ui/FlatButton';
 import FontAwesome from 'react-fontawesome';
 import PropTypes from 'prop-types';
 import React from 'react';
-import ReactTooltip from 'react-tooltip';
 
+import ActionButtons from '../../../action-buttons/action-buttons-container';
 import CreateProject from './create-project';
 import { uppercaseFirst } from '../../../helpers/helpers';
 
@@ -28,31 +27,21 @@ class CreateContent extends React.Component {
           </div>
         }
         <div className="create-buttons">
-          <FlatButton
-            className="create-button-create"
-            label="Create"
-            onClick={ this.props.submitForm }
+          <ActionButtons
+            cancel={ {
+              func: this.props.cancelForm,
+              toolTipText: `Cancel ${this.props.active} creation`,
+            } }
+            idSuffix={ `create-${this.props.active}` }
+            reset={ {
+              func: this.props.resetForm,
+              toolTipText: 'Reset the form',
+            } }
+            update={ {
+              func: this.props.submitForm,
+              label: 'Create',
+            } }
           />
-          <FlatButton
-            className="create-button-reset"
-            data-tip={ true }
-            data-for="resetForm"
-            label="Reset"
-            onClick={ this.props.resetForm }
-          />
-          <ReactTooltip id="resetForm" effect="solid" type="dark" place="top">
-            <span>Reset the form</span>
-          </ReactTooltip>
-          <FlatButton
-            className="create-button-cancel"
-            data-tip={ true }
-            data-for="cancelForm"
-            label="Cancel"
-            onClick={ this.props.cancelForm }
-          />
-          <ReactTooltip id="cancelForm" effect="solid" type="dark" place="top">
-            <span>Cancel { this.props.active } creation</span>
-          </ReactTooltip>
           <div className="create-submission">
             <CSSTransitionGroup
               transitionName="create-message-text"

@@ -3,12 +3,14 @@ import FlatButton from 'material-ui/FlatButton';
 import FontAwesome from 'react-fontawesome';
 import Menu from 'material-ui/Menu';
 import MenuItem from 'material-ui/MenuItem';
+import Paper from 'material-ui/Paper';
 import Popover from 'material-ui/Popover';
 import PropTypes from 'prop-types';
+import { RadioButton, RadioButtonGroup } from 'material-ui/RadioButton';
 import RaisedButton from 'material-ui/RaisedButton';
 import React from 'react';
-import ReactTooltip from 'react-tooltip';
 import SelectField from 'material-ui/SelectField';
+import TextField from 'material-ui/TextField';
 import {
   Tabs,
   Tab,
@@ -23,17 +25,21 @@ import {
   TableRowColumn,
 } from 'material-ui/Table';
 
+import ActionButtons from '../../../action-buttons/action-buttons-container';
 import './manage-content.scss';
 
 class ManageContent extends React.Component {
   componentDidMount = () => {
-    window.addEventListener('resize', this.props.calcPageLength);
-    window.addEventListener('resize', this.props.tabNameFunc);
+    window.addEventListener('resize', this.props.resize);
   }
   componentWillUnmount = () => {
     this.props.resetPost();
-    window.removeEventListener('resize', this.props.calcPageLength);
-    window.removeEventListener('resize', this.props.tabNameFunc);
+    window.removeEventListener('resize', this.props.resize);
+  }
+  onEnter = (e) => {
+    if (e.key === 'Enter') {
+      this.props.search();
+    }
   }
   permissionToText = (perm) => {
     const permConvert = {
@@ -47,9 +53,9 @@ class ManageContent extends React.Component {
   render() {
     return (
       <div className="manage-content">
-        <span className="manage-header">
+        <div className="manage-header">
           <FontAwesome name="info-circle" /> Manage user permissions for project { this.props.selected }: { this.props.name }.
-        </span>
+        </div>
         <Tabs className="manage-tabs">
           <Tab label={ this.props.tabNames.current } >
             { this.props.users.isGet &&
@@ -111,7 +117,7 @@ class ManageContent extends React.Component {
                           key={ user.name }
                           style={ { textAlign: 'center' } }
                         >
-                          <RaisedButton
+                          <FlatButton
                             className="manage-permission-button"
                             label={ this.permissionToText(user.permission) }
                             onTouchTap={ (event) => {
@@ -189,32 +195,19 @@ class ManageContent extends React.Component {
                         </CSSTransitionGroup>
                       </span>
                       <span className="manage-footer-buttons">
-                        <FlatButton
-                          className="manage-footer-button-update"
-                          data-tip={ true }
-                          data-for="updateManage"
-                          label="Update"
-                          onClick={ () => { this.props.updateManage('current'); } }
-                        />
-                        <ReactTooltip id="updateManage" effect="solid" type="dark" place="top">
-                          <span>Update permissions</span>
-                        </ReactTooltip>
-                        <FlatButton
-                          className="manage-footer-button-reset"
-                          data-tip={ true }
-                          data-for="resetManage"
-                          label="Reset"
-                          onClick={ this.props.resetManage }
-                        />
-                        <ReactTooltip id="resetManage" effect="solid" type="dark" place="top">
-                          <span>Reset details to most recent save</span>
-                        </ReactTooltip>
-                        <FlatButton
-                          className="manage-footer-button-cancel"
-                          data-tip={ true }
-                          data-for="cancelManage"
-                          label="Cancel"
-                          onClick={ this.props.cancel }
+                        <ActionButtons
+                          cancel={ {
+                            func: this.props.cancel,
+                          } }
+                          idSuffix="manageUsers"
+                          reset={ {
+                            func: this.props.resetManage,
+                            toolTipText: 'Reset details to most recent save',
+                          } }
+                          update={ {
+                            func: () => { this.props.updateManage('current'); },
+                            toolTipText: 'Update permissions',
+                          } }
                         />
                       </span>
                       { this.props.page > 0 &&
@@ -239,18 +232,98 @@ class ManageContent extends React.Component {
             }
           </Tab>
           <Tab label={ this.props.tabNames.manage } >
-            <SelectField
-              floatingLabelText="User permissions"
-              fullWidth={ true }
-              value={ this.props.formData.permission }
-              onChange={ (e, index, value) => { console.log(index, value); } }
+            <Paper
+              className="manage-subsection"
+              zDepth={ 2 }
             >
-              <MenuItem key="lr" value="lr" primaryText="Read - lab (all lab members can view this project)" />
-              <MenuItem key="lw" value="lw" primaryText="Write - lab (all lab members can edit this project)" />
-              <MenuItem key="ar" value="ar" primaryText="Read - all (all ScreenHits users can view this project)" />
-              <MenuItem key="aw" value="aw" primaryText="Write - all (all ScreenHits users can edit this project)" />
-              <MenuItem key="n" value="n" primaryText="None (only you can view this project)" />
-            </SelectField>
+              <div className="manage-sub-header">
+                <u>Search for and add individual users</u>
+              </div>
+              <div className="manage-search-container">
+                <TextField
+                  floatingLabelText={ this.props.inputLabel }
+                  onChange={ (e) => { this.props.inputChange('input', e.target.value); } }
+                  onKeyPress={ this.onEnter }
+                  style={ { width: '50%' } }
+                  value={ this.props.formData.input }
+                />
+                <RadioButtonGroup
+                  className="manage-radio-button-group"
+                  name="searchType"
+                  defaultSelected="name"
+                  onChange={ (e, v) => { this.props.setSearchType(v); } }
+                >
+                  <RadioButton
+                    value="name"
+                    label="Name"
+                    style={ { display: 'inline-block', width: '100px' } }
+                  />
+                  <RadioButton
+                    value="lab"
+                    label="Lab"
+                    style={ { display: 'inline-block', width: '100px' } }
+                  />
+                </RadioButtonGroup>
+                <RaisedButton
+                  className="manage-search-button"
+                  label={ this.props.searchLabel }
+                  style={ this.props.searchStyle }
+                  onClick={ this.props.search }
+                />
+              </div>
+              { this.props.searchUser._id === this.props.selected &&
+                <div className="manage-post-information">
+                  { this.props.searchUser.isGet &&
+                    <span>
+                      <FontAwesome name="spinner" pulse={ true } /> Searching...
+                    </span>
+                  }
+                  { this.props.searchUser.didGetFail &&
+                    <span>
+                      <FontAwesome name="exclamation-triangle" /> Update failed.{'\u00A0'}
+                      { this.props.searchUser.message }
+                    </span>
+                  }
+                  { this.props.searchUser.list.length < 0 ?
+                    <div>
+                      there are no results
+                    </div>
+                    :
+                    <div>
+                      { this.props.searchUser.list.length } results
+                      <ActionButtons
+                        idSuffix="addUsers"
+                        update={ {
+                          func: () => { },
+                          label: 'Add user(s)',
+                          toolTipText: 'Add selected users to project',
+                        } }
+                      />
+                    </div>
+                  }
+                </div>
+              }
+            </Paper>
+            <Paper
+              className="manage-subsection"
+              zDepth={ 2 }
+            >
+              <div className="manage-sub-header">
+                <u>Change permissions in bulk</u>
+              </div>
+              <SelectField
+                floatingLabelText="User permissions"
+                fullWidth={ true }
+                value={ this.props.formData.permission }
+                onChange={ (e, index, value) => { console.log(index, value); } }
+              >
+                <MenuItem key="lr" value="lr" primaryText="Read - lab (all lab members can view this project)" />
+                <MenuItem key="lw" value="lw" primaryText="Write - lab (all lab members can edit this project)" />
+                <MenuItem key="ar" value="ar" primaryText="Read - all (all ScreenHits users can view this project)" />
+                <MenuItem key="aw" value="aw" primaryText="Write - all (all ScreenHits users can edit this project)" />
+                <MenuItem key="n" value="n" primaryText="None (only you can view this project)" />
+              </SelectField>
+            </Paper>
           </Tab>
         </Tabs>
       </div>
@@ -264,12 +337,14 @@ ManageContent.defaultProps = {
 
 ManageContent.propTypes = {
   anchorEl: PropTypes.shape({}),
-  calcPageLength: PropTypes.func.isRequired,
   cancel: PropTypes.func.isRequired,
   closePopover: PropTypes.func.isRequired,
   formData: PropTypes.shape({
+    input: PropTypes.string,
     permission: PropTypes.string.isRequired,
   }).isRequired,
+  inputChange: PropTypes.func.isRequired,
+  inputLabel: PropTypes.string.isRequired,
   manageState: PropTypes.shape({
     didPostFail: PropTypes.bool,
     message: PropTypes.string,
@@ -285,8 +360,29 @@ ManageContent.propTypes = {
   pageUp: PropTypes.func.isRequired,
   resetManage: PropTypes.func.isRequired,
   resetPost: PropTypes.func.isRequired,
+  resize: PropTypes.func.isRequired,
+  search: PropTypes.func.isRequired,
+  searchLabel: PropTypes.oneOfType([
+    PropTypes.shape({}),
+    PropTypes.string,
+  ]).isRequired,
+  searchStyle: PropTypes.shape({
+    maxWidth: PropTypes.number,
+    minWidth: PropTypes.number,
+    width: PropTypes.number,
+  }).isRequired,
+  searchUser: PropTypes.shape({
+    didGetFail: PropTypes.bool,
+    message: PropTypes.string,
+    _id: PropTypes.bool.number,
+    isGet: PropTypes.bool,
+    list: PropTypes.arrayOf(
+      PropTypes.shape({
+      }),
+    ),
+  }).isRequired,
   selected: PropTypes.number.isRequired,
-  tabNameFunc: PropTypes.func.isRequired,
+  setSearchType: PropTypes.func.isRequired,
   tabNames: PropTypes.shape({
     current: PropTypes.oneOfType([
       PropTypes.shape({}),

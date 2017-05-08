@@ -1,10 +1,9 @@
 import CSSTransitionGroup from 'react-transition-group/CSSTransitionGroup';
-import FlatButton from 'material-ui/FlatButton';
 import FontAwesome from 'react-fontawesome';
 import PropTypes from 'prop-types';
 import React from 'react';
-import ReactTooltip from 'react-tooltip';
 
+import ActionButtons from '../../../action-buttons/action-buttons-container';
 import DisplayProject from './display-project-container';
 import { uppercaseFirst } from '../../../helpers/helpers';
 
@@ -32,36 +31,21 @@ class DisplayContent extends React.Component {
         }
         { this.props.edit &&
           <div className="display-buttons">
-            <FlatButton
-              className="display-button-update"
-              data-tip={ true }
-              data-for="updateData"
-              label="Update"
-              onClick={ this.props.update }
+            <ActionButtons
+              cancel={ {
+                func: this.props.cancel,
+                toolTipText: 'Cancel editting',
+              } }
+              idSuffix={ `display-${this.props.active}` }
+              reset={ {
+                func: this.props.reset,
+                toolTipText: 'Reset to orignal information',
+              } }
+              update={ {
+                func: this.props.update,
+                toolTipText: 'Submit edits',
+              } }
             />
-            <ReactTooltip id="updateData" effect="solid" type="dark" place="top">
-              <span>Submit updates</span>
-            </ReactTooltip>
-            <FlatButton
-              className="display-button-reset"
-              data-tip={ true }
-              data-for="resetData"
-              label="Reset"
-              onClick={ this.props.reset }
-            />
-            <ReactTooltip id="resetData" effect="solid" type="dark" place="top">
-              <span>Reset to orignal information</span>
-            </ReactTooltip>
-            <FlatButton
-              className="display-button-cancel"
-              data-tip={ true }
-              data-for="cancelData"
-              label="Cancel"
-              onClick={ this.props.cancel }
-            />
-            <ReactTooltip id="cancelData" effect="solid" type="dark" place="top">
-              <span>Cancel editting</span>
-            </ReactTooltip>
           </div>
         }
         <div className="edit-submission">

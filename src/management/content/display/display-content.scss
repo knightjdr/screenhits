@@ -3,36 +3,6 @@
 .display-buttons {
   margin-top: 15px;
 }
-.display-button-cancel {
-  background-color: $warning !important;
-  color: $text-color !important;
-  margin: 0px 2px 0px 2px !important;
-}
-.display-button-reset {
-  background-color: $alert !important;
-  color: $text-color !important;
-  margin: 0px 2px 0px 2px !important;
-}
-.display-button-update {
-  background-color: $sucess !important;
-  color: $text-color !important;
-  margin: 0px 2px 0px 2px !important;
-}
-.display-button-cancel:hover {
-  background-color: $warning-hover !important;
-  color: $text-color !important;
-  margin: 0px 2px 0px 2px !important;
-}
-.display-button-reset:hover {
-  background-color: $alert-hover !important;
-  color: $text-color !important;
-  margin: 0px 2px 0px 2px !important;
-}
-.display-button-update:hover {
-  background-color: $sucess-hover !important;
-  color: $text-color !important;
-  margin: 0px 2px 0px 2px !important;
-}
 .display-container {
   padding: 15px 15px 10px 15px;
 }

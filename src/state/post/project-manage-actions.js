@@ -1,6 +1,6 @@
 import fetch from 'isomorphic-fetch';
 
-import { userGet } from '../get/user-actions';
+import { userGet } from '../get/project-user-actions';
 
 export const FAIL_POST = 'FAIL_POST';
 export const REQUEST_POST = 'REQUEST_POST';
@@ -45,7 +45,7 @@ const manageUsers = (user, _id, lab, obj, permission) => {
     headers.append('Accept', 'application/json');
     headers.append('Auth', `${user.name}:${user.email}:${user.lab}:${user.token}`);
     headers.append('Content-Type', 'application/json');
-    return fetch('http://localhost:8003/users', {
+    return fetch('http://localhost:8003/project/users', {
       body: JSON.stringify(obj),
       cache: 'default',
       headers,

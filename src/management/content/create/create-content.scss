@@ -1,35 +1,5 @@
 @import '../../../style/palette';
 
-.create-button-cancel {
-  background-color: $warning !important;
-  color: $text-color !important;
-  margin: 0px 2px 0px 2px !important;
-}
-.create-button-create {
-  background-color: $sucess !important;
-  color: $text-color !important;
-  margin: 0px 2px 0px 2px !important;
-}
-.create-button-reset {
-  background-color: $alert !important;
-  color: $text-color !important;
-  margin: 0px 2px 0px 2px !important;
-}
-.create-button-cancel:hover {
-  background-color: $warning-hover !important;
-  color: $text-color !important;
-  margin: 0px 2px 0px 2px !important;
-}
-.create-button-create:hover {
-  background-color: $sucess-hover !important;
-  color: $text-color !important;
-  margin: 0px 2px 0px 2px !important;
-}
-.create-button-reset:hover {
-  background-color: $alert-hover !important;
-  color: $text-color !important;
-  margin: 0px 2px 0px 2px !important;
-}
 .create-buttons {
   margin-top: 15px;
 }

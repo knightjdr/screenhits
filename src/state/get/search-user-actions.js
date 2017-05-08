@@ -1,29 +1,29 @@
 import fetch from 'isomorphic-fetch';
 
-export const FAIL_GET = 'FAIL_GET';
-export const REQUEST_GET = 'REQUEST_GET';
-export const RESET_GET = 'RESET_GET';
-export const SUCCESS_GET = 'SUCCESS_GET';
+export const FAIL_GET = 'FAIL_SEARCH_USER_GET';
+export const REQUEST_GET = 'REQUEST_SEARCH_USER_GET';
+export const RESET_GET = 'RESET_SEARCH_USER_GET';
+export const SUCCESS_GET = 'SUCCESS_SEARCH_USER_GET';
 
 export function failGet(_id, message) {
   return {
     _id,
     message,
-    type: 'FAIL_GET',
+    type: 'FAIL_SEARCH_USER_GET',
   };
 }
 
 export function requestGet(_id) {
   return {
     _id,
-    type: 'REQUEST_GET',
+    type: 'REQUEST_SEARCH_USER_GET',
   };
 }
 
 export function resetGet(_id) {
   return {
     _id,
-    type: 'RESET_GET',
+    type: 'RESET_SEARCH_USER_GET',
   };
 }
 
@@ -32,19 +32,19 @@ export function successGet(_id, message, list) {
     _id,
     list,
     message,
-    type: 'SUCCESS_GET',
+    type: 'SUCCESS_SEARCH_USER_GET',
   };
 }
 
 // thunks
-const userGet = (user, _id, lab, permission) => {
+const userSearch = (user, _id, queryString) => {
   return (dispatch) => {
     dispatch(requestGet(_id));
     const headers = new Headers();
     headers.append('Accept', 'application/json');
     headers.append('Auth', `${user.name}:${user.email}:${user.lab}:${user.token}`);
     headers.append('Content-Type', 'application/json');
-    return fetch(`http://localhost:8003/users?_id=${_id}&lab=${lab}&permission=${permission}`, {
+    return fetch(`http://localhost:8003/users?${queryString}`, {
       cache: 'default',
       headers,
       method: 'GET',
@@ -66,4 +66,4 @@ const userGet = (user, _id, lab, permission) => {
     });
   };
 };
-export { userGet };
+export { userSearch };

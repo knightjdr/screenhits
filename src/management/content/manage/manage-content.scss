@@ -9,42 +9,11 @@
 .manage-footer-buttons {
   margin-right: 20px;
 }
-.manage-footer-button-cancel {
-  background-color: $warning !important;
-  color: $text-color !important;
-  margin: 0px 2px 0px 2px !important;
-}
-.manage-footer-button-cancel:hover {
-  background-color: $warning-hover !important;
-  color: $text-color !important;
-  margin: 0px 2px 0px 2px !important;
-}
-.manage-footer-button-reset {
-  background-color: $alert !important;
-  color: $text-color !important;
-  margin: 0px 2px 0px 2px !important;
-}
-.manage-footer-button-reset:hover {
-  background-color: $alert-hover !important;
-  color: $text-color !important;
-  margin: 0px 2px 0px 2px !important;
-}
-.manage-footer-button-update {
-  background-color: $sucess !important;
-  color: $text-color !important;
-  margin: 0px 2px 0px 2px !important;
-}
-.manage-footer-button-update:hover {
-  background-color: $sucess-hover !important;
-  color: $text-color !important;
-  margin: 0px 2px 0px 2px !important;
-}
 .manage-footer-updates {
   margin-right: 20px;
 }
 .manage-header {
   color: $primary-h800;
-  margin-top: 25px;
 }
 .manage-information {
   background-color: white;
@@ -94,13 +63,13 @@ color: $accent-h500 !important;
   opacity: 0.01;
   transition: opacity 500ms ease-in;
 }
-.manage-permission-button > button  {
+.manage-permission-button {
   background-color: $primary-h600 !important;
 }
-.manage-permission-button > button > div > div:hover {
+.manage-permission-button:hover {
   background-color: $primary-h700 !important;
 }
-.manage-permission-button > button > div > div span {
+.manage-permission-button > div > span {
   color: $accent-h400!important;
 }
 .manage-permission-popover > div > div > div > div {
@@ -109,9 +78,36 @@ color: $accent-h500 !important;
 .manage-post-information {
   background-color: white;
 }
+.manage-radio-button-group {
+  margin-left: 15px;
+  margin-top: 40px;
+}
+.manage-search-button {
+  height: 36px;
+  margin-top: 32px;
+}
+.manage-search-button > button > div > div > span {
+  color: $accent-h400 !important;
+}
+.manage-search-button > button {
+  background-color: $primary-h600 !important;
+}
+.manage-search-button > button > div > div:hover {
+  background-color: $primary-h700 !important;
+}
+.manage-search-container {
+  display: flex;
+}
 .manage-small-select {
   font-size: 12px !important;
   height: 50px !important;
+}
+.manage-sub-header {
+  color: $primary-h800;
+}
+.manage-subsection {
+  margin: 5px 0px 5px 0px;
+  padding: 15px 10px 5px 10px;
 }
 .manage-submission {
   color: $primary-h800;

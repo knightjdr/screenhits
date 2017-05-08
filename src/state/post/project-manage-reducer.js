@@ -3,7 +3,7 @@ import {
   REQUEST_POST,
   RESET_POST,
   SUCCESS_POST,
-} from './manage-actions';
+} from './project-manage-actions';
 
 const Get = (state = {
   didPostFail: false,

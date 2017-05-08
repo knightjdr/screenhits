@@ -63,7 +63,7 @@ const Users = {
       insertObj['user-permission'] = updateObj;
       update.insert('project', { _id }, { $set: insertObj })
         .then(() => {
-          res.send({ status: 200, message: 'Users successfully updated' });
+          res.send({ status: 200, message: 'Update successful' });
         })
         .catch((error) => {
           res.status(500).send({ status: 500, message: `There was an error performing this update: ${error}` });

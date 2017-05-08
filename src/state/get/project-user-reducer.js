@@ -3,7 +3,7 @@ import {
   REQUEST_GET,
   RESET_GET,
   SUCCESS_GET,
-} from './user-actions';
+} from './project-user-actions';
 
 const Get = (state = {
   didGetFail: false,
