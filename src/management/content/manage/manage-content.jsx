@@ -15,27 +15,12 @@ import {
   Tabs,
   Tab,
 } from 'material-ui/Tabs';
-import {
-  Table,
-  TableBody,
-  TableFooter,
-  TableHeader,
-  TableHeaderColumn,
-  TableRow,
-  TableRowColumn,
-} from 'material-ui/Table';
 
 import ActionButtons from '../../../action-buttons/action-buttons-container';
+import CustomTable from '../../../table/table-container';
 import './manage-content.scss';
 
 class ManageContent extends React.Component {
-  componentDidMount = () => {
-    window.addEventListener('resize', this.props.resize);
-  }
-  componentWillUnmount = () => {
-    this.props.resetPost();
-    window.removeEventListener('resize', this.props.resize);
-  }
   onEnter = (e) => {
     if (e.key === 'Enter') {
       this.props.search();
@@ -71,164 +56,145 @@ class ManageContent extends React.Component {
                 { this.props.users.message }.
               </div>
             }
-            { this.props.usersPage.length > 0 &&
-              <Table>
-                <TableHeader
-                  adjustForCheckbox={ false }
-                  displaySelectAll={ false }
-                >
-                  <TableRow>
-                    <TableHeaderColumn
-                      style={ { textAlign: 'center' } }
-                    >
-                      User
-                    </TableHeaderColumn>
-                    <TableHeaderColumn
-                      style={ { textAlign: 'center' } }
-                    >
-                      Lab
-                    </TableHeaderColumn>
-                    <TableHeaderColumn
-                      style={ { textAlign: 'center' } }
-                    >
-                      Permission
-                    </TableHeaderColumn>
-                  </TableRow>
-                </TableHeader>
-                <TableBody
-                  displayRowCheckbox={ false }
-                >
-                  { this.props.usersPage.map((user) => {
-                    return (
-                      <TableRow
-                        key={ user.name }
+            { this.props.users.list &&
+              this.props.users.list.length > 0 &&
+              <CustomTable
+                data={ {
+                  header: [
+                    {
+                      name: 'Name',
+                      sort: true,
+                      type: 'name',
+                    },
+                    {
+                      name: 'Lab',
+                      sort: true,
+                      type: 'lab',
+                    },
+                    {
+                      name: 'Permission',
+                      sort: false,
+                      type: 'permission',
+                    },
+                  ],
+                  list: this.props.users.list.map((user) => {
+                    return {
+                      key: user.name,
+                      columns: [
+                        {
+                          type: 'name',
+                          value: user.name,
+                        },
+                        {
+                          type: 'lab',
+                          value: user.lab,
+                        },
+                        {
+                          style: { textAlign: 'center' },
+                          type: 'permission',
+                          value: (
+                            <span>
+                              <FlatButton
+                                className="manage-permission-button"
+                                key="button"
+                                label={ this.permissionToText(user.permission) }
+                                onTouchTap={ (event) => {
+                                  this.props.openPopover(
+                                    event.target,
+                                    user.email,
+                                    user.permission,
+                                  );
+                                } }
+                              />
+                              <Popover
+                                anchorEl={ this.props.anchorEl }
+                                anchorOrigin={ { horizontal: 'left', vertical: 'top' } }
+                                className="manage-permission-popover"
+                                key="popover"
+                                onRequestClose={ () => { this.props.closePopover(user.email); } }
+                                open={ this.props.userPopover[user.email] }
+                                targetOrigin={ { horizontal: 'left', vertical: 'top' } }
+                              >
+                                <Menu>
+                                  <MenuItem
+                                    key="r"
+                                    value="r"
+                                    onClick={ () => { this.props.menuClickPermission(user.email, 'r'); } }
+                                    primaryText="Read"
+                                  />
+                                  <MenuItem
+                                    key="w"
+                                    value="w"
+                                    onClick={ () => { this.props.menuClickPermission(user.email, 'w'); } }
+                                    primaryText="Write"
+                                  />
+                                  <MenuItem
+                                    key="n"
+                                    value="n"
+                                    onClick={ () => { this.props.menuClickPermission(user.email, 'n'); } }
+                                    primaryText="Remove"
+                                  />
+                                </Menu>
+                              </Popover>
+                            </span>
+                          ),
+                        },
+                      ],
+                    };
+                  }),
+                } }
+                footer={
+                  <span>
+                    <span className="manage-footer-updates">
+                      <CSSTransitionGroup
+                        transitionName="manage-message-text"
+                        transitionEnterTimeout={ 500 }
+                        transitionLeaveTimeout={ 500 }
                       >
-                        <TableRowColumn
-                          key={ user.name }
-                        >
-                          { user.name }
-                        </TableRowColumn>
-                        <TableRowColumn
-                          key={ user.name }
-                        >
-                          { user.lab }
-                        </TableRowColumn>
-                        <TableRowColumn
-                          key={ user.name }
-                          style={ { textAlign: 'center' } }
-                        >
-                          <FlatButton
-                            className="manage-permission-button"
-                            label={ this.permissionToText(user.permission) }
-                            onTouchTap={ (event) => {
-                              this.props.openPopover(event, user.email, user.permission);
-                            } }
-                          />
-                          <Popover
-                            anchorEl={ this.props.anchorEl }
-                            anchorOrigin={ { horizontal: 'left', vertical: 'top' } }
-                            className="manage-permission-popover"
-                            onRequestClose={ () => { this.props.closePopover(user.email); } }
-                            open={ this.props.userPopover[user.email] }
-                            targetOrigin={ { horizontal: 'left', vertical: 'top' } }
-                          >
-                            <Menu>
-                              <MenuItem
-                                key="r"
-                                value="r"
-                                onClick={ () => { this.props.menuClickPermission(user.email, 'r'); } }
-                                primaryText="Read"
-                              />
-                              <MenuItem
-                                key="w"
-                                value="w"
-                                onClick={ () => { this.props.menuClickPermission(user.email, 'w'); } }
-                                primaryText="Write"
-                              />
-                              <MenuItem
-                                key="n"
-                                value="n"
-                                onClick={ () => { this.props.menuClickPermission(user.email, 'n'); } }
-                                primaryText="Remove"
-                              />
-                            </Menu>
-                          </Popover>
-                        </TableRowColumn>
-                      </TableRow>
-                    );
-                  })}
-                </TableBody>
-                <TableFooter>
-                  <TableRow>
-                    <TableRowColumn
-                      colSpan="3"
-                      style={ { textAlign: 'right' } }
-                    >
-                      <span className="manage-footer-updates">
-                        <CSSTransitionGroup
-                          transitionName="manage-message-text"
-                          transitionEnterTimeout={ 500 }
-                          transitionLeaveTimeout={ 500 }
-                        >
-                          <span className="manage-post-information">
-                            { this.props.manageState._id === this.props.selected &&
-                              this.props.manageState.isPost &&
-                              <span>
-                                <FontAwesome name="spinner" pulse={ true } /> Updates submitted
-                              </span>
-                            }
-                            { this.props.manageState._id === this.props.selected &&
-                              this.props.manageState.didPostFail &&
-                              <span>
-                                <FontAwesome name="exclamation-triangle" /> Update failed.{'\u00A0'}
-                                { this.props.manageState.message }
-                              </span>
-                            }
-                            { this.props.manageState._id === this.props.selected &&
-                              this.props.manageState.message &&
-                              !this.props.manageState.didPostFail &&
-                              <span>
-                                { this.props.manageState.message }
-                              </span>
-                            }
-                          </span>
-                        </CSSTransitionGroup>
-                      </span>
-                      <span className="manage-footer-buttons">
-                        <ActionButtons
-                          cancel={ {
-                            func: this.props.cancel,
-                          } }
-                          idSuffix="manageUsers"
-                          reset={ {
-                            func: this.props.resetManage,
-                            toolTipText: 'Reset details to most recent save',
-                          } }
-                          update={ {
-                            func: () => { this.props.updateManage('current'); },
-                            toolTipText: 'Update permissions',
-                          } }
-                        />
-                      </span>
-                      { this.props.page > 0 &&
-                        <FlatButton
-                          className="manage-page-button"
-                          icon={ <FontAwesome name="angle-left" /> }
-                          onClick={ this.props.pageDown }
-                        />
-                      }
-                      Page { this.props.page + 1 }/{ this.props.pageTotal + 1}
-                      { this.props.page < this.props.pageTotal &&
-                        <FlatButton
-                          className="manage-page-button"
-                          icon={ <FontAwesome name="angle-right" /> }
-                          onClick={ this.props.pageUp }
-                        />
-                      }
-                    </TableRowColumn>
-                  </TableRow>
-                </TableFooter>
-              </Table>
+                        <span className="manage-post-information">
+                          { this.props.manageState._id === this.props.selected &&
+                            this.props.manageState.isPost &&
+                            <span>
+                              <FontAwesome name="spinner" pulse={ true } /> Updates submitted
+                            </span>
+                          }
+                          { this.props.manageState._id === this.props.selected &&
+                            this.props.manageState.didPostFail &&
+                            <span>
+                              <FontAwesome name="exclamation-triangle" /> Update failed.{'\u00A0'}
+                              { this.props.manageState.message }
+                            </span>
+                          }
+                          { this.props.manageState._id === this.props.selected &&
+                            this.props.manageState.message &&
+                            !this.props.manageState.didPostFail &&
+                            <span>
+                              { this.props.manageState.message }
+                            </span>
+                          }
+                        </span>
+                      </CSSTransitionGroup>
+                    </span>
+                    <span className="manage-footer-buttons">
+                      <ActionButtons
+                        cancel={ {
+                          func: this.props.cancel,
+                        } }
+                        idSuffix="manageUsers"
+                        reset={ {
+                          func: this.props.resetManage,
+                          toolTipText: 'Reset details to most recent save',
+                        } }
+                        update={ {
+                          func: () => { this.props.updateManage('current'); },
+                          toolTipText: 'Update permissions',
+                        } }
+                      />
+                    </span>
+                  </span>
+                }
+                height={ this.props.tableHeight }
+              />
             }
           </Tab>
           <Tab label={ this.props.tabNames.manage } >
@@ -354,13 +320,7 @@ ManageContent.propTypes = {
   menuClickPermission: PropTypes.func.isRequired,
   name: PropTypes.string.isRequired,
   openPopover: PropTypes.func.isRequired,
-  page: PropTypes.number.isRequired,
-  pageDown: PropTypes.func.isRequired,
-  pageTotal: PropTypes.number.isRequired,
-  pageUp: PropTypes.func.isRequired,
   resetManage: PropTypes.func.isRequired,
-  resetPost: PropTypes.func.isRequired,
-  resize: PropTypes.func.isRequired,
   search: PropTypes.func.isRequired,
   searchLabel: PropTypes.oneOfType([
     PropTypes.shape({}),
@@ -383,6 +343,7 @@ ManageContent.propTypes = {
   }).isRequired,
   selected: PropTypes.number.isRequired,
   setSearchType: PropTypes.func.isRequired,
+  tableHeight: PropTypes.number.isRequired,
   tabNames: PropTypes.shape({
     current: PropTypes.oneOfType([
       PropTypes.shape({}),
@@ -394,20 +355,17 @@ ManageContent.propTypes = {
     ]),
   }).isRequired,
   updateManage: PropTypes.func.isRequired,
+  userPopover: PropTypes.shape({
+  }).isRequired,
   users: PropTypes.shape({
     didGetFail: PropTypes.bool,
-    message: PropTypes.string,
     _id: PropTypes.bool.number,
     isGet: PropTypes.bool,
     list: PropTypes.arrayOf(
       PropTypes.shape({}),
     ),
+    message: PropTypes.string,
   }).isRequired,
-  userPopover: PropTypes.shape({
-  }).isRequired,
-  usersPage: PropTypes.arrayOf(
-    PropTypes.shape({}),
-  ).isRequired,
 };
 
 export default ManageContent;

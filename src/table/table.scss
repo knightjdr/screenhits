@@ -1,0 +1,27 @@
+@import '../style/palette';
+
+.table-header-button {
+  background-color: transparent;
+  border: none;
+  height: 50px;
+  width: 100%;
+}
+.table-header-button:focus {
+  outline: 0;
+}
+.table-page-button {
+  background-color: $off-white !important;
+  border: 1px solid $primary-h800 !important;
+  color: $primary-h800 !important;
+  font-size: 20px !important;
+  height: 25px !important;
+  line-height: 12px !important;
+  margin: 0px 5px 0px 5px !important;
+  min-width: 25px !important;
+  vertical-align: center !important;
+  width: 25px !important;
+}
+.table-page-button:hover {
+  background-color: $off-white !important;
+  color: $accent-h500 !important;
+}
