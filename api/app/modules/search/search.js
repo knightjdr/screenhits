@@ -1,4 +1,5 @@
 const query = require('../query/query');
+const sort = require('../helpers/sort');
 
 const Search = {
   user: (type, value, res) => {
@@ -11,7 +12,7 @@ const Search = {
         const responseObj = {
           status: 200,
           message: 'Search completed',
-          users: documents
+          users: sort.arrayOfObjectByKey(documents, 'name'),
         };
         res.send(responseObj);
       })

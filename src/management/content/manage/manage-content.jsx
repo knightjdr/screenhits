@@ -1,3 +1,4 @@
+import Checkbox from 'material-ui/Checkbox';
 import CSSTransitionGroup from 'react-transition-group/CSSTransitionGroup';
 import FlatButton from 'material-ui/FlatButton';
 import FontAwesome from 'react-fontawesome';
@@ -33,7 +34,7 @@ class ManageContent extends React.Component {
       r: 'Read',
       w: 'Write',
     };
-    return permConvert[perm];
+    return !perm ? 'Select' : permConvert[perm];
   }
   render() {
     return (
@@ -101,18 +102,19 @@ class ManageContent extends React.Component {
                                 onTouchTap={ (event) => {
                                   this.props.openPopover(
                                     event.target,
+                                    'current',
                                     user.email,
                                     user.permission,
                                   );
                                 } }
                               />
                               <Popover
-                                anchorEl={ this.props.anchorEl }
+                                anchorEl={ this.props.anchorEl.current }
                                 anchorOrigin={ { horizontal: 'left', vertical: 'top' } }
                                 className="manage-permission-popover"
                                 key="popover"
-                                onRequestClose={ () => { this.props.closePopover(user.email); } }
-                                open={ this.props.userPopover[user.email] }
+                                onRequestClose={ () => { this.props.closePopover('current', user.email); } }
+                                open={ this.props.userPopover.current[user.email] }
                                 targetOrigin={ { horizontal: 'left', vertical: 'top' } }
                               >
                                 <Menu>
@@ -193,7 +195,8 @@ class ManageContent extends React.Component {
                     </span>
                   </span>
                 }
-                height={ this.props.tableHeight }
+                height={ this.props.tableHeight.current }
+                reset={ this.props.reset }
               />
             }
           </Tab>
@@ -237,37 +240,163 @@ class ManageContent extends React.Component {
                   onClick={ this.props.search }
                 />
               </div>
-              { this.props.searchUser._id === this.props.selected &&
-                <div className="manage-post-information">
-                  { this.props.searchUser.isGet &&
-                    <span>
-                      <FontAwesome name="spinner" pulse={ true } /> Searching...
+              { this.props.searchUser.list.length <= 0 &&
+                <span>
+                  <CSSTransitionGroup
+                    transitionName="manage-message-text"
+                    transitionEnterTimeout={ 500 }
+                    transitionLeaveTimeout={ 500 }
+                  >
+                    <span className="manage-search-information">
+                      { this.props.searchUser.isGet &&
+                        <span>
+                          <FontAwesome name="spinner" pulse={ true } /> Searching...
+                        </span>
+                      }
+                      { this.props.searchUser.didGetFail &&
+                        <span>
+                          <FontAwesome name="exclamation-triangle" /> Update failed.{'\u00A0'}
+                          { this.props.searchUser.message }
+                        </span>
+                      }
+                      { !this.props.searchUser.didGetFail &&
+                        this.props.searchUser.message &&
+                        <span>
+                          No users found
+                        </span>
+                      }
                     </span>
-                  }
-                  { this.props.searchUser.didGetFail &&
-                    <span>
-                      <FontAwesome name="exclamation-triangle" /> Update failed.{'\u00A0'}
-                      { this.props.searchUser.message }
-                    </span>
-                  }
-                  { this.props.searchUser.list.length < 0 ?
-                    <div>
-                      there are no results
-                    </div>
-                    :
-                    <div>
-                      { this.props.searchUser.list.length } results
+                  </CSSTransitionGroup>
+                </span>
+              }
+              { this.props.searchUser.list.length > 0 &&
+                <CustomTable
+                  data={ {
+                    header: [
+                      {
+                        name: 'Name',
+                        sort: true,
+                        type: 'name',
+                      },
+                      {
+                        name: 'Lab',
+                        sort: true,
+                        type: 'lab',
+                      },
+                      {
+                        name: 'Add',
+                        sort: false,
+                        type: 'checkbox',
+                      },
+                      {
+                        name: 'Permission',
+                        sort: false,
+                        type: 'permission',
+                      },
+                    ],
+                    list: this.props.searchUser.list.map((user) => {
+                      return {
+                        key: user.name,
+                        columns: [
+                          {
+                            type: 'name',
+                            value: user.name,
+                          },
+                          {
+                            type: 'lab',
+                            value: user.lab,
+                          },
+                          {
+                            style: {
+                              alignItems: 'center',
+                              display: 'flex',
+                              justifyContent: 'center',
+                            },
+                            type: 'checkbox',
+                            value: (
+                              <Checkbox
+                                onCheck={ (e, isChecked) => {
+                                  this.props.toggleUser(user.email, user.name, isChecked);
+                                } }
+                                style={ {
+                                  width: 24,
+                                } }
+                              />
+                            ),
+                          },
+                          {
+                            style: { textAlign: 'center' },
+                            type: 'permission',
+                            value: (
+                              <span>
+                                <FlatButton
+                                  className="manage-permission-button"
+                                  key="button"
+                                  label={ this.permissionToText(
+                                    this.props.searchUserPermission[user.email])
+                                  }
+                                  onTouchTap={ (e) => {
+                                    this.props.openPopover(
+                                      e.target,
+                                      'search',
+                                      user.email,
+                                      user.permission,
+                                    );
+                                  } }
+                                />
+                                <Popover
+                                  anchorEl={ this.props.anchorEl.search }
+                                  anchorOrigin={ { horizontal: 'left', vertical: 'top' } }
+                                  className="manage-permission-popover"
+                                  key="popover"
+                                  onRequestClose={ () => { this.props.closePopover('search', user.email); } }
+                                  open={ this.props.userPopover.search[user.email] }
+                                  targetOrigin={ { horizontal: 'left', vertical: 'top' } }
+                                >
+                                  <Menu>
+                                    <MenuItem
+                                      key="r"
+                                      value="r"
+                                      onClick={ () => { this.props.setSearchUserPermission(user.email, user.name, 'r'); } }
+                                      primaryText="Read"
+                                    />
+                                    <MenuItem
+                                      key="w"
+                                      value="w"
+                                      onClick={ () => { this.props.setSearchUserPermission(user.email, user.name, 'w'); } }
+                                      primaryText="Write"
+                                    />
+                                    <MenuItem
+                                      key="o"
+                                      value="o"
+                                      onClick={ () => { this.props.setSearchUserPermission(user.email, user.name, 'o'); } }
+                                      primaryText="Owner"
+                                    />
+                                  </Menu>
+                                </Popover>
+                              </span>
+                            ),
+                          },
+                        ],
+                      };
+                    }),
+                  } }
+                  footer={
+                    <span
+                      className="manage-search-footer-button"
+                    >
                       <ActionButtons
                         idSuffix="addUsers"
                         update={ {
-                          func: () => { },
+                          func: () => { this.props.addUsers(); },
                           label: 'Add user(s)',
                           toolTipText: 'Add selected users to project',
                         } }
                       />
-                    </div>
+                    </span>
                   }
-                </div>
+                  height={ this.props.tableHeight.search }
+                />
               }
             </Paper>
             <Paper
@@ -297,12 +426,12 @@ class ManageContent extends React.Component {
   }
 }
 
-ManageContent.defaultProps = {
-  anchorEl: {},
-};
-
 ManageContent.propTypes = {
-  anchorEl: PropTypes.shape({}),
+  addUsers: PropTypes.func.isRequired,
+  anchorEl: PropTypes.shape({
+    current: PropTypes.shape({}),
+    search: PropTypes.shape({}),
+  }).isRequired,
   cancel: PropTypes.func.isRequired,
   closePopover: PropTypes.func.isRequired,
   formData: PropTypes.shape({
@@ -320,6 +449,7 @@ ManageContent.propTypes = {
   menuClickPermission: PropTypes.func.isRequired,
   name: PropTypes.string.isRequired,
   openPopover: PropTypes.func.isRequired,
+  reset: PropTypes.number.isRequired,
   resetManage: PropTypes.func.isRequired,
   search: PropTypes.func.isRequired,
   searchLabel: PropTypes.oneOfType([
@@ -341,9 +471,16 @@ ManageContent.propTypes = {
       }),
     ),
   }).isRequired,
+  searchUserPermission: PropTypes.objectOf(
+      PropTypes.string,
+  ).isRequired,
   selected: PropTypes.number.isRequired,
   setSearchType: PropTypes.func.isRequired,
-  tableHeight: PropTypes.number.isRequired,
+  setSearchUserPermission: PropTypes.func.isRequired,
+  tableHeight: PropTypes.shape({
+    current: PropTypes.number,
+    search: PropTypes.number,
+  }).isRequired,
   tabNames: PropTypes.shape({
     current: PropTypes.oneOfType([
       PropTypes.shape({}),
@@ -354,8 +491,11 @@ ManageContent.propTypes = {
       PropTypes.string,
     ]),
   }).isRequired,
+  toggleUser: PropTypes.func.isRequired,
   updateManage: PropTypes.func.isRequired,
   userPopover: PropTypes.shape({
+    current: PropTypes.shape({}),
+    search: PropTypes.shape({}),
   }).isRequired,
   users: PropTypes.shape({
     didGetFail: PropTypes.bool,

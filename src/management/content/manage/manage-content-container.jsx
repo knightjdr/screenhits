@@ -41,19 +41,28 @@ class ManageContentContainer extends React.Component {
     super(props);
     const tableHeight = this.getHeight();
     this.state = {
-      anchorEl: null,
+      addUsers: [],
+      anchorEl: {
+        current: null,
+        search: null,
+      },
       formData: {
         input: '',
         permission: this.props.permission,
       },
       inputLabel: inputLabel.name,
       inputType: 'name',
+      reset: 0,
       searchLabel: window.innerWidth > 680 ? searchLabel.full : searchLabel.short,
       searchStyle: window.innerWidth > 680 ? {} : smallButtonStyle,
+      searchUserPermission: {},
       tableHeight,
       tabNames: window.innerWidth > 680 ? tabNames.full : tabNames.short,
       users: {},
-      userPopover: {},
+      userPopover: {
+        current: {},
+        search: {},
+      },
     };
     this.props.userGet(this.props.user, this.props.selected, this.props.lab, this.props.permission);
   }
@@ -77,9 +86,13 @@ class ManageContentContainer extends React.Component {
   }
   getHeight = () => {
     // 95 is the distance between the container and table top
-    const top = this.props.top() + 95;
-    // 70 is for some bottom padding
-    return window.innerHeight - top - 70;
+    const currentTop = this.props.top() + 95;
+    // 270 is the distance between the container and table top
+    const searchTop = this.props.top() + 270;
+    return {
+      current: window.innerHeight - currentTop - 70,
+      search: window.innerHeight - searchTop - 200,
+    };
   }
   setSearchType = (type) => {
     this.setState({
@@ -87,11 +100,41 @@ class ManageContentContainer extends React.Component {
       inputType: type,
     });
   }
-  closePopover = (key) => {
+  setSearchUserPermission = (email, name, permission) => {
+    const addUsers = JSON.parse(JSON.stringify(this.state.addUsers));
+    const searchUserPermission = this.state.searchUserPermission;
+    searchUserPermission[email] = permission;
+    const index = addUsers.findIndex((obj) => { return obj.email === email; });
+    if (index < 0) {
+      this.setState({
+        searchUserPermission,
+      });
+    } else {
+      addUsers.splice(index, 1);
+      const newUser = {
+        email,
+        name,
+        permission,
+      };
+      addUsers.push(newUser);
+      this.setState({
+        addUsers,
+        searchUserPermission,
+      });
+    }
+    this.closePopover('search', email);
+  }
+  addUsers = () => {
+    console.log(this.state.addUsers);
+  }
+  closePopover = (type, key) => {
     const userPopover = this.state.userPopover;
-    userPopover[key] = false;
+    userPopover[type][key] = false;
     this.setState({
-      anchorEl: null,
+      anchorEl: {
+        current: null,
+        search: null,
+      },
       userPopover,
     });
   }
@@ -107,21 +150,29 @@ class ManageContentContainer extends React.Component {
     this.setState({
       users: usersUpdate,
     });
-    this.closePopover(email);
+    this.closePopover('current', email);
   }
-  openPopover = (target, key, permission) => {
+  openPopover = (target, type, key, permission) => {
     if (permission !== 'o') {
+      const anchorEl = {
+        current: null,
+        search: null,
+      };
+      anchorEl[type] = target;
       const userPopover = this.state.userPopover;
-      userPopover[key] = true;
+      userPopover[type][key] = true;
       this.setState({
-        anchorEl: target,
+        anchorEl,
         userPopover,
       });
     }
   }
   resetManage = () => {
-    this.setState({
-      users: this.props.users,
+    this.setState((prevState) => {
+      return {
+        reset: prevState.reset + 1,
+        users: this.props.users,
+      };
     });
   }
   resize = () => {
@@ -133,6 +184,10 @@ class ManageContentContainer extends React.Component {
   }
   search = () => {
     if (this.state.formData.input) {
+      this.setState({
+        addUsers: [],
+        searchUserPermission: {},
+      });
       const queryString = `type=${this.state.inputType}&${this.state.inputType}=${this.state.formData.input}`;
       this.props.userSearch(this.props.user, this.props.selected, queryString);
     }
@@ -147,6 +202,33 @@ class ManageContentContainer extends React.Component {
     this.setState({
       tabNames: window.innerWidth > 680 ? tabNames.full : tabNames.short,
     });
+  }
+  toggleUser = (email, name, checked) => {
+    const addUsers = JSON.parse(JSON.stringify(this.state.addUsers));
+    const index = addUsers.findIndex((obj) => { return obj.email === email; });
+    if (index > -1) {
+      addUsers.splice(index, 1);
+      this.setState({
+        addUsers,
+      });
+    }
+    if (checked) {
+      const searchUserPermission = this.state.searchUserPermission;
+      searchUserPermission[email] = searchUserPermission[email] ?
+        searchUserPermission[email] :
+        'r'
+      ;
+      const newUser = {
+        email,
+        name,
+        permission: searchUserPermission[email],
+      };
+      addUsers.push(newUser);
+      this.setState({
+        addUsers,
+        searchUserPermission,
+      });
+    }
   }
   updateManage = (type) => {
     const submitObj = {};
@@ -164,9 +246,12 @@ class ManageContentContainer extends React.Component {
     ;
   }
   updateUsers = (users) => {
-    const userPopover = {};
+    const userPopover = {
+      current: {},
+      search: {},
+    };
     users.list.forEach((user) => {
-      userPopover[user.email] = false;
+      userPopover.current[user.email] = false;
     });
     this.setState({
       users: JSON.parse(JSON.stringify(users)),
@@ -176,6 +261,7 @@ class ManageContentContainer extends React.Component {
   render() {
     return (
       <ManageContent
+        addUsers={ this.addUsers }
         anchorEl={ this.state.anchorEl }
         calcPageLength={ this.calcPageLength }
         cancel={ this.props.cancel }
@@ -187,15 +273,19 @@ class ManageContentContainer extends React.Component {
         menuClickPermission={ this.menuClickPermission }
         name={ this.props.name }
         openPopover={ this.openPopover }
+        reset={ this.state.reset }
         resetManage={ this.resetManage }
         search={ this.search }
         searchLabel={ this.state.searchLabel }
-        searchUser={ this.props.searchUser }
         searchStyle={ this.state.searchStyle }
+        searchUser={ this.props.searchUser }
+        searchUserPermission={ this.state.searchUserPermission }
         setSearchType={ this.setSearchType }
+        setSearchUserPermission={ this.setSearchUserPermission }
         selected={ this.props.selected }
         tableHeight={ this.state.tableHeight }
         tabNames={ this.state.tabNames }
+        toggleUser={ this.toggleUser }
         updateManage={ this.updateManage }
         userPopover={ this.state.userPopover }
         users={ this.state.users }

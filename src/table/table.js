@@ -25,8 +25,12 @@ class CustomTable extends React.Component {
           <TableRow>
             { this.props.header.map((column, index) => {
               const buttonStyle = { cursor: this.props.sortCursor[index] };
+              const className = column.sort ?
+                'table-header-button table-header-sortable' :
+                'table-header-button'
+              ;
               const onClickFunc = column.sort ?
-                () => { this.props.sortTable(column.type); } :
+                () => { this.props.sortTable(index); } :
                 () => {}
               ;
               const style = column.style ? column.style : { textAlign: 'center' };
@@ -36,7 +40,7 @@ class CustomTable extends React.Component {
                   style={ style }
                 >
                   <button
-                    className="table-header-button"
+                    className={ className }
                     onClick={ onClickFunc }
                     style={ buttonStyle }
                   >

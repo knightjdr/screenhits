@@ -14,32 +14,75 @@ class TableContainer extends React.Component {
       pageLength,
       pageTotal: this.getPageTotal(pageLength, this.props.data.list),
       sortCursor: this.props.data.header.map((column) => {
-        return column.sort ? 'n-resize' : 'not-allowed';
+        return column.sort ? 'n-resize' : 'default';
       }),
+      sortDirection: this.props.data.header.map(() => {
+        return 'desc';
+      }),
+      sortIndex: -1,
     };
   }
   componentWillReceiveProps(nextProps) {
-    if (nextProps.height !== this.props.height) {
+    if (nextProps.reset !== this.props.reset) {
+      const pageLength = this.getPageLength(nextProps.height);
+      this.setState({
+        page: 0,
+        pageData: this.getPageData(
+          0,
+          pageLength,
+          nextProps.data.list,
+        ),
+        pageLength,
+        pageTotal: this.getPageTotal(pageLength, nextProps.data.list),
+        sortCursor: nextProps.data.header.map((column) => {
+          return column.sort ? 'n-resize' : 'default';
+        }),
+        sortDirection: nextProps.data.header.map(() => {
+          return 'desc';
+        }),
+        sortIndex: -1,
+      });
+    } else if (nextProps.height !== this.props.height) {
       const pageLength = this.getPageLength(this.props.height);
       if (pageLength !== this.state.pageLength) {
         let page = this.state.page;
         if ((page * pageLength) >= nextProps.data.list.length) {
           page -= 1;
         }
-        this.setState({
-          page,
-          pageData: this.getPageData(page, pageLength, nextProps.data.list),
-          pageLength,
-          pageTotal: this.getPageTotal(pageLength, nextProps.data.list),
+        this.setState((prevState) => {
+          return {
+            page,
+            pageData: this.getPageData(
+              page,
+              pageLength,
+              this.sortInputData(
+                nextProps.data.list,
+                prevState.sortIndex,
+                prevState.sortIndex > -1 ? prevState.sortDirection[prevState.sortIndex] : null,
+              ),
+            ),
+            pageLength,
+            pageTotal: this.getPageTotal(pageLength, nextProps.data.list),
+          };
         });
       }
     } else {
       const pageLength = this.getPageLength(nextProps.height);
-      this.setState({
-        page: 0,
-        pageData: this.getPageData(0, pageLength, nextProps.data.list),
-        pageLength,
-        pageTotal: this.getPageTotal(pageLength, nextProps.data.list),
+      this.setState((prevState) => {
+        return {
+          page: 0,
+          pageData: this.getPageData(
+            0,
+            pageLength,
+            this.sortInputData(
+              nextProps.data.list,
+              prevState.sortIndex,
+              prevState.sortIndex > -1 ? prevState.sortDirection[prevState.sortIndex] : null,
+            ),
+          ),
+          pageLength,
+          pageTotal: this.getPageTotal(pageLength, nextProps.data.list),
+        };
       });
     }
   }
@@ -58,15 +101,65 @@ class TableContainer extends React.Component {
       const newPage = direction === 'down' ? prevState.page - 1 : prevState.page + 1;
       return {
         page: newPage,
-        pageData: this.props.data.list.slice(
+        pageData: this.sortInputData(
+          this.props.data.list,
+          prevState.sortIndex,
+          prevState.sortIndex > -1 ? prevState.sortDirection[prevState.sortIndex] : null,
+        ).slice(
           newPage * prevState.pageLength,
-          (newPage * prevState.pageLength) + prevState.pageLength)
-        ,
+          (newPage * prevState.pageLength) + prevState.pageLength,
+        ),
       };
     });
   }
-  sortTable = (type) => {
-    console.log(type);
+  sortInputData = (arr, index, direction) => {
+    if (index < 0) {
+      return arr;
+    }
+    const returnValue = direction === 'asc' ? -1 : 1;
+    arr.sort((a, b) => {
+      const nameA = a.columns[index].value.toUpperCase();
+      const nameB = b.columns[index].value.toUpperCase();
+      if (nameA < nameB) {
+        return returnValue;
+      }
+      if (nameA > nameB) {
+        return -returnValue;
+      }
+      // for when the value is the same, use the key which has to be unique
+      const keyA = a.key.toUpperCase();
+      const keyB = b.key.toUpperCase();
+      if (keyA < keyB) {
+        return returnValue;
+      }
+      if (keyA > keyB) {
+        return -returnValue;
+      }
+      return 0;
+    });
+    return arr;
+  }
+  sortTable = (index) => {
+    const sortCursor = this.state.sortCursor;
+    sortCursor[index] = sortCursor[index] === 'n-resize' ? 's-resize' : 'n-resize';
+    const sortDirection = this.state.sortDirection;
+    sortDirection[index] = sortDirection[index] === 'asc' ? 'desc' : 'asc';
+    this.setState((prevState) => {
+      return {
+        pageData: this.getPageData(
+          prevState.page,
+          prevState.pageLength,
+          this.sortInputData(
+            this.props.data.list,
+            index,
+            sortDirection[index],
+          ),
+        ),
+        sortCursor,
+        sortDirection,
+        sortIndex: index,
+      };
+    });
   }
   render() {
     return (
@@ -86,6 +179,7 @@ class TableContainer extends React.Component {
 
 TableContainer.defaultProps = {
   footer: {},
+  reset: 0,
 };
 
 TableContainer.propTypes = {
@@ -119,6 +213,7 @@ TableContainer.propTypes = {
   }).isRequired,
   footer: PropTypes.shape({}),
   height: PropTypes.number.isRequired,
+  reset: PropTypes.number,
 };
 
 export default TableContainer;

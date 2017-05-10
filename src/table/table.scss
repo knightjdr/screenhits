@@ -9,6 +9,9 @@
 .table-header-button:focus {
   outline: 0;
 }
+.table-header-sortable:hover {
+  background-color: #cfd8dc;
+}
 .table-page-button {
   background-color: $off-white !important;
   border: 1px solid $primary-h800 !important;
