@@ -20,7 +20,11 @@ class DisplayContentContainer extends React.Component {
       },
       errors: Format.blankError[this.props.active],
       originalItem: Object.assign({}, this.props.item),
-      postMessage: null,
+      postMessage: this.setPostMessage(
+        this.props.postState,
+        this.props.active,
+        this.props.selected,
+      ),
       reset: 0,
       updateItem: Object.assign({}, this.props.item),
       warning: false,
@@ -54,17 +58,26 @@ class DisplayContentContainer extends React.Component {
     }
     this.setState({ editMessages });
     // check for post messages
-    const postMessage = postState[active]._id === selected ?
-      postState[active].message
-      :
-      null
-    ;
-    this.setState({ postMessage });
+    this.setState({
+      postMessage: this.setPostMessage(postState, active, selected),
+    });
   }
   componentWillUpdate() {
     if (this.state.postMessage) {
       this.props.postReset(this.props.active);
     }
+  }
+  componentWillUnmount() {
+    if (this.state.postMessage) {
+      this.props.postReset(this.props.active);
+    }
+  }
+  setPostMessage = (postState, active, selected) => {
+    return postState[active]._id === selected ?
+      postState[active].message
+      :
+      null
+    ;
   }
   cancel = () => {
     this.reset();

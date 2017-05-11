@@ -5,7 +5,7 @@ export const REQUEST_GET = 'REQUEST_SEARCH_USER_GET';
 export const RESET_GET = 'RESET_SEARCH_USER_GET';
 export const SUCCESS_GET = 'SUCCESS_SEARCH_USER_GET';
 
-export function failGet(_id, message) {
+export function failUserSearchGet(_id, message) {
   return {
     _id,
     message,
@@ -13,21 +13,20 @@ export function failGet(_id, message) {
   };
 }
 
-export function requestGet(_id) {
+export function requestUserSearchGet(_id) {
   return {
     _id,
     type: 'REQUEST_SEARCH_USER_GET',
   };
 }
 
-export function resetGet(_id) {
+export function resetUserSearchGet() {
   return {
-    _id,
     type: 'RESET_SEARCH_USER_GET',
   };
 }
 
-export function successGet(_id, message, list) {
+export function successUserSearchGet(_id, message, list) {
   return {
     _id,
     list,
@@ -39,7 +38,7 @@ export function successGet(_id, message, list) {
 // thunks
 const userSearch = (user, _id, queryString) => {
   return (dispatch) => {
-    dispatch(requestGet(_id));
+    dispatch(requestUserSearchGet(_id));
     const headers = new Headers();
     headers.append('Accept', 'application/json');
     headers.append('Auth', `${user.name}:${user.email}:${user.lab}:${user.token}`);
@@ -55,14 +54,14 @@ const userSearch = (user, _id, queryString) => {
     })
     .then((json) => {
       if (json.status === 200) {
-        dispatch(successGet(_id, json.message, json.users));
+        dispatch(successUserSearchGet(_id, json.message, json.users));
       } else {
         const error = `Status code: ${json.status}; ${json.message}`;
-        dispatch(failGet(_id, error));
+        dispatch(failUserSearchGet(_id, error));
       }
     })
     .catch((error) => {
-      dispatch(failGet(_id, error));
+      dispatch(failUserSearchGet(_id, error));
     });
   };
 };

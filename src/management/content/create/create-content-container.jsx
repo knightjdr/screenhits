@@ -81,6 +81,15 @@ class CreateContentContainer extends React.Component {
   }
 }
 
+CreateContentContainer.defaultProps = {
+  postState: {
+    didSubmitFail: false,
+    _id: null,
+    isSubmitted: false,
+    message: null,
+  },
+};
+
 CreateContentContainer.propTypes = {
   active: PropTypes.string.isRequired,
   cancel: PropTypes.func.isRequired,
@@ -90,7 +99,7 @@ CreateContentContainer.propTypes = {
     _id: PropTypes.number,
     isSubmitted: PropTypes.bool,
     message: PropTypes.string,
-  }).isRequired,
+  }),
   reset: PropTypes.func.isRequired,
   setIndex: PropTypes.func.isRequired,
 };

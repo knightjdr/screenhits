@@ -1,6 +1,6 @@
 import { connect } from 'react-redux';
 
-import { getData } from '../state/data/actions';
+import { getData } from '../state/get/data-actions';
 import Home from './home';
 
 const mapDispatchToProps = (dispatch) => {

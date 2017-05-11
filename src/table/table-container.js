@@ -70,9 +70,9 @@ class TableContainer extends React.Component {
       const pageLength = this.getPageLength(nextProps.height);
       this.setState((prevState) => {
         return {
-          page: 0,
+          page: prevState.page,
           pageData: this.getPageData(
-            0,
+            prevState.page,
             pageLength,
             this.sortInputData(
               nextProps.data.list,
@@ -211,7 +211,10 @@ TableContainer.propTypes = {
       }),
     ),
   }).isRequired,
-  footer: PropTypes.shape({}),
+  footer: PropTypes.oneOfType([
+    PropTypes.bool,
+    PropTypes.shape({}),
+  ]),
   height: PropTypes.number.isRequired,
   reset: PropTypes.number,
 };

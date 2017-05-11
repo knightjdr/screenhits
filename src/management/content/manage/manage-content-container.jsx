@@ -3,9 +3,12 @@ import FontAwesome from 'react-fontawesome';
 import PropTypes from 'prop-types';
 import React from 'react';
 
+import { addUsersAction, resetAddUserPut } from '../../../state/put/add-user-actions';
+import { changeBulkPermissionAction, resetBulkPermissionPut } from '../../../state/put/bulk-permission-actions';
+import { findObjectIndexes } from '../../../helpers/helpers';
 import { manageUsers, resetPost } from '../../../state/post/project-manage-actions';
 import { userGet } from '../../../state/get/project-user-actions';
-import { userSearch } from '../../../state/get/search-user-actions';
+import { resetUserSearchGet, userSearch } from '../../../state/get/search-user-actions';
 
 import ManageContent from './manage-content';
 
@@ -46,16 +49,14 @@ class ManageContentContainer extends React.Component {
         current: null,
         search: null,
       },
-      formData: {
-        input: '',
-        permission: this.props.permission,
-      },
       inputLabel: inputLabel.name,
+      inputText: '',
       inputType: 'name',
       reset: 0,
       searchLabel: window.innerWidth > 680 ? searchLabel.full : searchLabel.short,
       searchStyle: window.innerWidth > 680 ? {} : smallButtonStyle,
       searchUserPermission: {},
+      selectPermission: this.props.permission,
       tableHeight,
       tabNames: window.innerWidth > 680 ? tabNames.full : tabNames.short,
       users: {},
@@ -71,17 +72,20 @@ class ManageContentContainer extends React.Component {
   }
   componentWillReceiveProps(nextProps) {
     if (nextProps.selected !== this.props.selected) {
+      this.props.resetUserSearchGet();
       this.props.userGet(nextProps.user, nextProps.selected, nextProps.lab, nextProps.permission);
     }
     if (nextProps.users._id &&
-      nextProps.users._id !== this.state.users._id &&
       nextProps.users.list.length > 0
     ) {
       this.updateUsers(nextProps.users);
     }
   }
   componentWillUnmount() {
+    this.props.resetAddUserPut();
+    this.props.resetBulkPermissionPut();
     this.props.resetPost();
+    this.props.resetUserSearchGet();
     window.removeEventListener('resize', this.resize);
   }
   getHeight = () => {
@@ -100,9 +104,15 @@ class ManageContentContainer extends React.Component {
       inputType: type,
     });
   }
-  setSearchUserPermission = (email, name, permission) => {
+  setSearchUserPermission = (email, lab, name, permission) => {
     const addUsers = JSON.parse(JSON.stringify(this.state.addUsers));
     const searchUserPermission = this.state.searchUserPermission;
+    if (permission === 'o') {
+      const conflictingOwners = findObjectIndexes(searchUserPermission, 'o');
+      conflictingOwners.forEach((index) => {
+        searchUserPermission[index] = 'r';
+      });
+    }
     searchUserPermission[email] = permission;
     const index = addUsers.findIndex((obj) => { return obj.email === email; });
     if (index < 0) {
@@ -113,6 +123,7 @@ class ManageContentContainer extends React.Component {
       addUsers.splice(index, 1);
       const newUser = {
         email,
+        lab,
         name,
         permission,
       };
@@ -125,7 +136,22 @@ class ManageContentContainer extends React.Component {
     this.closePopover('search', email);
   }
   addUsers = () => {
-    console.log(this.state.addUsers);
+    const putObj = {
+      _id: this.props.selected,
+      users: this.state.addUsers,
+    };
+    this.props.addUsersAction(
+      this.props.user,
+      this.props.selected,
+      this.props.lab,
+      this.props.permission,
+      putObj,
+    );
+  }
+  bulkChange = (permission) => {
+    this.setState({
+      selectPermission: permission,
+    });
   }
   closePopover = (type, key) => {
     const userPopover = this.state.userPopover;
@@ -138,10 +164,10 @@ class ManageContentContainer extends React.Component {
       userPopover,
     });
   }
-  inputChange = (field, value) => {
-    const stateObject = this.state.formData;
-    stateObject[field] = value;
-    this.setState({ formData: stateObject });
+  inputChange = (value) => {
+    this.setState({
+      inputText: value,
+    });
   }
   menuClickPermission = (email, perm) => {
     const index = this.state.users.list.findIndex((obj) => { return obj.email === email; });
@@ -182,13 +208,15 @@ class ManageContentContainer extends React.Component {
       tableHeight: this.getHeight(),
     });
   }
-  search = () => {
-    if (this.state.formData.input) {
+  search = (value) => {
+    const searchValue = value || this.state.inputText;
+    if (searchValue && typeof searchValue === 'string') {
       this.setState({
         addUsers: [],
+        inputText: searchValue,
         searchUserPermission: {},
       });
-      const queryString = `type=${this.state.inputType}&${this.state.inputType}=${this.state.formData.input}`;
+      const queryString = `type=${this.state.inputType}&${this.state.inputType}=${searchValue}`;
       this.props.userSearch(this.props.user, this.props.selected, queryString);
     }
   }
@@ -203,7 +231,7 @@ class ManageContentContainer extends React.Component {
       tabNames: window.innerWidth > 680 ? tabNames.full : tabNames.short,
     });
   }
-  toggleUser = (email, name, checked) => {
+  toggleUser = (email, lab, name, checked) => {
     const addUsers = JSON.parse(JSON.stringify(this.state.addUsers));
     const index = addUsers.findIndex((obj) => { return obj.email === email; });
     if (index > -1) {
@@ -220,6 +248,7 @@ class ManageContentContainer extends React.Component {
       ;
       const newUser = {
         email,
+        lab,
         name,
         permission: searchUserPermission[email],
       };
@@ -230,11 +259,23 @@ class ManageContentContainer extends React.Component {
       });
     }
   }
+  updateBulkPermissions = () => {
+    this.props.changeBulkPermissionAction(
+      this.props.user,
+      this.props.selected,
+      this.props.lab,
+      this.state.selectPermission,
+    );
+  }
   updateManage = (type) => {
     const submitObj = {};
     if (type === 'current') {
       submitObj._id = this.props.selected;
-      submitObj.list = this.state.users.list;
+      submitObj.list = this.state.users.list.filter((obj) => {
+        return obj.permission !== 'n' ||
+          (obj.permission === 'n' && obj.lab === this.props.lab)
+        ;
+      });
       submitObj.type = type;
     }
     this.props.manageUsers(
@@ -261,14 +302,18 @@ class ManageContentContainer extends React.Component {
   render() {
     return (
       <ManageContent
-        addUsers={ this.addUsers }
+        addUsers={ this.state.addUsers }
+        addUsersFunc={ this.addUsers }
+        addUsersState={ this.props.addUsersState }
         anchorEl={ this.state.anchorEl }
+        bulkPermissionState={ this.props.bulkPermissionState }
+        bulkChange={ this.bulkChange }
         calcPageLength={ this.calcPageLength }
         cancel={ this.props.cancel }
         closePopover={ this.closePopover }
-        formData={ this.state.formData }
         inputChange={ this.inputChange }
         inputLabel={ this.state.inputLabel }
+        inputText={ this.state.inputText }
         manageState={ this.props.manageState }
         menuClickPermission={ this.menuClickPermission }
         name={ this.props.name }
@@ -282,10 +327,12 @@ class ManageContentContainer extends React.Component {
         searchUserPermission={ this.state.searchUserPermission }
         setSearchType={ this.setSearchType }
         setSearchUserPermission={ this.setSearchUserPermission }
+        selectPermission={ this.state.selectPermission }
         selected={ this.props.selected }
         tableHeight={ this.state.tableHeight }
         tabNames={ this.state.tabNames }
         toggleUser={ this.toggleUser }
+        updateBulkPermissions={ this.updateBulkPermissions }
         updateManage={ this.updateManage }
         userPopover={ this.state.userPopover }
         users={ this.state.users }
@@ -294,8 +341,37 @@ class ManageContentContainer extends React.Component {
   }
 }
 
+ManageContentContainer.defaultProps = {
+  addUsersState: {
+    didPutFail: false,
+    _id: null,
+    isPut: false,
+    message: null,
+  },
+  bulkPermissionState: {
+    didPutFail: false,
+    _id: null,
+    isPut: false,
+    message: null,
+  },
+};
+
 ManageContentContainer.propTypes = {
+  addUsersAction: PropTypes.func.isRequired,
+  addUsersState: PropTypes.shape({
+    didPutFail: PropTypes.bool,
+    _id: PropTypes.number,
+    isPut: PropTypes.bool,
+    message: PropTypes.string,
+  }),
+  bulkPermissionState: PropTypes.shape({
+    didPutFail: PropTypes.bool,
+    _id: PropTypes.number,
+    isPut: PropTypes.bool,
+    message: PropTypes.string,
+  }),
   cancel: PropTypes.func.isRequired,
+  changeBulkPermissionAction: PropTypes.func.isRequired,
   lab: PropTypes.string.isRequired,
   manageState: PropTypes.shape({
     didPostFail: PropTypes.bool,
@@ -306,7 +382,10 @@ ManageContentContainer.propTypes = {
   manageUsers: PropTypes.func.isRequired,
   name: PropTypes.string.isRequired,
   permission: PropTypes.string.isRequired,
+  resetAddUserPut: PropTypes.func.isRequired,
+  resetBulkPermissionPut: PropTypes.func.isRequired,
   resetPost: PropTypes.func.isRequired,
+  resetUserSearchGet: PropTypes.func.isRequired,
   searchUser: PropTypes.shape({
     didGetFail: PropTypes.bool,
     message: PropTypes.string,
@@ -341,8 +420,23 @@ ManageContentContainer.propTypes = {
 
 const mapDispatchToProps = (dispatch) => {
   return {
+    addUsersAction: (user, _id, lab, permission, obj) => {
+      dispatch(addUsersAction(user, _id, lab, permission, obj));
+    },
+    changeBulkPermissionAction: (user, _id, lab, permission) => {
+      dispatch(changeBulkPermissionAction(user, _id, lab, permission));
+    },
     manageUsers: (user, _id, lab, obj, permission) => {
       dispatch(manageUsers(user, _id, lab, obj, permission));
+    },
+    resetAddUserPut: () => {
+      dispatch(resetAddUserPut());
+    },
+    resetBulkPermissionPut: () => {
+      dispatch(resetBulkPermissionPut());
+    },
+    resetUserSearchGet: () => {
+      dispatch(resetUserSearchGet());
     },
     resetPost: () => {
       dispatch(resetPost(null));
@@ -358,6 +452,8 @@ const mapDispatchToProps = (dispatch) => {
 
 const mapStateToProps = (state) => {
   return {
+    addUsersState: state.addUsers,
+    bulkPermissionState: state.bulkPermission,
     manageState: state.manage,
     searchUser: state.searchUser,
     user: state.user,

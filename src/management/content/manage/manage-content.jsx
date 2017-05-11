@@ -24,7 +24,7 @@ import './manage-content.scss';
 class ManageContent extends React.Component {
   onEnter = (e) => {
     if (e.key === 'Enter') {
-      this.props.search();
+      this.props.search(e.target.value);
     }
   }
   permissionToText = (perm) => {
@@ -147,36 +147,34 @@ class ManageContent extends React.Component {
                 } }
                 footer={
                   <span>
-                    <span className="manage-footer-updates">
+                    { this.props.manageState._id === this.props.selected &&
                       <CSSTransitionGroup
+                        className="manage-footer-updates"
                         transitionName="manage-message-text"
                         transitionEnterTimeout={ 500 }
                         transitionLeaveTimeout={ 500 }
                       >
                         <span className="manage-post-information">
-                          { this.props.manageState._id === this.props.selected &&
-                            this.props.manageState.isPost &&
+                          { this.props.manageState.isPost &&
                             <span>
                               <FontAwesome name="spinner" pulse={ true } /> Updates submitted
                             </span>
                           }
-                          { this.props.manageState._id === this.props.selected &&
-                            this.props.manageState.didPostFail &&
+                          { this.props.manageState.didPostFail &&
                             <span>
                               <FontAwesome name="exclamation-triangle" /> Update failed.{'\u00A0'}
                               { this.props.manageState.message }
                             </span>
                           }
-                          { this.props.manageState._id === this.props.selected &&
+                          { !this.props.manageState.didPostFail &&
                             this.props.manageState.message &&
-                            !this.props.manageState.didPostFail &&
                             <span>
                               { this.props.manageState.message }
                             </span>
                           }
                         </span>
                       </CSSTransitionGroup>
-                    </span>
+                    }
                     <span className="manage-footer-buttons">
                       <ActionButtons
                         cancel={ {
@@ -211,10 +209,9 @@ class ManageContent extends React.Component {
               <div className="manage-search-container">
                 <TextField
                   floatingLabelText={ this.props.inputLabel }
-                  onChange={ (e) => { this.props.inputChange('input', e.target.value); } }
-                  onKeyPress={ this.onEnter }
+                  onBlur={ (e) => { this.props.inputChange(e.target.value); } }
+                  onKeyPress={ (e) => { this.onEnter(e); } }
                   style={ { width: '50%' } }
-                  value={ this.props.formData.input }
                 />
                 <RadioButtonGroup
                   className="manage-radio-button-group"
@@ -237,37 +234,35 @@ class ManageContent extends React.Component {
                   className="manage-search-button"
                   label={ this.props.searchLabel }
                   style={ this.props.searchStyle }
-                  onClick={ this.props.search }
+                  onClick={ () => { this.props.search(); } }
                 />
               </div>
               { this.props.searchUser.list.length <= 0 &&
-                <span>
-                  <CSSTransitionGroup
-                    transitionName="manage-message-text"
-                    transitionEnterTimeout={ 500 }
-                    transitionLeaveTimeout={ 500 }
-                  >
-                    <span className="manage-search-information">
-                      { this.props.searchUser.isGet &&
-                        <span>
-                          <FontAwesome name="spinner" pulse={ true } /> Searching...
-                        </span>
-                      }
-                      { this.props.searchUser.didGetFail &&
-                        <span>
-                          <FontAwesome name="exclamation-triangle" /> Update failed.{'\u00A0'}
-                          { this.props.searchUser.message }
-                        </span>
-                      }
-                      { !this.props.searchUser.didGetFail &&
-                        this.props.searchUser.message &&
-                        <span>
-                          No users found
-                        </span>
-                      }
-                    </span>
-                  </CSSTransitionGroup>
-                </span>
+                <CSSTransitionGroup
+                  transitionName="manage-message-text"
+                  transitionEnterTimeout={ 500 }
+                  transitionLeaveTimeout={ 500 }
+                >
+                  <span className="manage-search-information">
+                    { this.props.searchUser.isGet &&
+                      <span>
+                        <FontAwesome name="spinner" pulse={ true } /> Searching...
+                      </span>
+                    }
+                    { this.props.searchUser.didGetFail &&
+                      <span>
+                        <FontAwesome name="exclamation-triangle" /> Update failed.{'\u00A0'}
+                        { this.props.searchUser.message }
+                      </span>
+                    }
+                    { !this.props.searchUser.didGetFail &&
+                      this.props.searchUser.message &&
+                      <span>
+                        No users found
+                      </span>
+                    }
+                  </span>
+                </CSSTransitionGroup>
               }
               { this.props.searchUser.list.length > 0 &&
                 <CustomTable
@@ -316,7 +311,7 @@ class ManageContent extends React.Component {
                             value: (
                               <Checkbox
                                 onCheck={ (e, isChecked) => {
-                                  this.props.toggleUser(user.email, user.name, isChecked);
+                                  this.props.toggleUser(user.email, user.lab, user.name, isChecked);
                                 } }
                                 style={ {
                                   width: 24,
@@ -357,19 +352,19 @@ class ManageContent extends React.Component {
                                     <MenuItem
                                       key="r"
                                       value="r"
-                                      onClick={ () => { this.props.setSearchUserPermission(user.email, user.name, 'r'); } }
+                                      onClick={ () => { this.props.setSearchUserPermission(user.email, user.lab, user.name, 'r'); } }
                                       primaryText="Read"
                                     />
                                     <MenuItem
                                       key="w"
                                       value="w"
-                                      onClick={ () => { this.props.setSearchUserPermission(user.email, user.name, 'w'); } }
+                                      onClick={ () => { this.props.setSearchUserPermission(user.email, user.lab, user.name, 'w'); } }
                                       primaryText="Write"
                                     />
                                     <MenuItem
                                       key="o"
                                       value="o"
-                                      onClick={ () => { this.props.setSearchUserPermission(user.email, user.name, 'o'); } }
+                                      onClick={ () => { this.props.setSearchUserPermission(user.email, user.lab, user.name, 'o'); } }
                                       primaryText="Owner"
                                     />
                                   </Menu>
@@ -382,17 +377,49 @@ class ManageContent extends React.Component {
                     }),
                   } }
                   footer={
-                    <span
-                      className="manage-search-footer-button"
-                    >
-                      <ActionButtons
-                        idSuffix="addUsers"
-                        update={ {
-                          func: () => { this.props.addUsers(); },
-                          label: 'Add user(s)',
-                          toolTipText: 'Add selected users to project',
-                        } }
-                      />
+                    <span>
+                      { this.props.addUsersState._id === this.props.selected &&
+                        <CSSTransitionGroup
+                          className="manage-footer-updates"
+                          transitionName="manage-message-text"
+                          transitionEnterTimeout={ 500 }
+                          transitionLeaveTimeout={ 500 }
+                        >
+                          <span className="manage-post-information">
+                            { this.props.addUsersState.isPut &&
+                              <span>
+                                <FontAwesome name="spinner" pulse={ true } /> Updates submitted
+                              </span>
+                            }
+                            { this.props.addUsersState.didPutFail &&
+                              <span>
+                                <FontAwesome name="exclamation-triangle" /> Update failed.{'\u00A0'}
+                                { this.props.addUsersState.message }
+                              </span>
+                            }
+                            { !this.props.addUsersState.didPutFail &&
+                              this.props.addUsersState.message &&
+                              <span>
+                                { this.props.addUsersState.message }
+                              </span>
+                            }
+                          </span>
+                        </CSSTransitionGroup>
+                      }
+                      { this.props.addUsers.length > 0 &&
+                        <span
+                          className="manage-footer-buttons"
+                        >
+                          <ActionButtons
+                            idSuffix="addUsers"
+                            update={ {
+                              func: () => { this.props.addUsersFunc(); },
+                              label: 'Add user(s)',
+                              toolTipText: 'Add selected users to project',
+                            } }
+                          />
+                        </span>
+                      }
                     </span>
                   }
                   height={ this.props.tableHeight.search }
@@ -409,8 +436,8 @@ class ManageContent extends React.Component {
               <SelectField
                 floatingLabelText="User permissions"
                 fullWidth={ true }
-                value={ this.props.formData.permission }
-                onChange={ (e, index, value) => { console.log(index, value); } }
+                value={ this.props.selectPermission }
+                onChange={ (e, index, value) => { this.props.bulkChange(value); } }
               >
                 <MenuItem key="lr" value="lr" primaryText="Read - lab (all lab members can view this project)" />
                 <MenuItem key="lw" value="lw" primaryText="Write - lab (all lab members can edit this project)" />
@@ -418,6 +445,43 @@ class ManageContent extends React.Component {
                 <MenuItem key="aw" value="aw" primaryText="Write - all (all ScreenHits users can edit this project)" />
                 <MenuItem key="n" value="n" primaryText="None (only you can view this project)" />
               </SelectField>
+              <div>
+                <ActionButtons
+                  idSuffix="updateBulkUsers"
+                  update={ {
+                    func: () => { this.props.updateBulkPermissions(); },
+                    label: 'Update',
+                  } }
+                />
+                { this.props.bulkPermissionState._id === this.props.selected &&
+                  <CSSTransitionGroup
+                    className="manage-footer-updates-left"
+                    transitionName="manage-message-text"
+                    transitionEnterTimeout={ 500 }
+                    transitionLeaveTimeout={ 500 }
+                  >
+                    <span className="manage-post-information">
+                      { this.props.bulkPermissionState.isPut &&
+                        <span>
+                          <FontAwesome name="spinner" pulse={ true } /> Update submitted
+                        </span>
+                      }
+                      { this.props.bulkPermissionState.didPutFail &&
+                        <span>
+                          <FontAwesome name="exclamation-triangle" /> Update failed.{'\u00A0'}
+                          { this.props.bulkPermissionState.message }
+                        </span>
+                      }
+                      { !this.props.bulkPermissionState.didPutFail &&
+                        this.props.bulkPermissionState.message &&
+                        <span>
+                          { this.props.bulkPermissionState.message }
+                        </span>
+                      }
+                    </span>
+                  </CSSTransitionGroup>
+                }
+              </div>
             </Paper>
           </Tab>
         </Tabs>
@@ -427,17 +491,33 @@ class ManageContent extends React.Component {
 }
 
 ManageContent.propTypes = {
-  addUsers: PropTypes.func.isRequired,
+  addUsers: PropTypes.arrayOf(
+    PropTypes.shape({
+      email: PropTypes.string,
+      name: PropTypes.string,
+      permission: PropTypes.string,
+    }),
+  ).isRequired,
+  addUsersFunc: PropTypes.func.isRequired,
+  addUsersState: PropTypes.shape({
+    didPutFail: PropTypes.bool,
+    _id: PropTypes.number,
+    isPut: PropTypes.bool,
+    message: PropTypes.string,
+  }).isRequired,
   anchorEl: PropTypes.shape({
     current: PropTypes.shape({}),
     search: PropTypes.shape({}),
   }).isRequired,
+  bulkChange: PropTypes.func.isRequired,
+  bulkPermissionState: PropTypes.shape({
+    didPutFail: PropTypes.bool,
+    _id: PropTypes.number,
+    isPut: PropTypes.bool,
+    message: PropTypes.string,
+  }).isRequired,
   cancel: PropTypes.func.isRequired,
   closePopover: PropTypes.func.isRequired,
-  formData: PropTypes.shape({
-    input: PropTypes.string,
-    permission: PropTypes.string.isRequired,
-  }).isRequired,
   inputChange: PropTypes.func.isRequired,
   inputLabel: PropTypes.string.isRequired,
   manageState: PropTypes.shape({
@@ -474,6 +554,7 @@ ManageContent.propTypes = {
   searchUserPermission: PropTypes.objectOf(
       PropTypes.string,
   ).isRequired,
+  selectPermission: PropTypes.string.isRequired,
   selected: PropTypes.number.isRequired,
   setSearchType: PropTypes.func.isRequired,
   setSearchUserPermission: PropTypes.func.isRequired,
@@ -492,6 +573,7 @@ ManageContent.propTypes = {
     ]),
   }).isRequired,
   toggleUser: PropTypes.func.isRequired,
+  updateBulkPermissions: PropTypes.func.isRequired,
   updateManage: PropTypes.func.isRequired,
   userPopover: PropTypes.shape({
     current: PropTypes.shape({}),

@@ -67,24 +67,24 @@ class DisplayProject extends React.Component {
         { !this.props.edit &&
           <div className="display-element-container">
             <div className="display-element-key">
+              <span className="">
+                Owner:
+              </span>
+            </div>
+            <div className="display-element-value">
+              { this.props.item['owner-name'] }
+            </div>
+          </div>
+        }
+        { !this.props.edit &&
+          <div className="display-element-container">
+            <div className="display-element-key">
               <span>
                 Creation Date:
               </span>
             </div>
             <div className="display-element-value">
               { this.props.item['creation-date']}
-            </div>
-          </div>
-        }
-        { !this.props.edit && this.props.item && this.props.item['update-date'] &&
-          <div className="display-element-container">
-            <div className="display-element-key">
-              <span className="">
-                Details last updated:
-              </span>
-            </div>
-            <div className="display-element-value">
-              { this.props.item['update-date'] }
             </div>
           </div>
         }

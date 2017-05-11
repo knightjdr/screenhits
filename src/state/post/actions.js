@@ -1,5 +1,5 @@
 import fetch from 'isomorphic-fetch';
-import { pushData } from '../data/actions';
+import { pushData } from '../get/data-actions';
 
 export const FAIL_POST = 'FAIL_POST';
 export const REQUEST_POST = 'REQUEST_POST';

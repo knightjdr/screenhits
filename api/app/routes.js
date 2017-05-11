@@ -1,9 +1,10 @@
 const auth = require('./modules/auth/validate');
 const available = require('./modules/available/available');
 const create = require('./modules/create/create');
+const permission = require('./modules/permission/permission');
 const search = require('./modules/search/search');
 const update = require('./modules/update/update');
-const users = require('./modules/get/users');
+const users = require('./modules/users/users');
 
 const Routes = {
 	configure: (app) => {
@@ -30,6 +31,12 @@ const Routes = {
 		});
 		app.put('/management', (req, res) => {
 			update.put(req.body, res);
+		});
+		app.put('/permission', auth.validate, (req, res) => {
+			permission.put(req.body._id, req.body.permission, res);
+		});
+		app.put('/users', auth.validate, (req, res) => {
+			users.put(req.body._id, req.body.users, res);
 		});
 		app.put('/*', (req, res) => {
 			res.status(404).send({status: 404, error: 'ScreenHits - the route is not valid'});

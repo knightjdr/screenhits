@@ -81,20 +81,24 @@ class CustomTable extends React.Component {
               style={ { textAlign: 'right' } }
             >
               { this.props.footer }
-              { this.props.page > 0 &&
-                <FlatButton
-                  className="table-page-button"
-                  icon={ <FontAwesome name="angle-left" /> }
-                  onClick={ () => { this.props.changePage('down'); } }
-                />
-              }
-              Page { this.props.page + 1 }/{ this.props.pageTotal + 1}
-              { this.props.page < this.props.pageTotal &&
-                <FlatButton
-                  className="table-page-button"
-                  icon={ <FontAwesome name="angle-right" /> }
-                  onClick={ () => { this.props.changePage('up'); } }
-                />
+              { this.props.pageTotal > 0 &&
+                <span>
+                  { this.props.page > 0 &&
+                    <FlatButton
+                      className="table-page-button"
+                      icon={ <FontAwesome name="angle-left" /> }
+                      onClick={ () => { this.props.changePage('down'); } }
+                    />
+                  }
+                  Page { this.props.page + 1 }/{ this.props.pageTotal + 1}
+                  { this.props.page < this.props.pageTotal &&
+                    <FlatButton
+                      className="table-page-button"
+                      icon={ <FontAwesome name="angle-right" /> }
+                      onClick={ () => { this.props.changePage('up'); } }
+                    />
+                  }
+                </span>
               }
             </TableRowColumn>
           </TableRow>
@@ -110,7 +114,10 @@ CustomTable.defaultProps = {
 
 CustomTable.propTypes = {
   changePage: PropTypes.func.isRequired,
-  footer: PropTypes.shape({}),
+  footer: PropTypes.oneOfType([
+    PropTypes.bool,
+    PropTypes.shape({}),
+  ]),
   header: PropTypes.arrayOf(
     PropTypes.shape({
       name: PropTypes.string,

@@ -1,5 +1,5 @@
 import fetch from 'isomorphic-fetch';
-import { getData } from '../data/actions';
+import { getData } from '../get/data-actions';
 
 export const FAIL_PUT = 'FAIL_PUT';
 export const REQUEST_PUT = 'REQUEST_PUT';
