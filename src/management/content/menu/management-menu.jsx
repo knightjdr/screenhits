@@ -2,81 +2,56 @@ import FontAwesome from 'react-fontawesome';
 import FloatingActionButton from 'material-ui/FloatingActionButton';
 import Menu from 'material-ui/Menu';
 import MenuItem from 'material-ui/MenuItem';
+import muiThemeable from 'material-ui/styles/muiThemeable';
 import Popover, { PopoverAnimationVertical } from 'material-ui/Popover';
 import PropTypes from 'prop-types';
 import React from 'react';
 
-import './management-menu.scss';
-
 class ManagementMenu extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      menu: null,
-      showList: false,
-    };
-  }
-  create = () => {
-    this.hideManagementList();
-    this.props.funcs.create();
-  }
-  edit = () => {
-    this.hideManagementList();
-    this.props.funcs.edit();
-  }
-  hideManagementList = () => {
-    this.setState({
-      showList: false,
-    });
-  }
-  manage = () => {
-    this.hideManagementList();
-    this.props.funcs.manage();
-  }
-  showManagementList = (event) => {
-    this.setState({
-      anchorEl: event.currentTarget,
-      showList: true,
-    });
-  }
   render() {
     return (
       <span>
         <FloatingActionButton
-          className="management-menu-button"
           mini={ true }
-          onClick={ this.showManagementList }
+          onClick={ this.props.showManagementList }
+          iconStyle={ {
+            color: this.props.muiTheme.palette.alternateTextColor2,
+          } }
         >
           <FontAwesome name="bars" />
         </FloatingActionButton>
         <Popover
-          anchorEl={ this.state.anchorEl }
+          anchorEl={ this.props.anchorEl }
           anchorOrigin={ { horizontal: 'middle', vertical: 'center' } }
           animation={ PopoverAnimationVertical }
-          className="management-menu-popover"
-          onRequestClose={ this.hideManagementList }
-          open={ this.state.showList }
+          onRequestClose={ this.props.hideManagementList }
+          open={ this.props.showList }
           targetOrigin={ { horizontal: 'left', vertical: 'bottom' } }
         >
-          <Menu>
+          <Menu
+            listStyle={ {
+              paddingBottom: 0,
+              paddingTop: 0,
+            } }
+          >
             { this.props.active === 'project' &&
               this.props.selected &&
               <MenuItem
                 key="manage"
-                onClick={ this.manage }
+                onClick={ this.props.manage }
                 primaryText={ [<FontAwesome key="manage" name="user-plus" />, ' Manage ', this.props.active] }
               />
             }
             { this.props.selected &&
               <MenuItem
                 key="edit"
-                onClick={ this.edit }
+                onClick={ this.props.edit }
                 primaryText={ [<FontAwesome key="edit" name="pencil-square-o" />, ' Edit ', this.props.active] }
               />
             }
             <MenuItem
               key="add"
-              onClick={ this.create }
+              onClick={ this.props.create }
               primaryText={ [<FontAwesome key="add" name="plus" />, ' Add new ', this.props.active] }
             />
           </Menu>
@@ -87,17 +62,25 @@ class ManagementMenu extends React.Component {
 }
 
 ManagementMenu.defaultProps = {
+  anchorEl: PropTypes.shape({}),
   selected: null,
 };
 
 ManagementMenu.propTypes = {
   active: PropTypes.string.isRequired,
-  funcs: PropTypes.shape({
-    create: PropTypes.func,
-    edit: PropTypes.func,
-    manage: PropTypes.func,
+  anchorEl: PropTypes.shape({}),
+  create: PropTypes.func.isRequired,
+  edit: PropTypes.func.isRequired,
+  hideManagementList: PropTypes.func.isRequired,
+  manage: PropTypes.func.isRequired,
+  muiTheme: PropTypes.shape({
+    palette: PropTypes.shape({
+      alternateTextColor2: PropTypes.string,
+    }),
   }).isRequired,
   selected: PropTypes.number,
+  showList: PropTypes.bool.isRequired,
+  showManagementList: PropTypes.func.isRequired,
 };
 
-export default ManagementMenu;
+export default muiThemeable()(ManagementMenu);

@@ -5,25 +5,53 @@ import PropTypes from 'prop-types';
 import React from 'react';
 
 import {
+  blueGrey100,
+  blueGrey200,
   blueGrey300,
   blueGrey500,
+  blueGrey600,
+  blueGrey700,
   blueGrey800,
+  darkBlack,
+  green500,
+  green700,
+  grey100,
   orange400,
+  orange500,
   orange600,
   orange900,
+  red400,
+  red700,
+  yellow700,
+  yellow900,
 } from 'material-ui/styles/colors';
 
 injectTapEventPlugin();
 
 const muiTheme = getMuiTheme({
   palette: {
-    accent1Color: orange600,
+    accent1Color: orange400,
     accent2Color: orange900,
-    accent3Color: orange400,
+    accent3Color: orange600,
+    alert: yellow700,
+    alertHover: yellow900,
+    alternativeButtonColor: orange400,
+    alternativeButtonColorHover: orange500,
     alternateTextColor: blueGrey800,
+    alternateTextColor2: orange400,
+    buttonColor: blueGrey600,
+    buttonColorHover: blueGrey700,
+    keyColor: blueGrey100,
+    keyColorBorder: blueGrey200,
+    offWhite: grey100,
     primary1Color: blueGrey500,
     primary2Color: blueGrey800,
     primary3Color: blueGrey300,
+    success: green500,
+    successHover: green700,
+    textColor: darkBlack,
+    warning: red400,
+    warningHover: red700,
   },
 });
 

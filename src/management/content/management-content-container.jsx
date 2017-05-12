@@ -65,8 +65,10 @@ class ManagementContentContainer extends React.Component {
   render() {
     return (
       <div
-        className="content-ref-container"
         ref={ (element) => { this.element = element; } }
+        style={ {
+          width: '100%',
+        } }
       >
         <ManagementContent
           active={ this.props.active }

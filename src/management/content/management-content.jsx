@@ -4,9 +4,17 @@ import React from 'react';
 import CreateContent from './create/create-content-container';
 import DisplayContent from './display/display-content-container';
 import ManageContent from './manage/manage-content-container';
-import ManagementMenu from './menu/management-menu';
+import ManagementMenu from './menu/management-menu-container';
 
-import './management-content.scss';
+const introStyle = {
+  left: 0,
+  marginLeft: 5,
+  marginRight: 5,
+  position: 'absolute',
+  right: 0,
+  textAlign: 'center',
+  top: '30%',
+};
 
 class ManagementContent extends React.Component {
   render() {
@@ -35,17 +43,32 @@ class ManagementContent extends React.Component {
         selected={ this.props.selected }
       />);
     } else if (this.props.availableLength === 0) {
-      content = (<div className="content-intro">
+      content = (<div style={ introStyle }>
         Create a new { this.props.active } to begin
       </div>);
     } else {
-      content = (<div className="content-intro">
+      content = (<div style={ introStyle }>
         Select an existing { this.props.active } or create a new { this.props.active } to begin
       </div>);
     }
     return (
-      <div className="content-wrapper">
-        <div className="content-menu">
+      <div
+        style={ {
+          flex: '1 1 auto',
+          height: '100%',
+          padding: '0px 5px 0px 5px',
+          position: 'relative',
+          top: 0,
+        } }
+      >
+        <div
+          style={ {
+            bottom: 0,
+            left: 5,
+            position: 'absolute',
+            width: 50,
+          } }
+        >
           <ManagementMenu
             active={ this.props.active }
             funcs={ {

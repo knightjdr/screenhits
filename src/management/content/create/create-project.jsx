@@ -1,19 +1,28 @@
 import FontAwesome from 'react-fontawesome';
 import MenuItem from 'material-ui/MenuItem';
+import muiThemeable from 'material-ui/styles/muiThemeable';
 import PropTypes from 'prop-types';
 import SelectField from 'material-ui/SelectField';
 import TextField from 'material-ui/TextField';
 import React from 'react';
 
-import './create-content.scss';
+const inputStyle = {
+  marginLeft: 4,
+  marginRight: 4,
+  maxWidth: 500,
+};
 
 class CreateProject extends React.Component {
   render() {
     return (
       <div>
-        <span className="create-header">
+        <div
+          style={ {
+            color: this.props.muiTheme.palette.alternateTextColor,
+          } }
+        >
           <FontAwesome name="info-circle" /> Name your project and provide a description.
-        </span>
+        </div>
         <TextField
           errorText={ this.props.errors.name }
           floatingLabelText="Project name (short)"
@@ -22,6 +31,7 @@ class CreateProject extends React.Component {
           onChange={ (e) => { this.props.inputChange('name', e.target.value); } }
           rows={ 1 }
           rowsMax={ 2 }
+          style={ inputStyle }
           value={ this.props.formData.name }
         />
         <TextField
@@ -32,13 +42,15 @@ class CreateProject extends React.Component {
           onChange={ (e) => { this.props.inputChange('description', e.target.value); } }
           rows={ 1 }
           rowsMax={ 4 }
+          style={ inputStyle }
           value={ this.props.formData.description }
         />
         <SelectField
           floatingLabelText="Other user permissions"
           fullWidth={ true }
-          value={ this.props.formData.permission }
           onChange={ (e, index, value) => { this.props.inputChange('permission', value); } }
+          style={ inputStyle }
+          value={ this.props.formData.permission }
         >
           <MenuItem key="lr" value="lr" primaryText="Read - lab (all lab members can view this project)" />
           <MenuItem key="lw" value="lw" primaryText="Write - lab (all lab members can edit this project)" />
@@ -63,6 +75,11 @@ CreateProject.propTypes = {
     permission: PropTypes.string,
   }).isRequired,
   inputChange: PropTypes.func.isRequired,
+  muiTheme: PropTypes.shape({
+    palette: PropTypes.shape({
+      alternateTextColor: PropTypes.string,
+    }),
+  }).isRequired,
 };
 
-export default CreateProject;
+export default muiThemeable()(CreateProject);

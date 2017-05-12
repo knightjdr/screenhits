@@ -1,14 +1,13 @@
 import Checkbox from 'material-ui/Checkbox';
-import CSSTransitionGroup from 'react-transition-group/CSSTransitionGroup';
 import FlatButton from 'material-ui/FlatButton';
 import FontAwesome from 'react-fontawesome';
 import Menu from 'material-ui/Menu';
 import MenuItem from 'material-ui/MenuItem';
+import muiThemeable from 'material-ui/styles/muiThemeable';
 import Paper from 'material-ui/Paper';
 import Popover from 'material-ui/Popover';
 import PropTypes from 'prop-types';
 import { RadioButton, RadioButtonGroup } from 'material-ui/RadioButton';
-import RaisedButton from 'material-ui/RaisedButton';
 import React from 'react';
 import SelectField from 'material-ui/SelectField';
 import TextField from 'material-ui/TextField';
@@ -19,7 +18,7 @@ import {
 
 import ActionButtons from '../../../action-buttons/action-buttons-container';
 import CustomTable from '../../../table/table-container';
-import './manage-content.scss';
+import Notice from '../../../messages/notice/notice';
 
 class ManageContent extends React.Component {
   onEnter = (e) => {
@@ -38,21 +37,50 @@ class ManageContent extends React.Component {
   }
   render() {
     return (
-      <div className="manage-content">
-        <div className="manage-header">
+      <div
+        style={ {
+          padding: '10px 5px 10px 5px',
+        } }
+      >
+        <div
+          style={ {
+            color: this.props.muiTheme.palette.alternateTextColor,
+          } }
+        >
           <FontAwesome name="info-circle" /> Manage user permissions for project { this.props.selected }: { this.props.name }.
         </div>
-        <Tabs className="manage-tabs">
-          <Tab label={ this.props.tabNames.current } >
+        <Tabs
+          style={ {
+            marginTop: 20,
+          } }
+        >
+          <Tab
+            label={ this.props.tabNames.current }
+            style={ {
+              color: this.props.muiTheme.palette.alternateTextColor2,
+            } }
+          >
             { this.props.users.isGet &&
               this.props.users._id === this.props.selected &&
-              <div className="manage-information" key="manage-get">
+              <div
+                key="manage-get"
+                style={ {
+                  backgroundColor: '#fff',
+                  marginTop: 20,
+                } }
+              >
                 <FontAwesome key="fetching" name="spinner" pulse={ true } /> Retrieving user information.
               </div>
             }
             { this.props.users.didGetFail &&
               this.props.users._id === this.props.selected &&
-              <div className="manage-information" key="manage-fail">
+              <div
+                key="manage-fail"
+                style={ {
+                  backgroundColor: '#fff',
+                  marginTop: 20,
+                } }
+              >
                 <FontAwesome name="exclamation-triangle" /> User information could not be retrieved.
                 { this.props.users.message }.
               </div>
@@ -96,7 +124,8 @@ class ManageContent extends React.Component {
                           value: (
                             <span>
                               <FlatButton
-                                className="manage-permission-button"
+                                backgroundColor={ this.props.muiTheme.palette.buttonColor }
+                                hoverColor={ this.props.muiTheme.palette.buttonColorHover }
                                 key="button"
                                 label={ this.permissionToText(user.permission) }
                                 onTouchTap={ (event) => {
@@ -107,17 +136,22 @@ class ManageContent extends React.Component {
                                     user.permission,
                                   );
                                 } }
+                                secondary={ true }
                               />
                               <Popover
                                 anchorEl={ this.props.anchorEl.current }
                                 anchorOrigin={ { horizontal: 'left', vertical: 'top' } }
-                                className="manage-permission-popover"
                                 key="popover"
                                 onRequestClose={ () => { this.props.closePopover('current', user.email); } }
                                 open={ this.props.userPopover.current[user.email] }
                                 targetOrigin={ { horizontal: 'left', vertical: 'top' } }
                               >
-                                <Menu>
+                                <Menu
+                                  listStyle={ {
+                                    paddingBottom: 0,
+                                    paddingTop: 0,
+                                  } }
+                                >
                                   <MenuItem
                                     key="r"
                                     value="r"
@@ -146,36 +180,29 @@ class ManageContent extends React.Component {
                   }),
                 } }
                 footer={
-                  <span>
+                  <span
+                    style={ {
+                      marginRight: 20,
+                    } }
+                  >
                     { this.props.manageState._id === this.props.selected &&
-                      <CSSTransitionGroup
-                        className="manage-footer-updates"
-                        transitionName="manage-message-text"
-                        transitionEnterTimeout={ 500 }
-                        transitionLeaveTimeout={ 500 }
-                      >
-                        <span className="manage-post-information">
-                          { this.props.manageState.isPost &&
-                            <span>
-                              <FontAwesome name="spinner" pulse={ true } /> Updates submitted
-                            </span>
-                          }
-                          { this.props.manageState.didPostFail &&
-                            <span>
-                              <FontAwesome name="exclamation-triangle" /> Update failed.{'\u00A0'}
-                              { this.props.manageState.message }
-                            </span>
-                          }
-                          { !this.props.manageState.didPostFail &&
-                            this.props.manageState.message &&
-                            <span>
-                              { this.props.manageState.message }
-                            </span>
-                          }
-                        </span>
-                      </CSSTransitionGroup>
+                      <Notice
+                        fail={ this.props.manageState.didPostFail }
+                        failMessage={ `Update failed. ${this.props.manageState.message}` }
+                        label="manage-user-notification"
+                        submit={ this.props.manageState.isPost }
+                        submitMessage="Updates submitted"
+                        succeed={ this.props.manageState.message &&
+                          !this.props.manageState.didPostFail
+                        }
+                        succeedMessage={ this.props.manageState.message }
+                      />
                     }
-                    <span className="manage-footer-buttons">
+                    <span
+                      style={ {
+                        marginRight: 20,
+                      } }
+                    >
                       <ActionButtons
                         cancel={ {
                           func: this.props.cancel,
@@ -198,15 +225,31 @@ class ManageContent extends React.Component {
               />
             }
           </Tab>
-          <Tab label={ this.props.tabNames.manage } >
+          <Tab
+            label={ this.props.tabNames.manage }
+            style={ {
+              color: this.props.muiTheme.palette.alternateTextColor2,
+            } }
+          >
             <Paper
-              className="manage-subsection"
+              style={ {
+                margin: '5px 0px 5px 0px',
+                padding: '15px 10px 5px 10px',
+              } }
               zDepth={ 2 }
             >
-              <div className="manage-sub-header">
+              <div
+                style={ {
+                  color: this.props.muiTheme.palette.alternateTextColor,
+                } }
+              >
                 <u>Search for and add individual users</u>
               </div>
-              <div className="manage-search-container">
+              <div
+                style={ {
+                  display: 'flex',
+                } }
+              >
                 <TextField
                   floatingLabelText={ this.props.inputLabel }
                   onBlur={ (e) => { this.props.inputChange(e.target.value); } }
@@ -214,10 +257,13 @@ class ManageContent extends React.Component {
                   style={ { width: '50%' } }
                 />
                 <RadioButtonGroup
-                  className="manage-radio-button-group"
                   name="searchType"
                   defaultSelected="name"
                   onChange={ (e, v) => { this.props.setSearchType(v); } }
+                  style={ {
+                    marginLeft: 15,
+                    marginTop: 40,
+                  } }
                 >
                   <RadioButton
                     value="name"
@@ -230,39 +276,34 @@ class ManageContent extends React.Component {
                     style={ { display: 'inline-block', width: '100px' } }
                   />
                 </RadioButtonGroup>
-                <RaisedButton
-                  className="manage-search-button"
+                <FlatButton
+                  backgroundColor={ this.props.muiTheme.palette.buttonColor }
+                  hoverColor={ this.props.muiTheme.palette.buttonColorHover }
                   label={ this.props.searchLabel }
-                  style={ this.props.searchStyle }
+                  style={ Object.assign(
+                    {},
+                    this.props.searchStyle,
+                    {
+                      height: 36,
+                      marginTop: 32,
+                    },
+                  ) }
                   onClick={ () => { this.props.search(); } }
+                  secondary={ true }
                 />
               </div>
               { this.props.searchUser.list.length <= 0 &&
-                <CSSTransitionGroup
-                  transitionName="manage-message-text"
-                  transitionEnterTimeout={ 500 }
-                  transitionLeaveTimeout={ 500 }
-                >
-                  <span className="manage-search-information">
-                    { this.props.searchUser.isGet &&
-                      <span>
-                        <FontAwesome name="spinner" pulse={ true } /> Searching...
-                      </span>
-                    }
-                    { this.props.searchUser.didGetFail &&
-                      <span>
-                        <FontAwesome name="exclamation-triangle" /> Update failed.{'\u00A0'}
-                        { this.props.searchUser.message }
-                      </span>
-                    }
-                    { !this.props.searchUser.didGetFail &&
-                      this.props.searchUser.message &&
-                      <span>
-                        No users found
-                      </span>
-                    }
-                  </span>
-                </CSSTransitionGroup>
+                <Notice
+                  fail={ this.props.searchUser.didGetFail }
+                  failMessage={ `Update failed. ${this.props.searchUser.message}` }
+                  label="manage-user-search-notification"
+                  submit={ this.props.searchUser.isGet }
+                  submitMessage="Searching..."
+                  succeed={ this.props.searchUser.message &&
+                    !this.props.searchUser.didGetFail
+                  }
+                  succeedMessage="No users found"
+                />
               }
               { this.props.searchUser.list.length > 0 &&
                 <CustomTable
@@ -325,7 +366,8 @@ class ManageContent extends React.Component {
                             value: (
                               <span>
                                 <FlatButton
-                                  className="manage-permission-button"
+                                  backgroundColor={ this.props.muiTheme.palette.buttonColor }
+                                  hoverColor={ this.props.muiTheme.palette.buttonColorHover }
                                   key="button"
                                   label={ this.permissionToText(
                                     this.props.searchUserPermission[user.email])
@@ -338,11 +380,11 @@ class ManageContent extends React.Component {
                                       user.permission,
                                     );
                                   } }
+                                  secondary={ true }
                                 />
                                 <Popover
                                   anchorEl={ this.props.anchorEl.search }
                                   anchorOrigin={ { horizontal: 'left', vertical: 'top' } }
-                                  className="manage-permission-popover"
                                   key="popover"
                                   onRequestClose={ () => { this.props.closePopover('search', user.email); } }
                                   open={ this.props.userPopover.search[user.email] }
@@ -377,38 +419,29 @@ class ManageContent extends React.Component {
                     }),
                   } }
                   footer={
-                    <span>
+                    <span
+                      style={ {
+                        marginRight: 20,
+                      } }
+                    >
                       { this.props.addUsersState._id === this.props.selected &&
-                        <CSSTransitionGroup
-                          className="manage-footer-updates"
-                          transitionName="manage-message-text"
-                          transitionEnterTimeout={ 500 }
-                          transitionLeaveTimeout={ 500 }
-                        >
-                          <span className="manage-post-information">
-                            { this.props.addUsersState.isPut &&
-                              <span>
-                                <FontAwesome name="spinner" pulse={ true } /> Updates submitted
-                              </span>
-                            }
-                            { this.props.addUsersState.didPutFail &&
-                              <span>
-                                <FontAwesome name="exclamation-triangle" /> Update failed.{'\u00A0'}
-                                { this.props.addUsersState.message }
-                              </span>
-                            }
-                            { !this.props.addUsersState.didPutFail &&
-                              this.props.addUsersState.message &&
-                              <span>
-                                { this.props.addUsersState.message }
-                              </span>
-                            }
-                          </span>
-                        </CSSTransitionGroup>
+                        <Notice
+                          fail={ this.props.addUsersState.didPutFail }
+                          failMessage={ `Update failed. ${this.props.addUsersState.message}` }
+                          label="manage-user-update-notification"
+                          submit={ this.props.addUsersState.isPut }
+                          submitMessage="Updates submitted"
+                          succeed={ this.props.addUsersState.message &&
+                            !this.props.addUsersState.didPutFail
+                          }
+                          succeedMessage={ this.props.addUsersState.message }
+                        />
                       }
                       { this.props.addUsers.length > 0 &&
                         <span
-                          className="manage-footer-buttons"
+                          style={ {
+                            marginRight: 20,
+                          } }
                         >
                           <ActionButtons
                             idSuffix="addUsers"
@@ -427,10 +460,17 @@ class ManageContent extends React.Component {
               }
             </Paper>
             <Paper
-              className="manage-subsection"
+              style={ {
+                margin: '5px 0px 5px 0px',
+                padding: '15px 10px 5px 10px',
+              } }
               zDepth={ 2 }
             >
-              <div className="manage-sub-header">
+              <div
+                style={ {
+                  color: this.props.muiTheme.palette.alternateTextColor,
+                } }
+              >
                 <u>Change permissions in bulk</u>
               </div>
               <SelectField
@@ -454,32 +494,23 @@ class ManageContent extends React.Component {
                   } }
                 />
                 { this.props.bulkPermissionState._id === this.props.selected &&
-                  <CSSTransitionGroup
-                    className="manage-footer-updates-left"
-                    transitionName="manage-message-text"
-                    transitionEnterTimeout={ 500 }
-                    transitionLeaveTimeout={ 500 }
+                  <span
+                    style={ {
+                      marginLeft: 20,
+                    } }
                   >
-                    <span className="manage-post-information">
-                      { this.props.bulkPermissionState.isPut &&
-                        <span>
-                          <FontAwesome name="spinner" pulse={ true } /> Update submitted
-                        </span>
+                    <Notice
+                      fail={ this.props.bulkPermissionState.didPutFail }
+                      failMessage={ `Update failed. ${this.props.bulkPermissionState.message}` }
+                      label="manage-bulk-update-notification"
+                      submit={ this.props.bulkPermissionState.isPut }
+                      submitMessage="Update submitted"
+                      succeed={ this.props.bulkPermissionState.message &&
+                        !this.props.bulkPermissionState.didPutFail
                       }
-                      { this.props.bulkPermissionState.didPutFail &&
-                        <span>
-                          <FontAwesome name="exclamation-triangle" /> Update failed.{'\u00A0'}
-                          { this.props.bulkPermissionState.message }
-                        </span>
-                      }
-                      { !this.props.bulkPermissionState.didPutFail &&
-                        this.props.bulkPermissionState.message &&
-                        <span>
-                          { this.props.bulkPermissionState.message }
-                        </span>
-                      }
-                    </span>
-                  </CSSTransitionGroup>
+                      succeedMessage={ this.props.bulkPermissionState.message }
+                    />
+                  </span>
                 }
               </div>
             </Paper>
@@ -527,6 +558,14 @@ ManageContent.propTypes = {
     isPost: PropTypes.bool,
   }).isRequired,
   menuClickPermission: PropTypes.func.isRequired,
+  muiTheme: PropTypes.shape({
+    palette: PropTypes.shape({
+      alternateTextColor: PropTypes.string,
+      alternateTextColor2: PropTypes.string,
+      buttonColor: PropTypes.string,
+      buttonColorHover: PropTypes.string,
+    }),
+  }).isRequired,
   name: PropTypes.string.isRequired,
   openPopover: PropTypes.func.isRequired,
   reset: PropTypes.number.isRequired,
@@ -590,4 +629,4 @@ ManageContent.propTypes = {
   }).isRequired,
 };
 
-export default ManageContent;
+export default muiThemeable()(ManageContent);

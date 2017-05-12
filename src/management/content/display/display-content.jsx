@@ -1,18 +1,21 @@
-import CSSTransitionGroup from 'react-transition-group/CSSTransitionGroup';
 import FontAwesome from 'react-fontawesome';
+import muiThemeable from 'material-ui/styles/muiThemeable';
 import PropTypes from 'prop-types';
 import React from 'react';
 
 import ActionButtons from '../../../action-buttons/action-buttons-container';
 import DisplayProject from './display-project-container';
+import Notice from '../../../messages/notice/notice';
 import { uppercaseFirst } from '../../../helpers/helpers';
-
-import './display-content.scss';
 
 class DisplayContent extends React.Component {
   render() {
     return (
-      <div className="display-container">
+      <div
+        style={ {
+          padding: '15px 15px 10px 15px',
+        } }
+      >
         {this.props.active === 'project' ?
           <DisplayProject
             edit={ this.props.edit }
@@ -25,12 +28,21 @@ class DisplayContent extends React.Component {
         : null
         }
         { this.props.warning &&
-          <div className="display-warning">
+          <div
+            style={ {
+              color: this.props.muiTheme.palette.primary2Color,
+              marginTop: 10,
+            } }
+          >
             <FontAwesome name="exclamation-triangle " /> There are errors in the form. Please correct before proceeding.
           </div>
         }
         { this.props.edit &&
-          <div className="display-buttons">
+          <div
+            style={ {
+              marginTop: 15,
+            } }
+          >
             <ActionButtons
               cancel={ {
                 func: this.props.cancel,
@@ -48,40 +60,25 @@ class DisplayContent extends React.Component {
             />
           </div>
         }
-        <div className="edit-submission">
-          <CSSTransitionGroup
-            transitionName="edit-message-text"
-            transitionEnterTimeout={ 500 }
-            transitionLeaveTimeout={ 500 }
-          >
-            { this.props.editMessages &&
-              this.props.editMessages.isPut &&
-              <div className="edit-information" key="edit-submit">
-                <FontAwesome name="spinner" pulse={ true } />
-                {'\u00A0'}{ uppercaseFirst(this.props.active) } edit submitted.
-              </div>
-            }
-            { this.props.editMessages &&
-              this.props.editMessages.didPutFail &&
-              <div className="edit-information" key="edit-fail" style={ { zIndex: 2 } }>
-                <FontAwesome name="exclamation-triangle" />
-                { uppercaseFirst(this.props.active) } edit failed.{'\u00A0'}
-                { this.props.editMessages.message }.
-              </div>
-            }
-            { this.props.editMessages &&
-              this.props.editMessages.message &&
-              !this.props.editMessages.didPutFail &&
-              <div className="edit-information" key="edit-message" style={ { zIndex: 2 } }>
-                { this.props.editMessages.message }.
-              </div>
-            }
-            { this.props.postMessage &&
-              <div className="edit-information" key="edit-message" style={ { zIndex: 2 } }>
-                { this.props.postMessage }.
-              </div>
-            }
-          </CSSTransitionGroup>
+        <div
+          style={ {
+            margin: '10px 0px 0px 10px',
+            position: 'relative',
+          } }
+        >
+          <Notice
+            fail={ this.props.editMessages.didPutFail }
+            failMessage={ `${uppercaseFirst(this.props.active)} edit failed.
+            ${this.props.editMessages.message}` }
+            label="edit-notification"
+            other={ this.props.postMessage }
+            otherMessage={ this.props.postMessage }
+            submit={ this.props.editMessages.isPut }
+            submitMessage={ `${uppercaseFirst(this.props.active)} edit submitted` }
+            succeed={ this.props.editMessages.message &&
+            !this.props.editMessages.didPutFail }
+            succeedMessage={ this.props.editMessages.message }
+          />
         </div>
       </div>
     );
@@ -120,6 +117,11 @@ DisplayContent.propTypes = {
     'creation-date': PropTypes.string,
     'update-date': PropTypes.string,
   }).isRequired,
+  muiTheme: PropTypes.shape({
+    palette: PropTypes.shape({
+      primary2Color: PropTypes.string,
+    }),
+  }).isRequired,
   postMessage: PropTypes.string,
   reset: PropTypes.func.isRequired,
   resetKey: PropTypes.number.isRequired,
@@ -129,4 +131,4 @@ DisplayContent.propTypes = {
   warning: PropTypes.bool.isRequired,
 };
 
-export default DisplayContent;
+export default muiThemeable()(DisplayContent);

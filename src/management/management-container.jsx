@@ -33,11 +33,16 @@ class ManagementContainer extends React.Component {
     browserHistory.push(path)
   } */
   changeActive = (type) => {
-    this.setState({ activeTab: type });
-    if (this.state.showList) {
-      this.setState({
+    if (type !== this.state.activeTab) {
+      const newState = this.state.showList ?
+      {
+        activeTab: type,
         showList: false,
-      });
+      } :
+      {
+        activeTab: type,
+      };
+      this.setState(newState);
     }
   }
   changeView = () => {

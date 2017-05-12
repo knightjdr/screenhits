@@ -1,18 +1,21 @@
-import CSSTransitionGroup from 'react-transition-group/CSSTransitionGroup';
 import FontAwesome from 'react-fontawesome';
+import muiThemeable from 'material-ui/styles/muiThemeable';
 import PropTypes from 'prop-types';
 import React from 'react';
 
 import ActionButtons from '../../../action-buttons/action-buttons-container';
 import CreateProject from './create-project';
+import Notice from '../../../messages/notice/notice';
 import { uppercaseFirst } from '../../../helpers/helpers';
-
-import './create-content.scss';
 
 class CreateContent extends React.Component {
   render() {
     return (
-      <div className="create-container">
+      <div
+        style={ {
+          padding: '15px 15px 10px 15px',
+        } }
+      >
         { this.props.active === 'project' ?
           <CreateProject
             errors={ this.props.errors }
@@ -22,11 +25,20 @@ class CreateContent extends React.Component {
           : null
         }
         { this.props.warning &&
-          <div className="create-warning">
+          <div
+            style={ {
+              color: this.props.muiTheme.palette.alternateTextColor,
+              marginTop: 10,
+            } }
+          >
             <FontAwesome name="exclamation-triangle " /> There are errors in the form. Please correct before proceeding.
           </div>
         }
-        <div className="create-buttons">
+        <div
+          style={ {
+            marginTop: 15,
+          } }
+        >
           <ActionButtons
             cancel={ {
               func: this.props.cancelForm,
@@ -42,30 +54,23 @@ class CreateContent extends React.Component {
               label: 'Create',
             } }
           />
-          <div className="create-submission">
-            <CSSTransitionGroup
-              transitionName="create-message-text"
-              transitionEnterTimeout={ 500 }
-              transitionLeaveTimeout={ 500 }
-            >
-              { this.props.postState[this.props.active].isSubmitted &&
-                <div className="create-information" key="create-submit">
-                  <FontAwesome name="spinner" pulse={ true } /> { uppercaseFirst(this.props.active) } submitted
-                </div>
+          <div
+            style={ {
+              margin: '10px 0px 0px 10px',
+            } }
+          >
+            <Notice
+              fail={ this.props.postState[this.props.active].didSubmitFail }
+              failMessage={ `${uppercaseFirst(this.props.active)} creation failed. 
+              ${this.props.postState[this.props.active].message}.` }
+              label="create-notification"
+              submit={ this.props.postState[this.props.active].isSubmitted }
+              submitMessage={ `${uppercaseFirst(this.props.active)} submitted` }
+              succeed={ this.props.postState[this.props.active].message &&
+                !this.props.postState[this.props.active].didSubmitFail
               }
-              { this.props.postState[this.props.active].didSubmitFail &&
-                <div className="create-information" key="create-fail" style={ { zIndex: 2 } }>
-                  <FontAwesome name="exclamation-triangle" /> { uppercaseFirst(this.props.active) } creation failed.{'\u00A0'}
-                  { this.props.postState[this.props.active].message }.
-                </div>
-              }
-              { this.props.postState[this.props.active].message &&
-                !this.props.postState[this.props.active].didSubmitFail &&
-                <div className="create-information" key="create-message" style={ { zIndex: 2 } }>
-                  { this.props.postState[this.props.active].message }.
-                </div>
-              }
-            </CSSTransitionGroup>
+              succeedMessage={ this.props.postState[this.props.active].message }
+            />
           </div>
         </div>
       </div>
@@ -87,6 +92,11 @@ CreateContent.propTypes = {
     permission: PropTypes.string,
   }).isRequired,
   inputChange: PropTypes.func.isRequired,
+  muiTheme: PropTypes.shape({
+    palette: PropTypes.shape({
+      alternateTextColor: PropTypes.string,
+    }),
+  }).isRequired,
   postState: PropTypes.shape({
     didSubmitFail: PropTypes.bool,
     _id: PropTypes.number,
@@ -98,4 +108,4 @@ CreateContent.propTypes = {
   warning: PropTypes.bool.isRequired,
 };
 
-export default CreateContent;
+export default muiThemeable()(CreateContent);

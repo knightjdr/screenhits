@@ -1,19 +1,49 @@
+import muiThemeable from 'material-ui/styles/muiThemeable';
 import PropTypes from 'prop-types';
 import React from 'react';
 import TextField from 'material-ui/TextField';
+
+const elementContainerStyle = {
+  alignItems: 'center',
+  display: 'flex',
+  margin: '5px 0px 5px 0px',
+};
+const elementKeyStyle = {
+  borderRadius: 2,
+  flex: '0 0 15%',
+  textAlign: 'right',
+  padding: '5px 5px 5px 5px',
+};
+const elementValueStyle = {
+  flex: 1,
+  marginLeft: 10,
+};
 
 class DisplayProject extends React.Component {
   render() {
     return (
       <div>
         { !this.props.edit ?
-          <div className="display-element-container">
-            <div className="display-element-key">
-              <span className="">
+          <div
+            style={ elementContainerStyle }
+          >
+            <div
+              style={ Object.assign(
+                {},
+                elementKeyStyle,
+                {
+                  backgroundColor: this.props.muiTheme.palette.keyColor,
+                  border: `1px solid ${this.props.muiTheme.palette.keyColorBorder}`,
+                },
+              ) }
+            >
+              <span>
                 Project name:
               </span>
             </div>
-            <div className="display-element-value">
+            <div
+              style={ elementValueStyle }
+            >
               { this.props.item.name }
             </div>
           </div>
@@ -30,13 +60,26 @@ class DisplayProject extends React.Component {
           />
         }
         { !this.props.edit ?
-          <div className="display-element-container">
-            <div className="display-element-key">
-              <span className="">
+          <div
+            style={ elementContainerStyle }
+          >
+            <div
+              style={ Object.assign(
+                {},
+                elementKeyStyle,
+                {
+                  backgroundColor: this.props.muiTheme.palette.keyColor,
+                  border: `1px solid ${this.props.muiTheme.palette.keyColorBorder}`,
+                },
+              ) }
+            >
+              <span>
                 Description:
               </span>
             </div>
-            <div className="display-element-value">
+            <div
+              style={ elementValueStyle }
+            >
               { this.props.item.description }
             </div>
           </div>
@@ -53,37 +96,76 @@ class DisplayProject extends React.Component {
           />
         }
         { !this.props.edit &&
-          <div className="display-element-container">
-            <div className="display-element-key">
-              <span className="">
+          <div
+            style={ elementContainerStyle }
+          >
+            <div
+              style={ Object.assign(
+                {},
+                elementKeyStyle,
+                {
+                  backgroundColor: this.props.muiTheme.palette.keyColor,
+                  border: `1px solid ${this.props.muiTheme.palette.keyColorBorder}`,
+                },
+              ) }
+            >
+              <span>
                 Creator:
               </span>
             </div>
-            <div className="display-element-value">
+            <div
+              style={ elementValueStyle }
+            >
               { this.props.item['creator-name'] }
             </div>
           </div>
         }
         { !this.props.edit &&
-          <div className="display-element-container">
-            <div className="display-element-key">
-              <span className="">
+          <div
+            style={ elementContainerStyle }
+          >
+            <div
+              style={ Object.assign(
+                {},
+                elementKeyStyle,
+                {
+                  backgroundColor: this.props.muiTheme.palette.keyColor,
+                  border: `1px solid ${this.props.muiTheme.palette.keyColorBorder}`,
+                },
+              ) }
+            >
+              <span>
                 Owner:
               </span>
             </div>
-            <div className="display-element-value">
+            <div
+              style={ elementValueStyle }
+            >
               { this.props.item['owner-name'] }
             </div>
           </div>
         }
         { !this.props.edit &&
-          <div className="display-element-container">
-            <div className="display-element-key">
+          <div
+            style={ elementContainerStyle }
+          >
+            <div
+              style={ Object.assign(
+                {},
+                elementKeyStyle,
+                {
+                  backgroundColor: this.props.muiTheme.palette.keyColor,
+                  border: `1px solid ${this.props.muiTheme.palette.keyColorBorder}`,
+                },
+              ) }
+            >
               <span>
                 Creation Date:
               </span>
             </div>
-            <div className="display-element-value">
+            <div
+              style={ elementValueStyle }
+            >
               { this.props.item['creation-date']}
             </div>
           </div>
@@ -114,6 +196,12 @@ DisplayProject.propTypes = {
     'creation-date': PropTypes.string,
     'update-date': PropTypes.string,
   }).isRequired,
+  muiTheme: PropTypes.shape({
+    palette: PropTypes.shape({
+      keyColor: PropTypes.string,
+      keyColorBorder: PropTypes.string,
+    }),
+  }).isRequired,
 };
 
-export default DisplayProject;
+export default muiThemeable()(DisplayProject);

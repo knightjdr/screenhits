@@ -17,10 +17,9 @@ class ManagementSelectionContainer extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      buttonClass: this.props.active === this.props.type ?
-        'management-selection-button-active ' :
-        'management-selection-button',
+      buttonClass: this.props.active === this.props.type ? 'active' : 'default',
       buttonName: this.buttonName(),
+      hovered: false,
       showList: false,
       toggleIcon: <FontAwesome name="angle-down" />,
     };
@@ -29,13 +28,14 @@ class ManagementSelectionContainer extends React.Component {
     const { active } = nextProps;
     if (active !== this.props.active) {
       this.setState({
-        buttonClass: active === this.props.type ?
-          'management-selection-button-active '
-          :
-          'management-selection-button'
-        ,
+        buttonClass: active === this.props.type ? 'active' : 'default',
       });
     }
+  }
+  onHover = (bool) => {
+    this.setState({
+      hovered: bool,
+    });
   }
   buttonName = () => {
     return window.innerWidth > 680 ? this.props.type : icons[this.props.type];
@@ -72,6 +72,9 @@ class ManagementSelectionContainer extends React.Component {
         buttonName={ this.state.buttonName }
         details={ this.props.details }
         hideList={ this.hideList }
+        hovered={ this.state.hovered }
+        onClick={ this.props.onClick }
+        onHover={ this.onHover }
         selected={ this.props.selected }
         selectItem={ this.selectItem }
         showList={ this.showList }
@@ -90,6 +93,7 @@ ManagementSelectionContainer.defaultProps = {
 
 ManagementSelectionContainer.propTypes = {
   active: PropTypes.string.isRequired,
+  onClick: PropTypes.func.isRequired,
   details: PropTypes.shape({
     isFetching: PropTypes.bool,
     items: PropTypes.arrayOf(

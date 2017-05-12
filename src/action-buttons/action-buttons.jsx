@@ -1,9 +1,12 @@
-import RaisedButton from 'material-ui/RaisedButton';
+import FlatButton from 'material-ui/FlatButton';
+import muiThemeable from 'material-ui/styles/muiThemeable';
 import PropTypes from 'prop-types';
 import React from 'react';
 import ReactTooltip from 'react-tooltip';
 
-import './action-buttons.scss';
+const buttonStyle = {
+  margin: '0px 2px 0px 2px',
+};
 
 class ActionButtons extends React.Component {
   render() {
@@ -11,13 +14,22 @@ class ActionButtons extends React.Component {
       <span>
         { this.props.update &&
           <span>
-            <RaisedButton
+            <FlatButton
+              backgroundColor={ this.props.muiTheme.palette.success }
+              hoverColor={ this.props.muiTheme.palette.successHover }
               className="action-button-update"
               data-tip={ true }
               data-for={ `update-${this.props.idSuffix}` }
               label={ this.props.update.label }
               onClick={ () => { this.props.update.func(); } }
-              style={ this.props.style }
+              style={ Object.assign(
+                {},
+                this.props.style,
+                buttonStyle,
+                {
+                  color: this.props.muiTheme.palette.offWhite,
+                },
+              ) }
             />
             { this.props.update.toolTipText &&
               <ReactTooltip
@@ -33,13 +45,21 @@ class ActionButtons extends React.Component {
         }
         { this.props.reset &&
           <span>
-            <RaisedButton
-              className="action-button-reset"
+            <FlatButton
+              backgroundColor={ this.props.muiTheme.palette.alert }
+              hoverColor={ this.props.muiTheme.palette.alertHover }
               data-tip={ true }
               data-for={ `reset-${this.props.idSuffix}` }
               label={ this.props.reset.label }
               onClick={ () => { this.props.reset.func(); } }
-              style={ this.props.style }
+              style={ Object.assign(
+                {},
+                this.props.style,
+                buttonStyle,
+                {
+                  color: this.props.muiTheme.palette.offWhite,
+                },
+              ) }
             />
             { this.props.reset.toolTipText &&
               <ReactTooltip
@@ -55,13 +75,21 @@ class ActionButtons extends React.Component {
         }
         { this.props.cancel &&
           <span>
-            <RaisedButton
-              className="action-button-cancel"
+            <FlatButton
+              backgroundColor={ this.props.muiTheme.palette.warning }
+              hoverColor={ this.props.muiTheme.palette.warningHover }
               data-tip={ true }
               data-for={ `cancel-${this.props.idSuffix}` }
               label={ this.props.cancel.label }
               onClick={ () => { this.props.cancel.func(); } }
-              style={ this.props.style }
+              style={ Object.assign(
+                {},
+                this.props.style,
+                buttonStyle,
+                {
+                  color: this.props.muiTheme.palette.offWhite,
+                },
+              ) }
             />
             { this.props.cancel.toolTipText &&
               <ReactTooltip
@@ -96,6 +124,17 @@ ActionButtons.propTypes = {
     toolTipText: PropTypes.string,
   }),
   idSuffix: PropTypes.string.isRequired,
+  muiTheme: PropTypes.shape({
+    palette: PropTypes.shape({
+      alert: PropTypes.string,
+      alertHover: PropTypes.string,
+      offWhite: PropTypes.string,
+      success: PropTypes.string,
+      successHover: PropTypes.string,
+      warning: PropTypes.string,
+      warningHover: PropTypes.string,
+    }),
+  }).isRequired,
   reset: PropTypes.shape({
     func: PropTypes.func,
     label: PropTypes.oneOfType([
@@ -117,4 +156,4 @@ ActionButtons.propTypes = {
   }),
 };
 
-export default ActionButtons;
+export default muiThemeable()(ActionButtons);
