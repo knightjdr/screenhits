@@ -32,7 +32,7 @@ class CreateContentContainer extends React.Component {
   inputChange = (field, value) => {
     // check if field is valid and update errors object
     const errors = Object.assign({}, this.state.errors);
-    const validate = ValidateField.project[field](value);
+    const validate = ValidateField[this.props.active][field](value);
     errors[field] = validate.error ? validate.message : null;
     const warning = !objectEmpty(errors);
     this.setState({ errors, warning });
@@ -61,7 +61,8 @@ class CreateContentContainer extends React.Component {
       this.setState({ errors, warning: true });
     } else {
       const submitObj = Format[this.props.active](this.state.formData, this.props);
-      this.props.create(this.props.active, submitObj);
+      console.log(submitObj);
+      // this.props.create(this.props.active, submitObj);
     }
   }
   render() {
@@ -93,7 +94,7 @@ CreateContentContainer.defaultProps = {
 CreateContentContainer.propTypes = {
   active: PropTypes.string.isRequired,
   cancel: PropTypes.func.isRequired,
-  create: PropTypes.func.isRequired,
+  // create: PropTypes.func.isRequired,
   postState: PropTypes.shape({
     didSubmitFail: PropTypes.bool,
     _id: PropTypes.number,

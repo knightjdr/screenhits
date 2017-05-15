@@ -48,6 +48,10 @@ class CreateProject extends React.Component {
         <SelectField
           floatingLabelText="Other user permissions"
           fullWidth={ true }
+          listStyle={ {
+            paddingBottom: 0,
+            paddingTop: 0,
+          } }
           onChange={ (e, index, value) => { this.props.inputChange('permission', value); } }
           style={ inputStyle }
           value={ this.props.formData.permission }

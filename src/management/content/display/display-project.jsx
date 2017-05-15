@@ -18,6 +18,11 @@ const elementValueStyle = {
   flex: 1,
   marginLeft: 10,
 };
+const inputStyle = {
+  marginLeft: 4,
+  marginRight: 4,
+  maxWidth: 500,
+};
 
 class DisplayProject extends React.Component {
   render() {
@@ -56,6 +61,7 @@ class DisplayProject extends React.Component {
             onChange={ (e) => { this.props.inputChange('name', e.target.value); } }
             rows={ 1 }
             rowsMax={ 2 }
+            style={ inputStyle }
             value={ this.props.item.name }
           />
         }
@@ -92,6 +98,7 @@ class DisplayProject extends React.Component {
             onChange={ (e) => { this.props.inputChange('description', e.target.value); } }
             rows={ 1 }
             rowsMax={ 2 }
+            style={ inputStyle }
             value={ this.props.item.description }
           />
         }

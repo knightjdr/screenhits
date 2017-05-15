@@ -1,6 +1,8 @@
 import FlatButton from 'material-ui/FlatButton';
 import FontAwesome from 'react-fontawesome';
+import muiThemeable from 'material-ui/styles/muiThemeable';
 import PropTypes from 'prop-types';
+import Radium from 'radium';
 import React from 'react';
 import {
   Table,
@@ -12,7 +14,14 @@ import {
   TableRowColumn,
 } from 'material-ui/Table';
 
-import './table.scss';
+const pageButtonStyle = {
+  fontSize: 20,
+  height: 25,
+  lineHeight: '12px',
+  margin: '0px 5px 0px 5px',
+  minWidth: 25,
+  width: 25,
+};
 
 class CustomTable extends React.Component {
   render() {
@@ -24,11 +33,6 @@ class CustomTable extends React.Component {
         >
           <TableRow>
             { this.props.header.map((column, index) => {
-              const buttonStyle = { cursor: this.props.sortCursor[index] };
-              const className = column.sort ?
-                'table-header-button table-header-sortable' :
-                'table-header-button'
-              ;
               const onClickFunc = column.sort ?
                 () => { this.props.sortTable(index); } :
                 () => {}
@@ -40,9 +44,18 @@ class CustomTable extends React.Component {
                   style={ style }
                 >
                   <button
-                    className={ className }
+                    key={ column.name }
                     onClick={ onClickFunc }
-                    style={ buttonStyle }
+                    style={ {
+                      backgroundColor: 'transparent',
+                      border: 'none',
+                      cursor: this.props.sortCursor[index],
+                      ':focus': {
+                        outline: 0,
+                      },
+                      height: 50,
+                      width: '100%',
+                    } }
                   >
                     { column.name }
                   </button>
@@ -85,17 +98,39 @@ class CustomTable extends React.Component {
                 <span>
                   { this.props.page > 0 &&
                     <FlatButton
-                      className="table-page-button"
                       icon={ <FontAwesome name="angle-left" /> }
                       onClick={ () => { this.props.changePage('down'); } }
+                      style={ Object.assign(
+                        {},
+                        pageButtonStyle,
+                        {
+                          backgroundColor: this.props.muiTheme.palette.offWhite,
+                          border: `1px solid ${this.props.muiTheme.palette.alternateTextColor}`,
+                          color: this.props.muiTheme.palette.alternateTextColor,
+                          ':hover': {
+                            color: this.props.muiTheme.palette.alternateTextColor2,
+                          },
+                        },
+                      ) }
                     />
                   }
                   Page { this.props.page + 1 }/{ this.props.pageTotal + 1}
                   { this.props.page < this.props.pageTotal &&
                     <FlatButton
-                      className="table-page-button"
                       icon={ <FontAwesome name="angle-right" /> }
                       onClick={ () => { this.props.changePage('up'); } }
+                      style={ Object.assign(
+                        {},
+                        pageButtonStyle,
+                        {
+                          backgroundColor: this.props.muiTheme.palette.offWhite,
+                          border: `1px solid ${this.props.muiTheme.palette.alternateTextColor}`,
+                          color: this.props.muiTheme.palette.alternateTextColor,
+                          ':hover': {
+                            color: this.props.muiTheme.palette.alternateTextColor2,
+                          },
+                        },
+                      ) }
                     />
                   }
                 </span>
@@ -125,6 +160,13 @@ CustomTable.propTypes = {
       type: PropTypes.string,
     }),
   ).isRequired,
+  muiTheme: PropTypes.shape({
+    palette: PropTypes.shape({
+      offWhite: PropTypes.string,
+      alternateTextColor: PropTypes.string,
+      alternateTextColor2: PropTypes.string,
+    }),
+  }).isRequired,
   page: PropTypes.number.isRequired,
   pageData: PropTypes.arrayOf(
     PropTypes.shape({
@@ -151,4 +193,4 @@ CustomTable.propTypes = {
   sortTable: PropTypes.func.isRequired,
 };
 
-export default CustomTable;
+export default Radium(muiThemeable()(CustomTable));

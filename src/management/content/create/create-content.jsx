@@ -5,6 +5,7 @@ import React from 'react';
 
 import ActionButtons from '../../../action-buttons/action-buttons-container';
 import CreateProject from './create-project';
+import CreateScreen from './create-screen';
 import Notice from '../../../messages/notice/notice';
 import { uppercaseFirst } from '../../../helpers/helpers';
 
@@ -18,6 +19,14 @@ class CreateContent extends React.Component {
       >
         { this.props.active === 'project' ?
           <CreateProject
+            errors={ this.props.errors }
+            formData={ this.props.formData }
+            inputChange={ this.props.inputChange }
+          />
+          : null
+        }
+        { this.props.active === 'screen' ?
+          <CreateScreen
             errors={ this.props.errors }
             formData={ this.props.formData }
             inputChange={ this.props.inputChange }
@@ -61,7 +70,7 @@ class CreateContent extends React.Component {
           >
             <Notice
               fail={ this.props.postState[this.props.active].didSubmitFail }
-              failMessage={ `${uppercaseFirst(this.props.active)} creation failed. 
+              failMessage={ `${uppercaseFirst(this.props.active)} creation failed.
               ${this.props.postState[this.props.active].message}.` }
               label="create-notification"
               submit={ this.props.postState[this.props.active].isSubmitted }

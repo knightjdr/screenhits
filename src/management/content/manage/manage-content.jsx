@@ -248,13 +248,15 @@ class ManageContent extends React.Component {
               <div
                 style={ {
                   display: 'flex',
+                  justifyContent: 'flex-start',
                 } }
               >
                 <TextField
                   floatingLabelText={ this.props.inputLabel }
+                  fullWidth={ true }
                   onBlur={ (e) => { this.props.inputChange(e.target.value); } }
                   onKeyPress={ (e) => { this.onEnter(e); } }
-                  style={ { width: '50%' } }
+                  style={ { maxWidth: 500 } }
                 />
                 <RadioButtonGroup
                   name="searchType"

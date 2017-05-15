@@ -1,4 +1,3 @@
-// import FontAwesome from 'react-fontawesome';
 import PropTypes from 'prop-types';
 import React from 'react';
 

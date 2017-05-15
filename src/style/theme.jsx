@@ -47,6 +47,7 @@ const muiTheme = getMuiTheme({
     primary1Color: blueGrey500,
     primary2Color: blueGrey800,
     primary3Color: blueGrey300,
+    primary4Color: blueGrey200,
     success: green500,
     successHover: green700,
     textColor: darkBlack,
