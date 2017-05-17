@@ -27,6 +27,8 @@ class CreateContent extends React.Component {
         }
         { this.props.active === 'screen' ?
           <CreateScreen
+            dialog={ this.props.dialog }
+            dialogOpen={ this.props.dialogOpen }
             errors={ this.props.errors }
             formData={ this.props.formData }
             inputChange={ this.props.inputChange }
@@ -90,6 +92,13 @@ class CreateContent extends React.Component {
 CreateContent.propTypes = {
   active: PropTypes.string.isRequired,
   cancelForm: PropTypes.func.isRequired,
+  dialog: PropTypes.shape({
+    close: PropTypes.func,
+    open: PropTypes.bool,
+    text: PropTypes.string,
+    title: PropTypes.string,
+  }).isRequired,
+  dialogOpen: PropTypes.func.isRequired,
   errors: PropTypes.shape({
     description: PropTypes.string,
     name: PropTypes.string,

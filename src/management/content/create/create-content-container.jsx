@@ -2,17 +2,44 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import React from 'react';
 
+import BlankStateProject from './forms/blank-state-project';
+import BlankStateScreen from './forms/blank-state-screen';
 import CreateContent from './create-content';
-import Format from './format-submission';
+import FormatProject from './forms/form-submission-project';
+import FormatScreen from './forms/form-submission-screen';
 import { objectEmpty } from '../../../helpers/helpers';
 import { resetPost, submitPost } from '../../../state/post/actions';
 import { setIndex } from '../../../state/set/index-actions';
-import ValidateField from './validate-fields';
+import ValidateFieldProject from './forms/validate-field-project';
+import ValidateFieldScreen from './forms/validate-field-screen';
+
+const BlankState = {
+  project: BlankStateProject,
+  screen: BlankStateScreen,
+};
+
+const FormSubmission = {
+  project: FormatProject,
+  screen: FormatScreen,
+};
+
+const ValidateField = {
+  project: ValidateFieldProject,
+  screen: ValidateFieldScreen,
+};
 
 class CreateContentContainer extends React.Component {
   constructor(props) {
     super(props);
-    this.state = Format.blankState[this.props.active];
+    this.state = Object.assign(
+      {},
+      BlankState[this.props.active],
+      {
+        dialogBool: false,
+        dialogText: null,
+        dialogTitle: null,
+      },
+    );
   }
   componentWillReceiveProps(nextProps) {
     const { active, postState } = nextProps;
@@ -27,23 +54,47 @@ class CreateContentContainer extends React.Component {
   }
   cancelForm = () => {
     this.props.cancel();
-    this.setState(Format.blankState[this.props.active]);
+    this.setState(BlankState[this.props.active]);
   }
-  inputChange = (field, value) => {
-    // check if field is valid and update errors object
+  dialogClose = () => {
+    this.setState({
+      dialogBool: false,
+      dialogText: null,
+      dialogTitle: null,
+    });
+  }
+  dialogOpen = (title, text) => {
+    this.setState({
+      dialogBool: true,
+      dialogText: text,
+      dialogTitle: title,
+    });
+  }
+  inputChange = (field, value, other, type) => {
     const errors = Object.assign({}, this.state.errors);
-    const validate = ValidateField[this.props.active][field](value);
-    errors[field] = validate.error ? validate.message : null;
-    const warning = !objectEmpty(errors);
-    this.setState({ errors, warning });
-    // update item state
+    const validate = !other ?
+      ValidateField[this.props.active][field](value) :
+      ValidateField[this.props.active].other[type][field](value)
+    ;
     const stateObject = Object.assign({}, this.state.formData);
-    stateObject[field] = value;
-    this.setState({ formData: stateObject });
+    if (!other) {
+      stateObject[field] = value;
+      errors[field] = validate.error ? validate.message : null;
+    } else {
+      stateObject.other[field] = value;
+      errors.other[field] = validate.error ? validate.message : null;
+    }
+    const warning = !objectEmpty(errors);
+    console.log(errors, stateObject, warning);
+    this.setState({
+      errors,
+      formData: stateObject,
+      warning,
+    });
   }
   resetForm = () => {
     this.props.reset(this.props.active);
-    this.setState(Format.blankState[this.props.active]);
+    this.setState(BlankState[this.props.active]);
   }
   submitForm = () => {
     let error = false;
@@ -60,7 +111,7 @@ class CreateContentContainer extends React.Component {
     if (error) {
       this.setState({ errors, warning: true });
     } else {
-      const submitObj = Format[this.props.active](this.state.formData, this.props);
+      const submitObj = FormSubmission[this.props.active](this.state.formData, this.props);
       console.log(submitObj);
       // this.props.create(this.props.active, submitObj);
     }
@@ -70,6 +121,13 @@ class CreateContentContainer extends React.Component {
       <CreateContent
         active={ this.props.active }
         cancelForm={ this.cancelForm }
+        dialog={ {
+          close: this.dialogClose,
+          open: this.state.dialogBool,
+          text: this.state.dialogText,
+          title: this.state.dialogTitle,
+        } }
+        dialogOpen={ this.dialogOpen }
         errors={ this.state.errors }
         formData={ this.state.formData }
         inputChange={ this.inputChange }

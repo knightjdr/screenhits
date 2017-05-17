@@ -1,4 +1,8 @@
+import Dialog from 'material-ui/Dialog';
+import FlatButton from 'material-ui/FlatButton';
 import FontAwesome from 'react-fontawesome';
+import IconButton from 'material-ui/IconButton';
+import HelpIcon from 'material-ui/svg-icons/action/help';
 import MenuItem from 'material-ui/MenuItem';
 import muiThemeable from 'material-ui/styles/muiThemeable';
 import PropTypes from 'prop-types';
@@ -6,8 +10,24 @@ import TextField from 'material-ui/TextField';
 import React from 'react';
 import SelectField from 'material-ui/SelectField';
 
-import Fields from './fields';
+import FieldsProject from './forms/fields-project';
+import FieldsScreen from './forms/fields-screen';
+import { uppercaseFirst } from '../../../helpers/helpers';
 import SelectInput from './select-input/select-input-container';
+
+const Fields = {
+  project: FieldsProject,
+  screen: FieldsScreen,
+};
+
+const divWithHelpStyle = {
+  display: 'flex',
+  maxWidth: 500,
+};
+
+const helpIconStyle = {
+  marginTop: 25,
+};
 
 const inputStyle = {
   marginLeft: 4,
@@ -16,6 +36,17 @@ const inputStyle = {
 };
 
 class CreateScreen extends React.Component {
+  dialogClose = () => {
+    return (
+    [
+      <FlatButton
+        backgroundColor={ this.props.muiTheme.palette.warning }
+        hoverColor={ this.props.muiTheme.palette.warningHover }
+        label="Close"
+        onTouchTap={ this.props.dialog.close }
+      />,
+    ]);
+  }
   render() {
     return (
       <div>
@@ -86,27 +117,104 @@ class CreateScreen extends React.Component {
           type="cell"
           value={ this.props.formData.cell }
         />
-        <TextField
-          floatingLabelText="Condition"
-          fullWidth={ true }
-          multiLine={ true }
-          onChange={ (e) => { this.props.inputChange('condition', e.target.value); } }
-          rows={ 1 }
-          rowsMax={ 4 }
-          style={ inputStyle }
-          value={ this.props.formData.condition }
-        />
+        <div
+          style={ divWithHelpStyle }
+        >
+          <TextField
+            floatingLabelText="Condition (optional)"
+            fullWidth={ true }
+            multiLine={ true }
+            onChange={ (e) => { this.props.inputChange('condition', e.target.value); } }
+            rows={ 1 }
+            rowsMax={ 4 }
+            style={ inputStyle }
+            value={ this.props.formData.condition }
+          />
+          <IconButton
+            onTouchTap={ () => {
+              this.props.dialogOpen('Help for the "Condition" field', Fields.screen.condition.help);
+            } }
+            style={ helpIconStyle }
+            tooltip="Help"
+            tooltipPosition="top-center"
+          >
+            <HelpIcon
+              color={ this.props.muiTheme.palette.alternateTextColor }
+            />
+          </IconButton>
+        </div>
+        { this.props.formData.type &&
+          Fields.screen.other[this.props.formData.type].map((field) => {
+            return (
+              field.type === 'select' ?
+                <SelectField
+                  errorText={ this.props.errors.other[field.name] }
+                  floatingLabelText={ uppercaseFirst(field.name) }
+                  fullWidth={ true }
+                  key={ field.name }
+                  listStyle={ {
+                    paddingBottom: 0,
+                    paddingTop: 0,
+                  } }
+                  onChange={ (e, index, value) => {
+                    this.props.inputChange(field.name, value, true, this.props.formData.type);
+                  } }
+                  style={ inputStyle }
+                  value={ this.props.formData.other[field.name] }
+                >
+                  { field.options.map((option) => {
+                    return (
+                      <MenuItem
+                        key={ option }
+                        value={ option }
+                        primaryText={ option }
+                      />
+                    );
+                  }) }
+                </SelectField> :
+                <TextField
+                  errorText={ this.props.errors.other[field.name] }
+                  floatingLabelText={ uppercaseFirst(field.name) }
+                  fullWidth={ true }
+                  key={ field.name }
+                  multiLine={ true }
+                  onChange={ (e) => { this.props.inputChange(field.name, e.target.value); } }
+                  rows={ 1 }
+                  rowsMax={ 2 }
+                  style={ inputStyle }
+                  value={ this.props.formData.other[field.name] }
+                />
+            );
+          })
+        }
+        <Dialog
+          actions={ this.dialogClose() }
+          modal={ false }
+          onRequestClose={ this.props.dialog.close }
+          open={ this.props.dialog.open }
+          title={ this.props.dialog.title }
+        >
+          { this.props.dialog.text }
+        </Dialog>
       </div>
     );
   }
 }
 
 CreateScreen.propTypes = {
+  dialog: PropTypes.shape({
+    close: PropTypes.func,
+    open: PropTypes.bool,
+    text: PropTypes.string,
+    title: PropTypes.string,
+  }).isRequired,
+  dialogOpen: PropTypes.func.isRequired,
   errors: PropTypes.shape({
     cell: PropTypes.string,
     condition: PropTypes.string,
     description: PropTypes.string,
     name: PropTypes.string,
+    other: PropTypes.shape({}),
     species: PropTypes.string,
     type: PropTypes.string,
   }).isRequired,
@@ -115,6 +223,7 @@ CreateScreen.propTypes = {
     condition: PropTypes.string,
     description: PropTypes.string,
     name: PropTypes.string,
+    other: PropTypes.shape({}),
     species: PropTypes.string,
     type: PropTypes.string,
   }).isRequired,
@@ -122,6 +231,8 @@ CreateScreen.propTypes = {
   muiTheme: PropTypes.shape({
     palette: PropTypes.shape({
       alternateTextColor: PropTypes.string,
+      warning: PropTypes.string,
+      warningHover: PropTypes.string,
     }),
   }).isRequired,
 };
