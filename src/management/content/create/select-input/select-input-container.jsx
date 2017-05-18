@@ -24,6 +24,7 @@ class SelectInputContainer extends React.Component {
         errorText={ this.props.errorText }
         inputType={ this.state.inputType }
         inputChange={ this.props.inputChange }
+        inputWidth={ this.props.inputWidth }
         options={ this.props.options }
         labelText={ this.props.labelText }
         type={ this.props.type }
@@ -41,6 +42,7 @@ SelectInputContainer.defaultProps = {
 SelectInputContainer.propTypes = {
   errorText: PropTypes.string,
   inputChange: PropTypes.func.isRequired,
+  inputWidth: PropTypes.number.isRequired,
   labelText: PropTypes.string.isRequired,
   options: PropTypes.arrayOf(
     PropTypes.string,

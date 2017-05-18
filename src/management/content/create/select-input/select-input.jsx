@@ -17,7 +17,7 @@ class SelectInput extends React.Component {
           display: 'flex',
           marginLeft: 4,
           marginRight: 4,
-          maxWidth: 500,
+          width: this.props.inputWidth,
         } }
       >
         { this.props.inputType === 'text' ?
@@ -57,6 +57,7 @@ class SelectInput extends React.Component {
           checkedIcon={ <RadioButtonChecked /> }
           iconStyle={ {
             fill: this.props.muiTheme.palette.alternateTextColor,
+            marginRight: 5,
           } }
           label="Free text"
           labelStyle={ {
@@ -64,9 +65,9 @@ class SelectInput extends React.Component {
           } }
           onCheck={ () => { this.props.changeType(); } }
           style={ {
-            marginLeft: 5,
+            marginLeft: 10,
             marginTop: 40,
-            width: 125,
+            width: 150,
           } }
           uncheckedIcon={
             <RadioButtonUnchecked
@@ -87,8 +88,9 @@ SelectInput.defaultProps = {
 SelectInput.propTypes = {
   changeType: PropTypes.func.isRequired,
   errorText: PropTypes.string,
-  inputType: PropTypes.string.isRequired,
   inputChange: PropTypes.func.isRequired,
+  inputType: PropTypes.string.isRequired,
+  inputWidth: PropTypes.number.isRequired,
   muiTheme: PropTypes.shape({
     palette: PropTypes.shape({
       alternateTextColor: PropTypes.string,

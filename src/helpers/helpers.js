@@ -43,12 +43,14 @@ const findObjectIndexes = (obj, value) => {
   return indexes;
 };
 
-// check if all an object has no values assigned to its keys
+// check if object has no values assigned to its keys, including nested objects
 const objectEmpty = (obj) => {
   let empty = true;
   Object.values(obj).forEach((v) => {
-    if (v) {
+    if (v && typeof v !== 'object') {
       empty = false;
+    } else if (v && typeof v === 'object') {
+      empty = objectEmpty(v);
     }
   });
   return empty;

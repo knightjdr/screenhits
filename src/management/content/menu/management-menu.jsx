@@ -17,6 +17,9 @@ class ManagementMenu extends React.Component {
           iconStyle={ {
             color: this.props.muiTheme.palette.alternateTextColor2,
           } }
+          style={ {
+            zIndex: 5,
+          } }
         >
           <FontAwesome name="bars" />
         </FloatingActionButton>

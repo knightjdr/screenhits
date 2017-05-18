@@ -20,11 +20,6 @@ const Fields = {
   screen: FieldsScreen,
 };
 
-const divWithHelpStyle = {
-  display: 'flex',
-  maxWidth: 500,
-};
-
 const helpIconStyle = {
   marginTop: 25,
 };
@@ -33,6 +28,12 @@ const inputStyle = {
   marginLeft: 4,
   marginRight: 4,
   maxWidth: 500,
+};
+
+const inputWithChildrenStyle = {
+  display: 'flex',
+  marginLeft: 4,
+  marginRight: 4,
 };
 
 class CreateScreen extends React.Component {
@@ -57,136 +58,150 @@ class CreateScreen extends React.Component {
         >
           <FontAwesome name="info-circle" /> Name your screen and provide all details below.
         </div>
-        <TextField
-          errorText={ this.props.errors.name }
-          floatingLabelText="Screen name (short)"
-          fullWidth={ true }
-          multiLine={ true }
-          onChange={ (e) => { this.props.inputChange('name', e.target.value); } }
-          rows={ 1 }
-          rowsMax={ 2 }
-          style={ inputStyle }
-          value={ this.props.formData.name }
-        />
-        <TextField
-          errorText={ this.props.errors.description }
-          floatingLabelText="Project description"
-          fullWidth={ true }
-          multiLine={ true }
-          onChange={ (e) => { this.props.inputChange('description', e.target.value); } }
-          rows={ 1 }
-          rowsMax={ 4 }
-          style={ inputStyle }
-          value={ this.props.formData.description }
-        />
-        <SelectField
-          errorText={ this.props.errors.type }
-          floatingLabelText="Screen type"
-          fullWidth={ true }
-          listStyle={ {
-            paddingBottom: 0,
-            paddingTop: 0,
-          } }
-          onChange={ (e, index, value) => { this.props.inputChange('type', value); } }
-          style={ inputStyle }
-          value={ this.props.formData.type }
-        >
-          { Fields.screen.type.values.map((type) => {
-            return (
-              <MenuItem
-                key={ type }
-                value={ type }
-                primaryText={ type }
-              />
-            );
-          }) }
-        </SelectField>
-        <SelectInput
-          errorText={ this.props.errors.species }
-          inputChange={ this.props.inputChange }
-          labelText="Species"
-          options={ Fields.screen.species.values }
-          type="species"
-          value={ this.props.formData.species }
-        />
-        <SelectInput
-          errorText={ this.props.errors.cell }
-          inputChange={ this.props.inputChange }
-          labelText="Cell type"
-          options={ Fields.screen.cell.values }
-          type="cell"
-          value={ this.props.formData.cell }
-        />
         <div
-          style={ divWithHelpStyle }
+          style={ {
+            display: 'flex',
+            flexWrap: 'wrap',
+          } }
         >
           <TextField
-            floatingLabelText="Condition (optional)"
+            errorText={ this.props.errors.name }
+            floatingLabelText="Screen name (short)"
             fullWidth={ true }
             multiLine={ true }
-            onChange={ (e) => { this.props.inputChange('condition', e.target.value); } }
+            onChange={ (e) => { this.props.inputChange('name', e.target.value); } }
+            rows={ 1 }
+            rowsMax={ 2 }
+            style={ inputStyle }
+            value={ this.props.formData.name }
+          />
+          <TextField
+            errorText={ this.props.errors.description }
+            floatingLabelText="Project description"
+            fullWidth={ true }
+            multiLine={ true }
+            onChange={ (e) => { this.props.inputChange('description', e.target.value); } }
             rows={ 1 }
             rowsMax={ 4 }
             style={ inputStyle }
-            value={ this.props.formData.condition }
+            value={ this.props.formData.description }
           />
-          <IconButton
-            onTouchTap={ () => {
-              this.props.dialogOpen('Help for the "Condition" field', Fields.screen.condition.help);
+          <SelectField
+            errorText={ this.props.errors.type }
+            floatingLabelText="Screen type"
+            fullWidth={ true }
+            listStyle={ {
+              paddingBottom: 0,
+              paddingTop: 0,
             } }
-            style={ helpIconStyle }
-            tooltip="Help"
-            tooltipPosition="top-center"
+            onChange={ (e, index, value) => { this.props.inputChange('type', value); } }
+            style={ inputStyle }
+            value={ this.props.formData.type }
           >
-            <HelpIcon
-              color={ this.props.muiTheme.palette.alternateTextColor }
-            />
-          </IconButton>
-        </div>
-        { this.props.formData.type &&
-          Fields.screen.other[this.props.formData.type].map((field) => {
-            return (
-              field.type === 'select' ?
-                <SelectField
-                  errorText={ this.props.errors.other[field.name] }
-                  floatingLabelText={ uppercaseFirst(field.name) }
-                  fullWidth={ true }
-                  key={ field.name }
-                  listStyle={ {
-                    paddingBottom: 0,
-                    paddingTop: 0,
-                  } }
-                  onChange={ (e, index, value) => {
-                    this.props.inputChange(field.name, value, true, this.props.formData.type);
-                  } }
-                  style={ inputStyle }
-                  value={ this.props.formData.other[field.name] }
-                >
-                  { field.options.map((option) => {
-                    return (
-                      <MenuItem
-                        key={ option }
-                        value={ option }
-                        primaryText={ option }
-                      />
-                    );
-                  }) }
-                </SelectField> :
-                <TextField
-                  errorText={ this.props.errors.other[field.name] }
-                  floatingLabelText={ uppercaseFirst(field.name) }
-                  fullWidth={ true }
-                  key={ field.name }
-                  multiLine={ true }
-                  onChange={ (e) => { this.props.inputChange(field.name, e.target.value); } }
-                  rows={ 1 }
-                  rowsMax={ 2 }
-                  style={ inputStyle }
-                  value={ this.props.formData.other[field.name] }
+            { Fields.screen.type.values.map((type) => {
+              return (
+                <MenuItem
+                  key={ type }
+                  value={ type }
+                  primaryText={ type }
                 />
-            );
-          })
-        }
+              );
+            }) }
+          </SelectField>
+          <SelectInput
+            errorText={ this.props.errors.species }
+            inputChange={ this.props.inputChange }
+            inputWidth={ this.props.inputWidth }
+            labelText="Species"
+            options={ Fields.screen.species.values }
+            type="species"
+            value={ this.props.formData.species }
+          />
+          <SelectInput
+            errorText={ this.props.errors.cell }
+            inputChange={ this.props.inputChange }
+            inputWidth={ this.props.inputWidth }
+            labelText="Cell type"
+            options={ Fields.screen.cell.values }
+            type="cell"
+            value={ this.props.formData.cell }
+          />
+          <div
+            style={ Object.assign(
+              {},
+              inputWithChildrenStyle,
+              {
+                width: this.props.inputWidth,
+              },
+            ) }
+          >
+            <TextField
+              floatingLabelText="Condition (optional)"
+              fullWidth={ true }
+              multiLine={ true }
+              onChange={ (e) => { this.props.inputChange('condition', e.target.value); } }
+              rows={ 1 }
+              rowsMax={ 2 }
+              value={ this.props.formData.condition }
+            />
+            <IconButton
+              onTouchTap={ () => {
+                this.props.dialogOpen('Help for the "Condition" field', Fields.screen.condition.help);
+              } }
+              style={ helpIconStyle }
+              tooltip="Help"
+              tooltipPosition="top-center"
+            >
+              <HelpIcon
+                color={ this.props.muiTheme.palette.alternateTextColor }
+              />
+            </IconButton>
+          </div>
+          { this.props.formData.type &&
+            Fields.screen.other[this.props.formData.type].map((field) => {
+              return (
+                field.type === 'select' ?
+                  <SelectField
+                    errorText={ this.props.errors.other[field.name] }
+                    floatingLabelText={ uppercaseFirst(field.name) }
+                    fullWidth={ true }
+                    key={ field.name }
+                    listStyle={ {
+                      paddingBottom: 0,
+                      paddingTop: 0,
+                    } }
+                    onChange={ (e, index, value) => {
+                      this.props.inputChange(field.name, value, true, this.props.formData.type);
+                    } }
+                    style={ inputStyle }
+                    value={ this.props.formData.other[field.name] }
+                  >
+                    { field.options.map((option) => {
+                      return (
+                        <MenuItem
+                          key={ option }
+                          value={ option }
+                          primaryText={ option }
+                        />
+                      );
+                    }) }
+                  </SelectField> :
+                  <TextField
+                    errorText={ this.props.errors.other[field.name] }
+                    floatingLabelText={ uppercaseFirst(field.name) }
+                    fullWidth={ true }
+                    key={ field.name }
+                    multiLine={ true }
+                    onChange={ (e) => { this.props.inputChange(field.name, e.target.value); } }
+                    rows={ 1 }
+                    rowsMax={ 2 }
+                    style={ inputStyle }
+                    value={ this.props.formData.other[field.name] }
+                  />
+              );
+            })
+          }
+        </div>
         <Dialog
           actions={ this.dialogClose() }
           modal={ false }
@@ -228,6 +243,7 @@ CreateScreen.propTypes = {
     type: PropTypes.string,
   }).isRequired,
   inputChange: PropTypes.func.isRequired,
+  inputWidth: PropTypes.number.isRequired,
   muiTheme: PropTypes.shape({
     palette: PropTypes.shape({
       alternateTextColor: PropTypes.string,

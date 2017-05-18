@@ -5,6 +5,8 @@ import React from 'react';
 import BlankStateProject from './forms/blank-state-project';
 import BlankStateScreen from './forms/blank-state-screen';
 import CreateContent from './create-content';
+import FieldsProject from './forms/fields-project';
+import FieldsScreen from './forms/fields-screen';
 import FormatProject from './forms/form-submission-project';
 import FormatScreen from './forms/form-submission-screen';
 import { objectEmpty } from '../../../helpers/helpers';
@@ -16,6 +18,11 @@ import ValidateFieldScreen from './forms/validate-field-screen';
 const BlankState = {
   project: BlankStateProject,
   screen: BlankStateScreen,
+};
+
+const Fields = {
+  project: FieldsProject,
+  screen: FieldsScreen,
 };
 
 const FormSubmission = {
@@ -38,8 +45,12 @@ class CreateContentContainer extends React.Component {
         dialogBool: false,
         dialogText: null,
         dialogTitle: null,
+        inputWidth: window.innerWidth >= 555 ? 500 : window.innerWidth - 55,
       },
     );
+  }
+  componentDidMount() {
+    window.addEventListener('resize', this.resize);
   }
   componentWillReceiveProps(nextProps) {
     const { active, postState } = nextProps;
@@ -51,6 +62,9 @@ class CreateContentContainer extends React.Component {
       this.props.setIndex(postState[active]._id, active);
       this.props.cancel();
     }
+  }
+  componentWillUnmount() {
+    window.addEventListener('resize', this.resize);
   }
   cancelForm = () => {
     this.props.cancel();
@@ -71,21 +85,38 @@ class CreateContentContainer extends React.Component {
     });
   }
   inputChange = (field, value, other, type) => {
-    const errors = Object.assign({}, this.state.errors);
-    const validate = !other ?
-      ValidateField[this.props.active][field](value) :
-      ValidateField[this.props.active].other[type][field](value)
-    ;
+    const errors = JSON.parse(JSON.stringify(this.state.errors));
     const stateObject = Object.assign({}, this.state.formData);
     if (!other) {
+      const validate = ValidateField[this.props.active][field] ?
+        ValidateField[this.props.active][field](value) :
+      {
+        error: false,
+        message: null,
+      };
       stateObject[field] = value;
       errors[field] = validate.error ? validate.message : null;
     } else {
+      const validate = ValidateField[this.props.active][`${type}_${field}`] ?
+        ValidateField[this.props.active][`${type}_${field}`](value) :
+      {
+        error: false,
+        message: null,
+      };
       stateObject.other[field] = value;
       errors.other[field] = validate.error ? validate.message : null;
     }
     const warning = !objectEmpty(errors);
-    console.log(errors, stateObject, warning);
+    if (field === 'type') {
+      const newFields = {};
+      const newErrors = {};
+      Fields[this.props.active].other[value].forEach((otherField) => {
+        newErrors[otherField.name] = otherField.defaultError;
+        newFields[otherField.name] = otherField.defaultValue;
+      });
+      stateObject.other = newFields;
+      errors.other = newErrors;
+    }
     this.setState({
       errors,
       formData: stateObject,
@@ -96,11 +127,28 @@ class CreateContentContainer extends React.Component {
     this.props.reset(this.props.active);
     this.setState(BlankState[this.props.active]);
   }
+  resize = () => {
+    this.setState({
+      inputWidth: window.innerWidth >= 555 ? 500 : window.innerWidth - 55,
+    });
+  }
   submitForm = () => {
     let error = false;
-    const errors = {};
+    const errors = JSON.parse(JSON.stringify(this.state.errors));
     Object.keys(this.state.formData).forEach((field) => {
-      if (ValidateField[this.props.active].checkFields.indexOf(field) > -1) {
+      if (field === 'other') {
+        Object.keys(this.state.formData[field]).forEach((otherField) => {
+          const otherFieldName = `${this.state.formData.type}_${otherField}`;
+          if (ValidateField[this.props.active].otherCheckFields.indexOf(otherFieldName) > -1) {
+            const validation = ValidateField[this.props.active][otherFieldName](
+              this.state.formData.other[otherField]);
+            if (validation.error) {
+              error = true;
+              errors.other[otherField] = validation.message;
+            }
+          }
+        });
+      } else if (ValidateField[this.props.active].checkFields.indexOf(field) > -1) {
         const validation = ValidateField[this.props.active][field](this.state.formData[field]);
         if (validation.error) {
           error = true;
@@ -111,7 +159,11 @@ class CreateContentContainer extends React.Component {
     if (error) {
       this.setState({ errors, warning: true });
     } else {
-      const submitObj = FormSubmission[this.props.active](this.state.formData, this.props);
+      const submitObj = FormSubmission[this.props.active](
+        this.state.formData,
+        this.props,
+        this.props.selected,
+      );
       console.log(submitObj);
       // this.props.create(this.props.active, submitObj);
     }
@@ -131,6 +183,7 @@ class CreateContentContainer extends React.Component {
         errors={ this.state.errors }
         formData={ this.state.formData }
         inputChange={ this.inputChange }
+        inputWidth={ this.state.inputWidth }
         postState={ this.props.postState }
         resetForm={ this.resetForm }
         submitForm={ this.submitForm }
@@ -160,6 +213,12 @@ CreateContentContainer.propTypes = {
     message: PropTypes.string,
   }),
   reset: PropTypes.func.isRequired,
+  selected: PropTypes.shape({
+    experiment: PropTypes.number,
+    project: PropTypes.number,
+    sample: PropTypes.number,
+    screen: PropTypes.number,
+  }).isRequired,
   setIndex: PropTypes.func.isRequired,
 };
 
@@ -180,6 +239,7 @@ const mapDispatchToProps = (dispatch) => {
 const mapStateToProps = (state) => {
   return {
     postState: state.post,
+    selected: state.selected,
     user: state.user,
   };
 };

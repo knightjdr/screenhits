@@ -11,6 +11,8 @@ const Fields = {
   other: {
     CRISPR: [
       {
+        defaultError: null,
+        defaultValue: null,
         help: 'Select the CRISPR library used for the screen.',
         helpTitle: 'Help from the "Library" field.',
         name: 'library',
@@ -18,16 +20,16 @@ const Fields = {
           'tko v1 Base library',
           'tko v2 Base library',
         ],
-        required: true,
         type: 'select',
       },
       {
+        defaultError: null,
+        defaultValue: null,
         name: 'approach',
         options: [
           'Negative selection',
           'Positive selection',
         ],
-        required: true,
         type: 'select',
       },
     ],
