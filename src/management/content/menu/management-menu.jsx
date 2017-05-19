@@ -37,25 +37,25 @@ class ManagementMenu extends React.Component {
               paddingTop: 0,
             } }
           >
-            { this.props.active === 'project' &&
+            { this.props.activeLevel === 'project' &&
               this.props.selected &&
               <MenuItem
                 key="manage"
-                onClick={ this.props.manage }
-                primaryText={ [<FontAwesome key="manage" name="user-plus" />, ' Manage ', this.props.active] }
+                onClick={ this.props.manageMenuAction }
+                primaryText={ [<FontAwesome key="manage" name="user-plus" />, ' Manage ', this.props.activeLevel] }
               />
             }
             { this.props.selected &&
               <MenuItem
                 key="edit"
-                onClick={ this.props.edit }
-                primaryText={ [<FontAwesome key="edit" name="pencil-square-o" />, ' Edit ', this.props.active] }
+                onClick={ this.props.editMenuAction }
+                primaryText={ [<FontAwesome key="edit" name="pencil-square-o" />, ' Edit ', this.props.activeLevel] }
               />
             }
             <MenuItem
               key="add"
-              onClick={ this.props.create }
-              primaryText={ [<FontAwesome key="add" name="plus" />, ' Add new ', this.props.active] }
+              onClick={ this.props.createMenuAction }
+              primaryText={ [<FontAwesome key="add" name="plus" />, ' Add new ', this.props.activeLevel] }
             />
           </Menu>
         </Popover>
@@ -70,12 +70,12 @@ ManagementMenu.defaultProps = {
 };
 
 ManagementMenu.propTypes = {
-  active: PropTypes.string.isRequired,
+  activeLevel: PropTypes.string.isRequired,
   anchorEl: PropTypes.shape({}),
-  create: PropTypes.func.isRequired,
-  edit: PropTypes.func.isRequired,
+  createMenuAction: PropTypes.func.isRequired,
+  editMenuAction: PropTypes.func.isRequired,
   hideManagementList: PropTypes.func.isRequired,
-  manage: PropTypes.func.isRequired,
+  manageMenuAction: PropTypes.func.isRequired,
   muiTheme: PropTypes.shape({
     palette: PropTypes.shape({
       alternateTextColor2: PropTypes.string,

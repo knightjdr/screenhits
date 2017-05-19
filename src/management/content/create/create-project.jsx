@@ -13,6 +13,15 @@ const inputStyle = {
 };
 
 class CreateProject extends React.Component {
+  inputChangeDescription = (e) => {
+    this.props.inputChange('description', e.target.value);
+  }
+  inputChangeName = (e) => {
+    this.props.inputChange('name', e.target.value);
+  }
+  inputChangePermission = (e, index, value) => {
+    this.props.inputChange('permission', value);
+  }
   render() {
     return (
       <div>
@@ -28,7 +37,7 @@ class CreateProject extends React.Component {
           floatingLabelText="Project name (short)"
           fullWidth={ true }
           multiLine={ true }
-          onChange={ (e) => { this.props.inputChange('name', e.target.value); } }
+          onChange={ this.inputChangeName }
           rows={ 1 }
           rowsMax={ 2 }
           style={ inputStyle }
@@ -39,7 +48,7 @@ class CreateProject extends React.Component {
           floatingLabelText="Project description"
           fullWidth={ true }
           multiLine={ true }
-          onChange={ (e) => { this.props.inputChange('description', e.target.value); } }
+          onChange={ this.inputChangeDescription }
           rows={ 1 }
           rowsMax={ 4 }
           style={ inputStyle }
@@ -52,7 +61,7 @@ class CreateProject extends React.Component {
             paddingBottom: 0,
             paddingTop: 0,
           } }
-          onChange={ (e, index, value) => { this.props.inputChange('permission', value); } }
+          onChange={ this.inputChangePermission }
           style={ inputStyle }
           value={ this.props.formData.permission }
         >

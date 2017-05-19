@@ -21,6 +21,7 @@ class SelectInputContainer extends React.Component {
     return (
       <SelectInput
         changeType={ this.changeType }
+        dataSource={ this.props.dataSource }
         errorText={ this.props.errorText }
         inputType={ this.state.inputType }
         inputChange={ this.props.inputChange }
@@ -35,11 +36,18 @@ class SelectInputContainer extends React.Component {
 }
 
 SelectInputContainer.defaultProps = {
+  dataSource: [],
   errorText: null,
   value: '',
 };
 
 SelectInputContainer.propTypes = {
+  dataSource: PropTypes.arrayOf(
+    PropTypes.oneOfType([
+      PropTypes.number,
+      PropTypes.string,
+    ]),
+  ),
   errorText: PropTypes.string,
   inputChange: PropTypes.func.isRequired,
   inputWidth: PropTypes.number.isRequired,

@@ -11,22 +11,22 @@ class ManagementMenuContent extends React.Component {
       showList: false,
     };
   }
-  create = () => {
+  createMenuAction = () => {
     this.hideManagementList();
-    this.props.funcs.create();
+    this.props.menuActions.create();
   }
-  edit = () => {
+  editMenuAction = () => {
     this.hideManagementList();
-    this.props.funcs.edit();
+    this.props.menuActions.edit();
   }
   hideManagementList = () => {
     this.setState({
       showList: false,
     });
   }
-  manage = () => {
+  manageMenuAction = () => {
     this.hideManagementList();
-    this.props.funcs.manage();
+    this.props.menuActions.manage();
   }
   showManagementList = (event) => {
     this.setState({
@@ -37,12 +37,12 @@ class ManagementMenuContent extends React.Component {
   render() {
     return (
       <ManagementMenu
-        active={ this.props.active }
+        activeLevel={ this.props.activeLevel }
         anchorEl={ this.state.anchorEl }
-        create={ this.create }
-        edit={ this.edit }
+        createMenuAction={ this.createMenuAction }
+        editMenuAction={ this.editMenuAction }
         hideManagementList={ this.hideManagementList }
-        manage={ this.manage }
+        manageMenuAction={ this.manageMenuAction }
         selected={ this.props.selected }
         showList={ this.state.showList }
         showManagementList={ this.showManagementList }
@@ -56,8 +56,8 @@ ManagementMenuContent.defaultProps = {
 };
 
 ManagementMenuContent.propTypes = {
-  active: PropTypes.string.isRequired,
-  funcs: PropTypes.shape({
+  activeLevel: PropTypes.string.isRequired,
+  menuActions: PropTypes.shape({
     create: PropTypes.func,
     edit: PropTypes.func,
     manage: PropTypes.func,

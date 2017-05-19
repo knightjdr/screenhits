@@ -1,6 +1,9 @@
 # data folder for tests
 data/*
 
+# todo list
+todo.txt
+
 # node modules, client and server side
 node_modules/*
 

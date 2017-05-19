@@ -8,7 +8,7 @@ class ManagementContainer extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      activeTab: 'project',
+      activeLevel: 'project',
       showList: false,
       viewIcon: 'sitemap',
       viewType: 'hierarchy',
@@ -32,25 +32,30 @@ class ManagementContainer extends React.Component {
     console.log(path);
     browserHistory.push(path)
   } */
-  changeActive = (type) => {
-    if (type !== this.state.activeTab) {
+  changeLevel = (type) => {
+    if (type !== this.state.activeLevel) {
       const newState = this.state.showList ?
       {
-        activeTab: type,
+        activeLevel: type,
         showList: false,
       } :
       {
-        activeTab: type,
+        activeLevel: type,
       };
       this.setState(newState);
     }
   }
   changeView = () => {
-    if (this.state.viewType === 'hierarchy') {
-      this.setState({ viewIcon: 'list', viewType: 'list' });
-    } else {
-      this.setState({ viewIcon: 'sitemap', viewType: 'hierarchy' });
-    }
+    const newState = this.state.viewType === 'hierarchy' ?
+    {
+      viewIcon: 'list',
+      viewType: 'list',
+    } :
+    {
+      viewIcon: 'sitemap',
+      viewType: 'hierarchy',
+    };
+    this.setState(newState);
   }
   hideList = () => {
     this.setState({
@@ -66,14 +71,15 @@ class ManagementContainer extends React.Component {
   render() {
     return (
       <Management
-        activeTab={ this.state.activeTab }
+        activeLevel={ this.state.activeLevel }
         anchorEl={ this.state.anchorEl }
         available={ this.props.available }
-        changeActive={ this.changeActive }
+        changeLevel={ this.changeLevel }
         changeView={ this.changeView }
         hideList={ this.hideList }
         selected={ this.props.selected }
         showList={ this.showList }
+        showListBoolean={ this.state.showList }
         viewIcon={ this.state.viewIcon }
         viewType={ this.state.viewType }
 

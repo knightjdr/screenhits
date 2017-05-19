@@ -8,12 +8,6 @@ import RaisedButton from 'material-ui/RaisedButton';
 import React from 'react';
 
 class ManagementSelection extends React.Component {
-  componentDidMount = () => {
-    window.addEventListener('resize', this.props.updateButton);
-  }
-  componentWillUnmount = () => {
-    window.removeEventListener('resize', this.props.updateButton);
-  }
   setButtonColor = (buttonClass, hover) => {
     if (buttonClass === 'default' && hover) {
       return this.props.muiTheme.palette.alternativeButtonColorHover;
@@ -23,6 +17,11 @@ class ManagementSelection extends React.Component {
       return this.props.muiTheme.palette.buttonColorHover;
     }
     return this.props.muiTheme.palette.buttonColor;
+  }
+  selectButton = (e) => {
+    const colonIndex = e.target.innerHTML.indexOf(':');
+    const _id = Number(e.target.innerHTML.substr(0, colonIndex));
+    this.props.selectItem(this.props.type, _id);
   }
   render() {
     return (
@@ -45,12 +44,9 @@ class ManagementSelection extends React.Component {
             this.props.muiTheme.palette.alternateTextColor :
             this.props.muiTheme.palette.alternateTextColor2
           }
-          onClick={ (e) => {
-            this.props.onClick();
-            this.props.showList(e);
-          } }
-          onMouseEnter={ () => { this.props.onHover(true); } }
-          onMouseLeave={ () => { this.props.onHover(false); } }
+          onClick={ this.props.changeLevel }
+          onMouseEnter={ this.props.onHoverEnter }
+          onMouseLeave={ this.props.onHoverLeave }
         />
         <Popover
           anchorEl={ this.props.anchorEl }
@@ -59,8 +55,8 @@ class ManagementSelection extends React.Component {
             vertical: 'bottom',
           } }
           animation={ PopoverAnimationVertical }
-          onRequestClose={ this.props.hideList }
-          open={ this.props.showListBoolean }
+          onRequestClose={ this.props.hidePopover }
+          open={ this.props.showPopoverBoolean }
           targetOrigin={ {
             horizontal: 'left',
             vertical: 'top',
@@ -83,8 +79,8 @@ class ManagementSelection extends React.Component {
               return (
                 <MenuItem
                   key={ item._id }
-                  onClick={ () => { this.props.selectItem(this.props.type, item._id); } }
-                  primaryText={ `${item._id} : ${item.name}` }
+                  onClick={ this.selectButton }
+                  primaryText={ `${item._id}: ${item.name}` }
                 />
               );
             })}
@@ -109,7 +105,8 @@ ManagementSelection.propTypes = {
     }),
     PropTypes.string,
   ]).isRequired,
-  hideList: PropTypes.func.isRequired,
+  changeLevel: PropTypes.func.isRequired,
+  hidePopover: PropTypes.func.isRequired,
   hovered: PropTypes.bool.isRequired,
   details: PropTypes.shape({
     isFetching: PropTypes.bool,
@@ -130,16 +127,14 @@ ManagementSelection.propTypes = {
       buttonColorHover: PropTypes.string,
     }),
   }).isRequired,
-  onClick: PropTypes.func.isRequired,
-  onHover: PropTypes.func.isRequired,
+  onHoverEnter: PropTypes.func.isRequired,
+  onHoverLeave: PropTypes.func.isRequired,
   selected: PropTypes.number,
   selectItem: PropTypes.func.isRequired,
-  showList: PropTypes.func.isRequired,
-  showListBoolean: PropTypes.bool.isRequired,
+  showPopoverBoolean: PropTypes.bool.isRequired,
   toggleIcon: PropTypes.shape({
   }).isRequired,
   type: PropTypes.string.isRequired,
-  updateButton: PropTypes.func.isRequired,
 };
 
 export default muiThemeable()(ManagementSelection);

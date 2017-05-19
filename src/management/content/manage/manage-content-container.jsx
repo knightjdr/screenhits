@@ -309,7 +309,7 @@ class ManageContentContainer extends React.Component {
         bulkPermissionState={ this.props.bulkPermissionState }
         bulkChange={ this.bulkChange }
         calcPageLength={ this.calcPageLength }
-        cancel={ this.props.cancel }
+        cancelMenuAction={ this.props.cancelMenuAction }
         closePopover={ this.closePopover }
         inputChange={ this.inputChange }
         inputLabel={ this.state.inputLabel }
@@ -370,7 +370,7 @@ ManageContentContainer.propTypes = {
     isPut: PropTypes.bool,
     message: PropTypes.string,
   }),
-  cancel: PropTypes.func.isRequired,
+  cancelMenuAction: PropTypes.func.isRequired,
   changeBulkPermissionAction: PropTypes.func.isRequired,
   lab: PropTypes.string.isRequired,
   manageState: PropTypes.shape({

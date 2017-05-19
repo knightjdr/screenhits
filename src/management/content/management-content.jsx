@@ -7,6 +7,7 @@ import ManageContent from './manage/manage-content-container';
 import ManagementMenu from './menu/management-menu-container';
 
 const introStyle = {
+  fontFamily: 'Roboto',
   left: 0,
   marginLeft: 5,
   marginRight: 5,
@@ -21,12 +22,12 @@ class ManagementContent extends React.Component {
     let content;
     if (this.props.createBoolean) {
       content = (<CreateContent
-        active={ this.props.active }
-        cancel={ this.props.cancel }
+        activeLevel={ this.props.activeLevel }
+        cancelMenuAction={ this.props.cancelMenuAction }
       />);
     } else if (this.props.manageBoolean) {
       content = (<ManageContent
-        cancel={ this.props.cancel }
+        cancelMenuAction={ this.props.cancelMenuAction }
         lab={ this.props.item.lab }
         name={ this.props.item.name }
         permission={ this.props.item.permission }
@@ -35,8 +36,8 @@ class ManagementContent extends React.Component {
       />);
     } else if (this.props.selected) {
       content = (<DisplayContent
-        active={ this.props.active }
-        cancel={ this.props.cancel }
+        activeLevel={ this.props.activeLevel }
+        cancelMenuAction={ this.props.cancelMenuAction }
         edit={ this.props.editBoolean }
         item={ this.props.item }
         key={ this.props.selected }
@@ -44,11 +45,12 @@ class ManagementContent extends React.Component {
       />);
     } else if (this.props.availableLength === 0) {
       content = (<div style={ introStyle }>
-        Create a new { this.props.active } to begin
+        Create a new { this.props.activeLevel } to begin
       </div>);
     } else {
       content = (<div style={ introStyle }>
-        Select an existing { this.props.active } or create a new { this.props.active } to begin
+        Select an existing { this.props.activeLevel }
+        or create a new { this.props.activeLevel } to begin
       </div>);
     }
     return (
@@ -70,12 +72,8 @@ class ManagementContent extends React.Component {
           } }
         >
           <ManagementMenu
-            active={ this.props.active }
-            funcs={ {
-              create: this.props.funcs.create,
-              edit: this.props.funcs.edit,
-              manage: this.props.funcs.manage,
-            } }
+            activeLevel={ this.props.activeLevel }
+            menuActions={ this.props.menuActions }
             selected={ this.props.selected }
           />
         </div>
@@ -90,12 +88,12 @@ ManagementContent.defaultProps = {
 };
 
 ManagementContent.propTypes = {
-  active: PropTypes.string.isRequired,
+  activeLevel: PropTypes.string.isRequired,
   availableLength: PropTypes.number.isRequired,
-  cancel: PropTypes.func.isRequired,
+  cancelMenuAction: PropTypes.func.isRequired,
   createBoolean: PropTypes.bool.isRequired,
   editBoolean: PropTypes.bool.isRequired,
-  funcs: PropTypes.shape({
+  menuActions: PropTypes.shape({
     create: PropTypes.func,
     edit: PropTypes.func,
     manage: PropTypes.func,

@@ -14,6 +14,7 @@ import FieldsProject from './forms/fields-project';
 import FieldsScreen from './forms/fields-screen';
 import { uppercaseFirst } from '../../../helpers/helpers';
 import SelectInput from './select-input/select-input-container';
+import SpeciesDataSource from '../../../assets/data/species';
 
 const Fields = {
   project: FieldsProject,
@@ -48,6 +49,18 @@ class CreateScreen extends React.Component {
       />,
     ]);
   }
+  inputChangeCondition = (e) => {
+    this.props.inputChange('condition', e.target.value);
+  }
+  inputChangeDescription = (e) => {
+    this.props.inputChange('description', e.target.value);
+  }
+  inputChangeName = (e) => {
+    this.props.inputChange('name', e.target.value);
+  }
+  inputChangeType = (e, index, value) => {
+    this.props.inputChange('type', value);
+  }
   render() {
     return (
       <div>
@@ -69,7 +82,7 @@ class CreateScreen extends React.Component {
             floatingLabelText="Screen name (short)"
             fullWidth={ true }
             multiLine={ true }
-            onChange={ (e) => { this.props.inputChange('name', e.target.value); } }
+            onChange={ this.inputChangeName }
             rows={ 1 }
             rowsMax={ 2 }
             style={ inputStyle }
@@ -80,7 +93,7 @@ class CreateScreen extends React.Component {
             floatingLabelText="Project description"
             fullWidth={ true }
             multiLine={ true }
-            onChange={ (e) => { this.props.inputChange('description', e.target.value); } }
+            onChange={ this.inputChangeDescription }
             rows={ 1 }
             rowsMax={ 4 }
             style={ inputStyle }
@@ -94,7 +107,7 @@ class CreateScreen extends React.Component {
               paddingBottom: 0,
               paddingTop: 0,
             } }
-            onChange={ (e, index, value) => { this.props.inputChange('type', value); } }
+            onChange={ this.inputChangeType }
             style={ inputStyle }
             value={ this.props.formData.type }
           >
@@ -109,6 +122,7 @@ class CreateScreen extends React.Component {
             }) }
           </SelectField>
           <SelectInput
+            dataSource={ SpeciesDataSource }
             errorText={ this.props.errors.species }
             inputChange={ this.props.inputChange }
             inputWidth={ this.props.inputWidth }
@@ -139,7 +153,7 @@ class CreateScreen extends React.Component {
               floatingLabelText="Condition (optional)"
               fullWidth={ true }
               multiLine={ true }
-              onChange={ (e) => { this.props.inputChange('condition', e.target.value); } }
+              onChange={ this.inputChangeCondition }
               rows={ 1 }
               rowsMax={ 2 }
               value={ this.props.formData.condition }

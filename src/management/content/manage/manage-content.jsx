@@ -26,6 +26,15 @@ class ManageContent extends React.Component {
       this.props.search(e.target.value);
     }
   }
+  setSearchType = (e, v) => {
+    this.props.setSearchType(v);
+  }
+  bulkChange = (e, index, value) => {
+    this.props.bulkChange(value);
+  }
+  inputChange = (e) => {
+    this.props.inputChange(e.target.value);
+  }
   permissionToText = (perm) => {
     const permConvert = {
       n: 'None',
@@ -35,10 +44,14 @@ class ManageContent extends React.Component {
     };
     return !perm ? 'Select' : permConvert[perm];
   }
+  updateManangeCurrent = () => {
+    this.props.updateManage('current');
+  }
   render() {
     return (
       <div
         style={ {
+          fontFamily: 'Roboto',
           padding: '10px 5px 10px 5px',
         } }
       >
@@ -205,7 +218,7 @@ class ManageContent extends React.Component {
                     >
                       <ActionButtons
                         cancel={ {
-                          func: this.props.cancel,
+                          func: this.props.cancelMenuAction,
                         } }
                         idSuffix="manageUsers"
                         reset={ {
@@ -213,7 +226,7 @@ class ManageContent extends React.Component {
                           toolTipText: 'Reset details to most recent save',
                         } }
                         update={ {
-                          func: () => { this.props.updateManage('current'); },
+                          func: this.updateManangeCurrent,
                           toolTipText: 'Update permissions',
                         } }
                       />
@@ -254,14 +267,14 @@ class ManageContent extends React.Component {
                 <TextField
                   floatingLabelText={ this.props.inputLabel }
                   fullWidth={ true }
-                  onBlur={ (e) => { this.props.inputChange(e.target.value); } }
-                  onKeyPress={ (e) => { this.onEnter(e); } }
+                  onBlur={ this.inputChange }
+                  onKeyPress={ this.onEnter }
                   style={ { maxWidth: 500 } }
                 />
                 <RadioButtonGroup
                   name="searchType"
                   defaultSelected="name"
-                  onChange={ (e, v) => { this.props.setSearchType(v); } }
+                  onChange={ this.setSearchType }
                   style={ {
                     marginLeft: 15,
                     marginTop: 40,
@@ -448,7 +461,7 @@ class ManageContent extends React.Component {
                           <ActionButtons
                             idSuffix="addUsers"
                             update={ {
-                              func: () => { this.props.addUsersFunc(); },
+                              func: this.props.addUsersFunc,
                               label: 'Add user(s)',
                               toolTipText: 'Add selected users to project',
                             } }
@@ -479,7 +492,7 @@ class ManageContent extends React.Component {
                 floatingLabelText="User permissions"
                 fullWidth={ true }
                 value={ this.props.selectPermission }
-                onChange={ (e, index, value) => { this.props.bulkChange(value); } }
+                onChange={ this.bulkChange }
               >
                 <MenuItem key="lr" value="lr" primaryText="Read - lab (all lab members can view this project)" />
                 <MenuItem key="lw" value="lw" primaryText="Write - lab (all lab members can edit this project)" />
@@ -491,7 +504,7 @@ class ManageContent extends React.Component {
                 <ActionButtons
                   idSuffix="updateBulkUsers"
                   update={ {
-                    func: () => { this.props.updateBulkPermissions(); },
+                    func: this.props.updateBulkPermissions,
                     label: 'Update',
                   } }
                 />
@@ -549,7 +562,7 @@ ManageContent.propTypes = {
     isPut: PropTypes.bool,
     message: PropTypes.string,
   }).isRequired,
-  cancel: PropTypes.func.isRequired,
+  cancelMenuAction: PropTypes.func.isRequired,
   closePopover: PropTypes.func.isRequired,
   inputChange: PropTypes.func.isRequired,
   inputLabel: PropTypes.string.isRequired,

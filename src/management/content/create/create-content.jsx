@@ -29,7 +29,7 @@ class CreateContent extends React.Component {
           autoHeight={ true }
           autoHeightMax={ 'calc(100vh - 180px)' }
         >
-          { this.props.active === 'project' ?
+          { this.props.activeLevel === 'project' ?
             <CreateProject
               errors={ this.props.errors }
               formData={ this.props.formData }
@@ -37,7 +37,7 @@ class CreateContent extends React.Component {
             />
               : null
           }
-          { this.props.active === 'screen' ?
+          { this.props.activeLevel === 'screen' ?
             <CreateScreen
               dialog={ this.props.dialog }
               dialogOpen={ this.props.dialogOpen }
@@ -66,9 +66,9 @@ class CreateContent extends React.Component {
             <ActionButtons
               cancel={ {
                 func: this.props.cancelForm,
-                toolTipText: `Cancel ${this.props.active} creation`,
+                toolTipText: `Cancel ${this.props.activeLevel} creation`,
               } }
-              idSuffix={ `create-${this.props.active}` }
+              idSuffix={ `create-${this.props.activeLevel}` }
               reset={ {
                 func: this.props.resetForm,
                 toolTipText: 'Reset the form',
@@ -84,16 +84,16 @@ class CreateContent extends React.Component {
               } }
             >
               <Notice
-                fail={ this.props.postState[this.props.active].didSubmitFail }
-                failMessage={ `${uppercaseFirst(this.props.active)} creation failed.
-                ${this.props.postState[this.props.active].message}.` }
+                fail={ this.props.postState[this.props.activeLevel].didSubmitFail }
+                failMessage={ `${uppercaseFirst(this.props.activeLevel)} creation failed.
+                ${this.props.postState[this.props.activeLevel].message}.` }
                 label="create-notification"
-                submit={ this.props.postState[this.props.active].isSubmitted }
-                submitMessage={ `${uppercaseFirst(this.props.active)} submitted` }
-                succeed={ this.props.postState[this.props.active].message &&
-                  !this.props.postState[this.props.active].didSubmitFail
+                submit={ this.props.postState[this.props.activeLevel].isSubmitted }
+                submitMessage={ `${uppercaseFirst(this.props.activeLevel)} submitted` }
+                succeed={ this.props.postState[this.props.activeLevel].message &&
+                  !this.props.postState[this.props.activeLevel].didSubmitFail
                 }
-                succeedMessage={ this.props.postState[this.props.active].message }
+                succeedMessage={ this.props.postState[this.props.activeLevel].message }
               />
             </div>
           </div>
@@ -104,7 +104,7 @@ class CreateContent extends React.Component {
 }
 
 CreateContent.propTypes = {
-  active: PropTypes.string.isRequired,
+  activeLevel: PropTypes.string.isRequired,
   cancelForm: PropTypes.func.isRequired,
   dialog: PropTypes.shape({
     close: PropTypes.func,

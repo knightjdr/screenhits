@@ -1,8 +1,9 @@
+import AutoComplete from 'material-ui/AutoComplete';
 import Checkbox from 'material-ui/Checkbox';
 import MenuItem from 'material-ui/MenuItem';
 import muiThemeable from 'material-ui/styles/muiThemeable';
 import PropTypes from 'prop-types';
-import TextField from 'material-ui/TextField';
+// import TextField from 'material-ui/TextField';
 import React from 'react';
 import SelectField from 'material-ui/SelectField';
 
@@ -10,6 +11,15 @@ import RadioButtonChecked from 'material-ui/svg-icons/toggle/radio-button-checke
 import RadioButtonUnchecked from 'material-ui/svg-icons/toggle/radio-button-unchecked';
 
 class SelectInput extends React.Component {
+  autoCompleteFilter = (searchText, key) => {
+    return key.toLowerCase().includes(searchText.toLowerCase());
+  }
+  inputChangeText = (e) => {
+    this.props.inputChange(this.props.type, e.target.value);
+  }
+  inputChangeSelect = (e, index, value) => {
+    this.props.inputChange(this.props.type, value);
+  }
   render() {
     return (
       <div
@@ -21,12 +31,14 @@ class SelectInput extends React.Component {
         } }
       >
         { this.props.inputType === 'text' ?
-          <TextField
+          <AutoComplete
+            dataSource={ this.props.dataSource }
             errorText={ this.props.errorText }
+            filter={ this.autoCompleteFilter }
             floatingLabelText={ this.props.labelText }
             fullWidth={ true }
             multiLine={ true }
-            onChange={ (e) => { this.props.inputChange(this.props.type, e.target.value); } }
+            onChange={ this.inputChangeText }
             rows={ 1 }
             rowsMax={ 2 }
             value={ this.props.value }
@@ -39,7 +51,7 @@ class SelectInput extends React.Component {
               paddingBottom: 0,
               paddingTop: 0,
             } }
-            onChange={ (e, index, value) => { this.props.inputChange(this.props.type, value); } }
+            onChange={ this.inputChangeSelect }
             value={ this.props.value }
           >
             { this.props.options.map((type) => {
@@ -63,7 +75,7 @@ class SelectInput extends React.Component {
           labelStyle={ {
             color: this.props.muiTheme.palette.alternateTextColor,
           } }
-          onCheck={ () => { this.props.changeType(); } }
+          onCheck={ this.props.changeType }
           style={ {
             marginLeft: 10,
             marginTop: 40,
@@ -87,6 +99,12 @@ SelectInput.defaultProps = {
 
 SelectInput.propTypes = {
   changeType: PropTypes.func.isRequired,
+  dataSource: PropTypes.arrayOf(
+    PropTypes.oneOfType([
+      PropTypes.number,
+      PropTypes.string,
+    ]),
+  ).isRequired,
   errorText: PropTypes.string,
   inputChange: PropTypes.func.isRequired,
   inputType: PropTypes.string.isRequired,

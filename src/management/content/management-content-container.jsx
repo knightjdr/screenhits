@@ -17,9 +17,9 @@ class ManagementContentContainer extends React.Component {
     };
   }
   componentWillReceiveProps(nextProps) {
-    const { active, available, selected } = nextProps;
-    const index = available[active].items.findIndex((obj) => { return obj._id === selected; });
-    const item = index > -1 ? available[active].items[index] : {};
+    const { activeLevel, available, selected } = nextProps;
+    const index = available[activeLevel].items.findIndex((obj) => { return obj._id === selected; });
+    const item = index > -1 ? available[activeLevel].items[index] : {};
     if (Object.keys(item).length > 0) {
       this.setState({ item });
     }
@@ -29,14 +29,14 @@ class ManagementContentContainer extends React.Component {
       }
     }
   }
-  cancel = () => {
+  cancelMenuAction = () => {
     this.setState({
       createBoolean: false,
       editBoolean: false,
       manageBoolean: false,
     });
   }
-  create = () => {
+  createMenuAction = () => {
     this.props.resetPost();
     this.setState({
       createBoolean: true,
@@ -44,7 +44,7 @@ class ManagementContentContainer extends React.Component {
       manageBoolean: false,
     });
   }
-  edit = () => {
+  editMenuAction = () => {
     this.props.resetPut(this.state.item._id);
     this.setState({
       createBoolean: false,
@@ -52,7 +52,7 @@ class ManagementContentContainer extends React.Component {
       manageBoolean: false,
     });
   }
-  manage = () => {
+  manageMenuAction = () => {
     this.setState({
       createBoolean: false,
       editBoolean: false,
@@ -71,14 +71,18 @@ class ManagementContentContainer extends React.Component {
         } }
       >
         <ManagementContent
-          active={ this.props.active }
-          availableLength={ this.props.available[this.props.active].items.length }
-          cancel={ this.cancel }
+          activeLevel={ this.props.activeLevel }
+          availableLength={ this.props.available[this.props.activeLevel].items.length }
+          cancelMenuAction={ this.cancelMenuAction }
           createBoolean={ this.state.createBoolean }
           editBoolean={ this.state.editBoolean }
-          funcs={ { create: this.create, edit: this.edit, manage: this.manage } }
           item={ this.state.item }
           manageBoolean={ this.state.manageBoolean }
+          menuActions={ {
+            create: this.createMenuAction,
+            edit: this.editMenuAction,
+            manage: this.manageMenuAction,
+          } }
           selected={ this.props.selected }
           top={ this.top }
         />
@@ -92,7 +96,7 @@ ManagementContentContainer.defaultProps = {
 };
 
 ManagementContentContainer.propTypes = {
-  active: PropTypes.string.isRequired,
+  activeLevel: PropTypes.string.isRequired,
   available: PropTypes.shape({
     experiment: PropTypes.shape({
       didInvalidate: PropTypes.bool,
@@ -131,10 +135,10 @@ ManagementContentContainer.propTypes = {
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
     resetPost: () => {
-      dispatch(resetPost(ownProps.active));
+      dispatch(resetPost(ownProps.activeLevel));
     },
     resetPut: (_id) => {
-      dispatch(resetPut(_id, ownProps.active));
+      dispatch(resetPut(_id, ownProps.activeLevel));
     },
   };
 };

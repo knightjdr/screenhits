@@ -17,44 +17,59 @@ class ManagementSelectionContainer extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      buttonClass: this.props.active === this.props.type ? 'active' : 'default',
+      buttonClass: this.props.activeLevel === this.props.type ? 'active' : 'default',
       buttonName: this.buttonName(),
       hovered: false,
-      showList: false,
+      showPopoverBoolean: false,
       toggleIcon: <FontAwesome name="angle-down" />,
     };
   }
+  componentDidMount = () => {
+    window.addEventListener('resize', this.updateButton);
+  }
   componentWillUpdate = (nextProps) => {
-    const { active } = nextProps;
-    if (active !== this.props.active) {
+    const { activeLevel } = nextProps;
+    if (activeLevel !== this.props.activeLevel) {
       this.setState({
-        buttonClass: active === this.props.type ? 'active' : 'default',
+        buttonClass: activeLevel === this.props.type ? 'active' : 'default',
       });
     }
   }
-  onHover = (bool) => {
+  componentWillUnmount = () => {
+    window.removeEventListener('resize', this.updateButton);
+  }
+  onHoverEnter = () => {
     this.setState({
-      hovered: bool,
+      hovered: true,
+    });
+  }
+  onHoverLeave = () => {
+    this.setState({
+      hovered: false,
     });
   }
   buttonName = () => {
     return window.innerWidth > 680 ? this.props.type : icons[this.props.type];
   }
-  hideList = () => {
+  changeLevel = (e) => {
+    this.props.changeLevel(this.props.type);
+    this.showPopover(e);
+  }
+  hidePopover = () => {
     this.setState({
-      showList: false,
+      showPopoverBoolean: false,
       toggleIcon: <FontAwesome name="angle-down" />,
     });
   }
   selectItem = (type, item) => {
-    this.hideList();
+    this.hidePopover();
     this.props.changeSelected(item);
   }
-  showList = (event) => {
-    if (this.props.active === this.props.type) {
+  showPopover = (event) => {
+    if (this.props.activeLevel === this.props.type) {
       this.setState({
         anchorEl: event.currentTarget,
-        showList: true,
+        showPopoverBoolean: true,
         toggleIcon: <FontAwesome name="angle-up" />,
       });
     }
@@ -70,18 +85,17 @@ class ManagementSelectionContainer extends React.Component {
         anchorEl={ this.state.anchorEl }
         buttonClass={ this.state.buttonClass }
         buttonName={ this.state.buttonName }
+        changeLevel={ this.changeLevel }
         details={ this.props.details }
-        hideList={ this.hideList }
+        hidePopover={ this.hidePopover }
         hovered={ this.state.hovered }
-        onClick={ this.props.onClick }
-        onHover={ this.onHover }
+        onHoverEnter={ this.onHoverEnter }
+        onHoverLeave={ this.onHoverLeave }
         selected={ this.props.selected }
         selectItem={ this.selectItem }
-        showList={ this.showList }
-        showListBoolean={ this.state.showList }
+        showPopoverBoolean={ this.state.showPopoverBoolean }
         toggleIcon={ this.state.toggleIcon }
         type={ this.props.type }
-        updateButton={ this.updateButton }
       />
     );
   }
@@ -92,8 +106,8 @@ ManagementSelectionContainer.defaultProps = {
 };
 
 ManagementSelectionContainer.propTypes = {
-  active: PropTypes.string.isRequired,
-  onClick: PropTypes.func.isRequired,
+  activeLevel: PropTypes.string.isRequired,
+  changeLevel: PropTypes.func.isRequired,
   details: PropTypes.shape({
     isFetching: PropTypes.bool,
     items: PropTypes.arrayOf(

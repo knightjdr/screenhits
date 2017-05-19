@@ -13,6 +13,18 @@ import ManagementSelection from './selection/management-selection-container';
 import ManagementContent from './content/management-content-container';
 
 class Management extends React.Component {
+  changeExperimentLevel = () => {
+    this.props.changeLevel('experiment');
+  }
+  changeProjectLevel = () => {
+    this.props.changeLevel('project');
+  }
+  changeSampleLevel = () => {
+    this.props.changeLevel('sample');
+  }
+  changeScreenLevel = () => {
+    this.props.changeLevel('screen');
+  }
   render() {
     return (
       <div
@@ -54,9 +66,9 @@ class Management extends React.Component {
               { this.props.available.project.items.length >= 0 ||
                 this.props.available.project.isFetching ?
                   <ManagementSelection
-                    active={ this.props.activeTab }
+                    activeLevel={ this.props.activeLevel }
+                    changeLevel={ this.props.changeLevel }
                     details={ this.props.available.project }
-                    onClick={ () => { this.props.changeActive('project'); } }
                     type="project"
                     selected={ this.props.selected.project }
                   />
@@ -65,27 +77,27 @@ class Management extends React.Component {
               }
               { !this.props.selected.project ? null :
               <ManagementSelection
-                active={ this.props.activeTab }
+                activeLevel={ this.props.activeLevel }
+                changeLevel={ this.props.changeLevel }
                 details={ this.props.available.screen }
-                onClick={ () => { this.props.changeActive('screen'); } }
                 type="screen"
                 selected={ this.props.selected.screen }
               />
               }
               { !this.props.selected.screen ? null :
               <ManagementSelection
-                active={ this.props.activeTab }
+                activeLevel={ this.props.activeLevel }
+                changeLevel={ this.props.changeLevel }
                 details={ this.props.available.experiment }
-                onClick={ () => { this.props.changeActive('experiment'); } }
                 type="experiment"
                 selected={ this.props.selected.experiment }
               />
               }
               { !this.props.selected.experiment ? null :
               <ManagementSelection
-                active={ this.props.activeTab }
+                activeLevel={ this.props.activeLevel }
+                changeLevel={ this.props.changeLevel }
                 details={ this.props.available.sample }
-                onClick={ () => { this.props.changeActive('sample'); } }
                 type="sample"
                 selected={ this.props.selected.sample }
               />
@@ -99,7 +111,7 @@ class Management extends React.Component {
             >
               <RaisedButton
                 backgroundColor={ this.props.muiTheme.palette.alternativeButtonColor }
-                label={ this.props.activeTab ? `${this.props.activeTab}s` : 'Level:' }
+                label={ this.props.activeLevel ? `${this.props.activeLevel}s` : 'Level:' }
                 labelColor={ this.props.muiTheme.palette.alternateTextColor }
                 onClick={ this.props.showList }
               />
@@ -111,7 +123,7 @@ class Management extends React.Component {
                 } }
                 animation={ PopoverAnimationVertical }
                 onRequestClose={ this.props.hideList }
-                open={ this.props.showList }
+                open={ this.props.showListBoolean }
                 targetOrigin={ {
                   horizontal: 'left',
                   vertical: 'top',
@@ -125,22 +137,22 @@ class Management extends React.Component {
                 >
                   <MenuItem
                     key="project"
-                    onClick={ () => { this.props.changeActive('project'); } }
+                    onClick={ this.changeProjectLevel }
                     primaryText={ [<FontAwesome key="project" name="folder-open" />, ' projects'] }
                   />
                   <MenuItem
                     key="screen"
-                    onClick={ () => { this.props.changeActive('screen'); } }
+                    onClick={ this.changeScreenLevel }
                     primaryText={ [<FontAwesome key="screen" name="braille" />, ' screens'] }
                   />
                   <MenuItem
                     key="experiment"
-                    onClick={ () => { this.props.changeActive('experiment'); } }
+                    onClick={ this.changeExperimentLevel }
                     primaryText={ [<FontAwesome key="experiment" name="bar-chart" />, ' experiments'] }
                   />
                   <MenuItem
                     key="sample"
-                    onClick={ () => { this.props.changeActive('sample'); } }
+                    onClick={ this.changeSampleLevel }
                     primaryText={ [<FontAwesome key="sample" name="flask" />, ' samples'] }
                   />
                 </Menu>
@@ -156,8 +168,8 @@ class Management extends React.Component {
           } }
         >
           <ManagementContent
-            active={ this.props.activeTab }
-            selected={ this.props.selected[this.props.activeTab] }
+            activeLevel={ this.props.activeLevel }
+            selected={ this.props.selected[this.props.activeLevel] }
           />
         </div>
       </div>
@@ -171,7 +183,7 @@ Management.defaultProps = {
 };
 
 Management.propTypes = {
-  activeTab: PropTypes.string.isRequired,
+  activeLevel: PropTypes.string.isRequired,
   anchorEl: PropTypes.shape({
   }),
   available: PropTypes.shape({
@@ -212,7 +224,7 @@ Management.propTypes = {
       message: PropTypes.string,
     }),
   }).isRequired,
-  changeActive: PropTypes.func.isRequired,
+  changeLevel: PropTypes.func.isRequired,
   changeView: PropTypes.func.isRequired,
   hideList: PropTypes.func.isRequired,
   muiTheme: PropTypes.shape({
@@ -229,6 +241,7 @@ Management.propTypes = {
     screen: PropTypes.number,
   }),
   showList: PropTypes.func.isRequired,
+  showListBoolean: PropTypes.bool.isRequired,
   viewIcon: PropTypes.string.isRequired,
   viewType: PropTypes.string.isRequired,
 };

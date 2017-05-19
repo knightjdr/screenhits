@@ -18,11 +18,11 @@ class DisplayContentContainer extends React.Component {
         isPut: false,
         message: null,
       },
-      errors: Format.blankError[this.props.active],
+      errors: Format.blankError[this.props.activeLevel],
       originalItem: Object.assign({}, this.props.item),
       postMessage: this.setPostMessage(
         this.props.postState,
-        this.props.active,
+        this.props.activeLevel,
         this.props.selected,
       ),
       reset: 0,
@@ -31,17 +31,17 @@ class DisplayContentContainer extends React.Component {
     };
   }
   componentWillReceiveProps(nextProps) {
-    const { active, item, putState, postState, selected } = nextProps;
+    const { activeLevel, item, putState, postState, selected } = nextProps;
     // update item when store updates
     this.setState({ originalItem: item });
     // check for and update edit messages
-    const index = !putState[active] ?
+    const index = !putState[activeLevel] ?
       -1
       :
-      putState[active].findIndex((obj) => { return obj._id === selected; })
+      putState[activeLevel].findIndex((obj) => { return obj._id === selected; })
     ;
     const editMessages = index > -1 ?
-      Object.assign({}, putState[active][index])
+      Object.assign({}, putState[activeLevel][index])
       : {
         didPutFail: false,
         _id: null,
@@ -54,40 +54,39 @@ class DisplayContentContainer extends React.Component {
       && !editMessages.didPutFail
     ;
     if (success) {
-      this.props.cancel();
+      this.props.cancelMenuAction();
     }
     this.setState({ editMessages });
     // check for post messages
     this.setState({
-      postMessage: this.setPostMessage(postState, active, selected),
+      postMessage: this.setPostMessage(postState, activeLevel, selected),
     });
   }
   componentWillUpdate() {
     if (this.state.postMessage) {
-      this.props.postReset(this.props.active);
+      this.props.postReset(this.props.activeLevel);
     }
   }
   componentWillUnmount() {
     if (this.state.postMessage) {
-      this.props.postReset(this.props.active);
+      this.props.postReset(this.props.activeLevel);
     }
   }
-  setPostMessage = (postState, active, selected) => {
-    return postState[active]._id === selected ?
-      postState[active].message
+  setPostMessage = (postState, activeLevel, selected) => {
+    return postState[activeLevel]._id === selected ?
+      postState[activeLevel].message
       :
       null
     ;
   }
   cancel = () => {
-    this.reset();
-    this.props.putReset(this.props.item._id, this.props.active);
-    this.props.cancel();
+    this.props.putReset(this.props.item._id, this.props.activeLevel);
+    this.props.cancelMenuAction();
   }
   reset = () => {
     this.setState((prevState) => {
       return {
-        errors: Format.blankError[this.props.active],
+        errors: Format.blankError[this.props.activeLevel],
         reset: prevState.reset + 1,
         updateItem: prevState.originalItem,
         warning: false,
@@ -98,8 +97,9 @@ class DisplayContentContainer extends React.Component {
     let error = false;
     const errors = {};
     Object.keys(this.state.updateItem).forEach((field) => {
-      if (ValidateField[this.props.active].checkFields.indexOf(field) > -1) {
-        const validation = ValidateField[this.props.active][field](this.state.updateItem[field]);
+      if (ValidateField[this.props.activeLevel].checkFields.indexOf(field) > -1) {
+        const validation =
+          ValidateField[this.props.activeLevel][field](this.state.updateItem[field]);
         if (validation.error) {
           error = true;
           errors[field] = validation.message;
@@ -109,7 +109,7 @@ class DisplayContentContainer extends React.Component {
     if (error) {
       this.setState({ errors, warning: true });
     } else {
-      this.props.update(this.props.item._id, this.props.active, this.state.updateItem);
+      this.props.update(this.props.item._id, this.props.activeLevel, this.state.updateItem);
     }
   }
   updateErrors = (errorObject, warning) => {
@@ -121,7 +121,7 @@ class DisplayContentContainer extends React.Component {
   render() {
     return (
       <DisplayContent
-        active={ this.props.active }
+        activeLevel={ this.props.activeLevel }
         cancel={ this.cancel }
         edit={ this.props.edit }
         editMessages={ this.state.editMessages }
@@ -140,8 +140,8 @@ class DisplayContentContainer extends React.Component {
 }
 
 DisplayContentContainer.propTypes = {
-  active: PropTypes.string.isRequired,
-  cancel: PropTypes.func.isRequired,
+  activeLevel: PropTypes.string.isRequired,
+  cancelMenuAction: PropTypes.func.isRequired,
   edit: PropTypes.bool.isRequired,
   item: PropTypes.shape({
     _id: PropTypes.number,
@@ -224,14 +224,14 @@ DisplayContentContainer.propTypes = {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    postReset: (active) => {
-      dispatch(resetPost(active));
+    postReset: (activeLevel) => {
+      dispatch(resetPost(activeLevel));
     },
-    putReset: (_id, active) => {
-      dispatch(resetPut(_id, active));
+    putReset: (_id, activeLevel) => {
+      dispatch(resetPut(_id, activeLevel));
     },
-    update: (_id, active, obj) => {
-      dispatch(submitPut(_id, obj, active));
+    update: (_id, activeLevel, obj) => {
+      dispatch(submitPut(_id, obj, activeLevel));
     },
   };
 };

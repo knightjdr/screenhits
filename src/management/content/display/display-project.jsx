@@ -10,12 +10,12 @@ const elementContainerStyle = {
 };
 const elementKeyStyle = {
   borderRadius: 2,
-  flex: '0 0 15%',
+  minWidth: 120,
   textAlign: 'right',
   padding: '5px 5px 5px 5px',
+  width: 120,
 };
 const elementValueStyle = {
-  flex: 1,
   marginLeft: 10,
 };
 const inputStyle = {

@@ -40,7 +40,7 @@ class CreateContentContainer extends React.Component {
     super(props);
     this.state = Object.assign(
       {},
-      BlankState[this.props.active],
+      BlankState[this.props.activeLevel],
       {
         dialogBool: false,
         dialogText: null,
@@ -53,22 +53,22 @@ class CreateContentContainer extends React.Component {
     window.addEventListener('resize', this.resize);
   }
   componentWillReceiveProps(nextProps) {
-    const { active, postState } = nextProps;
-    const success = this.props.postState[active].isSubmitted &&
-      !postState[active].isSubmitted &&
-      !postState[active].didSubmitFail
+    const { activeLevel, postState } = nextProps;
+    const success = this.props.postState[activeLevel].isSubmitted &&
+      !postState[activeLevel].isSubmitted &&
+      !postState[activeLevel].didSubmitFail
     ;
     if (success) {
-      this.props.setIndex(postState[active]._id, active);
-      this.props.cancel();
+      this.props.setIndex(activeLevel, postState[activeLevel]._id);
+      this.props.cancelMenuAction();
     }
   }
   componentWillUnmount() {
     window.addEventListener('resize', this.resize);
   }
   cancelForm = () => {
-    this.props.cancel();
-    this.setState(BlankState[this.props.active]);
+    this.props.cancelMenuAction();
+    this.setState(BlankState[this.props.activeLevel]);
   }
   dialogClose = () => {
     this.setState({
@@ -88,8 +88,8 @@ class CreateContentContainer extends React.Component {
     const errors = JSON.parse(JSON.stringify(this.state.errors));
     const stateObject = Object.assign({}, this.state.formData);
     if (!other) {
-      const validate = ValidateField[this.props.active][field] ?
-        ValidateField[this.props.active][field](value) :
+      const validate = ValidateField[this.props.activeLevel][field] ?
+        ValidateField[this.props.activeLevel][field](value) :
       {
         error: false,
         message: null,
@@ -97,8 +97,8 @@ class CreateContentContainer extends React.Component {
       stateObject[field] = value;
       errors[field] = validate.error ? validate.message : null;
     } else {
-      const validate = ValidateField[this.props.active][`${type}_${field}`] ?
-        ValidateField[this.props.active][`${type}_${field}`](value) :
+      const validate = ValidateField[this.props.activeLevel][`${type}_${field}`] ?
+        ValidateField[this.props.activeLevel][`${type}_${field}`](value) :
       {
         error: false,
         message: null,
@@ -110,7 +110,7 @@ class CreateContentContainer extends React.Component {
     if (field === 'type') {
       const newFields = {};
       const newErrors = {};
-      Fields[this.props.active].other[value].forEach((otherField) => {
+      Fields[this.props.activeLevel].other[value].forEach((otherField) => {
         newErrors[otherField.name] = otherField.defaultError;
         newFields[otherField.name] = otherField.defaultValue;
       });
@@ -124,8 +124,8 @@ class CreateContentContainer extends React.Component {
     });
   }
   resetForm = () => {
-    this.props.reset(this.props.active);
-    this.setState(BlankState[this.props.active]);
+    this.props.reset(this.props.activeLevel);
+    this.setState(BlankState[this.props.activeLevel]);
   }
   resize = () => {
     this.setState({
@@ -139,8 +139,8 @@ class CreateContentContainer extends React.Component {
       if (field === 'other') {
         Object.keys(this.state.formData[field]).forEach((otherField) => {
           const otherFieldName = `${this.state.formData.type}_${otherField}`;
-          if (ValidateField[this.props.active].otherCheckFields.indexOf(otherFieldName) > -1) {
-            const validation = ValidateField[this.props.active][otherFieldName](
+          if (ValidateField[this.props.activeLevel].otherCheckFields.indexOf(otherFieldName) > -1) {
+            const validation = ValidateField[this.props.activeLevel][otherFieldName](
               this.state.formData.other[otherField]);
             if (validation.error) {
               error = true;
@@ -148,8 +148,8 @@ class CreateContentContainer extends React.Component {
             }
           }
         });
-      } else if (ValidateField[this.props.active].checkFields.indexOf(field) > -1) {
-        const validation = ValidateField[this.props.active][field](this.state.formData[field]);
+      } else if (ValidateField[this.props.activeLevel].checkFields.indexOf(field) > -1) {
+        const validation = ValidateField[this.props.activeLevel][field](this.state.formData[field]);
         if (validation.error) {
           error = true;
           errors[field] = validation.message;
@@ -159,19 +159,19 @@ class CreateContentContainer extends React.Component {
     if (error) {
       this.setState({ errors, warning: true });
     } else {
-      const submitObj = FormSubmission[this.props.active](
+      const submitObj = FormSubmission[this.props.activeLevel](
         this.state.formData,
         this.props,
         this.props.selected,
       );
       console.log(submitObj);
-      // this.props.create(this.props.active, submitObj);
+      // this.props.create(this.props.activeLevel, submitObj);
     }
   }
   render() {
     return (
       <CreateContent
-        active={ this.props.active }
+        activeLevel={ this.props.activeLevel }
         cancelForm={ this.cancelForm }
         dialog={ {
           close: this.dialogClose,
@@ -203,8 +203,8 @@ CreateContentContainer.defaultProps = {
 };
 
 CreateContentContainer.propTypes = {
-  active: PropTypes.string.isRequired,
-  cancel: PropTypes.func.isRequired,
+  activeLevel: PropTypes.string.isRequired,
+  cancelMenuAction: PropTypes.func.isRequired,
   // create: PropTypes.func.isRequired,
   postState: PropTypes.shape({
     didSubmitFail: PropTypes.bool,
@@ -224,14 +224,14 @@ CreateContentContainer.propTypes = {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    create: (active, obj) => {
-      dispatch(submitPost(active, obj));
+    create: (activeLevel, obj) => {
+      dispatch(submitPost(activeLevel, obj));
     },
-    reset: (active) => {
-      dispatch(resetPost(active));
+    reset: (activeLevel) => {
+      dispatch(resetPost(activeLevel));
     },
-    setIndex: (_id, active) => {
-      dispatch(setIndex(active, _id));
+    setIndex: (_id, activeLevel) => {
+      dispatch(setIndex(activeLevel, _id));
     },
   };
 };
