@@ -62,7 +62,7 @@ const submitPut = (_id, obj, target) => {
     .then((json) => {
       if (json.status === 200) {
         dispatch(successPut(_id, json.message, target));
-        dispatch(getData(target));
+        dispatch(getData(target, obj.group));
       } else {
         const error = `Status code: ${json.status}; ${json.message}`;
         dispatch(failPut(_id, error, target));

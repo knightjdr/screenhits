@@ -7,6 +7,7 @@ import { Scrollbars } from 'react-custom-scrollbars';
 
 import ActionButtons from '../../../action-buttons/action-buttons-container';
 import DisplayProject from './display-project-container';
+import DisplayScreen from './display-screen-container';
 import Notice from '../../../messages/notice/notice';
 import { uppercaseFirst } from '../../../helpers/helpers';
 
@@ -30,6 +31,17 @@ class DisplayContent extends React.Component {
         >
           {this.props.activeLevel === 'project' ?
             <DisplayProject
+              edit={ this.props.edit }
+              errors={ this.props.errors }
+              item={ this.props.item }
+              key={ this.props.resetKey }
+              updateErrors={ this.props.updateErrors }
+              updateItem={ this.props.updateItem }
+            />
+              : null
+          }
+          {this.props.activeLevel === 'screen' ?
+            <DisplayScreen
               edit={ this.props.edit }
               errors={ this.props.errors }
               item={ this.props.item }

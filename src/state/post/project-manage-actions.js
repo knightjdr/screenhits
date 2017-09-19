@@ -2,45 +2,45 @@ import fetch from 'isomorphic-fetch';
 
 import { userGet } from '../get/project-user-actions';
 
-export const FAIL_POST = 'FAIL_POST';
-export const REQUEST_POST = 'REQUEST_POST';
-export const RESET_POST = 'RESET_POST';
-export const SUCCESS_POST = 'SUCCESS_POST';
+export const FAIL_MANAGE_POST = 'FAIL_MANAGE_POST';
+export const REQUEST_MANAGE_POST = 'REQUEST_MANAGE_POST';
+export const RESET_MANAGE_POST = 'RESET_MANAGE_POST';
+export const SUCCESS_MANAGE_POST = 'SUCCESS_MANAGE_POST';
 
-export function failPost(_id, message) {
+export function failManagePost(_id, message) {
   return {
     _id,
     message,
-    type: 'FAIL_POST',
+    type: 'FAIL_MANAGE_POST',
   };
 }
 
-export function requestPost(_id) {
+export function requestManagePost(_id) {
   return {
     _id,
-    type: 'REQUEST_POST',
+    type: 'REQUEST_MANAGE_POST',
   };
 }
 
-export function resetPost(_id) {
+export function resetManagePost(_id) {
   return {
     _id,
-    type: 'RESET_POST',
+    type: 'RESET_MANAGE_POST',
   };
 }
 
-export function successPost(_id, message) {
+export function successManagePost(_id, message) {
   return {
     _id,
     message,
-    type: 'SUCCESS_POST',
+    type: 'SUCCESS_MANAGE_POST',
   };
 }
 
 // thunks
 const manageUsers = (user, _id, lab, obj, permission) => {
   return (dispatch) => {
-    dispatch(requestPost(_id));
+    dispatch(requestManagePost(_id));
     const headers = new Headers();
     headers.append('Accept', 'application/json');
     headers.append('Auth', `${user.name}:${user.email}:${user.lab}:${user.token}`);
@@ -57,15 +57,15 @@ const manageUsers = (user, _id, lab, obj, permission) => {
     })
     .then((json) => {
       if (json.status === 200) {
-        dispatch(successPost(_id, json.message));
+        dispatch(successManagePost(_id, json.message));
         dispatch(userGet(user, _id, lab, permission));
       } else {
         const error = `Status code: ${json.status}; ${json.message}`;
-        dispatch(failPost(_id, error));
+        dispatch(failManagePost(_id, error));
       }
     })
     .catch((error) => {
-      dispatch(failPost(_id, error));
+      dispatch(failManagePost(_id, error));
     });
   };
 };

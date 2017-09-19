@@ -1,35 +1,78 @@
-'use strict';
-
 const moment = require('moment');
 const validators = require('../helpers/validators');
 
 const permission = ['lr', 'lw', 'ar', 'aw'];
 
-const Validate = {
+const validate = {
   project: (obj, dateType) => {
     return new Promise((resolve, reject) => {
-      if(!obj['creator-email'] || !validators.email(obj['creator-email']) || !obj['owner-email'] || !validators.email(obj['owner-email'])) {
+      const validateObj = obj;
+      if (
+        !validateObj['creator-email'] ||
+        !validators.email(validateObj['creator-email']) ||
+        !validateObj['owner-email'] ||
+        !validators.email(validateObj['owner-email'])
+      ) {
         reject('invalid email');
       }
-      if(!obj['creator-name'] || !obj['owner-name']) {
+      if (!validateObj['creator-name'] || !validateObj['owner-name']) {
         reject('missing user name');
       }
-      if(!obj.description) {
+      if (!validateObj.description) {
         reject('missing description');
       }
-      if(!obj.lab) {
+      if (!validateObj.lab) {
         reject('missing lab name');
       }
-      if(!obj.name) {
+      if (!validateObj.name) {
         reject('missing project name');
       }
-      if(!obj.permission || permission.indexOf(obj.permission) < 0) {
+      if (!validateObj.permission || permission.indexOf(validateObj.permission) < 0) {
         reject('missing or invalid permission');
       }
-      delete obj.target;
-      obj[dateType] = moment().format('MMMM Do YYYY, h:mm a');
-      resolve(obj);
+      delete validateObj.target;
+      validateObj[dateType] = moment().format('MMMM Do YYYY, h:mm a');
+      resolve(validateObj);
     });
-  }
+  },
+  screen: (obj, dateType) => {
+    return new Promise((resolve, reject) => {
+      const validateObj = obj;
+      if (
+        !validateObj['creator-email'] ||
+        !validators.email(validateObj['creator-email'])
+      ) {
+        reject('invalid email');
+      }
+      if (!validateObj['creator-name']) {
+        reject('missing user name');
+      }
+      if (!validateObj.cell) {
+        reject('missing cell type');
+      }
+      if (!validateObj.description) {
+        reject('missing screen description');
+      }
+      if (!validateObj.name) {
+        reject('missing screen name');
+      }
+      if (!validateObj.project) {
+        reject('missing project');
+      }
+      if (!validateObj.species) {
+        reject('missing species');
+      }
+      if (!validateObj.type) {
+        reject('missing screen type');
+      }
+      validateObj.group = {
+        project: validateObj.project,
+      };
+      delete validateObj.project;
+      delete validateObj.target;
+      validateObj[dateType] = moment().format('MMMM Do YYYY, h:mm a');
+      resolve(validateObj);
+    });
+  },
 };
-module.exports = Validate;
+module.exports = validate;

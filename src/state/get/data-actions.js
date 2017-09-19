@@ -1,4 +1,6 @@
 import fetch from 'isomorphic-fetch';
+import { setIndex } from '../set/index-actions';
+import { objectEmpty } from '../../helpers/helpers';
 
 export const FILL_DATA = 'FILL_DATA';
 export const FILL_FAILED = 'FILL_FAILED';
@@ -37,13 +39,17 @@ export function pushData(obj, target) {
 }
 
 // thunks
-const getData = (target) => {
+const getData = (target, filters, selected) => {
   return (dispatch) => {
     dispatch(isFilling(target));
     const headers = new Headers();
     headers.append('Accept', 'application/json');
     headers.append('Auth', 'James Knight:knightjdr@gmail.com:Gingras:auth_token');
-    return fetch(`http://localhost:8003/management?target=${target}`, {
+    let url = `http://localhost:8003/management?target=${target}`;
+    if (!objectEmpty(filters)) {
+      url = `${url}&filters=${JSON.stringify(filters)}`;
+    }
+    return fetch(url, {
       cache: 'default',
       headers,
       mode: 'cors',
@@ -54,6 +60,11 @@ const getData = (target) => {
     .then((json) => {
       if (json.status === 200) {
         dispatch(fillData(target, json.data));
+        // this is so that data can be retrieved and a selected index set via a route.
+        // See management-container.js for implementation
+        if (selected) {
+          dispatch(setIndex(target, selected));
+        }
       } else {
         const error = `Status code: ${json.status}; ${json.message}`;
         dispatch(fillFailed(target, error));

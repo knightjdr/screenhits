@@ -38,7 +38,7 @@ class Notice extends React.Component {
             key={ `${this.props.label}-fail` }
             style={ Object.assign({}, messageStyle, { zIndex: 2 }) }
           >
-            <FontAwesome name="exclamation-triangle" /> { this.props.failMessage }.
+            <FontAwesome name="exclamation-triangle" /> { this.props.failMessage }
           </div>
         }
         { this.props.succeed &&
@@ -46,7 +46,7 @@ class Notice extends React.Component {
             key={ `${this.props.label}-succeed` }
             style={ Object.assign({}, messageStyle, { zIndex: 2 }) }
           >
-            { this.props.succeedMessage }.
+            { this.props.succeedMessage }
           </div>
         }
         { this.props.other &&
@@ -54,7 +54,7 @@ class Notice extends React.Component {
             key={ `${this.props.label}-other` }
             style={ Object.assign({}, messageStyle, { zIndex: 2 }) }
           >
-            { this.props.otherMessage }.
+            { this.props.otherMessage }
           </div>
         }
       </CSSTransitionGroup>

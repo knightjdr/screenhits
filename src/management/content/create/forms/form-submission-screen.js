@@ -13,7 +13,7 @@ const FormatSubmission = (form, props, selected) => {
       submitObj[field] = form.other[field];
     });
   }
-  submitObj.project_id = selected.project;
+  submitObj.project = selected.project;
   submitObj.species = form.species;
   submitObj.target = 'screen';
   submitObj.type = form.type;

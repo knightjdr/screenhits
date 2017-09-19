@@ -5,13 +5,13 @@ const Permission = {
   lw: (lab, list) => {
     return list.filter((obj) => { return obj.lab && obj.lab !== lab; });
   },
-  ar: (lab, list) => {
+  ar: () => {
     return [];
   },
-  aw: (lab, list) => {
+  aw: () => {
     return [];
   },
-  n: (lab, list) => {
+  n: () => {
     return [];
   },
 };

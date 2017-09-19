@@ -1,18 +1,15 @@
-'use strict';
-
-const config = require('../../../config');
 const database = require('../../connections/database');
 
 const Counter = {
   get: (name) => {
     return new Promise((resolve, reject) => {
       database.acquire().collection('counters').findAndModify(
-        {_id: name},
+        { _id: name },
         [],
-        {$inc: { sequence: 1}},
-        {new: true},
+        { $inc: { sequence: 1 } },
+        { new: true },
         (err, entry) => {
-          if(!err) {
+          if (!err) {
             resolve(entry.value.sequence);
           } else {
             reject(err);
@@ -20,6 +17,6 @@ const Counter = {
         }
       );
     });
-	}
+  },
 };
 module.exports = Counter;

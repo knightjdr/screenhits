@@ -1,25 +1,24 @@
-'use strict';
-
 const config = require('../../config');
 const mongo = require('mongodb');
+
 const mongoClient = mongo.MongoClient;
 
-const Connection = {
+const connection = {
   acquire: () => {
-    return Connection.connection;
+    return connection.connection;
   },
   connection: {},
   init: () => {
-    const url = 'mongodb://' + config.database.user + ':' + config.database.readPW + '@localhost:27017/' + config.database.name;
+    const url = `mongodb://${config.settings().database.user}:${config.settings().database.readPW}@localhost:27017/${config.settings().database.name}`;
     mongoClient.connect(url, (err, db) => {
-      if(!err) {
-        Connection.connection = db;
-        console.log('MongoDB connected, db: ' + config.database.name);
+      if (!err) {
+        connection.connection = db;
+        console.log(`MongoDB connected, db: ${config.settings().database.name}`);
       } else {
         console.log(err);
-        console.log('Could not connect to database ' + config.database.name);
+        console.log(`Could not connect to database ${config.settings().database.name}`);
       }
     });
-  }
+  },
 };
-module.exports = Connection;
+module.exports = connection;

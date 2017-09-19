@@ -49,8 +49,8 @@ class ManagementContent extends React.Component {
       </div>);
     } else {
       content = (<div style={ introStyle }>
-        Select an existing { this.props.activeLevel }
-        or create a new { this.props.activeLevel } to begin
+        Select an existing { this.props.activeLevel } or
+        create a new { this.props.activeLevel } to begin
       </div>);
     }
     return (

@@ -1,7 +1,7 @@
 const Fields = {
   cell: {
     values: [
-      'HEK293',
+      'HEK 293',
       'Hela',
     ],
   },

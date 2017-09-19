@@ -59,7 +59,7 @@ class CreateContentContainer extends React.Component {
       !postState[activeLevel].didSubmitFail
     ;
     if (success) {
-      this.props.setIndex(activeLevel, postState[activeLevel]._id);
+      this.props.setIndex(postState[activeLevel]._id, activeLevel);
       this.props.cancelMenuAction();
     }
   }
@@ -164,8 +164,7 @@ class CreateContentContainer extends React.Component {
         this.props,
         this.props.selected,
       );
-      console.log(submitObj);
-      // this.props.create(this.props.activeLevel, submitObj);
+      this.props.create(this.props.activeLevel, submitObj);
     }
   }
   render() {
@@ -205,7 +204,7 @@ CreateContentContainer.defaultProps = {
 CreateContentContainer.propTypes = {
   activeLevel: PropTypes.string.isRequired,
   cancelMenuAction: PropTypes.func.isRequired,
-  // create: PropTypes.func.isRequired,
+  create: PropTypes.func.isRequired,
   postState: PropTypes.shape({
     didSubmitFail: PropTypes.bool,
     _id: PropTypes.number,

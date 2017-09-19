@@ -43,6 +43,7 @@ const submitPost = (target, obj) => {
     dispatch(requestPost(target));
     const headers = new Headers();
     headers.append('Accept', 'application/json');
+    headers.append('Auth', 'James Knight:knightjdr@gmail.com:Gingras:auth_token');
     headers.append('Content-Type', 'application/json');
     return fetch('http://localhost:8003/management/', {
       body: JSON.stringify(obj),
@@ -64,6 +65,7 @@ const submitPost = (target, obj) => {
       }
     })
     .catch((error) => {
+      console.log(target, error);
       dispatch(failPost(target, error));
     });
   };

@@ -12,6 +12,12 @@ const Post = (state = {
     _id: null,
     isSubmitted: false,
   },
+  screen: {
+    didSubmitFail: false,
+    message: null,
+    _id: null,
+    isSubmitted: false,
+  },
 }, action) => {
   let modifiedFields = {};
   const updateObject = {};

@@ -60,6 +60,7 @@ class CreateContent extends React.Component {
           }
           <div
             style={ {
+              marginBottom: 35,
               marginTop: 15,
             } }
           >

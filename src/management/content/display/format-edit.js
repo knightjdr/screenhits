@@ -7,6 +7,10 @@ const Format = {
       name: null,
       permission: null,
     },
+    screen: {
+      description: null,
+      name: null,
+    },
   },
 };
 export default Format;

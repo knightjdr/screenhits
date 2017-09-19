@@ -15,6 +15,7 @@ import FieldsScreen from './forms/fields-screen';
 import { uppercaseFirst } from '../../../helpers/helpers';
 import SelectInput from './select-input/select-input-container';
 import SpeciesDataSource from '../../../assets/data/species';
+import CellsDataSource from '../../../assets/data/cells';
 
 const Fields = {
   project: FieldsProject,
@@ -132,6 +133,7 @@ class CreateScreen extends React.Component {
             value={ this.props.formData.species }
           />
           <SelectInput
+            dataSource={ CellsDataSource }
             errorText={ this.props.errors.cell }
             inputChange={ this.props.inputChange }
             inputWidth={ this.props.inputWidth }
