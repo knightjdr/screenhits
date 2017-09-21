@@ -19,6 +19,7 @@ class DisplayContentContainer extends React.Component {
         message: null,
       },
       errors: Format.blankError[this.props.activeLevel],
+      inputWidth: window.innerWidth >= 555 ? 500 : window.innerWidth - 55,
       originalItem: Object.assign({}, this.props.item),
       postMessage: this.setPostMessage(
         this.props.postState,
@@ -29,6 +30,9 @@ class DisplayContentContainer extends React.Component {
       updateItem: Object.assign({}, this.props.item),
       warning: false,
     };
+  }
+  componentDidMount() {
+    window.addEventListener('resize', this.resize);
   }
   componentWillReceiveProps(nextProps) {
     const { activeLevel, item, putState, postState, selected } = nextProps;
@@ -68,6 +72,7 @@ class DisplayContentContainer extends React.Component {
     }
   }
   componentWillUnmount() {
+    window.removeEventListener('resize', this.resize);
     if (this.state.postMessage) {
       this.props.postReset(this.props.activeLevel);
     }
@@ -91,6 +96,11 @@ class DisplayContentContainer extends React.Component {
         updateItem: prevState.originalItem,
         warning: false,
       };
+    });
+  }
+  resize = () => {
+    this.setState({
+      inputWidth: window.innerWidth >= 555 ? 500 : window.innerWidth - 55,
     });
   }
   update = () => {
@@ -126,6 +136,7 @@ class DisplayContentContainer extends React.Component {
         edit={ this.props.edit }
         editMessages={ this.state.editMessages }
         errors={ this.state.errors }
+        inputWidth={ this.state.inputWidth }
         item={ this.state.originalItem }
         postMessage={ this.state.postMessage }
         reset={ this.reset }

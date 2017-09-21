@@ -8,9 +8,10 @@ const FormatSubmission = (form, props, selected) => {
   }
   submitObj.description = form.description;
   submitObj.name = form.name;
+  submitObj.other = {};
   if (form.other) {
     Object.keys(form.other).forEach((field) => {
-      submitObj[field] = form.other[field];
+      submitObj.other[field] = form.other[field];
     });
   }
   submitObj.project = selected.project;

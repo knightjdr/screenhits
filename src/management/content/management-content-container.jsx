@@ -28,6 +28,9 @@ class ManagementContentContainer extends React.Component {
         this.setState({ createBoolean: false });
       }
     }
+    if (activeLevel !== this.props.activeLevel) {
+      this.cancelMenuAction();
+    }
   }
   cancelMenuAction = () => {
     this.setState({

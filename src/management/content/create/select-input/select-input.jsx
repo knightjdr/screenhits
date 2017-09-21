@@ -24,9 +24,10 @@ class SelectInput extends React.Component {
     return (
       <div
         style={ {
-          display: 'flex',
+          display: 'inline-flex',
           marginLeft: 4,
           marginRight: 4,
+          verticalAlign: 'top',
           width: this.props.inputWidth,
         } }
       >

@@ -18,11 +18,17 @@ const Selected = (state = {
   const modifiedFields = {};
   switch (action.type) {
     case SET_INDEX:
-      modifiedFields[action.target] = action._id;
-      if (action._id !== state[action.target]) {
-        targetChildren[action.target].forEach((child) => {
-          modifiedFields[child] = null;
+      if (action.target === 'all') {
+        Object.keys(state).forEach((target) => {
+          modifiedFields[target] = action._id[target] ? action._id[target] : null;
         });
+      } else {
+        modifiedFields[action.target] = action._id;
+        if (action._id !== state[action.target]) {
+          targetChildren[action.target].forEach((child) => {
+            modifiedFields[child] = null;
+          });
+        }
       }
       return Object.assign({}, state, modifiedFields);
     default:

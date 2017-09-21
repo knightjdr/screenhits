@@ -35,13 +35,40 @@ const Available = (state = {
   const updateObject = {};
   switch (action.type) {
     case FILL_DATA:
-      modifiedFields = {
-        didInvalidate: false,
-        isFetching: false,
-        items: action.arr,
-        message: null,
-      };
-      updateObject[action.target] = modifiedFields;
+      if (action.target === 'all') {
+        updateObject.experiment = {
+          didInvalidate: false,
+          isFetching: false,
+          items: action.arr.experiment,
+          message: null,
+        };
+        updateObject.project = {
+          didInvalidate: false,
+          isFetching: false,
+          items: action.arr.project,
+          message: null,
+        };
+        updateObject.sample = {
+          didInvalidate: false,
+          isFetching: false,
+          items: action.arr.sample,
+          message: null,
+        };
+        updateObject.screen = {
+          didInvalidate: false,
+          isFetching: false,
+          items: action.arr.screen,
+          message: null,
+        };
+      } else {
+        modifiedFields = {
+          didInvalidate: false,
+          isFetching: false,
+          items: action.arr,
+          message: null,
+        };
+        updateObject[action.target] = modifiedFields;
+      }
       return Object.assign({}, state, updateObject);
     case FILL_FAILED:
       modifiedFields = {

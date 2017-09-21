@@ -59,7 +59,7 @@ class CreateContentContainer extends React.Component {
       !postState[activeLevel].didSubmitFail
     ;
     if (success) {
-      this.props.setIndex(postState[activeLevel]._id, activeLevel);
+      this.props.setIndex(activeLevel, postState[activeLevel]._id);
       this.props.cancelMenuAction();
     }
   }
@@ -229,7 +229,7 @@ const mapDispatchToProps = (dispatch) => {
     reset: (activeLevel) => {
       dispatch(resetPost(activeLevel));
     },
-    setIndex: (_id, activeLevel) => {
+    setIndex: (activeLevel, _id) => {
       dispatch(setIndex(activeLevel, _id));
     },
   };

@@ -8,8 +8,11 @@ const Format = {
       permission: null,
     },
     screen: {
+      cell: null,
       description: null,
       name: null,
+      species: null,
+      type: null,
     },
   },
 };

@@ -4,8 +4,8 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { browserHistory } from 'react-router';
 
-import { getData } from '../state/get/data-actions';
-// import { isObjectEqualLoose } from '../helpers/helpers';
+import { getData, getRouteData } from '../state/get/data-actions';
+import { isObjectLooseEqual, objectEmpty } from '../helpers/helpers';
 import Management from './management';
 import { setIndex } from '../state/set/index-actions';
 
@@ -21,8 +21,15 @@ class ManagementContainer extends React.Component {
     };
   }
   componentWillMount = () => {
-    // when component first mounts, retrieve user project and set index is specified
-    this.fillProjectState(this.props);
+    // when component first mounts, retrieve user project or route-based details
+    if (
+      !this.props.selected ||
+      objectEmpty(this.props.selected)
+    ) {
+      this.props.getData('project', {});
+    } else {
+      this.fillProjectState(this.props.selected);
+    }
   }
   componentDidMount = () => {
     this.state.routeCanUpdate = true;
@@ -30,7 +37,11 @@ class ManagementContainer extends React.Component {
   }
   componentWillReceiveProps = (nextProps) => {
     // if "selected" indices have change, update underlying data
-    if (!deepEqual(nextProps.selected, this.props.selected)) {
+    if (
+      !objectEmpty(nextProps.selected) &&
+      !isObjectLooseEqual(nextProps.selected, this.props.queryParams) &&
+      !isObjectLooseEqual(nextProps.selected, this.props.selected)
+    ) {
       this.updateState(nextProps.selected);
     }
   }
@@ -64,49 +75,24 @@ class ManagementContainer extends React.Component {
     };
     this.setState(newState);
   }
-  fillProjectState = (props) => {
-    props.getData('project', {}, props.selected.project);
-    /* if (props.selected.project) {
-      const filters = {
-        project: props.selected.project,
-      };
-      props.getData('screen', filters, props.selected.screen);
-    }
-    if (
-      props.selected.project &&
-      props.selected.screen
-    ) {
-      currentLevel = 'screen';
-      const filters = {
-        project: props.selected.project,
-        screen: props.selected.screen,
-      };
-      props.getData('experiment', filters, props.selected.experiment);
-    }
-    if (
-      props.selected.project &&
-      props.selected.screen &&
-      props.selected.experiment
-    ) {
-      currentLevel = 'experiment';
-      const filters = {
-        experiment: props.selected.experiment,
-        project: props.selected.project,
-        screen: props.selected.screen,
-      };
-      props.getData('sample', filters, props.selected.sample);
-    }
-    if (
-      props.selected.project &&
-      props.selected.screen &&
-      props.selected.experiment &&
-      props.selected.screen
-    ) {
-      currentLevel = 'screen';
-    }
+  fillProjectState = (selected) => {
+    this.props.getRouteData(selected);
     this.setState({
-      activeLevel: currentLevel,
-    });*/
+      activeLevel: this.findActiveLevel(selected),
+    });
+  }
+  findActiveLevel = (selected) => {
+    let activeLevel;
+    if (selected.sample) {
+      activeLevel = 'sample';
+    } if (selected.experiment) {
+      activeLevel = 'experiment';
+    } if (selected.screen) {
+      activeLevel = 'screen';
+    } else {
+      activeLevel = 'project';
+    }
+    return activeLevel;
   }
   hideList = () => {
     this.setState({
@@ -257,6 +243,7 @@ ManagementContainer.propTypes = {
     }),
   }).isRequired,
   getData: PropTypes.func.isRequired,
+  getRouteData: PropTypes.func.isRequired,
   path: PropTypes.string.isRequired,
   queryParams: PropTypes.shape({}).isRequired,
   selected: PropTypes.shape({
@@ -274,6 +261,9 @@ const mapDispatchToProps = (dispatch) => {
   return {
     getData: (type, filters, selected) => {
       dispatch(getData(type, filters, selected));
+    },
+    getRouteData: (selected) => {
+      dispatch(getRouteData(selected));
     },
     setIndex: (target, _id) => {
       dispatch(setIndex(target, _id));

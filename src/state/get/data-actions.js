@@ -75,4 +75,53 @@ const getData = (target, filters, selected) => {
     });
   };
 };
-export { getData };
+
+const getRouteData = (selected) => {
+  return (dispatch) => {
+    Object.keys(selected).forEach((target) => {
+      if (target) {
+        dispatch(isFilling(target));
+      }
+    });
+    const headers = new Headers();
+    headers.append('Accept', 'application/json');
+    headers.append('Auth', 'James Knight:knightjdr@gmail.com:Gingras:auth_token');
+    let url = 'http://localhost:8003/loadRoute?target=management';
+    if (!objectEmpty(selected)) {
+      url = `${url}&selected=${JSON.stringify(selected)}`;
+    }
+    return fetch(url, {
+      cache: 'default',
+      headers,
+      mode: 'cors',
+    })
+    .then((response) => {
+      return response.json();
+    })
+    .then((json) => {
+      if (json.status === 200) {
+        dispatch(fillData('all', json.data));
+        // this is so that data can be retrieved and a selected index set via a route.
+        // See management-container.js for implementation
+        if (!objectEmpty(selected)) {
+          dispatch(setIndex('all', selected));
+        }
+      } else {
+        const error = `Status code: ${json.status}; ${json.message}`;
+        Object.keys(selected).forEach((target) => {
+          if (target) {
+            dispatch(fillFailed(target, error));
+          }
+        });
+      }
+    })
+    .catch((error) => {
+      Object.keys(selected).forEach((target) => {
+        if (target) {
+          dispatch(fillFailed(target, error));
+        }
+      });
+    });
+  };
+};
+export { getData, getRouteData };

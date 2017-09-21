@@ -35,7 +35,7 @@ const validate = {
       resolve(validateObj);
     });
   },
-  screen: (obj, dateType) => {
+  screen: (obj, dateType, creation = true) => {
     return new Promise((resolve, reject) => {
       const validateObj = obj;
       if (
@@ -56,7 +56,10 @@ const validate = {
       if (!validateObj.name) {
         reject('missing screen name');
       }
-      if (!validateObj.project) {
+      if (
+        creation &&
+        !validateObj.project
+      ) {
         reject('missing project');
       }
       if (!validateObj.species) {
@@ -65,11 +68,17 @@ const validate = {
       if (!validateObj.type) {
         reject('missing screen type');
       }
-      validateObj.group = {
-        project: validateObj.project,
-      };
-      delete validateObj.project;
-      delete validateObj.target;
+      if (creation) {
+        validateObj.group = {
+          project: validateObj.project,
+        };
+      }
+      if (validateObj.project) {
+        delete validateObj.project;
+      }
+      if (validateObj.target) {
+        delete validateObj.target;
+      }
       validateObj[dateType] = moment().format('MMMM Do YYYY, h:mm a');
       resolve(validateObj);
     });

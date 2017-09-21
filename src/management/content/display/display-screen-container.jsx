@@ -32,6 +32,7 @@ class DisplayScreenContainer extends React.Component {
         edit={ this.props.edit }
         errors={ this.props.errors }
         inputChange={ this.inputChange }
+        inputWidth={ this.props.inputWidth }
         item={ this.state.item }
       />
     );
@@ -44,6 +45,7 @@ DisplayScreenContainer.propTypes = {
     description: PropTypes.string,
     name: PropTypes.string,
   }).isRequired,
+  inputWidth: PropTypes.number.isRequired,
   item: PropTypes.shape({
     _id: PropTypes.number,
     'creator-email': PropTypes.string,

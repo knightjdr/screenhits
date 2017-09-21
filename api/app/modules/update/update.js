@@ -4,10 +4,10 @@ const validate = require('../validation/validation');
 
 const Update = {
   put: (obj) => {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       const id = obj._id;
       const target = obj.target;
-      validate[target](obj, 'update-date')
+      validate[target](obj, 'update-date', false)
         .then((newObj) => {
           return update.insert(target, { _id: id }, newObj);
         })
@@ -21,7 +21,7 @@ const Update = {
           });
         })
         .catch((error) => {
-          reject({
+          resolve({
             status: 500,
             clientResponse: {
               status: 500,

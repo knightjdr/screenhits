@@ -31,6 +31,7 @@ class DisplayContent extends React.Component {
         >
           {this.props.activeLevel === 'project' ?
             <DisplayProject
+              cancel={ this.props.cancel }
               edit={ this.props.edit }
               errors={ this.props.errors }
               item={ this.props.item }
@@ -42,8 +43,10 @@ class DisplayContent extends React.Component {
           }
           {this.props.activeLevel === 'screen' ?
             <DisplayScreen
+              cancel={ this.props.cancel }
               edit={ this.props.edit }
               errors={ this.props.errors }
+              inputWidth={ this.props.inputWidth }
               item={ this.props.item }
               key={ this.props.resetKey }
               updateErrors={ this.props.updateErrors }
@@ -61,48 +64,54 @@ class DisplayContent extends React.Component {
               <FontAwesome name="exclamation-triangle " /> There are errors in the form. Please correct before proceeding.
             </div>
           }
-          { this.props.edit &&
-            <div
-              style={ {
-                marginTop: 15,
-              } }
-            >
-              <ActionButtons
-                cancel={ {
-                  func: this.props.cancel,
-                  toolTipText: 'Cancel editting',
-                } }
-                idSuffix={ `display-${this.props.activeLevel}` }
-                reset={ {
-                  func: this.props.reset,
-                  toolTipText: 'Reset to orignal information',
-                } }
-                update={ {
-                  func: this.props.update,
-                  toolTipText: 'Submit edits',
-                } }
-              />
-            </div>
-          }
           <div
             style={ {
-              margin: '10px 0px 0px 10px',
-              position: 'relative',
+              marginBottom: 35,
             } }
           >
-            <Notice
-              fail={ this.props.editMessages.didPutFail }
-              failMessage={ `${uppercaseFirst(this.props.activeLevel)} edit failed.
-              ${this.props.editMessages.message}` }
-              label="edit-notification"
-              other={ this.props.postMessage }
-              otherMessage={ this.props.postMessage }
-              submit={ this.props.editMessages.isPut }
-              submitMessage={ `${uppercaseFirst(this.props.activeLevel)} edit submitted` }
-              succeed={ this.props.editMessages.message &&
-                !this.props.editMessages.didPutFail }
-              succeedMessage={ this.props.editMessages.message }
-            />
+            { this.props.edit &&
+              <div
+                style={ {
+                  marginTop: 15,
+                } }
+              >
+                <ActionButtons
+                  cancel={ {
+                    func: this.props.cancel,
+                    toolTipText: 'Cancel editting',
+                  } }
+                  idSuffix={ `display-${this.props.activeLevel}` }
+                  reset={ {
+                    func: this.props.reset,
+                    toolTipText: 'Reset to orignal information',
+                  } }
+                  update={ {
+                    func: this.props.update,
+                    toolTipText: 'Submit edits',
+                  } }
+                />
+              </div>
+            }
+            <div
+              style={ {
+                margin: '10px 0px 0px 10px',
+                position: 'relative',
+              } }
+            >
+              <Notice
+                fail={ this.props.editMessages.didPutFail }
+                failMessage={ `${uppercaseFirst(this.props.activeLevel)} edit failed.
+                ${this.props.editMessages.message}` }
+                label="edit-notification"
+                other={ this.props.postMessage }
+                otherMessage={ this.props.postMessage }
+                submit={ this.props.editMessages.isPut }
+                submitMessage={ `${uppercaseFirst(this.props.activeLevel)} edit submitted` }
+                succeed={ this.props.editMessages.message &&
+                  !this.props.editMessages.didPutFail }
+                succeedMessage={ this.props.editMessages.message }
+              />
+            </div>
           </div>
         </Scrollbars>
       </Paper>
@@ -129,6 +138,7 @@ DisplayContent.propTypes = {
     name: PropTypes.string,
     permission: PropTypes.string,
   }).isRequired,
+  inputWidth: PropTypes.number.isRequired,
   item: PropTypes.shape({
     _id: PropTypes.number,
     'creator-email': PropTypes.string,

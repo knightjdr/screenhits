@@ -46,6 +46,7 @@ const submitPut = (_id, obj, target) => {
     dispatch(requestPut(_id, target));
     const headers = new Headers();
     headers.append('Accept', 'application/json');
+    headers.append('Auth', 'James Knight:knightjdr@gmail.com:Gingras:auth_token');
     headers.append('Content-Type', 'application/json');
     const submitObj = Object.assign({}, obj);
     submitObj.target = target;

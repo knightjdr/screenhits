@@ -1,3 +1,5 @@
+import deepEqual from 'deep-equal';
+
 // custom sort functions
 const customSort = {
   // sort an array of objects by a particular key's values in direction 'asc' or 'desc'
@@ -43,6 +45,23 @@ const findObjectIndexes = (obj, value) => {
   return indexes;
 };
 
+// check if two objects are equal, ignoring null keys
+const isObjectLooseEqual = (obj1, obj2) => {
+  const testObj1 = obj1;
+  const testObj2 = obj2;
+  Object.keys(testObj1).forEach((key) => {
+    if (!testObj1[key]) {
+      delete testObj1[key];
+    }
+  });
+  Object.keys(testObj2).forEach((key) => {
+    if (!testObj2[key]) {
+      delete testObj2[key];
+    }
+  });
+  return deepEqual(testObj1, testObj2);
+};
+
 // check if object has no values assigned to its keys, including nested objects
 const objectEmpty = (obj) => {
   let empty = true;
@@ -65,6 +84,7 @@ export {
   customSort,
   findIndexes,
   findObjectIndexes,
+  isObjectLooseEqual,
   objectEmpty,
   uppercaseFirst,
 };
