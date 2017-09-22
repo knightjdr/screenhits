@@ -6,7 +6,25 @@ import {
 } from './actions';
 
 const Post = (state = {
+  experiment: {
+    didSubmitFail: false,
+    message: null,
+    _id: null,
+    isSubmitted: false,
+  },
   project: {
+    didSubmitFail: false,
+    message: null,
+    _id: null,
+    isSubmitted: false,
+  },
+  protocol: {
+    didSubmitFail: false,
+    message: null,
+    _id: null,
+    isSubmitted: false,
+  },
+  sample: {
     didSubmitFail: false,
     message: null,
     _id: null,

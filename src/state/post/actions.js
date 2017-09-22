@@ -65,7 +65,6 @@ const submitPost = (target, obj) => {
       }
     })
     .catch((error) => {
-      console.log(target, error);
       dispatch(failPost(target, error));
     });
   };

@@ -7,6 +7,7 @@ import available from './get/data-reducer';
 import bulkPermission from './put/bulk-permission-reducer';
 import manage from './post/project-manage-reducer';
 import post from './post/reducer';
+import protocol from './get/protocol-reducer';
 import put from './put/reducer';
 import searchUser from './get/search-user-reducer';
 import selected from './set/index-reducer';
@@ -19,6 +20,7 @@ const App = combineReducers({
   bulkPermission,
   manage,
   post,
+  protocol,
   put,
   routing: routerReducer,
   searchUser,

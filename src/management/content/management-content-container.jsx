@@ -6,14 +6,19 @@ import ManagementContent from './management-content';
 import { resetPost } from '../../state/post/actions';
 import { resetPut } from '../../state/put/actions';
 
+const resetBooleans = {
+  create: false,
+  edit: false,
+  manage: false,
+  protocol: false,
+};
+
 class ManagementContentContainer extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      createBoolean: false,
-      editBoolean: false,
+      menuBooleans: Object.assign({}, resetBooleans),
       item: {},
-      manageBoolean: false,
     };
   }
   componentWillReceiveProps(nextProps) {
@@ -24,8 +29,8 @@ class ManagementContentContainer extends React.Component {
       this.setState({ item });
     }
     if (selected && selected !== this.props.selected) {
-      if (this.state.createBoolean) {
-        this.setState({ createBoolean: false });
+      if (this.state.menuBooleans.create) {
+        this.setState({ menuBooleans: resetBooleans });
       }
     }
     if (activeLevel !== this.props.activeLevel) {
@@ -33,33 +38,48 @@ class ManagementContentContainer extends React.Component {
     }
   }
   cancelMenuAction = () => {
-    this.setState({
-      createBoolean: false,
-      editBoolean: false,
-      manageBoolean: false,
-    });
+    this.setState({ menuBooleans: resetBooleans });
   }
   createMenuAction = () => {
     this.props.resetPost();
     this.setState({
-      createBoolean: true,
-      editBoolean: false,
-      manageBoolean: false,
+      menuBooleans: {
+        create: true,
+        edit: false,
+        manage: false,
+        protocol: false,
+      },
     });
   }
   editMenuAction = () => {
     this.props.resetPut(this.state.item._id);
     this.setState({
-      createBoolean: false,
-      editBoolean: true,
-      manageBoolean: false,
+      menuBooleans: {
+        create: false,
+        edit: true,
+        manage: false,
+        protocol: false,
+      },
     });
   }
   manageMenuAction = () => {
     this.setState({
-      createBoolean: false,
-      editBoolean: false,
-      manageBoolean: true,
+      menuBooleans: {
+        create: false,
+        edit: false,
+        manage: true,
+        protocol: false,
+      },
+    });
+  }
+  protocolMenuAction = () => {
+    this.setState({
+      menuBooleans: {
+        create: false,
+        edit: false,
+        manage: false,
+        protocol: true,
+      },
     });
   }
   top = () => {
@@ -77,14 +97,13 @@ class ManagementContentContainer extends React.Component {
           activeLevel={ this.props.activeLevel }
           availableLength={ this.props.available[this.props.activeLevel].items.length }
           cancelMenuAction={ this.cancelMenuAction }
-          createBoolean={ this.state.createBoolean }
-          editBoolean={ this.state.editBoolean }
+          menuBoolean={ this.state.menuBooleans }
           item={ this.state.item }
-          manageBoolean={ this.state.manageBoolean }
           menuActions={ {
             create: this.createMenuAction,
             edit: this.editMenuAction,
             manage: this.manageMenuAction,
+            protocol: this.protocolMenuAction,
           } }
           selected={ this.props.selected }
           top={ this.top }

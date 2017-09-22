@@ -45,6 +45,13 @@ class ManagementMenu extends React.Component {
                 primaryText={ [<FontAwesome key="manage" name="user-plus" />, ' Manage ', this.props.activeLevel] }
               />
             }
+            { this.props.activeLevel === 'experiment' &&
+              <MenuItem
+                key="protocol"
+                onClick={ this.props.protocolMenuAction }
+                primaryText={ [<FontAwesome key="protocol" name="file-text-o" />, ' Manage protocols '] }
+              />
+            }
             { this.props.selected &&
               <MenuItem
                 key="edit"
@@ -81,6 +88,7 @@ ManagementMenu.propTypes = {
       alternateTextColor2: PropTypes.string,
     }),
   }).isRequired,
+  protocolMenuAction: PropTypes.func.isRequired,
   selected: PropTypes.number,
   showList: PropTypes.bool.isRequired,
   showManagementList: PropTypes.func.isRequired,

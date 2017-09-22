@@ -6,9 +6,9 @@ import HelpIcon from 'material-ui/svg-icons/action/help';
 import MenuItem from 'material-ui/MenuItem';
 import muiThemeable from 'material-ui/styles/muiThemeable';
 import PropTypes from 'prop-types';
-import TextField from 'material-ui/TextField';
 import React from 'react';
 import SelectField from 'material-ui/SelectField';
+import TextField from 'material-ui/TextField';
 
 import FieldsScreen from './forms/fields-screen';
 import { uppercaseFirst } from '../../../helpers/helpers';

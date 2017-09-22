@@ -2,35 +2,43 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import React from 'react';
 
+import BlankStateExperiment from './forms/blank-state-experiment';
 import BlankStateProject from './forms/blank-state-project';
 import BlankStateScreen from './forms/blank-state-screen';
 import CreateContent from './create-content';
+import FieldsExperiment from './forms/fields-experiment';
 import FieldsProject from './forms/fields-project';
 import FieldsScreen from './forms/fields-screen';
+import FormatExperiment from './forms/form-submission-experiment';
 import FormatProject from './forms/form-submission-project';
 import FormatScreen from './forms/form-submission-screen';
 import { objectEmpty } from '../../../helpers/helpers';
 import { resetPost, submitPost } from '../../../state/post/actions';
 import { setIndex } from '../../../state/set/index-actions';
+import ValidateFieldExperiment from './forms/validate-field-experiment';
 import ValidateFieldProject from './forms/validate-field-project';
 import ValidateFieldScreen from './forms/validate-field-screen';
 
 const BlankState = {
+  experiment: BlankStateExperiment,
   project: BlankStateProject,
   screen: BlankStateScreen,
 };
 
 const Fields = {
+  experiment: FieldsExperiment,
   project: FieldsProject,
   screen: FieldsScreen,
 };
 
 const FormSubmission = {
+  experiment: FormatExperiment,
   project: FormatProject,
   screen: FormatScreen,
 };
 
 const ValidateField = {
+  experiment: ValidateFieldExperiment,
   project: ValidateFieldProject,
   screen: ValidateFieldScreen,
 };

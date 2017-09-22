@@ -28,6 +28,10 @@ class ManagementMenuContent extends React.Component {
     this.hideManagementList();
     this.props.menuActions.manage();
   }
+  protocolMenuAction = () => {
+    this.hideManagementList();
+    this.props.menuActions.protocol();
+  }
   showManagementList = (event) => {
     this.setState({
       anchorEl: event.currentTarget,
@@ -43,6 +47,7 @@ class ManagementMenuContent extends React.Component {
         editMenuAction={ this.editMenuAction }
         hideManagementList={ this.hideManagementList }
         manageMenuAction={ this.manageMenuAction }
+        protocolMenuAction={ this.protocolMenuAction }
         selected={ this.props.selected }
         showList={ this.state.showList }
         showManagementList={ this.showManagementList }
@@ -61,6 +66,7 @@ ManagementMenuContent.propTypes = {
     create: PropTypes.func,
     edit: PropTypes.func,
     manage: PropTypes.func,
+    protocol: PropTypes.func,
   }).isRequired,
   selected: PropTypes.number,
 };

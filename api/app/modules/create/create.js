@@ -3,6 +3,11 @@ const counter = require('../helpers/counter');
 const validate = require('../validation/validation');
 
 const Create = {
+  experiment: (obj) => {
+    return new Promise(() => {
+      console.log(obj);
+    });
+  },
   project: (obj) => {
     return new Promise((resolve) => {
       let objCreate = {};
@@ -37,6 +42,11 @@ const Create = {
           });
         })
       ;
+    });
+  },
+  protocol: (obj) => {
+    return new Promise(() => {
+      console.log(obj);
     });
   },
   screen: (obj) => {

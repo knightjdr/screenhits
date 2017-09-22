@@ -6,6 +6,7 @@ import React from 'react';
 import { Scrollbars } from 'react-custom-scrollbars';
 
 import ActionButtons from '../../../action-buttons/action-buttons-container';
+import CreateExperiment from './create-experiment';
 import CreateProject from './create-project';
 import CreateScreen from './create-screen';
 import Notice from '../../../messages/notice/notice';
@@ -39,6 +40,17 @@ class CreateContent extends React.Component {
           }
           { this.props.activeLevel === 'screen' ?
             <CreateScreen
+              dialog={ this.props.dialog }
+              dialogOpen={ this.props.dialogOpen }
+              errors={ this.props.errors }
+              formData={ this.props.formData }
+              inputChange={ this.props.inputChange }
+              inputWidth={ this.props.inputWidth }
+            />
+              : null
+          }
+          { this.props.activeLevel === 'experiment' ?
+            <CreateExperiment
               dialog={ this.props.dialog }
               dialogOpen={ this.props.dialogOpen }
               errors={ this.props.errors }
