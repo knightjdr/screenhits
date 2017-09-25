@@ -31,8 +31,8 @@ const available = {
     let queryObj;
     if (target === 'project') {
       const queryArr = [
-        { 'creator-email': email },
-        { 'owner-email': email },
+        { creatorEmail: email },
+        { ownerEmail: email },
         { $and: [
           { lab },
           {
@@ -48,6 +48,8 @@ const available = {
         },
       ];
       queryObj = { $or: queryArr };
+    } else if (target === 'protocol') {
+      queryObj = {};
     } else {
       queryObj = { group: filters };
     }

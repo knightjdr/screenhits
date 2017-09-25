@@ -1,5 +1,6 @@
 const BlankState = {
   formData: {
+    comment: '',
     concentration: '',
     description: '',
     name: '',

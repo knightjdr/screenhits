@@ -8,15 +8,15 @@ const Permission = {
     return new Promise((resolve) => {
       validate.type(permission)
         .then(() => {
-          return query.get('project', { _id: Number(_id) }, { _id: 0, lab: 1, 'user-permission': 1 }, 'findOne');
+          return query.get('project', { _id: Number(_id) }, { _id: 0, lab: 1, userPermission: 1 }, 'findOne');
         })
         .then((document) => {
-          const userPermission = permissionUpdate[permission](document.lab, document['user-permission']);
+          const userPermission = permissionUpdate[permission](document.lab, document.userPermission);
           return update.insert('project',
             { _id },
             { $set: {
               permission,
-              'user-permission': userPermission,
+              userPermission,
             },
             }
           );

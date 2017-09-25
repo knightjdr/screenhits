@@ -8,14 +8,17 @@ const validate = {
     return new Promise((resolve, reject) => {
       const validateObj = obj;
       if (
-        !validateObj['creator-email'] ||
-        !validators.email(validateObj['creator-email']) ||
-        !validateObj['owner-email'] ||
-        !validators.email(validateObj['owner-email'])
+        !validateObj.creatorEmail ||
+        !validators.email(validateObj.creatorEmail) ||
+        !validateObj.ownerEmail ||
+        !validators.email(validateObj.ownerEmail)
       ) {
         reject('invalid email');
       }
-      if (!validateObj['creator-name'] || !validateObj['owner-name']) {
+      if (
+        !validateObj.creatorName ||
+        !validateObj.ownerName
+      ) {
         reject('missing user name');
       }
       if (!validateObj.description) {
@@ -35,16 +38,35 @@ const validate = {
       resolve(validateObj);
     });
   },
+  protocol: (obj, dateType) => {
+    return new Promise((resolve, reject) => {
+      const validateObj = obj;
+      if (
+        !validateObj.creatorEmail ||
+        !validators.email(validateObj.creatorEmail)
+      ) {
+        reject('invalid email');
+      }
+      if (!validateObj.creatorName) {
+        reject('missing user name');
+      }
+      if (validateObj.target) {
+        delete validateObj.target;
+      }
+      validateObj[dateType] = moment().format('MMMM Do YYYY, h:mm a');
+      resolve(validateObj);
+    });
+  },
   screen: (obj, dateType, creation = true) => {
     return new Promise((resolve, reject) => {
       const validateObj = obj;
       if (
-        !validateObj['creator-email'] ||
-        !validators.email(validateObj['creator-email'])
+        !validateObj.creatorEmail ||
+        !validators.email(validateObj.creatorEmail)
       ) {
         reject('invalid email');
       }
-      if (!validateObj['creator-name']) {
+      if (!validateObj.creatorName) {
         reject('missing user name');
       }
       if (!validateObj.cell) {

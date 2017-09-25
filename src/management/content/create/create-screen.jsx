@@ -48,6 +48,9 @@ class CreateScreen extends React.Component {
       />,
     ]);
   }
+  inputChangeComment = (e) => {
+    this.props.inputChange('comment', e.target.value);
+  }
   inputChangeCondition = (e) => {
     this.props.inputChange('condition', e.target.value);
   }
@@ -89,12 +92,12 @@ class CreateScreen extends React.Component {
           />
           <TextField
             errorText={ this.props.errors.description }
-            floatingLabelText="Project description"
+            floatingLabelText="Screen description"
             fullWidth={ true }
             multiLine={ true }
             onChange={ this.inputChangeDescription }
             rows={ 1 }
-            rowsMax={ 4 }
+            rowsMax={ 5 }
             style={ inputStyle }
             value={ this.props.formData.description }
           />
@@ -215,6 +218,16 @@ class CreateScreen extends React.Component {
               );
             })
           }
+          <TextField
+            floatingLabelText="Comments (optional)"
+            fullWidth={ true }
+            multiLine={ true }
+            onChange={ this.inputChangeComment }
+            rows={ 1 }
+            rowsMax={ 5 }
+            style={ inputStyle }
+            value={ this.props.formData.comment }
+          />
         </div>
         <Dialog
           actions={ this.dialogClose() }
@@ -249,6 +262,7 @@ CreateScreen.propTypes = {
   }).isRequired,
   formData: PropTypes.shape({
     cell: PropTypes.string,
+    comment: PropTypes.string,
     condition: PropTypes.string,
     description: PropTypes.string,
     name: PropTypes.string,

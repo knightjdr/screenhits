@@ -44,6 +44,9 @@ class CreateExperiment extends React.Component {
       />,
     ]);
   }
+  inputChangeComment = (e) => {
+    this.props.inputChange('comment', e.target.value);
+  }
   inputChangeConcentration = (e) => {
     this.props.inputChange('concentration', e.target.value);
   }
@@ -198,6 +201,16 @@ class CreateExperiment extends React.Component {
               />
             </IconButton>
           </div>
+          <TextField
+            floatingLabelText="Comments (optional)"
+            fullWidth={ true }
+            multiLine={ true }
+            onChange={ this.inputChangeComment }
+            rows={ 1 }
+            rowsMax={ 5 }
+            style={ inputStyle }
+            value={ this.props.formData.comment }
+          />
         </div>
         <Dialog
           actions={ this.dialogClose() }
@@ -226,6 +239,7 @@ CreateExperiment.propTypes = {
     name: PropTypes.string,
   }).isRequired,
   formData: PropTypes.shape({
+    comment: PropTypes.string,
     concentration: PropTypes.string,
     description: PropTypes.string,
     name: PropTypes.string,

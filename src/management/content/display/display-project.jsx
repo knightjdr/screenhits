@@ -97,9 +97,46 @@ class DisplayProject extends React.Component {
             multiLine={ true }
             onChange={ (e) => { this.props.inputChange('description', e.target.value); } }
             rows={ 1 }
-            rowsMax={ 2 }
+            rowsMax={ 5 }
             style={ inputStyle }
             value={ this.props.item.description }
+          />
+        }
+        { !this.props.edit ?
+          this.props.item.comment &&
+          <div
+            style={ elementContainerStyle }
+          >
+            <div
+              style={ Object.assign(
+                {},
+                elementKeyStyle,
+                {
+                  backgroundColor: this.props.muiTheme.palette.keyColor,
+                  border: `1px solid ${this.props.muiTheme.palette.keyColorBorder}`,
+                },
+              ) }
+            >
+              <span>
+                Comments:
+              </span>
+            </div>
+            <div
+              style={ elementValueStyle }
+            >
+              { this.props.item.comment }
+            </div>
+          </div>
+          :
+          <TextField
+            floatingLabelText="Comments (optional)"
+            fullWidth={ true }
+            multiLine={ true }
+            onChange={ (e) => { this.props.inputChange('comment', e.target.value); } }
+            rows={ 1 }
+            rowsMax={ 5 }
+            style={ inputStyle }
+            value={ this.props.item.comment }
           />
         }
         { !this.props.edit &&
@@ -123,7 +160,7 @@ class DisplayProject extends React.Component {
             <div
               style={ elementValueStyle }
             >
-              { this.props.item['creator-name'] }
+              { this.props.item.creatorName }
             </div>
           </div>
         }
@@ -148,7 +185,7 @@ class DisplayProject extends React.Component {
             <div
               style={ elementValueStyle }
             >
-              { this.props.item['owner-name'] }
+              { this.props.item.ownerName }
             </div>
           </div>
         }
@@ -173,7 +210,7 @@ class DisplayProject extends React.Component {
             <div
               style={ elementValueStyle }
             >
-              { this.props.item['creation-date']}
+              { this.props.item.creationDate}
             </div>
           </div>
         }
@@ -192,16 +229,17 @@ DisplayProject.propTypes = {
   inputChange: PropTypes.func.isRequired,
   item: PropTypes.shape({
     _id: PropTypes.number,
-    'creator-email': PropTypes.string,
-    'creator-name': PropTypes.string,
+    comment: PropTypes.string,
+    creatorEmail: PropTypes.string,
+    creatorName: PropTypes.string,
     description: PropTypes.string,
     lab: PropTypes.string,
     name: PropTypes.string,
-    'owner-email': PropTypes.string,
-    'owner-name': PropTypes.string,
+    ownerEmail: PropTypes.string,
+    ownerName: PropTypes.string,
     permission: PropTypes.string,
-    'creation-date': PropTypes.string,
-    'update-date': PropTypes.string,
+    creationDate: PropTypes.string,
+    updateDate: PropTypes.string,
   }).isRequired,
   muiTheme: PropTypes.shape({
     palette: PropTypes.shape({

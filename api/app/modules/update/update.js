@@ -7,7 +7,7 @@ const Update = {
     return new Promise((resolve) => {
       const id = obj._id;
       const target = obj.target;
-      validate[target](obj, 'update-date', false)
+      validate[target](obj, 'updateDate', false)
         .then((newObj) => {
           return update.insert(target, { _id: id }, newObj);
         })

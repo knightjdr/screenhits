@@ -141,16 +141,16 @@ DisplayContent.propTypes = {
   inputWidth: PropTypes.number.isRequired,
   item: PropTypes.shape({
     _id: PropTypes.number,
-    'creator-email': PropTypes.string,
-    'creator-name': PropTypes.string,
+    creatorEmail: PropTypes.string,
+    creatorName: PropTypes.string,
     description: PropTypes.string,
     lab: PropTypes.string,
     name: PropTypes.string,
-    'owner-email': PropTypes.string,
-    'owner-name': PropTypes.string,
+    ownerEmail: PropTypes.string,
+    ownerName: PropTypes.string,
     permission: PropTypes.string,
-    'creation-date': PropTypes.string,
-    'update-date': PropTypes.string,
+    creationDate: PropTypes.string,
+    updateDate: PropTypes.string,
   }).isRequired,
   muiTheme: PropTypes.shape({
     palette: PropTypes.shape({

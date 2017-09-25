@@ -169,7 +169,7 @@ class CreateContentContainer extends React.Component {
     } else {
       const submitObj = FormSubmission[this.props.activeLevel](
         this.state.formData,
-        this.props,
+        this.props.user,
         this.props.selected,
       );
       this.props.create(this.props.activeLevel, submitObj);
@@ -207,6 +207,11 @@ CreateContentContainer.defaultProps = {
     isSubmitted: false,
     message: null,
   },
+  user: {
+    email: null,
+    lab: null,
+    name: null,
+  },
 };
 
 CreateContentContainer.propTypes = {
@@ -227,6 +232,11 @@ CreateContentContainer.propTypes = {
     screen: PropTypes.number,
   }).isRequired,
   setIndex: PropTypes.func.isRequired,
+  user: PropTypes.shape({
+    email: PropTypes.string,
+    lab: PropTypes.string,
+    name: PropTypes.string,
+  }),
 };
 
 const mapDispatchToProps = (dispatch) => {

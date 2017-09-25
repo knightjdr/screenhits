@@ -1,6 +1,7 @@
 const BlankState = {
   formData: {
     cell: '',
+    comment: '',
     condition: '',
     description: '',
     name: '',

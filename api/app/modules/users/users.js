@@ -19,15 +19,15 @@ const Users = {
       let userExceptions = [];
       query.get('project', { _id: Number(_id) }, {}, 'findOne')
         .then((document) => {
-          responseObj.clientResponse['creator-email'] = document['creator-email'];
-          responseObj.clientResponse['creator-name'] = document['creator-name'];
-          responseObj.clientResponse['owner-email'] = document['owner-email'];
-          responseObj.clientResponse['owner-name'] = document['owner-name'];
+          responseObj.clientResponse.creatorEmail = document.creatorEmail;
+          responseObj.clientResponse.creatorName = document.creatorName;
+          responseObj.clientResponse.ownerEmail = document.ownerEmail;
+          responseObj.clientResponse.ownerName = document.ownerName;
           if (
-            document['user-permission'] &&
-            document['user-permission'].length > 0
+            document.userPermission &&
+            document.userPermission.length > 0
           ) {
-            userExceptions = document['user-permission'];
+            userExceptions = document.userPermission;
           }
           return permission === 'n' ? [] :
             query.get(
@@ -47,7 +47,7 @@ const Users = {
             lab,
             users,
             userExceptions,
-            responseObj.clientResponse['owner-email']
+            responseObj.clientResponse.ownerEmail
           );
           resolve(responseObj);
         })
@@ -94,7 +94,7 @@ const Users = {
             const ownerIndex = updateObj.findIndex((obj) => { return obj.permission === 'o'; });
             updateObj.splice(ownerIndex, 1);
             const insertObj = {};
-            insertObj['user-permission'] = updateObj;
+            insertObj.userPermission = updateObj;
             return update.insert('project', { _id }, { $set: insertObj });
           })
           .then(() => {
@@ -123,11 +123,11 @@ const Users = {
     return new Promise((resolve) => {
       validate.userArray(users)
         .then(() => {
-          return query.get('project', { _id: Number(_id) }, { _id: 0, 'user-permission': 1 }, 'findOne');
+          return query.get('project', { _id: Number(_id) }, { _id: 0, userPermission: 1 }, 'findOne');
         })
         .then((document) => {
           const updateInfo = owner.check(users);
-          const userPermission = document['user-permission'];
+          const userPermission = document.userPermission;
           updateInfo.arr.forEach((user) => {
             const index = userPermission.findIndex((obj) => { return obj.email === user.email; });
             if (index > -1) {
@@ -137,8 +137,8 @@ const Users = {
           });
           const insertObj = {};
           if (updateInfo.owner) {
-            insertObj['owner-email'] = updateInfo.owner.email;
-            insertObj['owner-name'] = updateInfo.owner.name;
+            insertObj.ownerEmail = updateInfo.owner.email;
+            insertObj.ownerName = updateInfo.owner.name;
             const ownerIndex = userPermission.findIndex((obj) => {
               return obj.email === updateInfo.owner.email;
             });
@@ -146,7 +146,7 @@ const Users = {
               userPermission.splice(ownerIndex, 1);
             }
           }
-          insertObj['user-permission'] = userPermission;
+          insertObj.userPermission = userPermission;
           return update.insert('project', { _id }, { $set: insertObj });
         })
         .then(() => {

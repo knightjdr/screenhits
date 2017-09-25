@@ -52,7 +52,6 @@ const routes = {
     app.post('/management', auth.validate, (req, res) => {
       create[req.body.target](req.body)
         .then((response) => {
-          console.log(response);
           routes.response(res, response);
         })
       ;

@@ -12,6 +12,12 @@ const Available = (state = {
     items: [],
     message: null,
   },
+  protocol: {
+    didInvalidate: false,
+    isFetching: false,
+    items: [],
+    message: null,
+  },
   project: {
     didInvalidate: false,
     isFetching: false,

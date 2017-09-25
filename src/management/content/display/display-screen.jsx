@@ -357,6 +357,43 @@ class DisplayScreen extends React.Component {
               })
             )
         }
+        { !this.props.edit ?
+          this.props.item.comment &&
+          <div
+            style={ elementContainerStyle }
+          >
+            <div
+              style={ Object.assign(
+                {},
+                elementKeyStyle,
+                {
+                  backgroundColor: this.props.muiTheme.palette.keyColor,
+                  border: `1px solid ${this.props.muiTheme.palette.keyColorBorder}`,
+                },
+              ) }
+            >
+              <span>
+                Comments:
+              </span>
+            </div>
+            <div
+              style={ elementValueStyle }
+            >
+              { this.props.item.comment }
+            </div>
+          </div>
+          :
+          <TextField
+            floatingLabelText="Comments (optional)"
+            fullWidth={ true }
+            multiLine={ true }
+            onChange={ (e) => { this.props.inputChange('comment', e.target.value); } }
+            rows={ 1 }
+            rowsMax={ 5 }
+            style={ inputStyle }
+            value={ this.props.item.comment }
+          />
+        }
         { !this.props.edit &&
           <div
             style={ elementContainerStyle }
@@ -378,7 +415,7 @@ class DisplayScreen extends React.Component {
             <div
               style={ elementValueStyle }
             >
-              { this.props.item['creator-name'] }
+              { this.props.item.creatorName }
             </div>
           </div>
         }
@@ -403,7 +440,7 @@ class DisplayScreen extends React.Component {
             <div
               style={ elementValueStyle }
             >
-              { this.props.item['creation-date']}
+              { this.props.item.creationDate}
             </div>
           </div>
         }
@@ -427,16 +464,17 @@ DisplayScreen.propTypes = {
   item: PropTypes.shape({
     _id: PropTypes.number,
     cell: PropTypes.string,
+    comment: PropTypes.string,
     condition: PropTypes.string,
-    'creator-email': PropTypes.string,
-    'creator-name': PropTypes.string,
+    creatorEmail: PropTypes.string,
+    creatorName: PropTypes.string,
     description: PropTypes.string,
     name: PropTypes.string,
     other: PropTypes.shape({}),
     species: PropTypes.string,
     type: PropTypes.string,
-    'creation-date': PropTypes.string,
-    'update-date': PropTypes.string,
+    creationDate: PropTypes.string,
+    updateDate: PropTypes.string,
   }).isRequired,
   muiTheme: PropTypes.shape({
     palette: PropTypes.shape({

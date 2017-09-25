@@ -11,14 +11,14 @@ const Create = {
   project: (obj) => {
     return new Promise((resolve) => {
       let objCreate = {};
-      validate.project(obj, 'creation-date')
+      validate.project(obj, 'creationDate')
         .then((newObj) => {
           objCreate = newObj;
           return counter.get('project');
         })
         .then((sequence) => {
           objCreate._id = sequence;
-          objCreate['user-permission'] = [];
+          objCreate.userPermission = [];
           return create.insert('project', objCreate);
         })
         .then(() => {
@@ -45,14 +45,45 @@ const Create = {
     });
   },
   protocol: (obj) => {
-    return new Promise(() => {
+    return new Promise((resolve) => {
       console.log(obj);
+      let objCreate = {};
+      validate.protocol(obj, 'creationDate')
+        .then((newObj) => {
+          objCreate = newObj;
+          return counter.get('protocol');
+        })
+        .then((sequence) => {
+          objCreate._id = sequence;
+          return create.insert('protocol', objCreate);
+        })
+        .then(() => {
+          resolve({
+            status: 200,
+            clientResponse: {
+              status: 200,
+              _id: objCreate._id,
+              message: `Protocol successfully created with ID ${objCreate._id}`,
+              obj: objCreate,
+            },
+          });
+        })
+        .catch((error) => {
+          resolve({
+            status: 500,
+            clientResponse: {
+              status: 500,
+              message: `There was an error creating this protocol: ${error}`,
+            },
+          });
+        })
+      ;
     });
   },
   screen: (obj) => {
     return new Promise((resolve) => {
       let objCreate = {};
-      validate.screen(obj, 'creation-date')
+      validate.screen(obj, 'creationDate')
         .then((newObj) => {
           objCreate = newObj;
           return counter.get('screen');
