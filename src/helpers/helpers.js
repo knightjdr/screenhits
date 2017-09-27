@@ -4,11 +4,12 @@ import deepEqual from 'deep-equal';
 const customSort = {
   // sort an array of objects by a particular key's values in direction 'asc' or 'desc'
   arrayOfObjectByKey: (arr, key, direction) => {
+    const sortArray = JSON.parse(JSON.stringify(arr));
     if (!key) {
-      return arr;
+      return sortArray;
     }
     const returnValue = direction === 'asc' ? -1 : 1;
-    arr.sort((a, b) => {
+    sortArray.sort((a, b) => {
       const nameA = a[key].toUpperCase();
       const nameB = b[key].toUpperCase();
       if (nameA < nameB) {
@@ -19,7 +20,7 @@ const customSort = {
       }
       return 0;
     });
-    return arr;
+    return sortArray;
   },
 };
 

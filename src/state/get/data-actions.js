@@ -62,8 +62,12 @@ const getData = (target, filters, selected) => {
         dispatch(fillData(target, json.data));
         // this is so that data can be retrieved and a selected index set via a route.
         // See management-container.js for implementation
-        if (selected) {
-          dispatch(setIndex(target, selected));
+        if (
+          selected &&
+          target !== 'protocol'
+        ) {
+          const index = selected === -1 ? null : selected;
+          dispatch(setIndex(target, index));
         }
       } else {
         const error = `Status code: ${json.status}; ${json.message}`;

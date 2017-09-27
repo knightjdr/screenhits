@@ -23,9 +23,8 @@ export function requestPut(_id, target) {
   };
 }
 
-export function resetPut(_id, target) {
+export function resetPut(target) {
   return {
-    _id,
     target,
     type: 'RESET_PUT',
   };
@@ -63,14 +62,15 @@ const submitPut = (_id, obj, target) => {
     .then((json) => {
       if (json.status === 200) {
         dispatch(successPut(_id, json.message, target));
-        dispatch(getData(target, obj.group));
+        dispatch(getData(target, obj.group ? obj.group : {}));
       } else {
         const error = `Status code: ${json.status}; ${json.message}`;
         dispatch(failPut(_id, error, target));
       }
     })
     .catch((error) => {
-      dispatch(failPut(_id, error, target));
+      const writeError = typeof error !== 'string' ? 'unknown error' : error;
+      dispatch(failPut(_id, writeError, target));
     });
   };
 };

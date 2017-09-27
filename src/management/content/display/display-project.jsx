@@ -1,7 +1,21 @@
+import Dialog from 'material-ui/Dialog';
+import FlatButton from 'material-ui/FlatButton';
 import muiThemeable from 'material-ui/styles/muiThemeable';
 import PropTypes from 'prop-types';
 import React from 'react';
 import TextField from 'material-ui/TextField';
+
+import ActionButtons from '../../../action-buttons/action-buttons-container';
+
+const actionButtonStyle = {
+  float: 'right',
+  margin: '10px 10px 0px 0px',
+};
+
+const deleteContainer = {
+  height: 40,
+  width: '100%',
+};
 
 const elementContainerStyle = {
   alignItems: 'center',
@@ -25,6 +39,31 @@ const inputStyle = {
 };
 
 class DisplayProject extends React.Component {
+  confirmDeletion = () => {
+    return (
+    [
+      <FlatButton
+        backgroundColor={ this.props.muiTheme.palette.success }
+        hoverColor={ this.props.muiTheme.palette.successHover }
+        label="Confirm"
+        onTouchTap={ () => { this.props.deleteProject(this.props.project._id); } }
+      />,
+    ]);
+  }
+  dialogClose = () => {
+    return (
+    [
+      <FlatButton
+        backgroundColor={ this.props.muiTheme.palette.warning }
+        hoverColor={ this.props.muiTheme.palette.warningHover }
+        label="Close"
+        onTouchTap={ this.props.dialog.close }
+        style={ {
+          marginLeft: 10,
+        } }
+      />,
+    ]);
+  }
   render() {
     return (
       <div>
@@ -49,7 +88,7 @@ class DisplayProject extends React.Component {
             <div
               style={ elementValueStyle }
             >
-              { this.props.item.name }
+              { this.props.project.name }
             </div>
           </div>
           :
@@ -62,7 +101,7 @@ class DisplayProject extends React.Component {
             rows={ 1 }
             rowsMax={ 2 }
             style={ inputStyle }
-            value={ this.props.item.name }
+            value={ this.props.project.name }
           />
         }
         { !this.props.edit ?
@@ -86,7 +125,7 @@ class DisplayProject extends React.Component {
             <div
               style={ elementValueStyle }
             >
-              { this.props.item.description }
+              { this.props.project.description }
             </div>
           </div>
           :
@@ -99,11 +138,11 @@ class DisplayProject extends React.Component {
             rows={ 1 }
             rowsMax={ 5 }
             style={ inputStyle }
-            value={ this.props.item.description }
+            value={ this.props.project.description }
           />
         }
         { !this.props.edit ?
-          this.props.item.comment &&
+          this.props.project.comment &&
           <div
             style={ elementContainerStyle }
           >
@@ -124,7 +163,7 @@ class DisplayProject extends React.Component {
             <div
               style={ elementValueStyle }
             >
-              { this.props.item.comment }
+              { this.props.project.comment }
             </div>
           </div>
           :
@@ -136,7 +175,7 @@ class DisplayProject extends React.Component {
             rows={ 1 }
             rowsMax={ 5 }
             style={ inputStyle }
-            value={ this.props.item.comment }
+            value={ this.props.project.comment }
           />
         }
         { !this.props.edit &&
@@ -160,7 +199,7 @@ class DisplayProject extends React.Component {
             <div
               style={ elementValueStyle }
             >
-              { this.props.item.creatorName }
+              { this.props.project.creatorName }
             </div>
           </div>
         }
@@ -185,7 +224,7 @@ class DisplayProject extends React.Component {
             <div
               style={ elementValueStyle }
             >
-              { this.props.item.ownerName }
+              { this.props.project.ownerName }
             </div>
           </div>
         }
@@ -210,16 +249,54 @@ class DisplayProject extends React.Component {
             <div
               style={ elementValueStyle }
             >
-              { this.props.item.creationDate}
+              { this.props.project.creationDate}
             </div>
           </div>
         }
+        {
+          !this.props.edit &&
+          <div
+            style={ deleteContainer }
+          >
+            <div
+              style={ actionButtonStyle }
+            >
+              <ActionButtons
+                cancel={ {
+                  func: this.props.dialog.open,
+                  label: 'Delete',
+                  toolTipText: 'Delete project',
+                } }
+                idSuffix="delete-project"
+              />
+            </div>
+          </div>
+        }
+        <Dialog
+          actions={ [
+            this.confirmDeletion(),
+            this.dialogClose(),
+          ] }
+          modal={ false }
+          onRequestClose={ this.props.dialog.close }
+          open={ this.props.dialog.bool }
+          title="Confirmation"
+        >
+          This action will permanently delete the project (and all screens, experiments,
+          samples and analysis associated with it). Press confirm to proceed.
+        </Dialog>
       </div>
     );
   }
 }
 
 DisplayProject.propTypes = {
+  deleteProject: PropTypes.func.isRequired,
+  dialog: PropTypes.shape({
+    bool: PropTypes.bool,
+    close: PropTypes.func,
+    open: PropTypes.func,
+  }).isRequired,
   edit: PropTypes.bool.isRequired,
   errors: PropTypes.shape({
     description: PropTypes.string,
@@ -227,7 +304,7 @@ DisplayProject.propTypes = {
     permission: PropTypes.string,
   }).isRequired,
   inputChange: PropTypes.func.isRequired,
-  item: PropTypes.shape({
+  project: PropTypes.shape({
     _id: PropTypes.number,
     comment: PropTypes.string,
     creatorEmail: PropTypes.string,
@@ -245,6 +322,10 @@ DisplayProject.propTypes = {
     palette: PropTypes.shape({
       keyColor: PropTypes.string,
       keyColorBorder: PropTypes.string,
+      success: PropTypes.string,
+      successHover: PropTypes.string,
+      warning: PropTypes.string,
+      warningHover: PropTypes.string,
     }),
   }).isRequired,
 };

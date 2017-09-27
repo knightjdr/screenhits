@@ -12,6 +12,12 @@ import CreateScreen from './create-screen';
 import Notice from '../../../messages/notice/notice';
 import { uppercaseFirst } from '../../../helpers/helpers';
 
+const noticeContainer = {
+  marginTop: 10,
+  textAlign: 'center',
+  width: '100%',
+};
+
 class CreateContent extends React.Component {
   render() {
     return (
@@ -70,45 +76,36 @@ class CreateContent extends React.Component {
               <FontAwesome name="exclamation-triangle " /> There are errors in the form. Please correct before proceeding.
             </div>
           }
-          <div
-            style={ {
-              marginBottom: 35,
-              marginTop: 15,
+          <ActionButtons
+            cancel={ {
+              func: this.props.cancelForm,
+              toolTipText: `Cancel ${this.props.activeLevel} creation`,
             } }
+            idSuffix={ `create-${this.props.activeLevel}` }
+            reset={ {
+              func: this.props.resetForm,
+              toolTipText: 'Reset the form',
+            } }
+            update={ {
+              func: this.props.submitForm,
+              label: 'Create',
+            } }
+          />
+          <div
+            style={ noticeContainer }
           >
-            <ActionButtons
-              cancel={ {
-                func: this.props.cancelForm,
-                toolTipText: `Cancel ${this.props.activeLevel} creation`,
-              } }
-              idSuffix={ `create-${this.props.activeLevel}` }
-              reset={ {
-                func: this.props.resetForm,
-                toolTipText: 'Reset the form',
-              } }
-              update={ {
-                func: this.props.submitForm,
-                label: 'Create',
-              } }
+            <Notice
+              fail={ this.props.postState[this.props.activeLevel].didSubmitFail }
+              failMessage={ `${uppercaseFirst(this.props.activeLevel)} creation failed.
+              ${this.props.postState[this.props.activeLevel].message}.` }
+              label="create-notification"
+              submit={ this.props.postState[this.props.activeLevel].isSubmitted }
+              submitMessage={ `${uppercaseFirst(this.props.activeLevel)} submitted` }
+              succeed={ this.props.postState[this.props.activeLevel].message &&
+                !this.props.postState[this.props.activeLevel].didSubmitFail
+              }
+              succeedMessage={ this.props.postState[this.props.activeLevel].message }
             />
-            <div
-              style={ {
-                margin: '10px 0px 0px 10px',
-              } }
-            >
-              <Notice
-                fail={ this.props.postState[this.props.activeLevel].didSubmitFail }
-                failMessage={ `${uppercaseFirst(this.props.activeLevel)} creation failed.
-                ${this.props.postState[this.props.activeLevel].message}.` }
-                label="create-notification"
-                submit={ this.props.postState[this.props.activeLevel].isSubmitted }
-                submitMessage={ `${uppercaseFirst(this.props.activeLevel)} submitted` }
-                succeed={ this.props.postState[this.props.activeLevel].message &&
-                  !this.props.postState[this.props.activeLevel].didSubmitFail
-                }
-                succeedMessage={ this.props.postState[this.props.activeLevel].message }
-              />
-            </div>
           </div>
         </Scrollbars>
       </Paper>

@@ -72,7 +72,7 @@ class CreateContentContainer extends React.Component {
     }
   }
   componentWillUnmount() {
-    window.addEventListener('resize', this.resize);
+    window.removeEventListener('resize', this.resize);
   }
   cancelForm = () => {
     this.props.cancelMenuAction();

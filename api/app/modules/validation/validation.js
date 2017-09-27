@@ -1,3 +1,4 @@
+const sort = require('../helpers/sort');
 const moment = require('moment');
 const validators = require('../helpers/validators');
 
@@ -53,6 +54,11 @@ const validate = {
       if (validateObj.target) {
         delete validateObj.target;
       }
+      // sort subsections by name
+      if (validateObj.subSections.length > 0) {
+        validateObj.subSections = sort.arrayOfObjectByKey(validateObj.subSections, 'name');
+      }
+      // add date
       validateObj[dateType] = moment().format('MMMM Do YYYY, h:mm a');
       resolve(validateObj);
     });

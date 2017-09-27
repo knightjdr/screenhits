@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import { connect } from 'react-redux';
 
 import DisplayScreen from './display-screen';
 import { objectEmpty } from '../../../helpers/helpers';
@@ -9,9 +10,30 @@ class DisplayScreenContainer extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      dialogBoolean: false,
       item: Object.assign({}, this.props.item),
       warning: null,
     };
+  }
+  deleteScreen = (_id) => {
+    this.dialogClose();
+    this.props.delete(
+      _id,
+      'screen',
+      {
+        project: this.props.selectedIndices.project,
+      },
+    );
+  }
+  dialogClose = () => {
+    this.setState({
+      dialogBoolean: false,
+    });
+  }
+  dialogOpen = () => {
+    this.setState({
+      dialogBoolean: true,
+    });
   }
   inputChange = (field, value) => {
     // check if field is valid and update errors object
@@ -29,17 +51,24 @@ class DisplayScreenContainer extends React.Component {
   render() {
     return (
       <DisplayScreen
+        deleteScreen={ this.deleteScreen }
+        dialog={ {
+          bool: this.state.dialogBoolean,
+          close: this.dialogClose,
+          open: this.dialogOpen,
+        } }
         edit={ this.props.edit }
         errors={ this.props.errors }
         inputChange={ this.inputChange }
         inputWidth={ this.props.inputWidth }
-        item={ this.state.item }
+        screen={ this.state.item }
       />
     );
   }
 }
 
 DisplayScreenContainer.propTypes = {
+  delete: PropTypes.func.isRequired,
   edit: PropTypes.bool.isRequired,
   errors: PropTypes.shape({
     description: PropTypes.string,
@@ -61,8 +90,24 @@ DisplayScreenContainer.propTypes = {
     creationDate: PropTypes.string,
     updateDate: PropTypes.string,
   }).isRequired,
+  selectedIndices: PropTypes.shape({
+    experiment: PropTypes.number,
+    project: PropTypes.number,
+    sample: PropTypes.number,
+    screen: PropTypes.number,
+  }).isRequired,
   updateErrors: PropTypes.func.isRequired,
   updateItem: PropTypes.func.isRequired,
 };
 
-export default DisplayScreenContainer;
+const mapStateToProps = (state) => {
+  return {
+    selectedIndices: state.selected,
+  };
+};
+
+const Container = connect(
+  mapStateToProps,
+)(DisplayScreenContainer);
+
+export default Container;

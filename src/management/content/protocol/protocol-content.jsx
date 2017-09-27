@@ -1,4 +1,5 @@
 import AddBoxIcon from 'material-ui/svg-icons/content/add-box';
+import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import FontAwesome from 'react-fontawesome';
 import IconButton from 'material-ui/IconButton';
@@ -14,13 +15,14 @@ import { Scrollbars } from 'react-custom-scrollbars';
 
 import ActionButtons from '../../../action-buttons/action-buttons-container';
 import Notice from '../../../messages/notice/notice';
+import { customSort } from '../../../helpers/helpers';
 
 const actionButtonStyle = {
   marginTop: 10,
 };
 
 const displayStyle = {
-  margin: '10px 0px 10px 0px',
+  margin: '10px 0px 0px 0px',
   padding: '5px 5px 5px 5px',
 };
 
@@ -40,6 +42,12 @@ const elementValueStyle = {
   marginLeft: 10,
 };
 
+const noticeContainer = {
+  marginTop: 10,
+  textAlign: 'center',
+  width: '100%',
+};
+
 const iconStyle = {
   marginTop: 25,
 };
@@ -54,19 +62,40 @@ const inputFullWidthStyle = {
   width: '98%',
 };
 
-const inputWithChildrenStyle = {
-  display: 'flex',
-  marginLeft: 4,
-  marginRight: 4,
-  width: 500,
-};
-
 const inputWithChildrenFullWidthStyle = {
   display: 'flex',
   width: '98%',
 };
 
 class ProtocolContent extends React.Component {
+  confirmDeletion = () => {
+    return (
+    [
+      <FlatButton
+        backgroundColor={ this.props.muiTheme.palette.success }
+        hoverColor={ this.props.muiTheme.palette.successHover }
+        label="Confirm"
+        onTouchTap={ () => { this.props.deleteProtocol(this.props.selectedProtocol); } }
+      />,
+    ]);
+  }
+  dialogClose = () => {
+    return (
+    [
+      <FlatButton
+        backgroundColor={ this.props.muiTheme.palette.warning }
+        hoverColor={ this.props.muiTheme.palette.warningHover }
+        label="Close"
+        onTouchTap={ this.props.dialog.close }
+        style={ {
+          marginLeft: 10,
+        } }
+      />,
+    ]);
+  }
+  inputChangeEditField = (e) => {
+    this.props.inputChangeEdit(e.target.value);
+  }
   inputChangeField = (e) => {
     this.props.inputChange('fieldName', e.target.value);
   }
@@ -96,7 +125,6 @@ class ProtocolContent extends React.Component {
           <div
             style={ {
               color: this.props.muiTheme.palette.alternateTextColor,
-              paddingBottom: 20,
             } }
           >
             { this.props.protocols.items.length > 0 ?
@@ -128,20 +156,25 @@ class ProtocolContent extends React.Component {
                   style={ inputStyle }
                   value={ this.props.selectedProtocol }
                 >
-                  { this.props.protocols.items.map((protocol) => {
-                    return (
-                      <MenuItem
-                        key={ protocol._id }
-                        value={ protocol._id }
-                        primaryText={ protocol.name }
-                      />
-                    );
-                  }) }
+                  { customSort.arrayOfObjectByKey(
+                      this.props.protocols.items,
+                      'name',
+                      'asc',
+                    ).map((protocol) => {
+                      return (
+                        <MenuItem
+                          key={ protocol._id }
+                          value={ protocol._id }
+                          primaryText={ protocol.name }
+                        />
+                      );
+                    })
+                  }
                 </SelectField>
               }
               <div
                 style={ {
-                  marginLeft: 10,
+                  marginLeft: 'auto',
                   paddingTop: 27,
                 } }
               >
@@ -157,6 +190,7 @@ class ProtocolContent extends React.Component {
               </div>
             </div>
             { this.props.display &&
+              this.props.protocols.items.length > 0 &&
               <div
                 style={ displayStyle }
               >
@@ -180,10 +214,10 @@ class ProtocolContent extends React.Component {
                   <div
                     style={ elementValueStyle }
                   >
-                    { this.props.protocols.items[this.props.selectedProtocol].name }
+                    { this.props.protocols.items[this.props.selectedProtocolIndex].name }
                   </div>
                 </div>
-                { this.props.protocols.items[this.props.selectedProtocol]
+                { this.props.protocols.items[this.props.selectedProtocolIndex]
                   .subSections.map((subsection) => {
                     return (
                       <div
@@ -228,6 +262,35 @@ class ProtocolContent extends React.Component {
                       color: this.props.muiTheme.palette.offWhite,
                     } }
                     onTouchTap={ this.props.changeEdit }
+                  />
+                  <ActionButtons
+                    cancel={ {
+                      func: this.props.dialog.open,
+                      label: 'Delete',
+                      toolTipText: 'Delete protocol',
+                    } }
+                    idSuffix="delete-protocol"
+                  />
+                </div>
+                <div
+                  style={ noticeContainer }
+                >
+                  <Notice
+                    label="display-notification"
+                    succeed={ this.props.postState.message &&
+                      !this.props.postState.didSubmitFail
+                    }
+                    succeedMessage={ this.props.postState.message }
+                  />
+                  <Notice
+                    fail={ this.props.editMessages.didPutFail }
+                    failMessage={ `Protocol edit failed. ${this.props.editMessages.message}` }
+                    label="edit-notification"
+                    submit={ this.props.editMessages.isPut }
+                    submitMessage={ 'Protocol edit submitted' }
+                    succeed={ this.props.editMessages.message &&
+                      !this.props.editMessages.didPutFail }
+                    succeedMessage={ this.props.editMessages.message }
                   />
                 </div>
               </div>
@@ -283,6 +346,29 @@ class ProtocolContent extends React.Component {
                   })
                 }
                 <div
+                  style={ inputWithChildrenFullWidthStyle }
+                >
+                  <TextField
+                    errorText={ this.props.editFieldError }
+                    onChange={ this.inputChangeEditField }
+                    floatingLabelText="New subsection name"
+                    fullWidth={ true }
+                    value={ this.props.editFieldName }
+                  />
+                  <IconButton
+                    onTouchTap={ () => {
+                      this.props.addFieldEdit(this.props.editFieldName);
+                    } }
+                    style={ iconStyle }
+                    tooltip="Add field"
+                    tooltipPosition="top-center"
+                  >
+                    <AddBoxIcon
+                      color={ this.props.muiTheme.palette.alternateTextColor }
+                    />
+                  </IconButton>
+                </div>
+                <div
                   style={ actionButtonStyle }
                 >
                   <ActionButtons
@@ -332,7 +418,7 @@ class ProtocolContent extends React.Component {
                     onChange={ this.inputChangeName }
                     rows={ 1 }
                     rowsMax={ 2 }
-                    style={ inputStyle }
+                    style={ inputFullWidthStyle }
                     value={ this.props.protocolName }
                   />
                   {
@@ -340,7 +426,7 @@ class ProtocolContent extends React.Component {
                       return (
                         <div
                           key={ `container-${field.name}` }
-                          style={ inputWithChildrenStyle }
+                          style={ inputWithChildrenFullWidthStyle }
                         >
                           <TextField
                             floatingLabelText={ field.name }
@@ -350,7 +436,7 @@ class ProtocolContent extends React.Component {
                             onChange={ (e) => { this.inputChangeSubField(index, e.target.value); } }
                             rows={ 1 }
                             rowsMax={ 5 }
-                            style={ inputStyle }
+                            style={ inputFullWidthStyle }
                             value={ field.content }
                           />
                           <IconButton
@@ -372,7 +458,7 @@ class ProtocolContent extends React.Component {
                   }
                 </div>
                 <div
-                  style={ inputWithChildrenStyle }
+                  style={ inputWithChildrenFullWidthStyle }
                 >
                   <TextField
                     onChange={ this.inputChangeField }
@@ -418,50 +504,95 @@ class ProtocolContent extends React.Component {
                       label: 'Create',
                     } }
                   />
-                  <div
-                    style={ {
-                      margin: '10px 0px 0px 10px',
-                    } }
-                  >
-                    <Notice
-                      fail={ this.props.postState.didSubmitFail }
-                      failMessage={ `Protocol creation failed. ${this.props.postState.message}.` }
-                      label="create-notification"
-                      submit={ this.props.postState.isSubmitted }
-                      submitMessage="Protocol submitted"
-                      succeed={ this.props.postState.message &&
-                        !this.props.postState.didSubmitFail
-                      }
-                      succeedMessage={ this.props.postState.message }
-                    />
-                  </div>
+                </div>
+                <div
+                  style={ noticeContainer }
+                >
+                  <Notice
+                    fail={ this.props.postState.didSubmitFail }
+                    failMessage={ `Protocol creation failed. ${this.props.postState.message}.` }
+                    label="create-notification"
+                    submit={ this.props.postState.isSubmitted }
+                    submitMessage="Protocol submitted"
+                    succeed={ this.props.postState.message &&
+                      !this.props.postState.didSubmitFail
+                    }
+                    succeedMessage={ this.props.postState.message }
+                  />
+                  <Notice
+                    fail={ this.props.deleteMessages.didDeleteFail }
+                    failMessage={ `Protocol deletion failed.
+                    ${this.props.deleteMessages.message}` }
+                    label="delete-notification"
+                    submit={ this.props.deleteMessages.isDelete }
+                    submitMessage="Protocol deletion requested"
+                    succeed={ this.props.deleteMessages.message &&
+                      !this.props.deleteMessages.didDeleteFail }
+                    succeedMessage={ this.props.deleteMessages.message }
+                  />
                 </div>
               </div>
             }
           </div>
         </Scrollbars>
+        <Dialog
+          actions={ [
+            this.confirmDeletion(),
+            this.dialogClose(),
+          ] }
+          modal={ false }
+          onRequestClose={ this.props.dialog.close }
+          open={ this.props.dialog.bool }
+          title="Confirmation"
+        >
+          This action will permanently delete the protocol. Press confirm to proceed.
+        </Dialog>
       </Paper>
     );
   }
 }
 
 ProtocolContent.defaultProps = {
+  editFieldError: '',
+  editFieldName: '',
   fieldError: '',
   fieldName: '',
   protocolName: '',
   selectedProtocol: null,
+  selectedProtocolIndex: null,
 };
 
 ProtocolContent.propTypes = {
   addField: PropTypes.func.isRequired,
+  addFieldEdit: PropTypes.func.isRequired,
   cancel: PropTypes.func.isRequired,
   cancelEdit: PropTypes.func.isRequired,
   changeNew: PropTypes.func.isRequired,
   changeEdit: PropTypes.func.isRequired,
   createProtocol: PropTypes.func.isRequired,
+  deleteMessages: PropTypes.shape({
+    _id: PropTypes.number,
+    didDeleteFail: PropTypes.bool,
+    message: PropTypes.string,
+    isDelete: PropTypes.bool,
+  }).isRequired,
+  deleteProtocol: PropTypes.func.isRequired,
+  dialog: PropTypes.shape({
+    bool: PropTypes.bool,
+    close: PropTypes.func,
+    open: PropTypes.func,
+  }).isRequired,
   display: PropTypes.bool.isRequired,
   edit: PropTypes.bool.isRequired,
   editChangeField: PropTypes.func.isRequired,
+  editFieldError: PropTypes.string,
+  editFieldName: PropTypes.string,
+  editMessages: PropTypes.shape({
+    _id: PropTypes.number,
+    didPutFail: PropTypes.bool,
+    message: PropTypes.string,
+    isPut: PropTypes.bool,
+  }).isRequired,
   editProtocol: PropTypes.shape({
     name: PropTypes.string,
     subSections: PropTypes.arrayOf(
@@ -480,6 +611,7 @@ ProtocolContent.propTypes = {
   fieldError: PropTypes.string,
   fieldName: PropTypes.string,
   inputChange: PropTypes.func.isRequired,
+  inputChangeEdit: PropTypes.func.isRequired,
   inputChangeSubField: PropTypes.func.isRequired,
   muiTheme: PropTypes.shape({
     palette: PropTypes.shape({
@@ -491,6 +623,10 @@ ProtocolContent.propTypes = {
       keyColor: PropTypes.string,
       keyColorBorder: PropTypes.string,
       offWhite: PropTypes.string,
+      success: PropTypes.string,
+      successHover: PropTypes.string,
+      warning: PropTypes.string,
+      warningHover: PropTypes.string,
     }),
   }).isRequired,
   new: PropTypes.bool.isRequired,
@@ -513,6 +649,7 @@ ProtocolContent.propTypes = {
   }).isRequired,
   removeField: PropTypes.func.isRequired,
   selectedProtocol: PropTypes.number,
+  selectedProtocolIndex: PropTypes.number,
   updateProtocol: PropTypes.func.isRequired,
 };
 

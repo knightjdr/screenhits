@@ -1,23 +1,20 @@
-import { connect } from 'react-redux';
+import deepEqual from 'deep-equal';
 import PropTypes from 'prop-types';
 import React from 'react';
+import { connect } from 'react-redux';
 
 import DisplayContent from './display-content';
 import Format from './format-edit';
+import ValidateField from '../create/validate-fields';
+import { setIndex } from '../../../state/set/index-actions';
+import { resetDelete, submitDelete } from '../../../state/delete/actions';
 import { resetPost } from '../../../state/post/actions';
 import { resetPut, submitPut } from '../../../state/put/actions';
-import ValidateField from '../create/validate-fields';
 
 class DisplayContentContainer extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      editMessages: {
-        didPutFail: false,
-        _id: null,
-        isPut: false,
-        message: null,
-      },
       errors: Format.blankError[this.props.activeLevel],
       inputWidth: window.innerWidth >= 555 ? 500 : window.innerWidth - 55,
       originalItem: Object.assign({}, this.props.item),
@@ -27,7 +24,7 @@ class DisplayContentContainer extends React.Component {
         this.props.selected,
       ),
       reset: 0,
-      updateItem: Object.assign({}, this.props.item),
+      updateItem: JSON.parse(JSON.stringify(this.props.item)),
       warning: false,
     };
   }
@@ -35,47 +32,41 @@ class DisplayContentContainer extends React.Component {
     window.addEventListener('resize', this.resize);
   }
   componentWillReceiveProps(nextProps) {
-    const { activeLevel, item, putState, postState, selected } = nextProps;
-    // update item when store updates
-    this.setState({ originalItem: item });
-    // check for and update edit messages
-    const index = !putState[activeLevel] ?
-      -1
-      :
-      putState[activeLevel].findIndex((obj) => { return obj._id === selected; })
-    ;
-    const editMessages = index > -1 ?
-      Object.assign({}, putState[activeLevel][index])
-      : {
-        didPutFail: false,
-        _id: null,
-        isPut: false,
-        message: null,
-      }
-    ;
-    const success = this.state.editMessages.isPut &&
-      !editMessages.isPut
-      && !editMessages.didPutFail
-    ;
-    if (success) {
+    const { activeLevel, deleteState, edit, item, putState, postState, selected } = nextProps;
+    const newState = {};
+    // update item when store item updates
+    if (!deepEqual(item, this.props.item)) {
+      newState.originalItem = item;
+      newState.updateItem = JSON.parse(JSON.stringify(item));
+    }
+    // on successful delete
+    if (
+      this.props.deleteState[activeLevel].isDelete &&
+      !deleteState[activeLevel].isDelete &&
+      !deleteState[activeLevel].didDeleteFail
+    ) {
+      this.props.changeSelected(activeLevel, null);
+    }
+    // on successful edit
+    if (
+      this.props.putState[activeLevel].isPut &&
+      !putState[activeLevel].isPut &&
+      !putState[activeLevel].didPutFail
+    ) {
       this.props.cancelMenuAction();
     }
-    this.setState({ editMessages });
     // check for post messages
-    this.setState({
-      postMessage: this.setPostMessage(postState, activeLevel, selected),
-    });
-  }
-  componentWillUpdate() {
-    if (this.state.postMessage) {
-      this.props.postReset(this.props.activeLevel);
+    newState.postMessage = this.setPostMessage(postState, activeLevel, selected);
+    // when switching to edit mode
+    if (edit) {
+      this.resetMessages();
     }
+    // update state
+    this.setState(newState);
   }
   componentWillUnmount() {
     window.removeEventListener('resize', this.resize);
-    if (this.state.postMessage) {
-      this.props.postReset(this.props.activeLevel);
-    }
+    this.resetMessages();
   }
   setPostMessage = (postState, activeLevel, selected) => {
     return postState[activeLevel]._id === selected ?
@@ -85,10 +76,14 @@ class DisplayContentContainer extends React.Component {
     ;
   }
   cancel = () => {
-    this.props.putReset(this.props.item._id, this.props.activeLevel);
     this.props.cancelMenuAction();
   }
+  delete = (_id, type, group) => {
+    this.resetMessages();
+    this.props.delete(_id, type, group);
+  }
   reset = () => {
+    this.resetMessages();
     this.setState((prevState) => {
       return {
         errors: Format.blankError[this.props.activeLevel],
@@ -98,12 +93,24 @@ class DisplayContentContainer extends React.Component {
       };
     });
   }
+  resetMessages = () => {
+    if (this.props.deleteState[this.props.activeLevel].message) {
+      this.props.resetDelete(this.props.activeLevel);
+    }
+    if (this.props.postState[this.props.activeLevel].message) {
+      this.props.resetPost(this.props.activeLevel);
+    }
+    if (this.props.putState[this.props.activeLevel].message) {
+      this.props.resetPut(this.props.activeLevel);
+    }
+  }
   resize = () => {
     this.setState({
       inputWidth: window.innerWidth >= 555 ? 500 : window.innerWidth - 55,
     });
   }
   update = () => {
+    this.resetMessages();
     let error = false;
     const errors = {};
     Object.keys(this.state.updateItem).forEach((field) => {
@@ -119,7 +126,7 @@ class DisplayContentContainer extends React.Component {
     if (error) {
       this.setState({ errors, warning: true });
     } else {
-      this.props.update(this.props.item._id, this.props.activeLevel, this.state.updateItem);
+      this.props.update(this.props.item._id, this.state.updateItem, this.props.activeLevel);
     }
   }
   updateErrors = (errorObject, warning) => {
@@ -133,8 +140,10 @@ class DisplayContentContainer extends React.Component {
       <DisplayContent
         activeLevel={ this.props.activeLevel }
         cancel={ this.cancel }
+        delete={ this.delete }
+        deleteMessages={ this.props.deleteState[this.props.activeLevel] }
         edit={ this.props.edit }
-        editMessages={ this.state.editMessages }
+        editMessages={ this.props.putState[this.props.activeLevel] }
         errors={ this.state.errors }
         inputWidth={ this.state.inputWidth }
         item={ this.state.originalItem }
@@ -153,6 +162,40 @@ class DisplayContentContainer extends React.Component {
 DisplayContentContainer.propTypes = {
   activeLevel: PropTypes.string.isRequired,
   cancelMenuAction: PropTypes.func.isRequired,
+  changeSelected: PropTypes.func.isRequired,
+  delete: PropTypes.func.isRequired,
+  deleteState: PropTypes.shape({
+    experiment: PropTypes.shape({
+      _id: PropTypes.number,
+      didDeleteFail: PropTypes.bool,
+      message: PropTypes.string,
+      isDelete: PropTypes.bool,
+    }),
+    project: PropTypes.shape({
+      _id: PropTypes.number,
+      didDeleteFail: PropTypes.bool,
+      message: PropTypes.string,
+      isDelete: PropTypes.bool,
+    }),
+    protocol: PropTypes.shape({
+      _id: PropTypes.number,
+      didDeleteFail: PropTypes.bool,
+      message: PropTypes.string,
+      isDelete: PropTypes.bool,
+    }),
+    sample: PropTypes.shape({
+      _id: PropTypes.number,
+      didDeleteFail: PropTypes.bool,
+      message: PropTypes.string,
+      isDelete: PropTypes.bool,
+    }),
+    screen: PropTypes.shape({
+      _id: PropTypes.number,
+      didDeleteFail: PropTypes.bool,
+      message: PropTypes.string,
+      isDelete: PropTypes.bool,
+    }),
+  }).isRequired,
   edit: PropTypes.bool.isRequired,
   item: PropTypes.shape({
     _id: PropTypes.number,
@@ -167,10 +210,14 @@ DisplayContentContainer.propTypes = {
     creationDate: PropTypes.string,
     updateDate: PropTypes.string,
   }).isRequired,
-  postReset: PropTypes.func.isRequired,
-  putReset: PropTypes.func.isRequired,
   postState: PropTypes.shape({
     experiment: PropTypes.shape({
+      didSubmitFail: PropTypes.bool,
+      message: PropTypes.string,
+      _id: PropTypes.number,
+      isSubmitted: PropTypes.bool,
+    }),
+    protocol: PropTypes.shape({
       didSubmitFail: PropTypes.bool,
       message: PropTypes.string,
       _id: PropTypes.number,
@@ -196,52 +243,62 @@ DisplayContentContainer.propTypes = {
     }),
   }).isRequired,
   putState: PropTypes.shape({
-    experiment: PropTypes.arrayOf(
-      PropTypes.shape({
-        _id: PropTypes.number,
-        didPutFail: PropTypes.bool,
-        message: PropTypes.string,
-        isPut: PropTypes.bool,
-      }),
-    ),
-    project: PropTypes.arrayOf(
-      PropTypes.shape({
-        _id: PropTypes.number,
-        didPutFail: PropTypes.bool,
-        message: PropTypes.string,
-        isPut: PropTypes.bool,
-      }),
-    ),
-    sample: PropTypes.arrayOf(
-      PropTypes.shape({
-        _id: PropTypes.number,
-        didPutFail: PropTypes.bool,
-        message: PropTypes.string,
-        isPut: PropTypes.bool,
-      }),
-    ),
-    screen: PropTypes.arrayOf(
-      PropTypes.shape({
-        _id: PropTypes.number,
-        didPutFail: PropTypes.bool,
-        message: PropTypes.string,
-        isPut: PropTypes.bool,
-      }),
-    ),
+    experiment: PropTypes.shape({
+      _id: PropTypes.number,
+      didPutFail: PropTypes.bool,
+      message: PropTypes.string,
+      isPut: PropTypes.bool,
+    }),
+    project: PropTypes.shape({
+      _id: PropTypes.number,
+      didPutFail: PropTypes.bool,
+      message: PropTypes.string,
+      isPut: PropTypes.bool,
+    }),
+    protocol: PropTypes.shape({
+      _id: PropTypes.number,
+      didPutFail: PropTypes.bool,
+      message: PropTypes.string,
+      isPut: PropTypes.bool,
+    }),
+    sample: PropTypes.shape({
+      _id: PropTypes.number,
+      didPutFail: PropTypes.bool,
+      message: PropTypes.string,
+      isPut: PropTypes.bool,
+    }),
+    screen: PropTypes.shape({
+      _id: PropTypes.number,
+      didPutFail: PropTypes.bool,
+      message: PropTypes.string,
+      isPut: PropTypes.bool,
+    }),
   }).isRequired,
+  resetDelete: PropTypes.func.isRequired,
+  resetPost: PropTypes.func.isRequired,
+  resetPut: PropTypes.func.isRequired,
   selected: PropTypes.number.isRequired,
   update: PropTypes.func.isRequired,
 };
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    postReset: (activeLevel) => {
+    changeSelected: (activeLevel, selected) => {
+      dispatch(setIndex(activeLevel, selected));
+    },
+    delete: (_id, activeLevel, obj) => {
+      dispatch(submitDelete(_id, activeLevel, obj));
+    },
+    resetPost: (activeLevel) => {
       dispatch(resetPost(activeLevel));
     },
-    putReset: (_id, activeLevel) => {
-      dispatch(resetPut(_id, activeLevel));
+    resetPut: (activeLevel) => {
+      dispatch(resetPut(activeLevel));
     },
-    update: (_id, activeLevel, obj) => {
+    resetDelete: (activeLevel) => {
+      dispatch(resetDelete(activeLevel));
+    },
+    update: (_id, obj, activeLevel) => {
       dispatch(submitPut(_id, obj, activeLevel));
     },
   };
@@ -249,6 +306,7 @@ const mapDispatchToProps = (dispatch) => {
 
 const mapStateToProps = (state) => {
   return {
+    deleteState: state.delete,
     postState: state.post,
     putState: state.put,
   };

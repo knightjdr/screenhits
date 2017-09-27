@@ -25,17 +25,21 @@ class ManagementContentContainer extends React.Component {
     const { activeLevel, available, selected } = nextProps;
     const index = available[activeLevel].items.findIndex((obj) => { return obj._id === selected; });
     const item = index > -1 ? available[activeLevel].items[index] : {};
-    if (Object.keys(item).length > 0) {
-      this.setState({ item });
-    }
-    if (selected && selected !== this.props.selected) {
-      if (this.state.menuBooleans.create) {
-        this.setState({ menuBooleans: resetBooleans });
+    this.setState((prevState) => {
+      const newState = {};
+      if (Object.keys(item).length > 0) {
+        newState.item = item;
       }
-    }
-    if (activeLevel !== this.props.activeLevel) {
-      this.cancelMenuAction();
-    }
+      if (selected && selected !== this.props.selected) {
+        if (prevState.menuBooleans.create) {
+          newState.menuBooleans = resetBooleans;
+        }
+      }
+      if (activeLevel !== this.props.activeLevel) {
+        this.cancelMenuAction();
+      }
+      return newState;
+    });
   }
   cancelMenuAction = () => {
     this.setState({ menuBooleans: resetBooleans });

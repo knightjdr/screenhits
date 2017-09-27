@@ -2,16 +2,31 @@ import PropTypes from 'prop-types';
 import React from 'react';
 
 import DisplayProject from './display-project';
-import { objectEmpty } from '../../../helpers/helpers';
 import ValidateField from '../create/validate-fields';
+import { objectEmpty } from '../../../helpers/helpers';
 
 class DisplayProjectContainer extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      dialogBoolean: false,
       item: Object.assign({}, this.props.item),
       warning: null,
     };
+  }
+  deleteProject = (_id) => {
+    this.dialogClose();
+    this.props.delete(_id, 'project', {});
+  }
+  dialogClose = () => {
+    this.setState({
+      dialogBoolean: false,
+    });
+  }
+  dialogOpen = () => {
+    this.setState({
+      dialogBoolean: true,
+    });
   }
   inputChange = (field, value) => {
     // check if field is valid and update errors object
@@ -29,16 +44,23 @@ class DisplayProjectContainer extends React.Component {
   render() {
     return (
       <DisplayProject
+        deleteProject={ this.deleteProject }
+        dialog={ {
+          bool: this.state.dialogBoolean,
+          close: this.dialogClose,
+          open: this.dialogOpen,
+        } }
         edit={ this.props.edit }
         errors={ this.props.errors }
         inputChange={ this.inputChange }
-        item={ this.state.item }
+        project={ this.state.item }
       />
     );
   }
 }
 
 DisplayProjectContainer.propTypes = {
+  delete: PropTypes.func.isRequired,
   edit: PropTypes.bool.isRequired,
   errors: PropTypes.shape({
     description: PropTypes.string,

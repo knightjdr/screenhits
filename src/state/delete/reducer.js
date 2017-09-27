@@ -1,78 +1,78 @@
 import {
-  FAIL_PUT,
-  REQUEST_PUT,
-  RESET_PUT,
-  SUCCESS_PUT,
+  FAIL_DELETE,
+  REQUEST_DELETE,
+  RESET_DELETE,
+  SUCCESS_DELETE,
 } from './actions';
 
-const Put = (state = {
+const Delete = (state = {
   experiment: {
-    didPutFail: false,
+    didDeleteFail: false,
     message: null,
     _id: null,
-    isPut: false,
+    isDelete: false,
   },
   project: {
-    didPutFail: false,
+    didDeleteFail: false,
     message: null,
     _id: null,
-    isPut: false,
+    isDelete: false,
   },
   protocol: {
-    didPutFail: false,
+    didDeleteFail: false,
     message: null,
     _id: null,
-    isPut: false,
+    isDelete: false,
   },
   sample: {
-    didPutFail: false,
+    didDeleteFail: false,
     message: null,
     _id: null,
-    isPut: false,
+    isDelete: false,
   },
   screen: {
-    didPutFail: false,
+    didDeleteFail: false,
     message: null,
     _id: null,
-    isPut: false,
+    isDelete: false,
   },
 }, action) => {
   let modifiedFields = {};
   const updateObject = {};
   switch (action.type) {
-    case FAIL_PUT:
+    case FAIL_DELETE:
       modifiedFields = Object.assign({}, state[action.target]);
-      modifiedFields.didPutFail = true;
+      modifiedFields.didDeleteFail = true;
       modifiedFields.message = action.message;
       modifiedFields._id = action._id;
-      modifiedFields.isPut = false;
+      modifiedFields.isDelete = false;
       updateObject[action.target] = modifiedFields;
       return Object.assign({}, state, updateObject);
-    case REQUEST_PUT:
+    case REQUEST_DELETE:
       modifiedFields = Object.assign({}, state[action.target]);
-      modifiedFields.didPutFail = false;
+      modifiedFields.didDeleteFail = false;
       modifiedFields._id = action._id;
-      modifiedFields.isPut = true;
+      modifiedFields.isDelete = true;
       updateObject[action.target] = modifiedFields;
       return Object.assign({}, state, updateObject);
-    case RESET_PUT:
+    case RESET_DELETE:
       modifiedFields = Object.assign({}, state[action.target]);
-      modifiedFields.didPutFail = false;
+      modifiedFields.didDeleteFail = false;
       modifiedFields.message = null;
       modifiedFields._id = null;
-      modifiedFields.isPut = false;
+      modifiedFields.isDelete = false;
       updateObject[action.target] = modifiedFields;
       return Object.assign({}, state, updateObject);
-    case SUCCESS_PUT:
+    case SUCCESS_DELETE:
       modifiedFields = Object.assign({}, state[action.target]);
-      modifiedFields.didPutFail = false;
+      modifiedFields.didDeleteFail = false;
       modifiedFields.message = action.message;
       modifiedFields._id = action._id;
-      modifiedFields.isPut = false;
+      modifiedFields.isDelete = false;
       updateObject[action.target] = modifiedFields;
       return Object.assign({}, state, updateObject);
     default:
       return state;
   }
 };
-export default Put;
+export default Delete;

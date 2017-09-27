@@ -5,6 +5,7 @@ import { routerReducer } from 'react-router-redux';
 import addUsers from './put/add-user-reducer';
 import available from './get/data-reducer';
 import bulkPermission from './put/bulk-permission-reducer';
+import deleteReducer from './delete/reducer';
 import manage from './post/project-manage-reducer';
 import post from './post/reducer';
 import put from './put/reducer';
@@ -17,6 +18,7 @@ const App = combineReducers({
   addUsers,
   available,
   bulkPermission,
+  delete: deleteReducer,
   manage,
   post,
   put,

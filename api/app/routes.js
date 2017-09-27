@@ -1,6 +1,7 @@
 const auth = require('./modules/auth/validate');
 const available = require('./modules/available/available');
 const create = require('./modules/create/create');
+const deleteQuery = require('./modules/delete/delete');
 const loadRoute = require('./modules/available/load-route');
 const permission = require('./modules/permission/permission');
 const search = require('./modules/search/search');
@@ -9,6 +10,21 @@ const users = require('./modules/users/users');
 
 const routes = {
   configure: (app) => {
+    // deleting
+    app.delete('/management', auth.validate, (req, res) => {
+      deleteQuery.item(req.query.target, Number(req.query._id))
+        .then((response) => {
+          routes.response(res, response);
+        })
+      ;
+    });
+    // invalid delete method
+    app.delete('/*', (req, res) => {
+      res.status(404).send({
+        status: 404,
+        error: routes.messages.invalidRoute,
+      });
+    });
     // returns available projects, screens, etc, based on user
     app.get('/loadRoute', auth.validate, (req, res) => {
       loadRoute.get(req.query.target, req.email, req.lab, req.query.selected)

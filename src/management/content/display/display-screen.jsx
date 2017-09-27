@@ -1,3 +1,5 @@
+import Dialog from 'material-ui/Dialog';
+import FlatButton from 'material-ui/FlatButton';
 import MenuItem from 'material-ui/MenuItem';
 import muiThemeable from 'material-ui/styles/muiThemeable';
 import PropTypes from 'prop-types';
@@ -5,11 +7,22 @@ import React from 'react';
 import SelectField from 'material-ui/SelectField';
 import TextField from 'material-ui/TextField';
 
+import ActionButtons from '../../../action-buttons/action-buttons-container';
 import CellsDataSource from '../../../assets/data/cells';
 import FieldsScreen from '../create/forms/fields-screen';
 import SelectInput from '../create/select-input/select-input-container';
 import SpeciesDataSource from '../../../assets/data/species';
 import { objectEmpty, uppercaseFirst } from '../../../helpers/helpers';
+
+const actionButtonStyle = {
+  float: 'right',
+  margin: '10px 10px 0px 0px',
+};
+
+const deleteContainer = {
+  height: 40,
+  width: '100%',
+};
 
 const Fields = {
   screen: FieldsScreen,
@@ -37,6 +50,31 @@ const inputStyle = {
 };
 
 class DisplayScreen extends React.Component {
+  confirmDeletion = () => {
+    return (
+    [
+      <FlatButton
+        backgroundColor={ this.props.muiTheme.palette.success }
+        hoverColor={ this.props.muiTheme.palette.successHover }
+        label="Confirm"
+        onTouchTap={ () => { this.props.deleteScreen(this.props.screen._id); } }
+      />,
+    ]);
+  }
+  dialogClose = () => {
+    return (
+    [
+      <FlatButton
+        backgroundColor={ this.props.muiTheme.palette.warning }
+        hoverColor={ this.props.muiTheme.palette.warningHover }
+        label="Close"
+        onTouchTap={ this.props.dialog.close }
+        style={ {
+          marginLeft: 10,
+        } }
+      />,
+    ]);
+  }
   render() {
     return (
       <div>
@@ -61,7 +99,7 @@ class DisplayScreen extends React.Component {
             <div
               style={ elementValueStyle }
             >
-              { this.props.item.name }
+              { this.props.screen.name }
             </div>
           </div>
           :
@@ -74,7 +112,7 @@ class DisplayScreen extends React.Component {
             rows={ 1 }
             rowsMax={ 2 }
             style={ inputStyle }
-            value={ this.props.item.name }
+            value={ this.props.screen.name }
           />
         }
         { !this.props.edit ?
@@ -98,7 +136,7 @@ class DisplayScreen extends React.Component {
             <div
               style={ elementValueStyle }
             >
-              { this.props.item.description }
+              { this.props.screen.description }
             </div>
           </div>
           :
@@ -111,7 +149,7 @@ class DisplayScreen extends React.Component {
             rows={ 1 }
             rowsMax={ 2 }
             style={ inputStyle }
-            value={ this.props.item.description }
+            value={ this.props.screen.description }
           />
         }
         { !this.props.edit ?
@@ -135,7 +173,7 @@ class DisplayScreen extends React.Component {
             <div
               style={ elementValueStyle }
             >
-              { this.props.item.type }
+              { this.props.screen.type }
             </div>
           </div>
           :
@@ -149,7 +187,7 @@ class DisplayScreen extends React.Component {
             } }
             onChange={ this.inputChangeType }
             style={ inputStyle }
-            value={ this.props.item.type }
+            value={ this.props.screen.type }
           >
             { Fields.screen.type.values.map((type) => {
               return (
@@ -183,7 +221,7 @@ class DisplayScreen extends React.Component {
             <div
               style={ elementValueStyle }
             >
-              { this.props.item.species }
+              { this.props.screen.species }
             </div>
           </div>
           :
@@ -195,7 +233,7 @@ class DisplayScreen extends React.Component {
             labelText="Species"
             options={ Fields.screen.species.values }
             type="species"
-            value={ this.props.item.species }
+            value={ this.props.screen.species }
           />
         }
         { !this.props.edit ?
@@ -219,7 +257,7 @@ class DisplayScreen extends React.Component {
             <div
               style={ elementValueStyle }
             >
-              { this.props.item.cell }
+              { this.props.screen.cell }
             </div>
           </div>
           :
@@ -231,7 +269,7 @@ class DisplayScreen extends React.Component {
             labelText="Cell type"
             options={ Fields.screen.cell.values }
             type="cell"
-            value={ this.props.item.cell }
+            value={ this.props.screen.cell }
           />
         }
         { !this.props.edit ?
@@ -240,7 +278,7 @@ class DisplayScreen extends React.Component {
               {},
               elementContainerStyle,
               {
-                display: this.props.item.condition ? 'flex' : 'none',
+                display: this.props.screen.condition ? 'flex' : 'none',
               },
             ) }
           >
@@ -261,7 +299,7 @@ class DisplayScreen extends React.Component {
             <div
               style={ elementValueStyle }
             >
-              { this.props.item.condition }
+              { this.props.screen.condition }
             </div>
           </div>
           :
@@ -273,13 +311,13 @@ class DisplayScreen extends React.Component {
             rows={ 1 }
             rowsMax={ 2 }
             style={ inputStyle }
-            value={ this.props.item.condition }
+            value={ this.props.screen.condition }
           />
         }
         { !this.props.edit ? (
-            this.props.item.other &&
-            !objectEmpty(this.props.item.other) &&
-            Object.keys(this.props.item.other).sort().map((key) => {
+            this.props.screen.other &&
+            !objectEmpty(this.props.screen.other) &&
+            Object.keys(this.props.screen.other).sort().map((key) => {
               return (
                 <div
                   key={ `${key}-container` }
@@ -306,14 +344,14 @@ class DisplayScreen extends React.Component {
                     key={ `${key}-value` }
                     style={ elementValueStyle }
                   >
-                    { this.props.item.other[key] }
+                    { this.props.screen.other[key] }
                   </div>
                 </div>
               );
             })
           ) :
             (
-              Fields.screen.other[this.props.item.type].map((field) => {
+              Fields.screen.other[this.props.screen.type].map((field) => {
                 return (
                   field.type === 'select' ?
                     <SelectField
@@ -326,10 +364,10 @@ class DisplayScreen extends React.Component {
                         paddingTop: 0,
                       } }
                       onChange={ (e, index, value) => {
-                        this.props.inputChange(field.name, value, true, this.props.item.type);
+                        this.props.inputChange(field.name, value, true, this.props.screen.type);
                       } }
                       style={ inputStyle }
-                      value={ this.props.item.other[field.name] }
+                      value={ this.props.screen.other[field.name] }
                     >
                       { field.options.map((option) => {
                         return (
@@ -351,14 +389,14 @@ class DisplayScreen extends React.Component {
                       rows={ 1 }
                       rowsMax={ 2 }
                       style={ inputStyle }
-                      value={ this.props.item.other[field.name] }
+                      value={ this.props.screen.other[field.name] }
                     />
                 );
               })
             )
         }
         { !this.props.edit ?
-          this.props.item.comment &&
+          this.props.screen.comment &&
           <div
             style={ elementContainerStyle }
           >
@@ -379,7 +417,7 @@ class DisplayScreen extends React.Component {
             <div
               style={ elementValueStyle }
             >
-              { this.props.item.comment }
+              { this.props.screen.comment }
             </div>
           </div>
           :
@@ -391,7 +429,7 @@ class DisplayScreen extends React.Component {
             rows={ 1 }
             rowsMax={ 5 }
             style={ inputStyle }
-            value={ this.props.item.comment }
+            value={ this.props.screen.comment }
           />
         }
         { !this.props.edit &&
@@ -415,7 +453,7 @@ class DisplayScreen extends React.Component {
             <div
               style={ elementValueStyle }
             >
-              { this.props.item.creatorName }
+              { this.props.screen.creatorName }
             </div>
           </div>
         }
@@ -440,16 +478,54 @@ class DisplayScreen extends React.Component {
             <div
               style={ elementValueStyle }
             >
-              { this.props.item.creationDate}
+              { this.props.screen.creationDate}
             </div>
           </div>
         }
+        {
+          !this.props.edit &&
+          <div
+            style={ deleteContainer }
+          >
+            <div
+              style={ actionButtonStyle }
+            >
+              <ActionButtons
+                cancel={ {
+                  func: this.props.dialog.open,
+                  label: 'Delete',
+                  toolTipText: 'Delete screen',
+                } }
+                idSuffix="delete-screen"
+              />
+            </div>
+          </div>
+        }
+        <Dialog
+          actions={ [
+            this.confirmDeletion(),
+            this.dialogClose(),
+          ] }
+          modal={ false }
+          onRequestClose={ this.props.dialog.close }
+          open={ this.props.dialog.bool }
+          title="Confirmation"
+        >
+          This action will permanently delete the screen (and all experiments,
+          samples and analysis associated with it). Press confirm to proceed.
+        </Dialog>
       </div>
     );
   }
 }
 
 DisplayScreen.propTypes = {
+  deleteScreen: PropTypes.func.isRequired,
+  dialog: PropTypes.shape({
+    bool: PropTypes.bool,
+    close: PropTypes.func,
+    open: PropTypes.func,
+  }).isRequired,
   edit: PropTypes.bool.isRequired,
   errors: PropTypes.shape({
     cell: PropTypes.string,
@@ -461,7 +537,7 @@ DisplayScreen.propTypes = {
   }).isRequired,
   inputChange: PropTypes.func.isRequired,
   inputWidth: PropTypes.number.isRequired,
-  item: PropTypes.shape({
+  screen: PropTypes.shape({
     _id: PropTypes.number,
     cell: PropTypes.string,
     comment: PropTypes.string,
@@ -480,6 +556,10 @@ DisplayScreen.propTypes = {
     palette: PropTypes.shape({
       keyColor: PropTypes.string,
       keyColorBorder: PropTypes.string,
+      success: PropTypes.string,
+      successHover: PropTypes.string,
+      warning: PropTypes.string,
+      warningHover: PropTypes.string,
     }),
   }).isRequired,
 };

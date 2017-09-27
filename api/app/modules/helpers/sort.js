@@ -1,6 +1,7 @@
 const Sort = {
   arrayOfObjectByKey: (arr, key) => {
-    arr.sort((a, b) => {
+    const sortArray = JSON.parse(JSON.stringify(arr));
+    sortArray.sort((a, b) => {
       const nameA = a[key].toUpperCase();
       const nameB = b[key].toUpperCase();
       if (nameA < nameB) {
@@ -11,7 +12,7 @@ const Sort = {
       }
       return 0;
     });
-    return arr;
+    return sortArray;
   },
 };
 module.exports = Sort;

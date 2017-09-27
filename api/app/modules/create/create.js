@@ -46,7 +46,6 @@ const Create = {
   },
   protocol: (obj) => {
     return new Promise((resolve) => {
-      console.log(obj);
       let objCreate = {};
       validate.protocol(obj, 'creationDate')
         .then((newObj) => {
