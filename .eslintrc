@@ -9,6 +9,7 @@
   "parser": "babel-eslint",
   "rules": {
     "arrow-body-style": [2, "always"],
+    "no-unused-expressions": [2, { "allowTernary": true }],
     "comma-dangle": [2, {
         "arrays": "always-multiline",
         "objects": "always-multiline",

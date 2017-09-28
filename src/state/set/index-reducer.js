@@ -2,6 +2,13 @@ import {
   SET_INDEX,
 } from './index-actions';
 
+const defaultState = {
+  experiment: null,
+  project: null,
+  sample: null,
+  screen: null,
+};
+
 const targetChildren = {
   experiment: ['sample'],
   project: ['screen', 'experiment', 'sample'],
@@ -9,18 +16,13 @@ const targetChildren = {
   screen: ['experiment', 'sample'],
 };
 
-const Selected = (state = {
-  experiment: null,
-  project: null,
-  sample: null,
-  screen: null,
-}, action) => {
-  const modifiedFields = {};
+const Selected = (state = Object.assign({}, defaultState), action) => {
+  const modifiedFields = Object.assign({}, defaultState);
   switch (action.type) {
     case SET_INDEX:
       if (action.target === 'all') {
         Object.keys(state).forEach((target) => {
-          modifiedFields[target] = action._id[target] ? action._id[target] : null;
+          modifiedFields[target] = action._id && action._id[target] ? action._id[target] : null;
         });
       } else {
         modifiedFields[action.target] = action._id;

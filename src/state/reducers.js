@@ -9,6 +9,8 @@ import deleteReducer from './delete/reducer';
 import manage from './post/project-manage-reducer';
 import post from './post/reducer';
 import put from './put/reducer';
+import route from './routing/routeload-reducer';
+import routerLocations from './routing/router-locations-reducer';
 import searchUser from './get/search-user-reducer';
 import selected from './set/index-reducer';
 import user from './set/user-reducer';
@@ -22,7 +24,9 @@ const App = combineReducers({
   manage,
   post,
   put,
+  route,
   routing: routerReducer,
+  routerLocations,
   searchUser,
   selected,
   user,

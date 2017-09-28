@@ -11,10 +11,6 @@ import DisplayScreen from './display-screen-container';
 import Notice from '../../../messages/notice/notice';
 import { uppercaseFirst } from '../../../helpers/helpers';
 
-const noticeContainer = {
-  marginTop: 10,
-};
-
 class DisplayContent extends React.Component {
   render() {
     return (
@@ -33,7 +29,7 @@ class DisplayContent extends React.Component {
           autoHeight={ true }
           autoHeightMax={ 'calc(100vh - 180px)' }
         >
-          {this.props.activeLevel === 'project' ?
+          { this.props.activeLevel === 'project' ?
             <DisplayProject
               cancel={ this.props.cancel }
               delete={ this.props.delete }
@@ -46,7 +42,7 @@ class DisplayContent extends React.Component {
             />
               : null
           }
-          {this.props.activeLevel === 'screen' ?
+          { this.props.activeLevel === 'screen' ?
             <DisplayScreen
               cancel={ this.props.cancel }
               delete={ this.props.delete }
@@ -93,34 +89,30 @@ class DisplayContent extends React.Component {
               />
             </div>
           }
-          <div
-            style={ noticeContainer }
-          >
-            <Notice
-              fail={ this.props.editMessages.didPutFail }
-              failMessage={ `${uppercaseFirst(this.props.activeLevel)} edit failed.
-              ${this.props.editMessages.message}` }
-              label="edit-notification"
-              other={ this.props.postMessage }
-              otherMessage={ this.props.postMessage }
-              submit={ this.props.editMessages.isPut }
-              submitMessage={ `${uppercaseFirst(this.props.activeLevel)} edit submitted` }
-              succeed={ this.props.editMessages.message &&
-                !this.props.editMessages.didPutFail }
-              succeedMessage={ this.props.editMessages.message }
-            />
-            <Notice
-              fail={ this.props.deleteMessages.didDeleteFail }
-              failMessage={ `${uppercaseFirst(this.props.activeLevel)} deletion failed.
-              ${this.props.deleteMessages.message}` }
-              label="delete-notification"
-              submit={ this.props.deleteMessages.isDelete }
-              submitMessage={ `${uppercaseFirst(this.props.activeLevel)} deletion requested` }
-              succeed={ this.props.deleteMessages.message &&
-                !this.props.deleteMessages.didDeleteFail }
-              succeedMessage={ this.props.deleteMessages.message }
-            />
-          </div>
+          <Notice
+            fail={ this.props.editMessages.didPutFail }
+            failMessage={ `${uppercaseFirst(this.props.activeLevel)} edit failed.
+            ${this.props.editMessages.message}` }
+            label="edit-notification"
+            other={ this.props.postMessage }
+            otherMessage={ this.props.postMessage }
+            submit={ this.props.editMessages.isPut }
+            submitMessage={ `${uppercaseFirst(this.props.activeLevel)} edit submitted` }
+            succeed={ this.props.editMessages.message &&
+              !this.props.editMessages.didPutFail }
+            succeedMessage={ this.props.editMessages.message }
+          />
+          <Notice
+            fail={ this.props.deleteMessages.didDeleteFail }
+            failMessage={ `${uppercaseFirst(this.props.activeLevel)} deletion failed.
+            ${this.props.deleteMessages.message}` }
+            label="delete-notification"
+            submit={ this.props.deleteMessages.isDelete }
+            submitMessage={ `${uppercaseFirst(this.props.activeLevel)} deletion requested` }
+            succeed={ this.props.deleteMessages.message &&
+              !this.props.deleteMessages.didDeleteFail }
+            succeedMessage={ this.props.deleteMessages.message }
+          />
         </Scrollbars>
       </Paper>
     );

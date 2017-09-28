@@ -1,6 +1,7 @@
-import { connect } from 'react-redux';
+import deepEqual from 'deep-equal';
 import PropTypes from 'prop-types';
 import React from 'react';
+import { connect } from 'react-redux';
 
 import ManagementContent from './management-content';
 import { resetPost } from '../../state/post/actions';
@@ -23,20 +24,30 @@ class ManagementContentContainer extends React.Component {
   }
   componentWillReceiveProps(nextProps) {
     const { activeLevel, available, selected } = nextProps;
-    const index = available[activeLevel].items.findIndex((obj) => { return obj._id === selected; });
-    const item = index > -1 ? available[activeLevel].items[index] : {};
+    // when changing levels, go to default view
+    if (activeLevel !== this.props.activeLevel) {
+      this.cancelMenuAction();
+    }
     this.setState((prevState) => {
       const newState = {};
-      if (Object.keys(item).length > 0) {
-        newState.item = item;
+      // update item if needed
+      const index = available[activeLevel].items.findIndex((obj) => {
+        return obj._id === selected;
+      });
+      if (
+        index > -1 &&
+        !deepEqual(prevState.item, available[activeLevel].items[index])
+      ) {
+        newState.item = JSON.parse(JSON.stringify(available[activeLevel].items[index]));
       }
-      if (selected && selected !== this.props.selected) {
+      // if switching between items and currently on "creation" page, reset to default view
+      if (
+        selected &&
+        selected !== this.props.selected
+      ) {
         if (prevState.menuBooleans.create) {
-          newState.menuBooleans = resetBooleans;
+          this.cancelMenuAction();
         }
-      }
-      if (activeLevel !== this.props.activeLevel) {
-        this.cancelMenuAction();
       }
       return newState;
     });

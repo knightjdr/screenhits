@@ -48,8 +48,8 @@ const findObjectIndexes = (obj, value) => {
 
 // check if two objects are equal, ignoring null keys
 const isObjectLooseEqual = (obj1, obj2) => {
-  const testObj1 = obj1;
-  const testObj2 = obj2;
+  const testObj1 = Object.assign({}, obj1);
+  const testObj2 = Object.assign({}, obj2);
   Object.keys(testObj1).forEach((key) => {
     if (!testObj1[key]) {
       delete testObj1[key];
@@ -67,9 +67,15 @@ const isObjectLooseEqual = (obj1, obj2) => {
 const objectEmpty = (obj) => {
   let empty = true;
   Object.values(obj).forEach((v) => {
-    if (v && typeof v !== 'object') {
+    if (
+      v &&
+      typeof v !== 'object'
+    ) {
       empty = false;
-    } else if (v && typeof v === 'object') {
+    } else if (
+      v &&
+      typeof v === 'object'
+    ) {
       empty = objectEmpty(v);
     }
   });

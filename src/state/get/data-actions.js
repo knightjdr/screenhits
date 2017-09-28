@@ -1,6 +1,9 @@
 import fetch from 'isomorphic-fetch';
-import { setIndex } from '../set/index-actions';
+
+import activeLevel from '../../helpers/find-active-level';
 import { objectEmpty } from '../../helpers/helpers';
+import { routeLoaded } from '../routing/routeload-actions';
+import { setIndex } from '../set/index-actions';
 
 export const FILL_DATA = 'FILL_DATA';
 export const FILL_FAILED = 'FILL_FAILED';
@@ -103,12 +106,14 @@ const getRouteData = (selected) => {
       return response.json();
     })
     .then((json) => {
+      let setSelected;
       if (json.status === 200) {
         dispatch(fillData('all', json.data));
         // this is so that data can be retrieved and a selected index set via a route.
         // See management-container.js for implementation
         if (!objectEmpty(selected)) {
-          dispatch(setIndex('all', selected));
+          setSelected = activeLevel.checkSelected(selected, json.data);
+          dispatch(setIndex('all', setSelected));
         }
       } else {
         const error = `Status code: ${json.status}; ${json.message}`;
@@ -118,6 +123,7 @@ const getRouteData = (selected) => {
           }
         });
       }
+      dispatch(routeLoaded());
     })
     .catch((error) => {
       Object.keys(selected).forEach((target) => {
@@ -125,6 +131,7 @@ const getRouteData = (selected) => {
           dispatch(fillFailed(target, error));
         }
       });
+      dispatch(routeLoaded());
     });
   };
 };

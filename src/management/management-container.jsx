@@ -1,12 +1,12 @@
 import { connect } from 'react-redux';
-import deepEqual from 'deep-equal';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { browserHistory } from 'react-router';
 
+import Management from './management';
 import { getData, getRouteData } from '../state/get/data-actions';
 import { isObjectLooseEqual, objectEmpty } from '../helpers/helpers';
-import Management from './management';
+import { routeLoaded } from '../state/routing/routeload-actions';
 import { setIndex } from '../state/set/index-actions';
 
 class ManagementContainer extends React.Component {
@@ -14,7 +14,6 @@ class ManagementContainer extends React.Component {
     super(props);
     this.state = {
       activeLevel: 'project',
-      routeCanUpdate: false,
       showList: false,
       viewIcon: 'sitemap',
       viewType: 'hierarchy',
@@ -22,34 +21,35 @@ class ManagementContainer extends React.Component {
   }
   componentWillMount = () => {
     // when component first mounts, retrieve user project or route-based details
-    if (
-      !this.props.selected ||
-      objectEmpty(this.props.selected)
-    ) {
-      this.props.getData('project', {});
+    if (!objectEmpty(this.props.queryParams)) {
+      this.fillProjectState(this.props.queryParams);
     } else {
-      this.fillProjectState(this.props.selected);
+      this.props.getData('project', {});
+      this.props.routeLoaded();
     }
-  }
-  componentDidMount = () => {
-    this.state.routeCanUpdate = true;
-    window.onpopstate = this.onBackForwardButton;
   }
   componentWillReceiveProps = (nextProps) => {
-    // if "selected" indices have change, update underlying data
+    const { location, queryParams, routeLoading, selected } = nextProps;
+    // if "selected" indices have changed, update underlying data and route
     if (
-      !objectEmpty(nextProps.selected) &&
-      !isObjectLooseEqual(nextProps.selected, this.props.queryParams) &&
-      !isObjectLooseEqual(nextProps.selected, this.props.selected)
+      !routeLoading &&
+      location.action === 'POP' &&
+      !isObjectLooseEqual(queryParams, this.props.selected)
     ) {
-      this.updateState(nextProps.selected);
+      this.props.setIndex('all', queryParams);
+    } else if (
+      !routeLoading &&
+      !isObjectLooseEqual(selected, queryParams)
+    ) {
+      this.updateState(selected, queryParams);
+    } else if (
+      !routeLoading &&
+      !isObjectLooseEqual(selected, this.props.selected)
+    ) {
+      this.updateState(selected, this.props.selected);
     }
   }
-  onBackForwardButton = () => {
-    if (!deepEqual(this.props.queryParams, this.props.selected)) {
-      this.updateState(this.props.queryParams, true);
-    }
-  }
+  should
   changeLevel = (type) => {
     if (type !== this.state.activeLevel) {
       const newState = this.state.showList ?
@@ -105,49 +105,80 @@ class ManagementContainer extends React.Component {
       showList: true,
     });
   }
-  updateState = (selected) => {
-    let currentLevel = 'project';
+  updateState = (selected, lastSelected) => {
+    let continuteUpdate = true;
+    const currentLevel = 'project';
     let path = 'management?';
-    let updateRoute = false;
-    if (selected.project) {
+    const setSelected = {
+      experiment: null,
+      project: null,
+      sample: null,
+      screen: null,
+    };
+    if (objectEmpty(selected)) {
+      path = 'management';
+      continuteUpdate = false;
+    }
+    if ( // project has been selected, and it exists
+      continuteUpdate &&
+      selected.project &&
+      this.props.available.project.items.findIndex((projectItem) => {
+        return projectItem._id === selected.project;
+      }) > -1
+    ) {
+      continuteUpdate = true;
       path += `project=${selected.project}`;
+      setSelected.project = selected.project;
       if (
-        selected.project !== this.props.selected.project
+        selected.project !== lastSelected.project
       ) {
+        continuteUpdate = false;
         const filters = {
           project: selected.project,
         };
         this.props.getData('screen', filters);
         this.props.setIndex('project', selected.project);
-        updateRoute = true;
       }
     }
-    if (
-      selected.project &&
+    if ( // screen has been selected, and it exists
+      continuteUpdate &&
+      setSelected.project &&
       selected.screen &&
-      !updateRoute
+      this.props.available.screen.items.findIndex((screenItem) => {
+        return screenItem._id === selected.screen;
+      }) > -1
     ) {
-      currentLevel = 'screen';
-      path += `&screen=${selected.screen}`;
-      if (selected.screen !== this.props.selected.screen) {
+      continuteUpdate = true;
+      path += `screen=${selected.screen}`;
+      setSelected.screen = selected.screen;
+      if (
+        selected.screen !== lastSelected.screen
+      ) {
+        continuteUpdate = false;
         const filters = {
           project: selected.project,
           screen: selected.screen,
         };
         this.props.getData('experiment', filters);
         this.props.setIndex('screen', selected.screen);
-        updateRoute = true;
       }
     }
-    if (
-      selected.project &&
-      selected.screen &&
+    if ( // experiment has been selected, and it exists
+      continuteUpdate &&
+      setSelected.project &&
+      setSelected.screen &&
       selected.experiment &&
-      !updateRoute
+      this.props.available.experiment.items.findIndex((experimentItem) => {
+        return experimentItem._id === selected.experiment;
+      }) > -1
     ) {
-      currentLevel = 'experiment';
-      path += `&experiment=${selected.experiment}`;
-      if (selected.experiment !== this.props.selected.experiment) {
+      continuteUpdate = true;
+      path += `experiment=${selected.experiment}`;
+      setSelected.experiment = selected.experiment;
+      if (
+        selected.experiment !== lastSelected.experiment
+      ) {
+        continuteUpdate = false;
         const filters = {
           experiment: selected.experiment,
           project: selected.project,
@@ -155,33 +186,44 @@ class ManagementContainer extends React.Component {
         };
         this.props.getData('sample', filters);
         this.props.setIndex('experiment', selected.experiment);
-        updateRoute = true;
       }
     }
-    if (
-      selected.project &&
-      selected.screen &&
-      selected.experiment &&
+    if ( // sample has been selected, and it exists
+      continuteUpdate &&
+      setSelected.project &&
+      setSelected.screen &&
+      setSelected.experiment &&
       selected.sample &&
-      !updateRoute
+      this.props.available.sample.items.findIndex((sampleItem) => {
+        return sampleItem._id === selected.sample;
+      }) > -1
     ) {
-      currentLevel = 'sample';
-      path += `&sample=${selected.sample}`;
-      if (selected.sample !== this.props.selected.sample) {
+      path += `sample=${selected.sample}`;
+      setSelected.sample = selected.sample;
+      if (
+        selected.sample !== lastSelected.sample
+      ) {
         this.props.setIndex('sample', selected.sample);
-        updateRoute = true;
       }
     }
-    this.setState({
-      activeLevel: currentLevel,
+    // check is last state still exist. If not, replace browserHistory
+    let lastExists = true;
+    Object.keys(lastSelected).forEach((level) => {
+      if (
+        lastSelected[level] &&
+        this.props.available[level].items.findIndex((levelItem) => {
+          return levelItem._id === lastSelected[level];
+        }) < 0
+      ) {
+        lastExists = false;
+      }
     });
-    if (
-      this.state.routeCanUpdate &&
-      updateRoute &&
-      path !== this.props.path
-    ) {
-      browserHistory.push(path);
+    // update route
+    if (path !== this.props.path) {
+      lastExists ? browserHistory.push(path) : browserHistory.replace(path);
     }
+    // update state
+    this.setState({ activeLevel: currentLevel });
   }
   render() {
     return (
@@ -244,8 +286,11 @@ ManagementContainer.propTypes = {
   }).isRequired,
   getData: PropTypes.func.isRequired,
   getRouteData: PropTypes.func.isRequired,
+  location: PropTypes.shape({}).isRequired,
   path: PropTypes.string.isRequired,
   queryParams: PropTypes.shape({}).isRequired,
+  routeLoaded: PropTypes.func.isRequired,
+  routeLoading: PropTypes.bool.isRequired,
   selected: PropTypes.shape({
     experiment: PropTypes.number,
     project: PropTypes.number,
@@ -255,8 +300,6 @@ ManagementContainer.propTypes = {
   setIndex: PropTypes.func.isRequired,
 };
 
-let init = true;
-
 const mapDispatchToProps = (dispatch) => {
   return {
     getData: (type, filters, selected) => {
@@ -264,6 +307,9 @@ const mapDispatchToProps = (dispatch) => {
     },
     getRouteData: (selected) => {
       dispatch(getRouteData(selected));
+    },
+    routeLoaded: () => {
+      dispatch(routeLoaded());
     },
     setIndex: (target, _id) => {
       dispatch(setIndex(target, _id));
@@ -277,18 +323,12 @@ const mapStateToProps = (state, ownProps) => {
   Object.keys(queryParams).forEach((queryParam) => {
     queryParams[queryParam] = Number(queryParams[queryParam]);
   });
-  let selectedObj = {};
-  if (init) {
-    selectedObj = queryParams;
-    init = false;
-  } else {
-    selectedObj = state.selected;
-  }
   return {
     available: state.available,
+    routeLoading: state.route.loading,
     path,
     queryParams,
-    selected: selectedObj,
+    selected: state.selected,
   };
 };
 

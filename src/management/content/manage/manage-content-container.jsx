@@ -6,7 +6,7 @@ import React from 'react';
 import { addUsersAction, resetAddUserPut } from '../../../state/put/add-user-actions';
 import { changeBulkPermissionAction, resetBulkPermissionPut } from '../../../state/put/bulk-permission-actions';
 import { findObjectIndexes } from '../../../helpers/helpers';
-import { manageUsers, resetPost } from '../../../state/post/project-manage-actions';
+import { manageUsers, resetManagePost } from '../../../state/post/project-manage-actions';
 import { userGet } from '../../../state/get/project-user-actions';
 import { resetUserSearchGet, userSearch } from '../../../state/get/search-user-actions';
 
@@ -84,7 +84,7 @@ class ManageContentContainer extends React.Component {
   componentWillUnmount() {
     this.props.resetAddUserPut();
     this.props.resetBulkPermissionPut();
-    this.props.resetPost();
+    this.props.resetManagePost();
     this.props.resetUserSearchGet();
     window.removeEventListener('resize', this.resize);
   }
@@ -384,7 +384,7 @@ ManageContentContainer.propTypes = {
   permission: PropTypes.string.isRequired,
   resetAddUserPut: PropTypes.func.isRequired,
   resetBulkPermissionPut: PropTypes.func.isRequired,
-  resetPost: PropTypes.func.isRequired,
+  resetManagePost: PropTypes.func.isRequired,
   resetUserSearchGet: PropTypes.func.isRequired,
   searchUser: PropTypes.shape({
     didGetFail: PropTypes.bool,
@@ -438,8 +438,8 @@ const mapDispatchToProps = (dispatch) => {
     resetUserSearchGet: () => {
       dispatch(resetUserSearchGet());
     },
-    resetPost: () => {
-      dispatch(resetPost(null));
+    resetManagePost: () => {
+      dispatch(resetManagePost(null));
     },
     userGet: (user, _id, lab, permission) => {
       dispatch(userGet(user, _id, lab, permission));

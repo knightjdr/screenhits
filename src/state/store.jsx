@@ -13,8 +13,8 @@ export const store = createStore(
   initialState,
   composeEnhancers(
     applyMiddleware(
-    thunkMiddleware,
-  ),
+      thunkMiddleware,
+    ),
   ),
 );
 
