@@ -105,10 +105,38 @@ const Validate = {
         error: false,
         message: null,
       };
-      const valid = ['CRISPR', 'Microscopy'];
+      const valid = ['CRISPR', 'Generic', 'Microscopy'];
       if (!value || valid.indexOf(value) < 0) {
         errorObj.error = true;
         errorObj.message = 'Screen type must be selected';
+      }
+      return errorObj;
+    },
+  },
+  experiment: {
+    checkFields: [
+      'description',
+      'name',
+    ],
+    description: (value) => {
+      const errorObj = {
+        error: false,
+        message: null,
+      };
+      if (!value) {
+        errorObj.error = true;
+        errorObj.message = 'This field is required';
+      }
+      return errorObj;
+    },
+    name: (value) => {
+      const errorObj = {
+        error: false,
+        message: null,
+      };
+      if (!value) {
+        errorObj.error = true;
+        errorObj.message = 'This field is required';
       }
       return errorObj;
     },

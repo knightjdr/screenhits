@@ -4,8 +4,38 @@ const validate = require('../validation/validation');
 
 const Create = {
   experiment: (obj) => {
-    return new Promise(() => {
-      console.log(obj);
+    return new Promise((resolve) => {
+      let objCreate = {};
+      validate.experiment(obj, 'creationDate')
+        .then((newObj) => {
+          objCreate = newObj;
+          return counter.get('experiment');
+        })
+        .then((sequence) => {
+          objCreate._id = sequence;
+          return create.insert('experiment', objCreate);
+        })
+        .then(() => {
+          resolve({
+            status: 200,
+            clientResponse: {
+              status: 200,
+              _id: objCreate._id,
+              message: `Screen successfully created with ID ${objCreate._id}`,
+              obj: objCreate,
+            },
+          });
+        })
+        .catch((error) => {
+          resolve({
+            status: 500,
+            clientResponse: {
+              status: 500,
+              message: `There was an error creating this experiment: ${error}`,
+            },
+          });
+        })
+      ;
     });
   },
   project: (obj) => {

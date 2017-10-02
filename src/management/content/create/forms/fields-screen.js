@@ -33,6 +33,7 @@ const Fields = {
         type: 'select',
       },
     ],
+    Generic: [],
     Microscopy: [],
   },
   species: {
@@ -44,6 +45,7 @@ const Fields = {
   type: {
     values: [
       'CRISPR',
+      'Generic',
       'Microscopy',
     ],
   },

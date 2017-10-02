@@ -2,11 +2,12 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
 
-import DisplayScreen from './display-screen';
+import DisplayExperiment from './display-experiment';
+import { getData } from '../../../state/get/data-actions';
 import { objectEmpty } from '../../../helpers/helpers';
 import ValidateField from '../create/validate-fields';
 
-class DisplayScreenContainer extends React.Component {
+class DisplayExperimentContainer extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -20,13 +21,17 @@ class DisplayScreenContainer extends React.Component {
       warning: null,
     };
   }
-  deleteScreen = (_id) => {
+  componentWillMount = () => {
+    this.props.protocolGet();
+  }
+  deleteExperiment = (_id) => {
     this.dialogClose();
     this.props.delete(
       _id,
-      'screen',
+      'experiment',
       {
         project: this.props.selectedIndices.project,
+        screen: this.props.selectedIndices.screen,
       },
     );
   }
@@ -64,8 +69,8 @@ class DisplayScreenContainer extends React.Component {
   }
   render() {
     return (
-      <DisplayScreen
-        deleteScreen={ this.deleteScreen }
+      <DisplayExperiment
+        deleteExperiment={ this.deleteExperiment }
         dialog={ {
           close: this.dialogClose,
           delete: this.state.dialog.delete,
@@ -76,15 +81,16 @@ class DisplayScreenContainer extends React.Component {
         } }
         edit={ this.props.edit }
         errors={ this.props.errors }
+        experiment={ this.state.item }
         inputChange={ this.inputChange }
         inputWidth={ this.props.inputWidth }
-        screen={ this.state.item }
+        protocols={ this.props.protocols }
       />
     );
   }
 }
 
-DisplayScreenContainer.propTypes = {
+DisplayExperimentContainer.propTypes = {
   delete: PropTypes.func.isRequired,
   edit: PropTypes.bool.isRequired,
   errors: PropTypes.shape({
@@ -94,18 +100,25 @@ DisplayScreenContainer.propTypes = {
   inputWidth: PropTypes.number.isRequired,
   item: PropTypes.shape({
     _id: PropTypes.number,
-    cell: PropTypes.string,
     comment: PropTypes.string,
-    condition: PropTypes.string,
+    concentration: PropTypes.string,
     creatorEmail: PropTypes.string,
     creatorName: PropTypes.string,
     description: PropTypes.string,
     name: PropTypes.string,
-    other: PropTypes.shape({}),
-    species: PropTypes.string,
-    type: PropTypes.string,
+    timepoint: PropTypes.string,
     creationDate: PropTypes.string,
     updateDate: PropTypes.string,
+  }).isRequired,
+  protocolGet: PropTypes.func.isRequired,
+  protocols: PropTypes.shape({
+    didInvalidate: PropTypes.bool,
+    isFetching: PropTypes.bool,
+    items: PropTypes.arrayOf(
+      PropTypes.shape({
+      }),
+    ),
+    message: PropTypes.string,
   }).isRequired,
   selectedIndices: PropTypes.shape({
     experiment: PropTypes.number,
@@ -117,14 +130,24 @@ DisplayScreenContainer.propTypes = {
   updateItem: PropTypes.func.isRequired,
 };
 
+const mapDispatchToProps = (dispatch) => {
+  return {
+    protocolGet: () => {
+      dispatch(getData('protocol', {}));
+    },
+  };
+};
+
 const mapStateToProps = (state) => {
   return {
+    protocols: state.available.protocol,
     selectedIndices: state.selected,
   };
 };
 
 const Container = connect(
   mapStateToProps,
-)(DisplayScreenContainer);
+  mapDispatchToProps,
+)(DisplayExperimentContainer);
 
 export default Container;

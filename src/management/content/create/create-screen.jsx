@@ -163,7 +163,7 @@ class CreateScreen extends React.Component {
             />
             <IconButton
               onTouchTap={ () => {
-                this.props.dialogOpen('Help for the "Condition" field', Fields.screen.condition.help);
+                this.props.dialog.open('Help for the "Condition" field', Fields.screen.condition.help);
               } }
               style={ helpIconStyle }
               tooltip="Help"
@@ -233,7 +233,7 @@ class CreateScreen extends React.Component {
           actions={ this.dialogClose() }
           modal={ false }
           onRequestClose={ this.props.dialog.close }
-          open={ this.props.dialog.open }
+          open={ this.props.dialog.help }
           title={ this.props.dialog.title }
         >
           { this.props.dialog.text }
@@ -246,11 +246,11 @@ class CreateScreen extends React.Component {
 CreateScreen.propTypes = {
   dialog: PropTypes.shape({
     close: PropTypes.func,
-    open: PropTypes.bool,
+    help: PropTypes.bool,
+    open: PropTypes.func,
     text: PropTypes.string,
     title: PropTypes.string,
   }).isRequired,
-  dialogOpen: PropTypes.func.isRequired,
   errors: PropTypes.shape({
     cell: PropTypes.string,
     condition: PropTypes.string,

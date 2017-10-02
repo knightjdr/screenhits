@@ -1,5 +1,7 @@
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
+import IconButton from 'material-ui/IconButton';
+import HelpIcon from 'material-ui/svg-icons/action/help';
 import MenuItem from 'material-ui/MenuItem';
 import muiThemeable from 'material-ui/styles/muiThemeable';
 import PropTypes from 'prop-types';
@@ -29,7 +31,7 @@ const Fields = {
 };
 
 const elementContainerStyle = {
-  alignItems: 'center',
+  alignItems: 'top',
   display: 'flex',
   margin: '5px 0px 5px 0px',
 };
@@ -42,11 +44,20 @@ const elementKeyStyle = {
 };
 const elementValueStyle = {
   marginLeft: 10,
+  padding: '5px 5px 5px 5px',
+};
+const helpIconStyle = {
+  marginTop: 25,
 };
 const inputStyle = {
   marginLeft: 4,
   marginRight: 4,
   maxWidth: 500,
+};
+const inputWithChildrenStyle = {
+  display: 'inline-flex',
+  marginLeft: 4,
+  marginRight: 4,
 };
 
 class DisplayScreen extends React.Component {
@@ -93,7 +104,7 @@ class DisplayScreen extends React.Component {
               ) }
             >
               <span>
-                Screen name:
+                Name:
               </span>
             </div>
             <div
@@ -303,16 +314,38 @@ class DisplayScreen extends React.Component {
             </div>
           </div>
           :
-          <TextField
-            floatingLabelText="Condition (optional)"
-            fullWidth={ true }
-            multiLine={ true }
-            onChange={ (e) => { this.props.inputChange('condition', e.target.value); } }
-            rows={ 1 }
-            rowsMax={ 2 }
-            style={ inputStyle }
-            value={ this.props.screen.condition }
-          />
+          <div
+            style={ Object.assign(
+              {},
+              inputWithChildrenStyle,
+              {
+                width: this.props.inputWidth,
+              },
+            ) }
+          >
+            <TextField
+              floatingLabelText="Condition (optional)"
+              fullWidth={ true }
+              multiLine={ true }
+              onChange={ (e) => { this.props.inputChange('condition', e.target.value); } }
+              rows={ 1 }
+              rowsMax={ 2 }
+              style={ inputStyle }
+              value={ this.props.screen.condition }
+            />
+            <IconButton
+              onTouchTap={ () => {
+                this.props.dialog.open('help', 'Help for the "Condition" field', Fields.screen.condition.help);
+              } }
+              style={ helpIconStyle }
+              tooltip="Help"
+              tooltipPosition="top-center"
+            >
+              <HelpIcon
+                color={ this.props.muiTheme.palette.alternateTextColor }
+              />
+            </IconButton>
+          </div>
         }
         { !this.props.edit ? (
             this.props.screen.other &&
@@ -492,7 +525,7 @@ class DisplayScreen extends React.Component {
             >
               <ActionButtons
                 cancel={ {
-                  func: this.props.dialog.open,
+                  func: () => { this.props.dialog.open('delete'); },
                   label: 'Delete',
                   toolTipText: 'Delete screen',
                 } }
@@ -508,11 +541,20 @@ class DisplayScreen extends React.Component {
           ] }
           modal={ false }
           onRequestClose={ this.props.dialog.close }
-          open={ this.props.dialog.bool }
+          open={ this.props.dialog.delete }
           title="Confirmation"
         >
           This action will permanently delete the screen (and all experiments,
           samples and analysis associated with it). Press confirm to proceed.
+        </Dialog>
+        <Dialog
+          actions={ this.dialogClose() }
+          modal={ false }
+          onRequestClose={ this.props.dialog.close }
+          open={ this.props.dialog.help }
+          title={ this.props.dialog.title }
+        >
+          { this.props.dialog.text }
         </Dialog>
       </div>
     );
@@ -522,9 +564,12 @@ class DisplayScreen extends React.Component {
 DisplayScreen.propTypes = {
   deleteScreen: PropTypes.func.isRequired,
   dialog: PropTypes.shape({
-    bool: PropTypes.bool,
     close: PropTypes.func,
+    delete: PropTypes.bool,
+    help: PropTypes.bool,
     open: PropTypes.func,
+    text: PropTypes.string,
+    title: PropTypes.string,
   }).isRequired,
   edit: PropTypes.bool.isRequired,
   errors: PropTypes.shape({
@@ -554,6 +599,7 @@ DisplayScreen.propTypes = {
   }).isRequired,
   muiTheme: PropTypes.shape({
     palette: PropTypes.shape({
+      alternateTextColor: PropTypes.string,
       keyColor: PropTypes.string,
       keyColorBorder: PropTypes.string,
       success: PropTypes.string,

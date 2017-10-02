@@ -27,7 +27,7 @@ const displayStyle = {
 };
 
 const elementContainerStyle = {
-  alignItems: 'center',
+  alignItems: 'top',
   display: 'flex',
   margin: '5px 0px 5px 0px',
 };
@@ -40,12 +40,7 @@ const elementKeyStyle = {
 };
 const elementValueStyle = {
   marginLeft: 10,
-};
-
-const noticeContainer = {
-  marginTop: 10,
-  textAlign: 'center',
-  width: '100%',
+  padding: '5px 5px 5px 5px',
 };
 
 const iconStyle = {
@@ -120,7 +115,7 @@ class ProtocolContent extends React.Component {
           autoHideTimeout={ 1000 }
           autoHideDuration={ 200 }
           autoHeight={ true }
-          autoHeightMax={ 'calc(100vh - 185px)' }
+          autoHeightMax={ 'calc(100vh - 180px)' }
         >
           <div
             style={ {
@@ -136,6 +131,7 @@ class ProtocolContent extends React.Component {
             <div
               style={ {
                 display: 'flex',
+                minHeight: 90,
               } }
             >
               { this.props.protocols.isFetching &&
@@ -272,27 +268,23 @@ class ProtocolContent extends React.Component {
                     idSuffix="delete-protocol"
                   />
                 </div>
-                <div
-                  style={ noticeContainer }
-                >
-                  <Notice
-                    label="display-notification"
-                    succeed={ this.props.postState.message &&
-                      !this.props.postState.didSubmitFail
-                    }
-                    succeedMessage={ this.props.postState.message }
-                  />
-                  <Notice
-                    fail={ this.props.editMessages.didPutFail }
-                    failMessage={ `Protocol edit failed. ${this.props.editMessages.message}` }
-                    label="edit-notification"
-                    submit={ this.props.editMessages.isPut }
-                    submitMessage={ 'Protocol edit submitted' }
-                    succeed={ this.props.editMessages.message &&
-                      !this.props.editMessages.didPutFail }
-                    succeedMessage={ this.props.editMessages.message }
-                  />
-                </div>
+                <Notice
+                  label="display-notification"
+                  succeed={ this.props.postState.message &&
+                    !this.props.postState.didSubmitFail
+                  }
+                  succeedMessage={ this.props.postState.message }
+                />
+                <Notice
+                  fail={ this.props.editMessages.didPutFail }
+                  failMessage={ `Protocol edit failed. ${this.props.editMessages.message}` }
+                  label="edit-notification"
+                  submit={ this.props.editMessages.isPut }
+                  submitMessage={ 'Protocol edit submitted' }
+                  succeed={ this.props.editMessages.message &&
+                    !this.props.editMessages.didPutFail }
+                  succeedMessage={ this.props.editMessages.message }
+                />
               </div>
             }
             { this.props.edit &&
@@ -505,32 +497,28 @@ class ProtocolContent extends React.Component {
                     } }
                   />
                 </div>
-                <div
-                  style={ noticeContainer }
-                >
-                  <Notice
-                    fail={ this.props.postState.didSubmitFail }
-                    failMessage={ `Protocol creation failed. ${this.props.postState.message}.` }
-                    label="create-notification"
-                    submit={ this.props.postState.isSubmitted }
-                    submitMessage="Protocol submitted"
-                    succeed={ this.props.postState.message &&
-                      !this.props.postState.didSubmitFail
-                    }
-                    succeedMessage={ this.props.postState.message }
-                  />
-                  <Notice
-                    fail={ this.props.deleteMessages.didDeleteFail }
-                    failMessage={ `Protocol deletion failed.
-                    ${this.props.deleteMessages.message}` }
-                    label="delete-notification"
-                    submit={ this.props.deleteMessages.isDelete }
-                    submitMessage="Protocol deletion requested"
-                    succeed={ this.props.deleteMessages.message &&
-                      !this.props.deleteMessages.didDeleteFail }
-                    succeedMessage={ this.props.deleteMessages.message }
-                  />
-                </div>
+                <Notice
+                  fail={ this.props.postState.didSubmitFail }
+                  failMessage={ `Protocol creation failed. ${this.props.postState.message}.` }
+                  label="create-notification"
+                  submit={ this.props.postState.isSubmitted }
+                  submitMessage="Protocol submitted"
+                  succeed={ this.props.postState.message &&
+                    !this.props.postState.didSubmitFail
+                  }
+                  succeedMessage={ this.props.postState.message }
+                />
+                <Notice
+                  fail={ this.props.deleteMessages.didDeleteFail }
+                  failMessage={ `Protocol deletion failed.
+                  ${this.props.deleteMessages.message}` }
+                  label="delete-notification"
+                  submit={ this.props.deleteMessages.isDelete }
+                  submitMessage="Protocol deletion requested"
+                  succeed={ this.props.deleteMessages.message &&
+                    !this.props.deleteMessages.didDeleteFail }
+                  succeedMessage={ this.props.deleteMessages.message }
+                />
               </div>
             }
           </div>

@@ -12,6 +12,7 @@ import FieldsScreen from './forms/fields-screen';
 import FormatExperiment from './forms/form-submission-experiment';
 import FormatProject from './forms/form-submission-project';
 import FormatScreen from './forms/form-submission-screen';
+import { getData } from '../../../state/get/data-actions';
 import { objectEmpty } from '../../../helpers/helpers';
 import { resetPost, submitPost } from '../../../state/post/actions';
 import { setIndex } from '../../../state/set/index-actions';
@@ -50,9 +51,11 @@ class CreateContentContainer extends React.Component {
       {},
       BlankState[this.props.activeLevel],
       {
-        dialogBool: false,
-        dialogText: null,
-        dialogTitle: null,
+        dialog: {
+          help: false,
+          text: null,
+          title: null,
+        },
         inputWidth: window.innerWidth >= 555 ? 500 : window.innerWidth - 55,
       },
     );
@@ -80,16 +83,20 @@ class CreateContentContainer extends React.Component {
   }
   dialogClose = () => {
     this.setState({
-      dialogBool: false,
-      dialogText: null,
-      dialogTitle: null,
+      dialog: {
+        help: false,
+        text: null,
+        title: null,
+      },
     });
   }
   dialogOpen = (title, text) => {
     this.setState({
-      dialogBool: true,
-      dialogText: text,
-      dialogTitle: title,
+      dialog: {
+        help: true,
+        text,
+        title,
+      },
     });
   }
   inputChange = (field, value, other, type) => {
@@ -102,7 +109,14 @@ class CreateContentContainer extends React.Component {
         error: false,
         message: null,
       };
-      stateObject[field] = value;
+      if (
+        typeof stateObject[field] === 'object' &&
+        stateObject[field].isArray
+      ) {
+        stateObject[field].push(value);
+      } else {
+        stateObject[field] = value;
+      }
       errors[field] = validate.error ? validate.message : null;
     } else {
       const validate = ValidateField[this.props.activeLevel][`${type}_${field}`] ?
@@ -182,15 +196,17 @@ class CreateContentContainer extends React.Component {
         cancelForm={ this.cancelForm }
         dialog={ {
           close: this.dialogClose,
-          open: this.state.dialogBool,
-          text: this.state.dialogText,
-          title: this.state.dialogTitle,
+          help: this.state.dialog.help,
+          open: this.dialogOpen,
+          text: this.state.dialog.text,
+          title: this.state.dialog.title,
         } }
-        dialogOpen={ this.dialogOpen }
         errors={ this.state.errors }
         formData={ this.state.formData }
         inputChange={ this.inputChange }
         inputWidth={ this.state.inputWidth }
+        protocolGet={ this.props.protocolGet }
+        protocols={ this.props.protocols }
         postState={ this.props.postState }
         resetForm={ this.resetForm }
         submitForm={ this.submitForm }
@@ -224,6 +240,16 @@ CreateContentContainer.propTypes = {
     isSubmitted: PropTypes.bool,
     message: PropTypes.string,
   }),
+  protocolGet: PropTypes.func.isRequired,
+  protocols: PropTypes.shape({
+    didInvalidate: PropTypes.bool,
+    isFetching: PropTypes.bool,
+    items: PropTypes.arrayOf(
+      PropTypes.shape({
+      }),
+    ),
+    message: PropTypes.string,
+  }).isRequired,
   reset: PropTypes.func.isRequired,
   selected: PropTypes.shape({
     experiment: PropTypes.number,
@@ -244,6 +270,9 @@ const mapDispatchToProps = (dispatch) => {
     create: (activeLevel, obj) => {
       dispatch(submitPost(activeLevel, obj));
     },
+    protocolGet: () => {
+      dispatch(getData('protocol', {}));
+    },
     reset: (activeLevel) => {
       dispatch(resetPost(activeLevel));
     },
@@ -256,6 +285,7 @@ const mapDispatchToProps = (dispatch) => {
 const mapStateToProps = (state) => {
   return {
     postState: state.post,
+    protocols: state.available.protocol,
     selected: state.selected,
     user: state.user,
   };

@@ -7,7 +7,7 @@ const BlankState = {
     name: '',
     other: {},
     species: '',
-    type: null,
+    type: '',
   },
   errors: {
     cell: null,

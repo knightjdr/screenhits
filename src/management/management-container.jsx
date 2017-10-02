@@ -85,9 +85,9 @@ class ManagementContainer extends React.Component {
     let activeLevel;
     if (selected.sample) {
       activeLevel = 'sample';
-    } if (selected.experiment) {
+    } else if (selected.experiment) {
       activeLevel = 'experiment';
-    } if (selected.screen) {
+    } else if (selected.screen) {
       activeLevel = 'screen';
     } else {
       activeLevel = 'project';
@@ -107,7 +107,6 @@ class ManagementContainer extends React.Component {
   }
   updateState = (selected, lastSelected) => {
     let continuteUpdate = true;
-    const currentLevel = 'project';
     let path = 'management?';
     const setSelected = {
       experiment: null,
@@ -149,7 +148,7 @@ class ManagementContainer extends React.Component {
       }) > -1
     ) {
       continuteUpdate = true;
-      path += `screen=${selected.screen}`;
+      path += `&screen=${selected.screen}`;
       setSelected.screen = selected.screen;
       if (
         selected.screen !== lastSelected.screen
@@ -173,7 +172,7 @@ class ManagementContainer extends React.Component {
       }) > -1
     ) {
       continuteUpdate = true;
-      path += `experiment=${selected.experiment}`;
+      path += `&experiment=${selected.experiment}`;
       setSelected.experiment = selected.experiment;
       if (
         selected.experiment !== lastSelected.experiment
@@ -198,7 +197,7 @@ class ManagementContainer extends React.Component {
         return sampleItem._id === selected.sample;
       }) > -1
     ) {
-      path += `sample=${selected.sample}`;
+      path += `&sample=${selected.sample}`;
       setSelected.sample = selected.sample;
       if (
         selected.sample !== lastSelected.sample
@@ -223,7 +222,7 @@ class ManagementContainer extends React.Component {
       lastExists ? browserHistory.push(path) : browserHistory.replace(path);
     }
     // update state
-    this.setState({ activeLevel: currentLevel });
+    this.setState({ activeLevel: this.findActiveLevel(setSelected) });
   }
   render() {
     return (

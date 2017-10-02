@@ -8,6 +8,7 @@ import { Scrollbars } from 'react-custom-scrollbars';
 import ActionButtons from '../../../action-buttons/action-buttons-container';
 import DisplayProject from './display-project-container';
 import DisplayScreen from './display-screen-container';
+import DisplayExperiment from './display-experiment-container';
 import Notice from '../../../messages/notice/notice';
 import { uppercaseFirst } from '../../../helpers/helpers';
 
@@ -56,11 +57,25 @@ class DisplayContent extends React.Component {
             />
               : null
           }
+          { this.props.activeLevel === 'experiment' ?
+            <DisplayExperiment
+              cancel={ this.props.cancel }
+              delete={ this.props.delete }
+              edit={ this.props.edit }
+              errors={ this.props.errors }
+              inputWidth={ this.props.inputWidth }
+              item={ this.props.item }
+              key={ this.props.resetKey }
+              updateErrors={ this.props.updateErrors }
+              updateItem={ this.props.updateItem }
+            />
+              : null
+          }
           { this.props.warning &&
             <div
               style={ {
                 color: this.props.muiTheme.palette.primary2Color,
-                marginTop: 10,
+                margin: '10px 0px 10px 0px',
               } }
             >
               <FontAwesome name="exclamation-triangle " /> There are errors in the form. Please correct before proceeding.
@@ -69,7 +84,7 @@ class DisplayContent extends React.Component {
           { this.props.edit &&
             <div
               style={ {
-                marginTop: 15,
+                marginTop: 10,
               } }
             >
               <ActionButtons

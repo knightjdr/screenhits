@@ -9,7 +9,6 @@ import './notice.scss';
 const messageStyle = {
   backgroundColor: '#fff',
   position: 'absolute',
-  textAlign: 'center',
   width: '100%',
 };
 
@@ -21,16 +20,25 @@ class Notice extends React.Component {
   render() {
     return (
       <div
-        style={ Object.assign(
-          {},
-          noticeContainer,
-          this.props.submit ||
-          this.props.fail ||
-          this.props.succeed ||
-          this.props.other ?
-            { height: 35 }
+        style={
+          this.props.overRideStyle ?
+            Object.assign(
+              {},
+              noticeContainer,
+              this.props.style,
+            )
             :
-            { height: 0 }
+            Object.assign(
+              {},
+              noticeContainer,
+              this.props.submit ||
+              this.props.fail ||
+              this.props.succeed ||
+              this.props.other ?
+                { height: 35 }
+                :
+                { height: 0 }
+              ,
         ) }
       >
         <CSSTransitionGroup
@@ -44,7 +52,13 @@ class Notice extends React.Component {
           { this.props.submit &&
             <div
               key={ `${this.props.label}-submit` }
-              style={ messageStyle }
+              style={ Object.assign(
+                {},
+                messageStyle,
+                {
+                  textAlign: this.props.textAlign,
+                }
+              ) }
             >
               <FontAwesome name="spinner" pulse={ true } /> { this.props.submitMessage }
             </div>
@@ -52,7 +66,14 @@ class Notice extends React.Component {
           { this.props.fail &&
             <div
               key={ `${this.props.label}-fail` }
-              style={ Object.assign({}, messageStyle, { zIndex: 2 }) }
+              style={ Object.assign(
+                {},
+                messageStyle,
+                { zIndex: 2 },
+                {
+                  textAlign: this.props.textAlign,
+                }
+              ) }
             >
               <FontAwesome name="exclamation-triangle" /> { this.props.failMessage }
             </div>
@@ -60,7 +81,14 @@ class Notice extends React.Component {
           { this.props.succeed &&
             <div
               key={ `${this.props.label}-succeed` }
-              style={ Object.assign({}, messageStyle, { zIndex: 2 }) }
+              style={ Object.assign(
+                {},
+                messageStyle,
+                { zIndex: 2 },
+                {
+                  textAlign: this.props.textAlign,
+                }
+              ) }
             >
               { this.props.succeedMessage }
             </div>
@@ -68,7 +96,14 @@ class Notice extends React.Component {
           { this.props.other &&
             <div
               key={ `${this.props.label}-other` }
-              style={ Object.assign({}, messageStyle, { zIndex: 2 }) }
+              style={ Object.assign(
+                {},
+                messageStyle,
+                { zIndex: 2 },
+                {
+                  textAlign: this.props.textAlign,
+                }
+              ) }
             >
               { this.props.otherMessage }
             </div>
@@ -84,10 +119,13 @@ Notice.defaultProps = {
   failMessage: null,
   other: false,
   otherMessage: null,
+  overRideStyle: false,
+  style: {},
   submit: false,
   submitMessage: null,
   succeed: false,
   succeedMessage: null,
+  textAlign: 'center',
 };
 
 Notice.propTypes = {
@@ -104,10 +142,13 @@ Notice.propTypes = {
     PropTypes.string,
   ]),
   otherMessage: PropTypes.string,
+  overRideStyle: PropTypes.bool,
+  style: PropTypes.shape({}),
   submit: PropTypes.bool,
   submitMessage: PropTypes.string,
   succeed: PropTypes.bool,
   succeedMessage: PropTypes.string,
+  textAlign: PropTypes.string,
 };
 
 export default muiThemeable()(Notice);

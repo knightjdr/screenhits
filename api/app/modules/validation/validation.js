@@ -5,6 +5,51 @@ const validators = require('../helpers/validators');
 const permission = ['lr', 'lw', 'ar', 'aw'];
 
 const validate = {
+  experiment: (obj, dateType, creation = true) => {
+    return new Promise((resolve, reject) => {
+      const validateObj = obj;
+      if (
+        !validateObj.creatorEmail ||
+        !validators.email(validateObj.creatorEmail)
+      ) {
+        reject('invalid email');
+      }
+      if (!validateObj.creatorName) {
+        reject('missing user name');
+      }
+      if (!validateObj.description) {
+        reject('missing experiment description');
+      }
+      if (!validateObj.name) {
+        reject('missing experiment name');
+      }
+      if (
+        creation &&
+        !validateObj.project
+      ) {
+        reject('missing project');
+      }
+      if (
+        creation &&
+        !validateObj.screen
+      ) {
+        reject('missing screen');
+      }
+      if (creation) {
+        validateObj.group = {
+          project: validateObj.project,
+          screen: validateObj.screen,
+        };
+      }
+      delete validateObj.project;
+      delete validateObj.screen;
+      if (validateObj.target) {
+        delete validateObj.target;
+      }
+      validateObj[dateType] = moment().format('MMMM Do YYYY, h:mm a');
+      resolve(validateObj);
+    });
+  },
   project: (obj, dateType) => {
     return new Promise((resolve, reject) => {
       const validateObj = obj;
@@ -101,9 +146,7 @@ const validate = {
           project: validateObj.project,
         };
       }
-      if (validateObj.project) {
-        delete validateObj.project;
-      }
+      delete validateObj.project;
       if (validateObj.target) {
         delete validateObj.target;
       }

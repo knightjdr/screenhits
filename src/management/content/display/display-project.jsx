@@ -8,17 +8,19 @@ import TextField from 'material-ui/TextField';
 import ActionButtons from '../../../action-buttons/action-buttons-container';
 
 const actionButtonStyle = {
-  float: 'right',
-  margin: '10px 10px 0px 0px',
+  position: 'absolute',
+  right: 10,
 };
 
 const deleteContainer = {
-  height: 40,
+  height: 50,
+  marginTop: 10,
+  position: 'relative',
   width: '100%',
 };
 
 const elementContainerStyle = {
-  alignItems: 'center',
+  alignItems: 'top',
   display: 'flex',
   margin: '5px 0px 5px 0px',
 };
@@ -31,6 +33,7 @@ const elementKeyStyle = {
 };
 const elementValueStyle = {
   marginLeft: 10,
+  padding: '5px 5px 5px 5px',
 };
 const inputStyle = {
   marginLeft: 4,
@@ -82,7 +85,7 @@ class DisplayProject extends React.Component {
               ) }
             >
               <span>
-                Project name:
+                Name:
               </span>
             </div>
             <div

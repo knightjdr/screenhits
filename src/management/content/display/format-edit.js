@@ -2,6 +2,10 @@
 
 const Format = {
   blankError: {
+    experiment: {
+      description: null,
+      name: null,
+    },
     project: {
       description: null,
       name: null,

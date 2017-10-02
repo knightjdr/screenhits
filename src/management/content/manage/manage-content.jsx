@@ -20,6 +20,10 @@ import ActionButtons from '../../../action-buttons/action-buttons-container';
 import CustomTable from '../../../table/table-container';
 import Notice from '../../../messages/notice/notice';
 
+const noticeFullWidth = {
+  marginTop: 10,
+};
+
 class ManageContent extends React.Component {
   onEnter = (e) => {
     if (e.key === 'Enter') {
@@ -203,12 +207,20 @@ class ManageContent extends React.Component {
                         fail={ this.props.manageState.didPostFail }
                         failMessage={ `Update failed. ${this.props.manageState.message}` }
                         label="manage-user-notification"
+                        overRideStyle={ true }
+                        style={ {
+                          display: 'inline-block',
+                          marginRight: 10,
+                          top: -12,
+                          width: 250,
+                        } }
                         submit={ this.props.manageState.isPost }
                         submitMessage="Updates submitted"
                         succeed={ this.props.manageState.message &&
                           !this.props.manageState.didPostFail
                         }
                         succeedMessage={ this.props.manageState.message }
+                        textAlign="right"
                       />
                     }
                     <span
@@ -308,17 +320,21 @@ class ManageContent extends React.Component {
                 />
               </div>
               { this.props.searchUser.list.length <= 0 &&
-                <Notice
-                  fail={ this.props.searchUser.didGetFail }
-                  failMessage={ `Update failed. ${this.props.searchUser.message}` }
-                  label="manage-user-search-notification"
-                  submit={ this.props.searchUser.isGet }
-                  submitMessage="Searching..."
-                  succeed={ this.props.searchUser.message &&
-                    !this.props.searchUser.didGetFail
-                  }
-                  succeedMessage="No users found"
-                />
+                <div
+                  style={ noticeFullWidth }
+                >
+                  <Notice
+                    fail={ this.props.searchUser.didGetFail }
+                    failMessage={ `Update failed. ${this.props.searchUser.message}` }
+                    label="manage-user-search-notification"
+                    submit={ this.props.searchUser.isGet }
+                    submitMessage="Searching..."
+                    succeed={ this.props.searchUser.message &&
+                      !this.props.searchUser.didGetFail
+                    }
+                    succeedMessage="No users found"
+                  />
+                </div>
               }
               { this.props.searchUser.list.length > 0 &&
                 <CustomTable
@@ -509,23 +525,25 @@ class ManageContent extends React.Component {
                   } }
                 />
                 { this.props.bulkPermissionState._id === this.props.selected &&
-                  <span
+                  <Notice
+                    fail={ this.props.bulkPermissionState.didPutFail }
+                    failMessage={ `Update failed. ${this.props.bulkPermissionState.message}` }
+                    label="manage-bulk-update-notification"
+                    overRideStyle={ true }
                     style={ {
-                      marginLeft: 20,
+                      display: 'inline-block',
+                      marginLeft: 10,
+                      top: -12,
+                      width: 250,
                     } }
-                  >
-                    <Notice
-                      fail={ this.props.bulkPermissionState.didPutFail }
-                      failMessage={ `Update failed. ${this.props.bulkPermissionState.message}` }
-                      label="manage-bulk-update-notification"
-                      submit={ this.props.bulkPermissionState.isPut }
-                      submitMessage="Update submitted"
-                      succeed={ this.props.bulkPermissionState.message &&
-                        !this.props.bulkPermissionState.didPutFail
-                      }
-                      succeedMessage={ this.props.bulkPermissionState.message }
-                    />
-                  </span>
+                    submit={ this.props.bulkPermissionState.isPut }
+                    submitMessage="Update submitted"
+                    succeed={ this.props.bulkPermissionState.message &&
+                      !this.props.bulkPermissionState.didPutFail
+                    }
+                    succeedMessage={ this.props.bulkPermissionState.message }
+                    textAlign="left"
+                  />
                 }
               </div>
             </Paper>

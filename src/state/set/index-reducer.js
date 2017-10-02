@@ -17,7 +17,7 @@ const targetChildren = {
 };
 
 const Selected = (state = Object.assign({}, defaultState), action) => {
-  const modifiedFields = Object.assign({}, defaultState);
+  const modifiedFields = Object.assign({}, state);
   switch (action.type) {
     case SET_INDEX:
       if (action.target === 'all') {

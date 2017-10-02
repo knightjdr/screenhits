@@ -59,7 +59,7 @@ const Validate = {
       error: false,
       message: null,
     };
-    const valid = ['CRISPR', 'Microscopy'];
+    const valid = ['CRISPR', 'Generic', 'Microscopy'];
     if (!value || valid.indexOf(value) < 0) {
       errorObj.error = true;
       errorObj.message = 'Screen type must be selected';

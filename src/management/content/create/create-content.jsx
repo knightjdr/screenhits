@@ -12,12 +12,6 @@ import CreateScreen from './create-screen';
 import Notice from '../../../messages/notice/notice';
 import { uppercaseFirst } from '../../../helpers/helpers';
 
-const noticeContainer = {
-  marginTop: 10,
-  textAlign: 'center',
-  width: '100%',
-};
-
 class CreateContent extends React.Component {
   render() {
     return (
@@ -47,7 +41,6 @@ class CreateContent extends React.Component {
           { this.props.activeLevel === 'screen' ?
             <CreateScreen
               dialog={ this.props.dialog }
-              dialogOpen={ this.props.dialogOpen }
               errors={ this.props.errors }
               formData={ this.props.formData }
               inputChange={ this.props.inputChange }
@@ -58,11 +51,12 @@ class CreateContent extends React.Component {
           { this.props.activeLevel === 'experiment' ?
             <CreateExperiment
               dialog={ this.props.dialog }
-              dialogOpen={ this.props.dialogOpen }
               errors={ this.props.errors }
               formData={ this.props.formData }
               inputChange={ this.props.inputChange }
               inputWidth={ this.props.inputWidth }
+              protocolGet={ this.props.protocolGet }
+              protocols={ this.props.protocols }
             />
               : null
           }
@@ -70,30 +64,32 @@ class CreateContent extends React.Component {
             <div
               style={ {
                 color: this.props.muiTheme.palette.alternateTextColor,
-                marginTop: 20,
+                margin: '10px 0px 10px 0px',
               } }
             >
               <FontAwesome name="exclamation-triangle " /> There are errors in the form. Please correct before proceeding.
             </div>
           }
-          <ActionButtons
-            cancel={ {
-              func: this.props.cancelForm,
-              toolTipText: `Cancel ${this.props.activeLevel} creation`,
-            } }
-            idSuffix={ `create-${this.props.activeLevel}` }
-            reset={ {
-              func: this.props.resetForm,
-              toolTipText: 'Reset the form',
-            } }
-            update={ {
-              func: this.props.submitForm,
-              label: 'Create',
-            } }
-          />
           <div
-            style={ noticeContainer }
+            style={ {
+              marginTop: 10,
+            } }
           >
+            <ActionButtons
+              cancel={ {
+                func: this.props.cancelForm,
+                toolTipText: `Cancel ${this.props.activeLevel} creation`,
+              } }
+              idSuffix={ `create-${this.props.activeLevel}` }
+              reset={ {
+                func: this.props.resetForm,
+                toolTipText: 'Reset the form',
+              } }
+              update={ {
+                func: this.props.submitForm,
+                label: 'Create',
+              } }
+            />
             <Notice
               fail={ this.props.postState[this.props.activeLevel].didSubmitFail }
               failMessage={ `${uppercaseFirst(this.props.activeLevel)} creation failed.
@@ -118,11 +114,11 @@ CreateContent.propTypes = {
   cancelForm: PropTypes.func.isRequired,
   dialog: PropTypes.shape({
     close: PropTypes.func,
-    open: PropTypes.bool,
+    help: PropTypes.bool,
+    open: PropTypes.func,
     text: PropTypes.string,
     title: PropTypes.string,
   }).isRequired,
-  dialogOpen: PropTypes.func.isRequired,
   errors: PropTypes.shape({
     description: PropTypes.string,
     name: PropTypes.string,
@@ -144,6 +140,16 @@ CreateContent.propTypes = {
     didSubmitFail: PropTypes.bool,
     _id: PropTypes.number,
     isSubmitted: PropTypes.bool,
+    message: PropTypes.string,
+  }).isRequired,
+  protocolGet: PropTypes.func.isRequired,
+  protocols: PropTypes.shape({
+    didInvalidate: PropTypes.bool,
+    isFetching: PropTypes.bool,
+    items: PropTypes.arrayOf(
+      PropTypes.shape({
+      }),
+    ),
     message: PropTypes.string,
   }).isRequired,
   resetForm: PropTypes.func.isRequired,

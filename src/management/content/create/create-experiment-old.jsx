@@ -11,7 +11,6 @@ import SelectField from 'material-ui/SelectField';
 import TextField from 'material-ui/TextField';
 
 import FieldsExperiment from './forms/fields-experiment';
-import { customSort } from '../../../helpers/helpers';
 
 const Fields = {
   experiment: FieldsExperiment,
@@ -34,9 +33,6 @@ const inputWithChildrenStyle = {
 };
 
 class CreateExperiment extends React.Component {
-  componentWillMount = () => {
-    this.props.protocolGet();
-  }
   dialogClose = () => {
     return (
     [
@@ -60,11 +56,8 @@ class CreateExperiment extends React.Component {
   inputChangeName = (e) => {
     this.props.inputChange('name', e.target.value);
   }
-  inputChangeProtocol = (e, index, value) => {
-    this.props.inputChange('protocols', value);
-  }
-  inputChangeTimepoint = (e) => {
-    this.props.inputChange('timepoint', e.target.value);
+  inputChangeTimepoint = (e, index, value) => {
+    this.props.inputChange('timepoint', value);
   }
   render() {
     return (
@@ -124,7 +117,7 @@ class CreateExperiment extends React.Component {
             />
             <IconButton
               onTouchTap={ () => {
-                this.props.dialog.open('Help for the "Concentration" field', Fields.experiment.concentration.help);
+                this.props.dialogOpen('Help for the "Concentration" field', Fields.experiment.concentration.help);
               } }
               style={ helpIconStyle }
               tooltip="Help"
@@ -155,7 +148,7 @@ class CreateExperiment extends React.Component {
             />
             <IconButton
               onTouchTap={ () => {
-                this.props.dialog.open('Help for the "Time point" field', Fields.experiment.timepoint.help);
+                this.props.dialogOpen('Help for the "Time point" field', Fields.experiment.timepoint.help);
               } }
               style={ helpIconStyle }
               tooltip="Help"
@@ -175,44 +168,29 @@ class CreateExperiment extends React.Component {
               },
             ) }
           >
-            { this.props.protocols.isFetching ?
-              <span
-                style={ inputStyle }
-              >
-                <FontAwesome key="fetching" name="spinner" pulse={ true } /> Fetching protocols...
-              </span>
-              :
-              <SelectField
-                floatingLabelText="Protocols"
-                fullWidth={ true }
-                listStyle={ {
-                  paddingBottom: 0,
-                  paddingTop: 0,
-                } }
-                multiple={ true }
-                onChange={ this.inputChangeProtocol }
-                style={ inputStyle }
-                value={ this.props.formData.protocols }
-              >
-                { customSort.arrayOfObjectByKey(
-                    this.props.protocols.items,
-                    'name',
-                    'asc',
-                  ).map((protocol) => {
-                    return (
-                      <MenuItem
-                        key={ protocol._id }
-                        value={ protocol._id }
-                        primaryText={ protocol.name }
-                      />
-                    );
-                  })
-                }
-              </SelectField>
-            }
+            <SelectField
+              floatingLabelText="Protocols"
+              fullWidth={ true }
+              listStyle={ {
+                paddingBottom: 0,
+                paddingTop: 0,
+              } }
+              style={ inputStyle }
+              value={ this.props.formData.protocols }
+            >
+              { [].map((type) => {
+                return (
+                  <MenuItem
+                    key={ type }
+                    value={ type }
+                    primaryText={ type }
+                  />
+                );
+              }) }
+            </SelectField>
             <IconButton
               onTouchTap={ () => {
-                this.props.dialog.open('Help for the "Protocols" field', Fields.experiment.protocols.help);
+                this.props.dialogOpen('Help for the "Protocols" field', Fields.experiment.protocols.help);
               } }
               style={ helpIconStyle }
               tooltip="Help"
@@ -238,7 +216,7 @@ class CreateExperiment extends React.Component {
           actions={ this.dialogClose() }
           modal={ false }
           onRequestClose={ this.props.dialog.close }
-          open={ this.props.dialog.help }
+          open={ this.props.dialog.open }
           title={ this.props.dialog.title }
         >
           { this.props.dialog.text }
@@ -251,11 +229,11 @@ class CreateExperiment extends React.Component {
 CreateExperiment.propTypes = {
   dialog: PropTypes.shape({
     close: PropTypes.func,
-    help: PropTypes.bool,
-    open: PropTypes.func,
+    open: PropTypes.bool,
     text: PropTypes.string,
     title: PropTypes.string,
   }).isRequired,
+  dialogOpen: PropTypes.func.isRequired,
   errors: PropTypes.shape({
     description: PropTypes.string,
     name: PropTypes.string,
@@ -276,16 +254,6 @@ CreateExperiment.propTypes = {
       warning: PropTypes.string,
       warningHover: PropTypes.string,
     }),
-  }).isRequired,
-  protocolGet: PropTypes.func.isRequired,
-  protocols: PropTypes.shape({
-    didInvalidate: PropTypes.bool,
-    isFetching: PropTypes.bool,
-    items: PropTypes.arrayOf(
-      PropTypes.shape({
-      }),
-    ),
-    message: PropTypes.string,
   }).isRequired,
 };
 
