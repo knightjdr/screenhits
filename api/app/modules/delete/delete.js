@@ -31,7 +31,7 @@ const Delete = {
         case 'experiment':
           Promise.all([
             deleteQuery.item('experiment', { _id }),
-            deleteQuery.item('sample', { group: { experiment: _id } }),
+            deleteQuery.item('sample', { 'group.experiment': _id }),
           ])
             .then(resolve())
             .catch((error) => { reject(error); })
@@ -40,9 +40,9 @@ const Delete = {
         case 'project':
           Promise.all([
             deleteQuery.item('project', { _id }),
-            deleteQuery.item('screen', { group: { project: _id } }),
-            deleteQuery.item('experiment', { group: { project: _id } }),
-            deleteQuery.item('sample', { group: { project: _id } }),
+            deleteQuery.item('screen', { 'group.project': _id }),
+            deleteQuery.item('experiment', { 'group.project': _id }),
+            deleteQuery.item('sample', { 'group.project': _id }),
           ])
             .then(resolve())
             .catch((error) => { reject(error); })
@@ -67,8 +67,8 @@ const Delete = {
         case 'screen':
           Promise.all([
             deleteQuery.item('screen', { _id }),
-            deleteQuery.item('experiment', { group: { screen: _id } }),
-            deleteQuery.item('sample', { group: { screen: _id } }),
+            deleteQuery.item('experiment', { 'group.screen': _id }),
+            deleteQuery.item('sample', { 'group.screen': _id }),
           ])
             .then(resolve())
             .catch((error) => { reject(error); })

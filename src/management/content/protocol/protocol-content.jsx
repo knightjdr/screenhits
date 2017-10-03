@@ -27,18 +27,19 @@ const displayStyle = {
 };
 
 const elementContainerStyle = {
-  alignItems: 'top',
+  alignItems: 'flex-start',
   display: 'flex',
   margin: '5px 0px 5px 0px',
 };
 const elementKeyStyle = {
   borderRadius: 2,
-  minWidth: 120,
   textAlign: 'right',
   padding: '5px 5px 5px 5px',
-  width: 120,
+  width: '20%',
+  maxWidth: 150,
 };
 const elementValueStyle = {
+  flex: 1,
   marginLeft: 10,
   padding: '5px 5px 5px 5px',
 };
@@ -57,7 +58,7 @@ const inputFullWidthStyle = {
   width: '98%',
 };
 
-const inputWithChildrenFullWidthStyle = {
+const inputWithHelpFullWidthStyle = {
   display: 'flex',
   width: '98%',
 };
@@ -183,6 +184,14 @@ class ProtocolContent extends React.Component {
                   } }
                   onTouchTap={ this.props.changeNew }
                 />
+                <ActionButtons
+                  reset={ {
+                    func: this.props.back,
+                    label: 'Close',
+                    toolTipText: 'Close view',
+                  } }
+                  idSuffix="delete-protocol"
+                />
               </div>
             </div>
             { this.props.display &&
@@ -305,7 +314,7 @@ class ProtocolContent extends React.Component {
                     return (
                       <div
                         key={ `container-${field.name}` }
-                        style={ inputWithChildrenFullWidthStyle }
+                        style={ inputWithHelpFullWidthStyle }
                       >
                         <TextField
                           floatingLabelText={ field.name }
@@ -338,7 +347,7 @@ class ProtocolContent extends React.Component {
                   })
                 }
                 <div
-                  style={ inputWithChildrenFullWidthStyle }
+                  style={ inputWithHelpFullWidthStyle }
                 >
                   <TextField
                     errorText={ this.props.editFieldError }
@@ -418,7 +427,7 @@ class ProtocolContent extends React.Component {
                       return (
                         <div
                           key={ `container-${field.name}` }
-                          style={ inputWithChildrenFullWidthStyle }
+                          style={ inputWithHelpFullWidthStyle }
                         >
                           <TextField
                             floatingLabelText={ field.name }
@@ -450,7 +459,7 @@ class ProtocolContent extends React.Component {
                   }
                 </div>
                 <div
-                  style={ inputWithChildrenFullWidthStyle }
+                  style={ inputWithHelpFullWidthStyle }
                 >
                   <TextField
                     onChange={ this.inputChangeField }
@@ -553,6 +562,7 @@ ProtocolContent.defaultProps = {
 ProtocolContent.propTypes = {
   addField: PropTypes.func.isRequired,
   addFieldEdit: PropTypes.func.isRequired,
+  back: PropTypes.func.isRequired,
   cancel: PropTypes.func.isRequired,
   cancelEdit: PropTypes.func.isRequired,
   changeNew: PropTypes.func.isRequired,

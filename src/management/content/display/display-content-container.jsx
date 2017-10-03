@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 
 import DisplayContent from './display-content';
 import Format from './format-edit';
-import ValidateField from '../create/validate-fields';
+import ValidateField from '../modules/validate-field';
 import { setIndex } from '../../../state/set/index-actions';
 import { resetDelete, submitDelete } from '../../../state/delete/actions';
 import { resetPost } from '../../../state/post/actions';
@@ -114,9 +114,25 @@ class DisplayContentContainer extends React.Component {
     let error = false;
     const errors = {};
     Object.keys(this.state.updateItem).forEach((field) => {
-      if (ValidateField[this.props.activeLevel].checkFields.indexOf(field) > -1) {
+      if (field === 'other') {
+        if (!errors.other) {
+          errors.other = {};
+        }
+        Object.keys(this.state.updateItem[field]).forEach((otherField) => {
+          const otherFieldName = `${this.state.updateItem.type}_${otherField}`;
+          if (ValidateField[this.props.activeLevel].otherCheckFields.indexOf(otherFieldName) > -1) {
+            const validation = ValidateField[this.props.activeLevel][otherFieldName](
+              this.state.updateItem.other[otherField]);
+            if (validation.error) {
+              error = true;
+              errors.other[otherField] = validation.message;
+            }
+          }
+        });
+      } else if (ValidateField[this.props.activeLevel].checkFields.indexOf(field) > -1) {
         const validation =
-          ValidateField[this.props.activeLevel][field](this.state.updateItem[field]);
+          ValidateField[this.props.activeLevel][field](this.state.updateItem[field])
+        ;
         if (validation.error) {
           error = true;
           errors[field] = validation.message;

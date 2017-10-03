@@ -14,8 +14,8 @@ class SelectInput extends React.Component {
   autoCompleteFilter = (searchText, key) => {
     return key.toLowerCase().includes(searchText.toLowerCase());
   }
-  inputChangeText = (e) => {
-    this.props.inputChange(this.props.type, e.target.value);
+  inputChangeText = (value) => {
+    this.props.inputChange(this.props.type, value);
   }
   inputChangeSelect = (e, index, value) => {
     this.props.inputChange(this.props.type, value);
@@ -38,11 +38,12 @@ class SelectInput extends React.Component {
             filter={ this.autoCompleteFilter }
             floatingLabelText={ this.props.labelText }
             fullWidth={ true }
+            maxSearchResults={ 20 }
             multiLine={ true }
-            onChange={ this.inputChangeText }
+            onUpdateInput={ this.inputChangeText }
             rows={ 1 }
             rowsMax={ 2 }
-            value={ this.props.value }
+            searchText={ this.props.value }
           /> :
           <SelectField
             errorText={ this.props.errorText }
@@ -67,6 +68,7 @@ class SelectInput extends React.Component {
           </SelectField>
         }
         <Checkbox
+          checked={ this.props.inputType === 'text' }
           checkedIcon={ <RadioButtonChecked /> }
           iconStyle={ {
             fill: this.props.muiTheme.palette.alternateTextColor,

@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import DisplayExperiment from './display-experiment';
 import { getData } from '../../../state/get/data-actions';
 import { objectEmpty } from '../../../helpers/helpers';
-import ValidateField from '../create/validate-fields';
+import ValidateField from '../modules/validate-field';
 
 class DisplayExperimentContainer extends React.Component {
   constructor(props) {
@@ -14,10 +14,12 @@ class DisplayExperimentContainer extends React.Component {
       dialog: {
         delete: false,
         help: false,
+        protocol: false,
         text: '',
         title: '',
       },
       item: Object.assign({}, this.props.item),
+      selectedProtocol: {},
       warning: null,
     };
   }
@@ -40,6 +42,7 @@ class DisplayExperimentContainer extends React.Component {
       dialog: {
         delete: false,
         help: false,
+        protocol: false,
       },
     });
   }
@@ -57,15 +60,39 @@ class DisplayExperimentContainer extends React.Component {
   inputChange = (field, value) => {
     // check if field is valid and update errors object
     const errors = Object.assign({}, this.props.errors);
-    const validate = ValidateField.project[field](value);
+    const validate = ValidateField.experiment.checkFields.indexOf(field) > 0 ?
+      ValidateField.experiment[field](value)
+      :
+      { error: false }
+    ;
     errors[field] = validate.error ? validate.message : null;
     const warning = !objectEmpty(errors);
     this.props.updateErrors(errors, warning);
     // update item state
-    const updateObject = Object.assign({}, this.state.item);
-    updateObject[field] = value;
+    const updateObject = JSON.parse(JSON.stringify(this.state.item));
+    if (
+      typeof updateObject[field] === 'object' &&
+      updateObject[field].isArray
+    ) {
+      const index = updateObject[field].indexOf(value);
+      if (index > -1) {
+        updateObject[field].splice(index, 1);
+      } else {
+        updateObject[field].push(value);
+      }
+    } else {
+      updateObject[field] = value;
+    }
     this.setState({ item: updateObject });
     this.props.updateItem(updateObject);
+  }
+  selectProtocol = (_id) => {
+    const index = this.props.protocols.items.findIndex((protocol) => {
+      return protocol._id === _id;
+    });
+    this.setState({
+      selectedProtocol: this.props.protocols.items[index],
+    });
   }
   render() {
     return (
@@ -76,6 +103,7 @@ class DisplayExperimentContainer extends React.Component {
           delete: this.state.dialog.delete,
           help: this.state.dialog.help,
           open: this.dialogOpen,
+          protocol: this.state.dialog.protocol,
           text: this.state.dialog.text,
           title: this.state.dialog.title,
         } }
@@ -85,6 +113,8 @@ class DisplayExperimentContainer extends React.Component {
         inputChange={ this.inputChange }
         inputWidth={ this.props.inputWidth }
         protocols={ this.props.protocols }
+        selectedProtocol={ this.state.selectedProtocol }
+        selectProtocol={ this.selectProtocol }
       />
     );
   }

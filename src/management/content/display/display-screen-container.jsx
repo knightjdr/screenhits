@@ -3,8 +3,9 @@ import React from 'react';
 import { connect } from 'react-redux';
 
 import DisplayScreen from './display-screen';
+import Fields from '../modules/fields';
 import { objectEmpty } from '../../../helpers/helpers';
-import ValidateField from '../create/validate-fields';
+import ValidateField from '../modules/validate-field';
 
 class DisplayScreenContainer extends React.Component {
   constructor(props) {
@@ -49,16 +50,39 @@ class DisplayScreenContainer extends React.Component {
       };
     });
   }
-  inputChange = (field, value) => {
+  inputChange = (field, value, other, type) => {
+    const updateObject = JSON.parse(JSON.stringify(this.state.item));
     // check if field is valid and update errors object
     const errors = Object.assign({}, this.props.errors);
-    const validate = ValidateField.project[field](value);
-    errors[field] = validate.error ? validate.message : null;
+    if (!other) {
+      const validate = ValidateField.screen.checkFields.indexOf(field) > 0 ?
+        ValidateField.screen[field](value)
+      :
+      {
+        error: false,
+        message: null,
+      };
+      updateObject[field] = value;
+      errors[field] = validate.error ? validate.message : null;
+    } else {
+      const validate = ValidateField.screen[`${type}_${field}`] ?
+        ValidateField.screen[`${type}_${field}`](value) :
+      {
+        error: false,
+        message: null,
+      };
+      updateObject.other[field] = value;
+      errors.other[field] = validate.error ? validate.message : null;
+    }
     const warning = !objectEmpty(errors);
     this.props.updateErrors(errors, warning);
-    // update item state
-    const updateObject = Object.assign({}, this.state.item);
-    updateObject[field] = value;
+    // if screen type changes, add/remove neccessary fields
+    if (field === 'type') {
+      updateObject.other = {};
+      Fields.screen.other[value].forEach((otherFields) => {
+        updateObject.other[otherFields.name] = otherFields.defaultValue;
+      });
+    }
     this.setState({ item: updateObject });
     this.props.updateItem(updateObject);
   }

@@ -12,6 +12,7 @@ const routes = {
   configure: (app) => {
     // deleting
     app.delete('/management', auth.validate, (req, res) => {
+      console.log(req.query);
       deleteQuery.item(req.query.target, Number(req.query._id))
         .then((response) => {
           routes.response(res, response);

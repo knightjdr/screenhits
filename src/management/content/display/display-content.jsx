@@ -84,7 +84,7 @@ class DisplayContent extends React.Component {
           { this.props.edit &&
             <div
               style={ {
-                marginTop: 10,
+                margin: '10px 0px 10px 0px',
               } }
             >
               <ActionButtons

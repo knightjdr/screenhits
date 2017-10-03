@@ -332,6 +332,7 @@ class ProtocolContentContainer extends React.Component {
       <ProtocolContent
         addField={ this.addField }
         addFieldEdit={ this.addFieldEdit }
+        back={ this.props.cancelMenuAction }
         cancel={ this.cancel }
         cancelEdit={ this.cancelEdit }
         changeEdit={ this.changeEdit }
@@ -383,6 +384,7 @@ ProtocolContentContainer.defaultProps = {
 };
 
 ProtocolContentContainer.propTypes = {
+  cancelMenuAction: PropTypes.func.isRequired,
   createProtocol: PropTypes.func.isRequired,
   delete: PropTypes.func.isRequired,
   deleteState: PropTypes.shape({

@@ -6,40 +6,7 @@ import React from 'react';
 import TextField from 'material-ui/TextField';
 
 import ActionButtons from '../../../action-buttons/action-buttons-container';
-
-const actionButtonStyle = {
-  position: 'absolute',
-  right: 10,
-};
-
-const deleteContainer = {
-  height: 50,
-  marginTop: 10,
-  position: 'relative',
-  width: '100%',
-};
-
-const elementContainerStyle = {
-  alignItems: 'top',
-  display: 'flex',
-  margin: '5px 0px 5px 0px',
-};
-const elementKeyStyle = {
-  borderRadius: 2,
-  minWidth: 120,
-  textAlign: 'right',
-  padding: '5px 5px 5px 5px',
-  width: 120,
-};
-const elementValueStyle = {
-  marginLeft: 10,
-  padding: '5px 5px 5px 5px',
-};
-const inputStyle = {
-  marginLeft: 4,
-  marginRight: 4,
-  maxWidth: 500,
-};
+import displayStyle from './display-style';
 
 class DisplayProject extends React.Component {
   confirmDeletion = () => {
@@ -70,209 +37,203 @@ class DisplayProject extends React.Component {
   render() {
     return (
       <div>
-        { !this.props.edit ?
-          <div
-            style={ elementContainerStyle }
-          >
+        {
+          !this.props.edit &&
+          <div>
             <div
-              style={ Object.assign(
-                {},
-                elementKeyStyle,
-                {
-                  backgroundColor: this.props.muiTheme.palette.keyColor,
-                  border: `1px solid ${this.props.muiTheme.palette.keyColorBorder}`,
-                },
-              ) }
+              style={ displayStyle.elementContainer }
             >
-              <span>
-                Name:
-              </span>
+              <div
+                style={ Object.assign(
+                  {},
+                  displayStyle.elementKey,
+                  {
+                    backgroundColor: this.props.muiTheme.palette.keyColor,
+                    border: `1px solid ${this.props.muiTheme.palette.keyColorBorder}`,
+                  },
+                ) }
+              >
+                <span>
+                  Name:
+                </span>
+              </div>
+              <div
+                style={ displayStyle.elementValue }
+              >
+                { this.props.project.name }
+              </div>
             </div>
             <div
-              style={ elementValueStyle }
+              style={ displayStyle.elementContainer }
             >
-              { this.props.project.name }
+              <div
+                style={ Object.assign(
+                  {},
+                  displayStyle.elementKey,
+                  {
+                    backgroundColor: this.props.muiTheme.palette.keyColor,
+                    border: `1px solid ${this.props.muiTheme.palette.keyColorBorder}`,
+                  },
+                ) }
+              >
+                <span>
+                  Description:
+                </span>
+              </div>
+              <div
+                style={ displayStyle.elementValue }
+              >
+                { this.props.project.description }
+              </div>
             </div>
-          </div>
-          :
-          <TextField
-            errorText={ this.props.errors.name }
-            floatingLabelText="Project name (short)"
-            fullWidth={ true }
-            multiLine={ true }
-            onChange={ (e) => { this.props.inputChange('name', e.target.value); } }
-            rows={ 1 }
-            rowsMax={ 2 }
-            style={ inputStyle }
-            value={ this.props.project.name }
-          />
-        }
-        { !this.props.edit ?
-          <div
-            style={ elementContainerStyle }
-          >
+            {
+              this.props.project.comment &&
+              <div
+                style={ displayStyle.elementContainer }
+              >
+                <div
+                  style={ Object.assign(
+                    {},
+                    displayStyle.elementKey,
+                    {
+                      backgroundColor: this.props.muiTheme.palette.keyColor,
+                      border: `1px solid ${this.props.muiTheme.palette.keyColorBorder}`,
+                    },
+                  ) }
+                >
+                  <span>
+                    Comments:
+                  </span>
+                </div>
+                <div
+                  style={ displayStyle.elementValue }
+                >
+                  { this.props.project.comment }
+                </div>
+              </div>
+            }
             <div
-              style={ Object.assign(
-                {},
-                elementKeyStyle,
-                {
-                  backgroundColor: this.props.muiTheme.palette.keyColor,
-                  border: `1px solid ${this.props.muiTheme.palette.keyColorBorder}`,
-                },
-              ) }
+              style={ displayStyle.elementContainer }
             >
-              <span>
-                Description:
-              </span>
-            </div>
-            <div
-              style={ elementValueStyle }
-            >
-              { this.props.project.description }
-            </div>
-          </div>
-          :
-          <TextField
-            errorText={ this.props.errors.description }
-            floatingLabelText="Project description"
-            fullWidth={ true }
-            multiLine={ true }
-            onChange={ (e) => { this.props.inputChange('description', e.target.value); } }
-            rows={ 1 }
-            rowsMax={ 5 }
-            style={ inputStyle }
-            value={ this.props.project.description }
-          />
-        }
-        { !this.props.edit ?
-          this.props.project.comment &&
-          <div
-            style={ elementContainerStyle }
-          >
-            <div
-              style={ Object.assign(
-                {},
-                elementKeyStyle,
-                {
-                  backgroundColor: this.props.muiTheme.palette.keyColor,
-                  border: `1px solid ${this.props.muiTheme.palette.keyColorBorder}`,
-                },
-              ) }
-            >
-              <span>
-                Comments:
-              </span>
+              <div
+                style={ Object.assign(
+                  {},
+                  displayStyle.elementKey,
+                  {
+                    backgroundColor: this.props.muiTheme.palette.keyColor,
+                    border: `1px solid ${this.props.muiTheme.palette.keyColorBorder}`,
+                  },
+                ) }
+              >
+                <span>
+                  Creator:
+                </span>
+              </div>
+              <div
+                style={ displayStyle.elementValue }
+              >
+                { this.props.project.creatorName }
+              </div>
             </div>
             <div
-              style={ elementValueStyle }
+              style={ displayStyle.elementContainer }
             >
-              { this.props.project.comment }
-            </div>
-          </div>
-          :
-          <TextField
-            floatingLabelText="Comments (optional)"
-            fullWidth={ true }
-            multiLine={ true }
-            onChange={ (e) => { this.props.inputChange('comment', e.target.value); } }
-            rows={ 1 }
-            rowsMax={ 5 }
-            style={ inputStyle }
-            value={ this.props.project.comment }
-          />
-        }
-        { !this.props.edit &&
-          <div
-            style={ elementContainerStyle }
-          >
-            <div
-              style={ Object.assign(
-                {},
-                elementKeyStyle,
-                {
-                  backgroundColor: this.props.muiTheme.palette.keyColor,
-                  border: `1px solid ${this.props.muiTheme.palette.keyColorBorder}`,
-                },
-              ) }
-            >
-              <span>
-                Creator:
-              </span>
+              <div
+                style={ Object.assign(
+                  {},
+                  displayStyle.elementKey,
+                  {
+                    backgroundColor: this.props.muiTheme.palette.keyColor,
+                    border: `1px solid ${this.props.muiTheme.palette.keyColorBorder}`,
+                  },
+                ) }
+              >
+                <span>
+                  Owner:
+                </span>
+              </div>
+              <div
+                style={ displayStyle.elementValue }
+              >
+                { this.props.project.ownerName }
+              </div>
             </div>
             <div
-              style={ elementValueStyle }
+              style={ displayStyle.elementContainer }
             >
-              { this.props.project.creatorName }
-            </div>
-          </div>
-        }
-        { !this.props.edit &&
-          <div
-            style={ elementContainerStyle }
-          >
-            <div
-              style={ Object.assign(
-                {},
-                elementKeyStyle,
-                {
-                  backgroundColor: this.props.muiTheme.palette.keyColor,
-                  border: `1px solid ${this.props.muiTheme.palette.keyColorBorder}`,
-                },
-              ) }
-            >
-              <span>
-                Owner:
-              </span>
+              <div
+                style={ Object.assign(
+                  {},
+                  displayStyle.elementKey,
+                  {
+                    backgroundColor: this.props.muiTheme.palette.keyColor,
+                    border: `1px solid ${this.props.muiTheme.palette.keyColorBorder}`,
+                  },
+                ) }
+              >
+                <span>
+                  Creation Date:
+                </span>
+              </div>
+              <div
+                style={ displayStyle.elementValue }
+              >
+                { this.props.project.creationDate}
+              </div>
             </div>
             <div
-              style={ elementValueStyle }
+              style={ displayStyle.deleteContainer }
             >
-              { this.props.project.ownerName }
-            </div>
-          </div>
-        }
-        { !this.props.edit &&
-          <div
-            style={ elementContainerStyle }
-          >
-            <div
-              style={ Object.assign(
-                {},
-                elementKeyStyle,
-                {
-                  backgroundColor: this.props.muiTheme.palette.keyColor,
-                  border: `1px solid ${this.props.muiTheme.palette.keyColorBorder}`,
-                },
-              ) }
-            >
-              <span>
-                Creation Date:
-              </span>
-            </div>
-            <div
-              style={ elementValueStyle }
-            >
-              { this.props.project.creationDate}
+              <div
+                style={ displayStyle.actionButton }
+              >
+                <ActionButtons
+                  cancel={ {
+                    func: this.props.dialog.open,
+                    label: 'Delete',
+                    toolTipText: 'Delete project',
+                  } }
+                  idSuffix="delete-project"
+                />
+              </div>
             </div>
           </div>
         }
         {
-          !this.props.edit &&
-          <div
-            style={ deleteContainer }
-          >
-            <div
-              style={ actionButtonStyle }
-            >
-              <ActionButtons
-                cancel={ {
-                  func: this.props.dialog.open,
-                  label: 'Delete',
-                  toolTipText: 'Delete project',
-                } }
-                idSuffix="delete-project"
-              />
-            </div>
+          this.props.edit &&
+          <div>
+            <TextField
+              errorText={ this.props.errors.name }
+              floatingLabelText="Project name (short)"
+              fullWidth={ true }
+              multiLine={ true }
+              onChange={ (e) => { this.props.inputChange('name', e.target.value); } }
+              rows={ 1 }
+              rowsMax={ 2 }
+              style={ displayStyle.input }
+              value={ this.props.project.name }
+            />
+            <TextField
+              errorText={ this.props.errors.description }
+              floatingLabelText="Project description"
+              fullWidth={ true }
+              multiLine={ true }
+              onChange={ (e) => { this.props.inputChange('description', e.target.value); } }
+              rows={ 1 }
+              rowsMax={ 5 }
+              style={ displayStyle.input }
+              value={ this.props.project.description }
+            />
+            <TextField
+              floatingLabelText="Comments (optional)"
+              fullWidth={ true }
+              multiLine={ true }
+              onChange={ (e) => { this.props.inputChange('comment', e.target.value); } }
+              rows={ 1 }
+              rowsMax={ 5 }
+              style={ displayStyle.input }
+              value={ this.props.project.comment }
+            />
           </div>
         }
         <Dialog

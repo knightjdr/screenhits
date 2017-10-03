@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 
 import DisplayProject from './display-project';
-import ValidateField from '../create/validate-fields';
+import ValidateField from '../modules/validate-field';
 import { objectEmpty } from '../../../helpers/helpers';
 
 class DisplayProjectContainer extends React.Component {
@@ -31,7 +31,11 @@ class DisplayProjectContainer extends React.Component {
   inputChange = (field, value) => {
     // check if field is valid and update errors object
     const errors = Object.assign({}, this.props.errors);
-    const validate = ValidateField.project[field](value);
+    const validate = ValidateField.project.checkFields.indexOf(field) > 0 ?
+      ValidateField.experiment[field](value)
+      :
+      { error: false }
+    ;
     errors[field] = validate.error ? validate.message : null;
     const warning = !objectEmpty(errors);
     this.props.updateErrors(errors, warning);

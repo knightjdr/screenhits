@@ -10,12 +10,8 @@ import React from 'react';
 import SelectField from 'material-ui/SelectField';
 import TextField from 'material-ui/TextField';
 
-import FieldsExperiment from './forms/fields-experiment';
+import Fields from '../modules/fields';
 import { customSort } from '../../../helpers/helpers';
-
-const Fields = {
-  experiment: FieldsExperiment,
-};
 
 const helpIconStyle = {
   marginTop: 25,

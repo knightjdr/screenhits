@@ -11,54 +11,11 @@ import TextField from 'material-ui/TextField';
 
 import ActionButtons from '../../../action-buttons/action-buttons-container';
 import CellsDataSource from '../../../assets/data/cells';
-import FieldsScreen from '../create/forms/fields-screen';
+import displayStyle from './display-style';
+import Fields from '../modules/fields';
 import SelectInput from '../create/select-input/select-input-container';
 import SpeciesDataSource from '../../../assets/data/species';
 import { objectEmpty, uppercaseFirst } from '../../../helpers/helpers';
-
-const actionButtonStyle = {
-  float: 'right',
-  margin: '10px 10px 0px 0px',
-};
-
-const deleteContainer = {
-  height: 40,
-  width: '100%',
-};
-
-const Fields = {
-  screen: FieldsScreen,
-};
-
-const elementContainerStyle = {
-  alignItems: 'top',
-  display: 'flex',
-  margin: '5px 0px 5px 0px',
-};
-const elementKeyStyle = {
-  borderRadius: 2,
-  minWidth: 120,
-  textAlign: 'right',
-  padding: '5px 5px 5px 5px',
-  width: 120,
-};
-const elementValueStyle = {
-  marginLeft: 10,
-  padding: '5px 5px 5px 5px',
-};
-const helpIconStyle = {
-  marginTop: 25,
-};
-const inputStyle = {
-  marginLeft: 4,
-  marginRight: 4,
-  maxWidth: 500,
-};
-const inputWithChildrenStyle = {
-  display: 'inline-flex',
-  marginLeft: 4,
-  marginRight: 4,
-};
 
 class DisplayScreen extends React.Component {
   confirmDeletion = () => {
@@ -89,306 +46,386 @@ class DisplayScreen extends React.Component {
   render() {
     return (
       <div>
-        { !this.props.edit ?
-          <div
-            style={ elementContainerStyle }
-          >
+        { !this.props.edit &&
+          <div>
+            <div
+              style={ displayStyle.elementContainer }
+            >
+              <div
+                style={ Object.assign(
+                  {},
+                  displayStyle.elementKey,
+                  {
+                    backgroundColor: this.props.muiTheme.palette.keyColor,
+                    border: `1px solid ${this.props.muiTheme.palette.keyColorBorder}`,
+                  },
+                ) }
+              >
+                <span>
+                  Name:
+                </span>
+              </div>
+              <div
+                style={ displayStyle.elementValue }
+              >
+                { this.props.screen.name }
+              </div>
+            </div>
+            <div
+              style={ displayStyle.elementContainer }
+            >
+              <div
+                style={ Object.assign(
+                  {},
+                  displayStyle.elementKey,
+                  {
+                    backgroundColor: this.props.muiTheme.palette.keyColor,
+                    border: `1px solid ${this.props.muiTheme.palette.keyColorBorder}`,
+                  },
+                ) }
+              >
+                <span>
+                  Description:
+                </span>
+              </div>
+              <div
+                style={ displayStyle.elementValue }
+              >
+                { this.props.screen.description }
+              </div>
+            </div>
+            <div
+              style={ displayStyle.elementContainer }
+            >
+              <div
+                style={ Object.assign(
+                  {},
+                  displayStyle.elementKey,
+                  {
+                    backgroundColor: this.props.muiTheme.palette.keyColor,
+                    border: `1px solid ${this.props.muiTheme.palette.keyColorBorder}`,
+                  },
+                ) }
+              >
+                <span>
+                  Screen type:
+                </span>
+              </div>
+              <div
+                style={ displayStyle.elementValue }
+              >
+                { this.props.screen.type }
+              </div>
+            </div>
+            <div
+              style={ displayStyle.elementContainer }
+            >
+              <div
+                style={ Object.assign(
+                  {},
+                  displayStyle.elementKey,
+                  {
+                    backgroundColor: this.props.muiTheme.palette.keyColor,
+                    border: `1px solid ${this.props.muiTheme.palette.keyColorBorder}`,
+                  },
+                ) }
+              >
+                <span>
+                  Species:
+                </span>
+              </div>
+              <div
+                style={ displayStyle.elementValue }
+              >
+                { this.props.screen.species }
+              </div>
+            </div>
+            <div
+              style={ displayStyle.elementContainer }
+            >
+              <div
+                style={ Object.assign(
+                  {},
+                  displayStyle.elementKey,
+                  {
+                    backgroundColor: this.props.muiTheme.palette.keyColor,
+                    border: `1px solid ${this.props.muiTheme.palette.keyColorBorder}`,
+                  },
+                ) }
+              >
+                <span>
+                  Cell type:
+                </span>
+              </div>
+              <div
+                style={ displayStyle.elementValue }
+              >
+                { this.props.screen.cell }
+              </div>
+            </div>
             <div
               style={ Object.assign(
                 {},
-                elementKeyStyle,
+                displayStyle.elementContainer,
                 {
-                  backgroundColor: this.props.muiTheme.palette.keyColor,
-                  border: `1px solid ${this.props.muiTheme.palette.keyColorBorder}`,
+                  display: this.props.screen.condition ? 'flex' : 'none',
                 },
               ) }
             >
-              <span>
-                Name:
-              </span>
+              <div
+                style={ Object.assign(
+                  {},
+                  displayStyle.elementKey,
+                  {
+                    backgroundColor: this.props.muiTheme.palette.keyColor,
+                    border: `1px solid ${this.props.muiTheme.palette.keyColorBorder}`,
+                  },
+                ) }
+              >
+                <span>
+                  Condition:
+                </span>
+              </div>
+              <div
+                style={ displayStyle.elementValue }
+              >
+                { this.props.screen.condition }
+              </div>
+            </div>
+            {
+              this.props.screen.other &&
+              !objectEmpty(this.props.screen.other) &&
+              Object.keys(this.props.screen.other).sort().map((key) => {
+                return (
+                  <div
+                    key={ `${key}-container` }
+                    style={ displayStyle.elementContainer }
+                  >
+                    <div
+                      key={ `${key}-header` }
+                      style={ Object.assign(
+                        {},
+                        displayStyle.elementKey,
+                        {
+                          backgroundColor: this.props.muiTheme.palette.keyColor,
+                          border: `1px solid ${this.props.muiTheme.palette.keyColorBorder}`,
+                        },
+                      ) }
+                    >
+                      <span
+                        key={ `${key}-span` }
+                      >
+                        { uppercaseFirst(key) }:
+                      </span>
+                    </div>
+                    <div
+                      key={ `${key}-value` }
+                      style={ displayStyle.elementValue }
+                    >
+                      { this.props.screen.other[key] }
+                    </div>
+                  </div>
+                );
+              })
+            }
+            {
+              this.props.screen.comment &&
+              <div
+                style={ displayStyle.elementContainer }
+              >
+                <div
+                  style={ Object.assign(
+                    {},
+                    displayStyle.elementKey,
+                    {
+                      backgroundColor: this.props.muiTheme.palette.keyColor,
+                      border: `1px solid ${this.props.muiTheme.palette.keyColorBorder}`,
+                    },
+                  ) }
+                >
+                  <span>
+                    Comments:
+                  </span>
+                </div>
+                <div
+                  style={ displayStyle.elementValue }
+                >
+                  { this.props.screen.comment }
+                </div>
+              </div>
+            }
+            <div
+              style={ displayStyle.elementContainer }
+            >
+              <div
+                style={ Object.assign(
+                  {},
+                  displayStyle.elementKey,
+                  {
+                    backgroundColor: this.props.muiTheme.palette.keyColor,
+                    border: `1px solid ${this.props.muiTheme.palette.keyColorBorder}`,
+                  },
+                ) }
+              >
+                <span>
+                  Creator:
+                </span>
+              </div>
+              <div
+                style={ displayStyle.elementValue }
+              >
+                { this.props.screen.creatorName }
+              </div>
             </div>
             <div
-              style={ elementValueStyle }
+              style={ displayStyle.elementContainer }
             >
-              { this.props.screen.name }
-            </div>
-          </div>
-          :
-          <TextField
-            errorText={ this.props.errors.name }
-            floatingLabelText="Screen name (short)"
-            fullWidth={ true }
-            multiLine={ true }
-            onChange={ (e) => { this.props.inputChange('name', e.target.value); } }
-            rows={ 1 }
-            rowsMax={ 2 }
-            style={ inputStyle }
-            value={ this.props.screen.name }
-          />
-        }
-        { !this.props.edit ?
-          <div
-            style={ elementContainerStyle }
-          >
-            <div
-              style={ Object.assign(
-                {},
-                elementKeyStyle,
-                {
-                  backgroundColor: this.props.muiTheme.palette.keyColor,
-                  border: `1px solid ${this.props.muiTheme.palette.keyColorBorder}`,
-                },
-              ) }
-            >
-              <span>
-                Description:
-              </span>
+              <div
+                style={ Object.assign(
+                  {},
+                  displayStyle.elementKey,
+                  {
+                    backgroundColor: this.props.muiTheme.palette.keyColor,
+                    border: `1px solid ${this.props.muiTheme.palette.keyColorBorder}`,
+                  },
+                ) }
+              >
+                <span>
+                  Creation Date:
+                </span>
+              </div>
+              <div
+                style={ displayStyle.elementValue }
+              >
+                { this.props.screen.creationDate}
+              </div>
             </div>
             <div
-              style={ elementValueStyle }
+              style={ displayStyle.deleteContainer }
             >
-              { this.props.screen.description }
-            </div>
-          </div>
-          :
-          <TextField
-            errorText={ this.props.errors.description }
-            floatingLabelText="Screen description"
-            fullWidth={ true }
-            multiLine={ true }
-            onChange={ (e) => { this.props.inputChange('description', e.target.value); } }
-            rows={ 1 }
-            rowsMax={ 2 }
-            style={ inputStyle }
-            value={ this.props.screen.description }
-          />
-        }
-        { !this.props.edit ?
-          <div
-            style={ elementContainerStyle }
-          >
-            <div
-              style={ Object.assign(
-                {},
-                elementKeyStyle,
-                {
-                  backgroundColor: this.props.muiTheme.palette.keyColor,
-                  border: `1px solid ${this.props.muiTheme.palette.keyColorBorder}`,
-                },
-              ) }
-            >
-              <span>
-                Screen type:
-              </span>
-            </div>
-            <div
-              style={ elementValueStyle }
-            >
-              { this.props.screen.type }
-            </div>
-          </div>
-          :
-          <SelectField
-            errorText={ this.props.errors.type }
-            floatingLabelText="Screen type"
-            fullWidth={ true }
-            listStyle={ {
-              paddingBottom: 0,
-              paddingTop: 0,
-            } }
-            onChange={ this.inputChangeType }
-            style={ inputStyle }
-            value={ this.props.screen.type }
-          >
-            { Fields.screen.type.values.map((type) => {
-              return (
-                <MenuItem
-                  key={ type }
-                  value={ type }
-                  primaryText={ type }
+              <div
+                style={ displayStyle.actionButton }
+              >
+                <ActionButtons
+                  cancel={ {
+                    func: () => { this.props.dialog.open('delete'); },
+                    label: 'Delete',
+                    toolTipText: 'Delete screen',
+                  } }
+                  idSuffix="delete-screen"
                 />
-              );
-            }) }
-          </SelectField>
-        }
-        { !this.props.edit ?
-          <div
-            style={ elementContainerStyle }
-          >
-            <div
-              style={ Object.assign(
-                {},
-                elementKeyStyle,
-                {
-                  backgroundColor: this.props.muiTheme.palette.keyColor,
-                  border: `1px solid ${this.props.muiTheme.palette.keyColorBorder}`,
-                },
-              ) }
-            >
-              <span>
-                Species:
-              </span>
-            </div>
-            <div
-              style={ elementValueStyle }
-            >
-              { this.props.screen.species }
+              </div>
             </div>
           </div>
-          :
-          <SelectInput
-            dataSource={ SpeciesDataSource }
-            errorText={ this.props.errors.species }
-            inputChange={ this.props.inputChange }
-            inputWidth={ this.props.inputWidth }
-            labelText="Species"
-            options={ Fields.screen.species.values }
-            type="species"
-            value={ this.props.screen.species }
-          />
         }
-        { !this.props.edit ?
-          <div
-            style={ elementContainerStyle }
-          >
-            <div
-              style={ Object.assign(
-                {},
-                elementKeyStyle,
-                {
-                  backgroundColor: this.props.muiTheme.palette.keyColor,
-                  border: `1px solid ${this.props.muiTheme.palette.keyColorBorder}`,
-                },
-              ) }
-            >
-              <span>
-                Cell type:
-              </span>
-            </div>
-            <div
-              style={ elementValueStyle }
-            >
-              { this.props.screen.cell }
-            </div>
-          </div>
-          :
-          <SelectInput
-            dataSource={ CellsDataSource }
-            errorText={ this.props.errors.cell }
-            inputChange={ this.props.inputChange }
-            inputWidth={ this.props.inputWidth }
-            labelText="Cell type"
-            options={ Fields.screen.cell.values }
-            type="cell"
-            value={ this.props.screen.cell }
-          />
-        }
-        { !this.props.edit ?
-          <div
-            style={ Object.assign(
-              {},
-              elementContainerStyle,
-              {
-                display: this.props.screen.condition ? 'flex' : 'none',
-              },
-            ) }
-          >
-            <div
-              style={ Object.assign(
-                {},
-                elementKeyStyle,
-                {
-                  backgroundColor: this.props.muiTheme.palette.keyColor,
-                  border: `1px solid ${this.props.muiTheme.palette.keyColorBorder}`,
-                },
-              ) }
-            >
-              <span>
-                Condition:
-              </span>
-            </div>
-            <div
-              style={ elementValueStyle }
-            >
-              { this.props.screen.condition }
-            </div>
-          </div>
-          :
-          <div
-            style={ Object.assign(
-              {},
-              inputWithChildrenStyle,
-              {
-                width: this.props.inputWidth,
-              },
-            ) }
-          >
+        { this.props.edit &&
+          <div>
             <TextField
-              floatingLabelText="Condition (optional)"
+              errorText={ this.props.errors.name }
+              floatingLabelText="Screen name (short)"
               fullWidth={ true }
               multiLine={ true }
-              onChange={ (e) => { this.props.inputChange('condition', e.target.value); } }
+              onChange={ (e) => { this.props.inputChange('name', e.target.value); } }
               rows={ 1 }
               rowsMax={ 2 }
-              style={ inputStyle }
-              value={ this.props.screen.condition }
+              style={ displayStyle.input }
+              value={ this.props.screen.name }
             />
-            <IconButton
-              onTouchTap={ () => {
-                this.props.dialog.open('help', 'Help for the "Condition" field', Fields.screen.condition.help);
+            <TextField
+              errorText={ this.props.errors.description }
+              floatingLabelText="Screen description"
+              fullWidth={ true }
+              multiLine={ true }
+              onChange={ (e) => { this.props.inputChange('description', e.target.value); } }
+              rows={ 1 }
+              rowsMax={ 2 }
+              style={ displayStyle.input }
+              value={ this.props.screen.description }
+            />
+            <SelectField
+              errorText={ this.props.errors.type }
+              floatingLabelText="Screen type"
+              fullWidth={ true }
+              listStyle={ {
+                paddingBottom: 0,
+                paddingTop: 0,
               } }
-              style={ helpIconStyle }
-              tooltip="Help"
-              tooltipPosition="top-center"
+              onChange={ (e, index, value) => {
+                this.props.inputChange('type', value);
+              } }
+              style={ displayStyle.input }
+              value={ this.props.screen.type }
             >
-              <HelpIcon
-                color={ this.props.muiTheme.palette.alternateTextColor }
+              { Fields.screen.type.values.map((type) => {
+                return (
+                  <MenuItem
+                    key={ type }
+                    value={ type }
+                    primaryText={ type }
+                  />
+                );
+              }) }
+            </SelectField>
+            <SelectInput
+              dataSource={ SpeciesDataSource }
+              errorText={ this.props.errors.species }
+              inputChange={ this.props.inputChange }
+              inputWidth={ this.props.inputWidth }
+              labelText="Species"
+              options={ Fields.screen.species.values }
+              type="species"
+              value={ this.props.screen.species }
+            />
+            <SelectInput
+              dataSource={ CellsDataSource }
+              errorText={ this.props.errors.cell }
+              inputChange={ this.props.inputChange }
+              inputWidth={ this.props.inputWidth }
+              labelText="Cell type"
+              options={ Fields.screen.cell.values }
+              type="cell"
+              value={ this.props.screen.cell }
+            />
+            <div
+              style={ Object.assign(
+                {},
+                displayStyle.inputWithHelp,
+                {
+                  width: this.props.inputWidth,
+                },
+              ) }
+            >
+              <TextField
+                floatingLabelText="Condition (optional)"
+                fullWidth={ true }
+                multiLine={ true }
+                onChange={ (e) => { this.props.inputChange('condition', e.target.value); } }
+                rows={ 1 }
+                rowsMax={ 2 }
+                style={ displayStyle.input }
+                value={ this.props.screen.condition }
               />
-            </IconButton>
-          </div>
-        }
-        { !this.props.edit ? (
-            this.props.screen.other &&
-            !objectEmpty(this.props.screen.other) &&
-            Object.keys(this.props.screen.other).sort().map((key) => {
-              return (
-                <div
-                  key={ `${key}-container` }
-                  style={ elementContainerStyle }
-                >
-                  <div
-                    key={ `${key}-header` }
-                    style={ Object.assign(
-                      {},
-                      elementKeyStyle,
-                      {
-                        backgroundColor: this.props.muiTheme.palette.keyColor,
-                        border: `1px solid ${this.props.muiTheme.palette.keyColorBorder}`,
-                      },
-                    ) }
-                  >
-                    <span
-                      key={ `${key}-span` }
-                    >
-                      { uppercaseFirst(key) }:
-                    </span>
-                  </div>
-                  <div
-                    key={ `${key}-value` }
-                    style={ elementValueStyle }
-                  >
-                    { this.props.screen.other[key] }
-                  </div>
-                </div>
-              );
-            })
-          ) :
-            (
+              <IconButton
+                onTouchTap={ () => {
+                  this.props.dialog.open('help', 'Help for the "Condition" field', Fields.screen.condition.help);
+                } }
+                tooltip="Help"
+                tooltipPosition="top-center"
+              >
+                <HelpIcon
+                  color={ this.props.muiTheme.palette.alternateTextColor }
+                />
+              </IconButton>
+            </div>
+            {
               Fields.screen.other[this.props.screen.type].map((field) => {
                 return (
                   field.type === 'select' ?
                     <SelectField
-                      errorText={ field.defaultError }
+                      errorText={
+                        this.props.errors.other &&
+                        this.props.errors.other[field.name]
+                      }
                       floatingLabelText={ uppercaseFirst(field.name) }
                       fullWidth={ true }
                       key={ field.name }
@@ -399,7 +436,7 @@ class DisplayScreen extends React.Component {
                       onChange={ (e, index, value) => {
                         this.props.inputChange(field.name, value, true, this.props.screen.type);
                       } }
-                      style={ inputStyle }
+                      style={ displayStyle.input }
                       value={ this.props.screen.other[field.name] }
                     >
                       { field.options.map((option) => {
@@ -411,127 +448,43 @@ class DisplayScreen extends React.Component {
                           />
                         );
                       }) }
-                    </SelectField> :
+                    </SelectField>
+                    :
                     <TextField
-                      errorText={ field.defaultError }
+                      errorText={
+                        this.props.errors.other &&
+                        this.props.errors.other[field.name]
+                      }
                       floatingLabelText={ uppercaseFirst(field.name) }
                       fullWidth={ true }
                       key={ field.name }
                       multiLine={ true }
-                      onChange={ (e) => { this.props.inputChange(field.name, e.target.value); } }
+                      onChange={ (e) => {
+                        this.props.inputChange(
+                          field.name,
+                          e.target.value,
+                          true,
+                          this.props.screen.type,
+                        );
+                      } }
                       rows={ 1 }
                       rowsMax={ 2 }
-                      style={ inputStyle }
+                      style={ displayStyle.input }
                       value={ this.props.screen.other[field.name] }
                     />
                 );
               })
-            )
-        }
-        { !this.props.edit ?
-          this.props.screen.comment &&
-          <div
-            style={ elementContainerStyle }
-          >
-            <div
-              style={ Object.assign(
-                {},
-                elementKeyStyle,
-                {
-                  backgroundColor: this.props.muiTheme.palette.keyColor,
-                  border: `1px solid ${this.props.muiTheme.palette.keyColorBorder}`,
-                },
-              ) }
-            >
-              <span>
-                Comments:
-              </span>
-            </div>
-            <div
-              style={ elementValueStyle }
-            >
-              { this.props.screen.comment }
-            </div>
-          </div>
-          :
-          <TextField
-            floatingLabelText="Comments (optional)"
-            fullWidth={ true }
-            multiLine={ true }
-            onChange={ (e) => { this.props.inputChange('comment', e.target.value); } }
-            rows={ 1 }
-            rowsMax={ 5 }
-            style={ inputStyle }
-            value={ this.props.screen.comment }
-          />
-        }
-        { !this.props.edit &&
-          <div
-            style={ elementContainerStyle }
-          >
-            <div
-              style={ Object.assign(
-                {},
-                elementKeyStyle,
-                {
-                  backgroundColor: this.props.muiTheme.palette.keyColor,
-                  border: `1px solid ${this.props.muiTheme.palette.keyColorBorder}`,
-                },
-              ) }
-            >
-              <span>
-                Creator:
-              </span>
-            </div>
-            <div
-              style={ elementValueStyle }
-            >
-              { this.props.screen.creatorName }
-            </div>
-          </div>
-        }
-        { !this.props.edit &&
-          <div
-            style={ elementContainerStyle }
-          >
-            <div
-              style={ Object.assign(
-                {},
-                elementKeyStyle,
-                {
-                  backgroundColor: this.props.muiTheme.palette.keyColor,
-                  border: `1px solid ${this.props.muiTheme.palette.keyColorBorder}`,
-                },
-              ) }
-            >
-              <span>
-                Creation Date:
-              </span>
-            </div>
-            <div
-              style={ elementValueStyle }
-            >
-              { this.props.screen.creationDate}
-            </div>
-          </div>
-        }
-        {
-          !this.props.edit &&
-          <div
-            style={ deleteContainer }
-          >
-            <div
-              style={ actionButtonStyle }
-            >
-              <ActionButtons
-                cancel={ {
-                  func: () => { this.props.dialog.open('delete'); },
-                  label: 'Delete',
-                  toolTipText: 'Delete screen',
-                } }
-                idSuffix="delete-screen"
-              />
-            </div>
+            }
+            <TextField
+              floatingLabelText="Comments (optional)"
+              fullWidth={ true }
+              multiLine={ true }
+              onChange={ (e) => { this.props.inputChange('comment', e.target.value); } }
+              rows={ 1 }
+              rowsMax={ 5 }
+              style={ displayStyle.input }
+              value={ this.props.screen.comment }
+            />
           </div>
         }
         <Dialog

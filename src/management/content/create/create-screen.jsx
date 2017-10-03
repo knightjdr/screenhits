@@ -10,15 +10,11 @@ import React from 'react';
 import SelectField from 'material-ui/SelectField';
 import TextField from 'material-ui/TextField';
 
-import FieldsScreen from './forms/fields-screen';
+import Fields from '../modules/fields';
 import { uppercaseFirst } from '../../../helpers/helpers';
 import SelectInput from './select-input/select-input-container';
 import SpeciesDataSource from '../../../assets/data/species';
 import CellsDataSource from '../../../assets/data/cells';
-
-const Fields = {
-  screen: FieldsScreen,
-};
 
 const helpIconStyle = {
   marginTop: 25,

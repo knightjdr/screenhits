@@ -1,4 +1,32 @@
 const Validate = {
+  experiment: {
+    checkFields: [
+      'description',
+      'name',
+    ],
+    description: (value) => {
+      const errorObj = {
+        error: false,
+        message: null,
+      };
+      if (!value) {
+        errorObj.error = true;
+        errorObj.message = 'This field is required';
+      }
+      return errorObj;
+    },
+    name: (value) => {
+      const errorObj = {
+        error: false,
+        message: null,
+      };
+      if (!value) {
+        errorObj.error = true;
+        errorObj.message = 'This field is required';
+      }
+      return errorObj;
+    },
+  },
   project: {
     checkFields: [
       'description',
@@ -43,11 +71,14 @@ const Validate = {
   screen: {
     checkFields: [
       'cell',
-      'condition',
       'description',
       'name',
       'species',
       'type',
+    ],
+    otherCheckFields: [
+      'CRISPR_approach',
+      'CRISPR_library',
     ],
     cell: (value) => {
       const errorObj = {
@@ -58,13 +89,6 @@ const Validate = {
         errorObj.error = true;
         errorObj.message = 'Select a cell type from the dropdown, or specify one via free text';
       }
-      return errorObj;
-    },
-    condition: () => {
-      const errorObj = {
-        error: false,
-        message: null,
-      };
       return errorObj;
     },
     description: (value) => {
@@ -112,31 +136,26 @@ const Validate = {
       }
       return errorObj;
     },
-  },
-  experiment: {
-    checkFields: [
-      'description',
-      'name',
-    ],
-    description: (value) => {
+    // validators for 'other' fields
+    CRISPR_approach: (value) => {
       const errorObj = {
         error: false,
         message: null,
       };
       if (!value) {
         errorObj.error = true;
-        errorObj.message = 'This field is required';
+        errorObj.message = 'Select an approach from the dropdown';
       }
       return errorObj;
     },
-    name: (value) => {
+    CRISPR_library: (value) => {
       const errorObj = {
         error: false,
         message: null,
       };
       if (!value) {
         errorObj.error = true;
-        errorObj.message = 'This field is required';
+        errorObj.message = 'Select a library from the dropdown';
       }
       return errorObj;
     },

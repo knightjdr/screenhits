@@ -6,8 +6,9 @@ import SelectInput from './select-input';
 class SelectInputContainer extends React.Component {
   constructor(props) {
     super(props);
+    const index = this.props.options.indexOf(this.props.value);
     this.state = {
-      inputType: 'select',
+      inputType: !this.props.value || index >= 0 ? 'select' : 'text',
     };
   }
   changeType = () => {

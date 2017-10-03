@@ -1,58 +1,21 @@
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
+import FontAwesome from 'react-fontawesome';
 import IconButton from 'material-ui/IconButton';
 import HelpIcon from 'material-ui/svg-icons/action/help';
+import MenuItem from 'material-ui/MenuItem';
 import muiThemeable from 'material-ui/styles/muiThemeable';
 import PropTypes from 'prop-types';
 import React from 'react';
+import SelectField from 'material-ui/SelectField';
 import TextField from 'material-ui/TextField';
+import VisibilityIcon from 'material-ui/svg-icons/action/visibility';
 
 import ActionButtons from '../../../action-buttons/action-buttons-container';
-import FieldsExperiment from '../create/forms/fields-experiment';
-
-const actionButtonStyle = {
-  float: 'right',
-  margin: '10px 10px 0px 0px',
-};
-
-const deleteContainer = {
-  height: 40,
-  width: '100%',
-};
-
-const Fields = {
-  experiment: FieldsExperiment,
-};
-
-const elementContainerStyle = {
-  alignItems: 'top',
-  display: 'flex',
-  margin: '5px 0px 5px 0px',
-};
-const elementKeyStyle = {
-  borderRadius: 2,
-  minWidth: 120,
-  textAlign: 'right',
-  padding: '5px 5px 5px 5px',
-  width: 120,
-};
-const elementValueStyle = {
-  marginLeft: 10,
-  padding: '5px 5px 5px 5px',
-};
-const helpIconStyle = {
-  marginTop: 25,
-};
-const inputStyle = {
-  marginLeft: 4,
-  marginRight: 4,
-  maxWidth: 500,
-};
-const inputWithChildrenStyle = {
-  display: 'inline-flex',
-  marginLeft: 4,
-  marginRight: 4,
-};
+import DisplayProtocol from './display-protocol';
+import displayStyle from './display-style';
+import Fields from '../modules/fields';
+import { customSort } from '../../../helpers/helpers';
 
 class DisplayExperiment extends React.Component {
   confirmDeletion = () => {
@@ -83,89 +46,15 @@ class DisplayExperiment extends React.Component {
   render() {
     return (
       <div>
-        { !this.props.edit ?
-          <div
-            style={ elementContainerStyle }
-          >
-            <div
-              style={ Object.assign(
-                {},
-                elementKeyStyle,
-                {
-                  backgroundColor: this.props.muiTheme.palette.keyColor,
-                  border: `1px solid ${this.props.muiTheme.palette.keyColorBorder}`,
-                },
-              ) }
-            >
-              <span>
-                Name:
-              </span>
-            </div>
-            <div
-              style={ elementValueStyle }
-            >
-              { this.props.experiment.name }
-            </div>
-          </div>
-          :
-          <TextField
-            errorText={ this.props.errors.name }
-            floatingLabelText="Experiment name (short)"
-            fullWidth={ true }
-            multiLine={ true }
-            onChange={ (e) => { this.props.inputChange('name', e.target.value); } }
-            rows={ 1 }
-            rowsMax={ 2 }
-            style={ inputStyle }
-            value={ this.props.experiment.name }
-          />
-        }
-        { !this.props.edit ?
-          <div
-            style={ elementContainerStyle }
-          >
-            <div
-              style={ Object.assign(
-                {},
-                elementKeyStyle,
-                {
-                  backgroundColor: this.props.muiTheme.palette.keyColor,
-                  border: `1px solid ${this.props.muiTheme.palette.keyColorBorder}`,
-                },
-              ) }
-            >
-              <span>
-                Description:
-              </span>
-            </div>
-            <div
-              style={ elementValueStyle }
-            >
-              { this.props.experiment.description }
-            </div>
-          </div>
-          :
-          <TextField
-            errorText={ this.props.errors.description }
-            floatingLabelText="Experiment description"
-            fullWidth={ true }
-            multiLine={ true }
-            onChange={ (e) => { this.props.inputChange('description', e.target.value); } }
-            rows={ 1 }
-            rowsMax={ 2 }
-            style={ inputStyle }
-            value={ this.props.experiment.description }
-          />
-        }
         { !this.props.edit &&
-          this.props.experiment.concentration ?
+          <div>
             <div
-              style={ elementContainerStyle }
+              style={ displayStyle.elementContainer }
             >
               <div
                 style={ Object.assign(
                   {},
-                  elementKeyStyle,
+                  displayStyle.elementKey,
                   {
                     backgroundColor: this.props.muiTheme.palette.keyColor,
                     border: `1px solid ${this.props.muiTheme.palette.keyColorBorder}`,
@@ -173,20 +62,285 @@ class DisplayExperiment extends React.Component {
                 ) }
               >
                 <span>
-                  Concentration:
+                  Name:
                 </span>
               </div>
               <div
-                style={ elementValueStyle }
+                style={ displayStyle.elementValue }
               >
-                { this.props.experiment.concentration }
+                { this.props.experiment.name }
               </div>
             </div>
-            :
+            <div
+              style={ displayStyle.elementContainer }
+            >
+              <div
+                style={ Object.assign(
+                  {},
+                  displayStyle.elementKey,
+                  {
+                    backgroundColor: this.props.muiTheme.palette.keyColor,
+                    border: `1px solid ${this.props.muiTheme.palette.keyColorBorder}`,
+                  },
+                ) }
+              >
+                <span>
+                  Description:
+                </span>
+              </div>
+              <div
+                style={ displayStyle.elementValue }
+              >
+                { this.props.experiment.description }
+              </div>
+            </div>
+            {
+              this.props.experiment.concentration &&
+              <div
+                style={ displayStyle.elementContainer }
+              >
+                <div
+                  style={ Object.assign(
+                    {},
+                    displayStyle.elementKey,
+                    {
+                      backgroundColor: this.props.muiTheme.palette.keyColor,
+                      border: `1px solid ${this.props.muiTheme.palette.keyColorBorder}`,
+                    },
+                  ) }
+                >
+                  <span>
+                    Concentration:
+                  </span>
+                </div>
+                <div
+                  style={ displayStyle.elementValue }
+                >
+                  { this.props.experiment.concentration }
+                </div>
+              </div>
+            }
+            {
+              this.props.experiment.timepoint &&
+              <div
+                style={ displayStyle.elementContainer }
+              >
+                <div
+                  style={ Object.assign(
+                    {},
+                    displayStyle.elementKey,
+                    {
+                      backgroundColor: this.props.muiTheme.palette.keyColor,
+                      border: `1px solid ${this.props.muiTheme.palette.keyColorBorder}`,
+                    },
+                  ) }
+                >
+                  <span>
+                    Timepoint:
+                  </span>
+                </div>
+                <div
+                  style={ displayStyle.elementValue }
+                >
+                  { this.props.experiment.timepoint }
+                </div>
+              </div>
+            }
+            {
+              this.props.experiment.comment &&
+              <div
+                style={ displayStyle.elementContainer }
+              >
+                <div
+                  style={ Object.assign(
+                    {},
+                    displayStyle.elementKey,
+                    {
+                      backgroundColor: this.props.muiTheme.palette.keyColor,
+                      border: `1px solid ${this.props.muiTheme.palette.keyColorBorder}`,
+                    },
+                  ) }
+                >
+                  <span>
+                    Comments:
+                  </span>
+                </div>
+                <div
+                  style={ displayStyle.elementValue }
+                >
+                  { this.props.experiment.comment }
+                </div>
+              </div>
+            }
+            <div
+              style={ displayStyle.elementContainer }
+            >
+              <div
+                style={ Object.assign(
+                  {},
+                  displayStyle.elementKey,
+                  {
+                    backgroundColor: this.props.muiTheme.palette.keyColor,
+                    border: `1px solid ${this.props.muiTheme.palette.keyColorBorder}`,
+                  },
+                ) }
+              >
+                <span>
+                  Creator:
+                </span>
+              </div>
+              <div
+                style={ displayStyle.elementValue }
+              >
+                { this.props.experiment.creatorName }
+              </div>
+            </div>
+            <div
+              style={ displayStyle.elementContainer }
+            >
+              <div
+                style={ Object.assign(
+                  {},
+                  displayStyle.elementKey,
+                  {
+                    backgroundColor: this.props.muiTheme.palette.keyColor,
+                    border: `1px solid ${this.props.muiTheme.palette.keyColorBorder}`,
+                  },
+                ) }
+              >
+                <span>
+                  Creation Date:
+                </span>
+              </div>
+              <div
+                style={ displayStyle.elementValue }
+              >
+                { this.props.experiment.creationDate}
+              </div>
+            </div>
+            {
+              this.props.experiment.protocols.length > 0 &&
+              <div
+                style={ displayStyle.elementContainer }
+              >
+                <div
+                  style={ Object.assign(
+                    {},
+                    displayStyle.elementKey,
+                    {
+                      backgroundColor: this.props.muiTheme.palette.keyColor,
+                      border: `1px solid ${this.props.muiTheme.palette.keyColorBorder}`,
+                    },
+                  ) }
+                >
+                  <span>
+                    Protocols:
+                  </span>
+                </div>
+                <div
+                  style={ displayStyle.elementValue }
+                >
+                  {
+                    this.props.experiment.protocols.map((selectedProtocol) => {
+                      const index = this.props.protocols.items.findIndex((protocol) => {
+                        return protocol._id === selectedProtocol;
+                      });
+                      return index >= 0 ?
+                        <p
+                          key={ selectedProtocol }
+                          style={ {
+                            margin: '0px 0px 5px 0px',
+                          } }
+                        >
+                          &bull; { this.props.protocols.items[index].name }
+                          <IconButton
+                            onTouchTap={ () => {
+                              this.props.selectProtocol(selectedProtocol);
+                              this.props.dialog.open('protocol');
+                            } }
+                            iconStyle={ {
+                              height: 18,
+                              width: 18,
+                            } }
+                            style={ {
+                              height: 22,
+                              left: 10,
+                              padding: '0px 0px 0px 0px',
+                              position: 'relative',
+                              top: 3,
+                              width: 22,
+                            } }
+                            tooltip="View protocol"
+                            tooltipPosition="top-center"
+                          >
+                            <VisibilityIcon
+                              color={ this.props.muiTheme.palette.alternateTextColor }
+                            />
+                          </IconButton>
+                        </p>
+                        :
+                        <p
+                          key={ selectedProtocol }
+                          style={ {
+                            margin: '5px 0px 5px 0px',
+                          } }
+                        >
+                          &bull; { `Protocol with id ${selectedProtocol} could not be found` }
+                        </p>
+                      ;
+                    })
+                  }
+                </div>
+              </div>
+            }
+            <div
+              style={ displayStyle.deleteContainer }
+            >
+              <div
+                style={ displayStyle.actionButton }
+              >
+                <ActionButtons
+                  cancel={ {
+                    func: () => { this.props.dialog.open('delete'); },
+                    label: 'Delete',
+                    toolTipText: 'Delete experiment',
+                  } }
+                  idSuffix="delete-experiment"
+                />
+              </div>
+            </div>
+          </div>
+        }
+        { this.props.edit &&
+          <div
+            style={ displayStyle.container }
+          >
+            <TextField
+              errorText={ this.props.errors.name }
+              floatingLabelText="Experiment name (short)"
+              fullWidth={ true }
+              multiLine={ true }
+              onChange={ (e) => { this.props.inputChange('name', e.target.value); } }
+              rows={ 1 }
+              rowsMax={ 2 }
+              style={ displayStyle.input }
+              value={ this.props.experiment.name }
+            />
+            <TextField
+              errorText={ this.props.errors.description }
+              floatingLabelText="Experiment description"
+              fullWidth={ true }
+              multiLine={ true }
+              onChange={ (e) => { this.props.inputChange('description', e.target.value); } }
+              rows={ 1 }
+              rowsMax={ 2 }
+              style={ displayStyle.input }
+              value={ this.props.experiment.description }
+            />
             <div
               style={ Object.assign(
                 {},
-                inputWithChildrenStyle,
+                displayStyle.inputWithHelp,
                 {
                   width: this.props.inputWidth,
                 },
@@ -199,14 +353,13 @@ class DisplayExperiment extends React.Component {
                 onChange={ (e) => { this.props.inputChange('concentration', e.target.value); } }
                 rows={ 1 }
                 rowsMax={ 2 }
-                style={ inputStyle }
+                style={ displayStyle.inputWithHelpInput }
                 value={ this.props.experiment.concentration }
               />
               <IconButton
                 onTouchTap={ () => {
                   this.props.dialog.open('help', 'Help for the "Concentration" field', Fields.experiment.concentration.help);
                 } }
-                style={ helpIconStyle }
                 tooltip="Help"
                 tooltipPosition="top-center"
               >
@@ -215,37 +368,10 @@ class DisplayExperiment extends React.Component {
                 />
               </IconButton>
             </div>
-        }
-        { !this.props.edit &&
-          this.props.experiment.timepoint ?
-            <div
-              style={ elementContainerStyle }
-            >
-              <div
-                style={ Object.assign(
-                  {},
-                  elementKeyStyle,
-                  {
-                    backgroundColor: this.props.muiTheme.palette.keyColor,
-                    border: `1px solid ${this.props.muiTheme.palette.keyColorBorder}`,
-                  },
-                ) }
-              >
-                <span>
-                  Timepoint:
-                </span>
-              </div>
-              <div
-                style={ elementValueStyle }
-              >
-                { this.props.experiment.timepoint }
-              </div>
-            </div>
-            :
             <div
               style={ Object.assign(
                 {},
-                inputWithChildrenStyle,
+                displayStyle.inputWithHelp,
                 {
                   width: this.props.inputWidth,
                 },
@@ -258,14 +384,13 @@ class DisplayExperiment extends React.Component {
                 onChange={ (e) => { this.props.inputChange('timepoint', e.target.value); } }
                 rows={ 1 }
                 rowsMax={ 2 }
-                style={ inputStyle }
+                style={ displayStyle.inputWithHelpInput }
                 value={ this.props.experiment.timepoint }
               />
               <IconButton
                 onTouchTap={ () => {
                   this.props.dialog.open('help', 'Help for the "Time point" field', Fields.experiment.timepoint.help);
                 } }
-                style={ helpIconStyle }
                 tooltip="Help"
                 tooltipPosition="top-center"
               >
@@ -274,150 +399,74 @@ class DisplayExperiment extends React.Component {
                 />
               </IconButton>
             </div>
-        }
-        { !this.props.edit &&
-          this.props.experiment.protocols.length > 0 ?
-            <div
-              style={ elementContainerStyle }
-            >
-              <div
-                style={ Object.assign(
-                  {},
-                  elementKeyStyle,
-                  {
-                    backgroundColor: this.props.muiTheme.palette.keyColor,
-                    border: `1px solid ${this.props.muiTheme.palette.keyColorBorder}`,
-                  },
-                ) }
-              >
-                <span>
-                  Protocols:
+            {
+              this.props.protocols.isFetching ?
+                <span
+                  style={ displayStyle.input }
+                >
+                  <FontAwesome key="fetching" name="spinner" pulse={ true } /> Fetching protocols...
                 </span>
-              </div>
-              <div
-                style={ elementValueStyle }
-              >
-                {
-                  this.props.experiment.protocols.map((selectedProtocol) => {
-                    const index = this.props.protocols.items.findIndex((protocol) => {
-                      return protocol._id === selectedProtocol;
-                    });
-                    return index > 0 ?
-                      this.props.protocols.items[index].name
-                      :
-                      `Protocol with id ${selectedProtocol} could not be found`
-                    ;
-                  }).join('<br />')
-                }
-              </div>
-            </div>
-            :
-            <div />
-        }
-        { !this.props.edit ?
-          this.props.experiment.comment &&
-          <div
-            style={ elementContainerStyle }
-          >
-            <div
-              style={ Object.assign(
-                {},
-                elementKeyStyle,
-                {
-                  backgroundColor: this.props.muiTheme.palette.keyColor,
-                  border: `1px solid ${this.props.muiTheme.palette.keyColorBorder}`,
-                },
-              ) }
-            >
-              <span>
-                Comments:
-              </span>
-            </div>
-            <div
-              style={ elementValueStyle }
-            >
-              { this.props.experiment.comment }
-            </div>
-          </div>
-          :
-          <TextField
-            floatingLabelText="Comments (optional)"
-            fullWidth={ true }
-            multiLine={ true }
-            onChange={ (e) => { this.props.inputChange('comment', e.target.value); } }
-            rows={ 1 }
-            rowsMax={ 5 }
-            style={ inputStyle }
-            value={ this.props.experiment.comment }
-          />
-        }
-        { !this.props.edit &&
-          <div
-            style={ elementContainerStyle }
-          >
-            <div
-              style={ Object.assign(
-                {},
-                elementKeyStyle,
-                {
-                  backgroundColor: this.props.muiTheme.palette.keyColor,
-                  border: `1px solid ${this.props.muiTheme.palette.keyColorBorder}`,
-                },
-              ) }
-            >
-              <span>
-                Creator:
-              </span>
-            </div>
-            <div
-              style={ elementValueStyle }
-            >
-              { this.props.experiment.creatorName }
-            </div>
-          </div>
-        }
-        { !this.props.edit &&
-          <div
-            style={ elementContainerStyle }
-          >
-            <div
-              style={ Object.assign(
-                {},
-                elementKeyStyle,
-                {
-                  backgroundColor: this.props.muiTheme.palette.keyColor,
-                  border: `1px solid ${this.props.muiTheme.palette.keyColorBorder}`,
-                },
-              ) }
-            >
-              <span>
-                Creation Date:
-              </span>
-            </div>
-            <div
-              style={ elementValueStyle }
-            >
-              { this.props.experiment.creationDate}
-            </div>
-          </div>
-        }
-        {
-          !this.props.edit &&
-          <div
-            style={ deleteContainer }
-          >
-            <div
-              style={ actionButtonStyle }
-            >
-              <ActionButtons
-                cancel={ {
-                  func: () => { this.props.dialog.open('delete'); },
-                  label: 'Delete',
-                  toolTipText: 'Delete experiment',
-                } }
-                idSuffix="delete-experiment"
-              />
-            </div>
+                :
+                <div
+                  style={ Object.assign(
+                    {},
+                    displayStyle.inputWithHelp,
+                    {
+                      width: this.props.inputWidth,
+                    },
+                  ) }
+                >
+                  <SelectField
+                    floatingLabelText="Protocols"
+                    fullWidth={ true }
+                    listStyle={ {
+                      paddingBottom: 0,
+                      paddingTop: 0,
+                    } }
+                    multiple={ true }
+                    onChange={ (e, index, value) => { this.props.inputChange('protocols', value); } }
+                    style={ displayStyle.inputWithHelpSelect }
+                    value={ this.props.experiment.protocols }
+                  >
+                    {
+                      customSort.arrayOfObjectByKey(
+                        this.props.protocols.items,
+                        'name',
+                        'asc',
+                      ).map((protocol) => {
+                        return (
+                          <MenuItem
+                            key={ protocol._id }
+                            value={ protocol._id }
+                            primaryText={ protocol.name }
+                          />
+                        );
+                      })
+                    }
+                  </SelectField>
+                  <IconButton
+                    onTouchTap={ () => {
+                      this.props.dialog.open('help', 'Help for the "Protocols" field', Fields.experiment.protocols.help);
+                    } }
+                    tooltip="Help"
+                    tooltipPosition="top-center"
+                  >
+                    <HelpIcon
+                      color={ this.props.muiTheme.palette.alternateTextColor }
+                    />
+                  </IconButton>
+                </div>
+            }
+            <TextField
+              floatingLabelText="Comments (optional)"
+              fullWidth={ true }
+              multiLine={ true }
+              onChange={ (e) => { this.props.inputChange('comment', e.target.value); } }
+              rows={ 1 }
+              rowsMax={ 5 }
+              style={ displayStyle.input }
+              value={ this.props.experiment.comment }
+            />
           </div>
         }
         <Dialog
@@ -442,6 +491,17 @@ class DisplayExperiment extends React.Component {
         >
           { this.props.dialog.text }
         </Dialog>
+        <Dialog
+          actions={ this.dialogClose() }
+          modal={ false }
+          onRequestClose={ this.props.dialog.close }
+          open={ this.props.dialog.protocol }
+          title={ this.props.selectedProtocol.name }
+        >
+          <DisplayProtocol
+            protocol={ this.props.selectedProtocol }
+          />
+        </Dialog>
       </div>
     );
   }
@@ -454,6 +514,7 @@ DisplayExperiment.propTypes = {
     delete: PropTypes.bool,
     help: PropTypes.bool,
     open: PropTypes.func,
+    protocol: PropTypes.bool,
     text: PropTypes.string,
     title: PropTypes.string,
   }).isRequired,
@@ -488,9 +549,14 @@ DisplayExperiment.propTypes = {
     isFetching: PropTypes.bool,
     items: PropTypes.arrayOf(
       PropTypes.shape({
+        _id: PropTypes.number,
+        name: PropTypes.string,
       }),
     ),
     message: PropTypes.string,
+  }).isRequired,
+  selectedProtocol: PropTypes.shape({
+    name: PropTypes.string,
   }).isRequired,
   muiTheme: PropTypes.shape({
     palette: PropTypes.shape({
@@ -503,6 +569,7 @@ DisplayExperiment.propTypes = {
       warningHover: PropTypes.string,
     }),
   }).isRequired,
+  selectProtocol: PropTypes.func.isRequired,
 };
 
 export default muiThemeable()(DisplayExperiment);
