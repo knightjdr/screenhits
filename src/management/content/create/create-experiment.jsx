@@ -10,24 +10,9 @@ import React from 'react';
 import SelectField from 'material-ui/SelectField';
 import TextField from 'material-ui/TextField';
 
+import createStyle from './create-style';
 import Fields from '../modules/fields';
 import { customSort } from '../../../helpers/helpers';
-
-const helpIconStyle = {
-  marginTop: 25,
-};
-
-const inputStyle = {
-  marginLeft: 4,
-  marginRight: 4,
-  maxWidth: 500,
-};
-
-const inputWithChildrenStyle = {
-  display: 'flex',
-  marginLeft: 4,
-  marginRight: 4,
-};
 
 class CreateExperiment extends React.Component {
   componentWillMount = () => {
@@ -86,7 +71,7 @@ class CreateExperiment extends React.Component {
             onChange={ this.inputChangeName }
             rows={ 1 }
             rowsMax={ 2 }
-            style={ inputStyle }
+            style={ createStyle.input }
             value={ this.props.formData.name }
           />
           <TextField
@@ -97,13 +82,13 @@ class CreateExperiment extends React.Component {
             onChange={ this.inputChangeDescription }
             rows={ 1 }
             rowsMax={ 4 }
-            style={ inputStyle }
+            style={ createStyle.input }
             value={ this.props.formData.description }
           />
           <div
             style={ Object.assign(
               {},
-              inputWithChildrenStyle,
+              createStyle.inputWithHelp,
               {
                 width: this.props.inputWidth,
               },
@@ -122,7 +107,6 @@ class CreateExperiment extends React.Component {
               onTouchTap={ () => {
                 this.props.dialog.open('Help for the "Concentration" field', Fields.experiment.concentration.help);
               } }
-              style={ helpIconStyle }
               tooltip="Help"
               tooltipPosition="top-center"
             >
@@ -134,7 +118,7 @@ class CreateExperiment extends React.Component {
           <div
             style={ Object.assign(
               {},
-              inputWithChildrenStyle,
+              createStyle.inputWithHelp,
               {
                 width: this.props.inputWidth,
               },
@@ -153,7 +137,6 @@ class CreateExperiment extends React.Component {
               onTouchTap={ () => {
                 this.props.dialog.open('Help for the "Time point" field', Fields.experiment.timepoint.help);
               } }
-              style={ helpIconStyle }
               tooltip="Help"
               tooltipPosition="top-center"
             >
@@ -165,7 +148,7 @@ class CreateExperiment extends React.Component {
           <div
             style={ Object.assign(
               {},
-              inputWithChildrenStyle,
+              createStyle.inputWithHelp,
               {
                 width: this.props.inputWidth,
               },
@@ -173,7 +156,7 @@ class CreateExperiment extends React.Component {
           >
             { this.props.protocols.isFetching ?
               <span
-                style={ inputStyle }
+                style={ createStyle.input }
               >
                 <FontAwesome key="fetching" name="spinner" pulse={ true } /> Fetching protocols...
               </span>
@@ -187,7 +170,7 @@ class CreateExperiment extends React.Component {
                 } }
                 multiple={ true }
                 onChange={ this.inputChangeProtocol }
-                style={ inputStyle }
+                style={ createStyle.inputWithHelpSelect }
                 value={ this.props.formData.protocols }
               >
                 { customSort.arrayOfObjectByKey(
@@ -210,7 +193,6 @@ class CreateExperiment extends React.Component {
               onTouchTap={ () => {
                 this.props.dialog.open('Help for the "Protocols" field', Fields.experiment.protocols.help);
               } }
-              style={ helpIconStyle }
               tooltip="Help"
               tooltipPosition="top-center"
             >
@@ -226,7 +208,7 @@ class CreateExperiment extends React.Component {
             onChange={ this.inputChangeComment }
             rows={ 1 }
             rowsMax={ 5 }
-            style={ inputStyle }
+            style={ createStyle.input }
             value={ this.props.formData.comment }
           />
         </div>

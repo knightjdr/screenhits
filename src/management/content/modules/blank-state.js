@@ -28,6 +28,17 @@ const BlankState = {
     },
     warning: false,
   },
+  sample: {
+    formData: {
+      comment: '',
+      name: '',
+      replicate: '',
+    },
+    errors: {
+      name: null,
+    },
+    warning: false,
+  },
   screen: {
     formData: {
       cell: '',

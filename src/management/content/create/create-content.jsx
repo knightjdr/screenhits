@@ -8,6 +8,7 @@ import { Scrollbars } from 'react-custom-scrollbars';
 import ActionButtons from '../../../action-buttons/action-buttons-container';
 import CreateExperiment from './create-experiment';
 import CreateProject from './create-project';
+import CreateSample from './create-sample-container';
 import CreateScreen from './create-screen';
 import Notice from '../../../messages/notice/notice';
 import { uppercaseFirst } from '../../../helpers/helpers';
@@ -57,6 +58,16 @@ class CreateContent extends React.Component {
               inputWidth={ this.props.inputWidth }
               protocolGet={ this.props.protocolGet }
               protocols={ this.props.protocols }
+            />
+              : null
+          }
+          { this.props.activeLevel === 'sample' ?
+            <CreateSample
+              dialog={ this.props.dialog }
+              errors={ this.props.errors }
+              formData={ this.props.formData }
+              inputChange={ this.props.inputChange }
+              inputWidth={ this.props.inputWidth }
             />
               : null
           }

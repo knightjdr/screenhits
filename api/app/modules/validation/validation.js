@@ -46,6 +46,10 @@ const validate = {
       if (validateObj.target) {
         delete validateObj.target;
       }
+      // when updating, need to remove fullProtocols attribute
+      if (validateObj.fullProtocols) {
+        delete validateObj.fullProtocols;
+      }
       validateObj[dateType] = moment().format('MMMM Do YYYY, h:mm a');
       resolve(validateObj);
     });

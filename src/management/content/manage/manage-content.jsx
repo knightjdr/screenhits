@@ -62,9 +62,35 @@ class ManageContent extends React.Component {
         <div
           style={ {
             color: this.props.muiTheme.palette.alternateTextColor,
+            height: 35,
+            position: 'relative',
           } }
         >
-          <FontAwesome name="info-circle" /> Manage user permissions for project { this.props.selected }: { this.props.name }.
+          <div
+            style={ {
+              display: 'inline-block',
+              width: 'calc(100% - 120px)',
+            } }
+          >
+            <FontAwesome name="info-circle" />
+            Manage user permissions for project { this.props.selected }: { this.props.name }.
+          </div>
+          <div
+            style={ {
+              display: 'inline-block',
+              position: 'absolute',
+              right: 5,
+            } }
+          >
+            <ActionButtons
+              reset={ {
+                func: this.props.cancelMenuAction,
+                label: 'Close',
+                toolTipText: 'Close management pane',
+              } }
+              idSuffix="management-header"
+            />
+          </div>
         </div>
         <Tabs
           style={ {

@@ -17,7 +17,7 @@ class DisplayContentContainer extends React.Component {
     this.state = {
       errors: Format.blankError[this.props.activeLevel],
       inputWidth: window.innerWidth >= 555 ? 500 : window.innerWidth - 55,
-      originalItem: Object.assign({}, this.props.item),
+      originalItem: JSON.parse(JSON.stringify(this.props.item)),
       postMessage: this.setPostMessage(
         this.props.postState,
         this.props.activeLevel,
@@ -36,7 +36,7 @@ class DisplayContentContainer extends React.Component {
     const newState = {};
     // update item when store item updates
     if (!deepEqual(item, this.props.item)) {
-      newState.originalItem = item;
+      newState.originalItem = JSON.parse(JSON.stringify(item));
       newState.updateItem = JSON.parse(JSON.stringify(item));
     }
     // on successful delete

@@ -241,21 +241,19 @@ class DisplayExperiment extends React.Component {
                   style={ displayStyle.elementValue }
                 >
                   {
-                    this.props.experiment.protocols.map((selectedProtocol) => {
-                      const index = this.props.protocols.items.findIndex((protocol) => {
-                        return protocol._id === selectedProtocol;
-                      });
-                      return index >= 0 ?
+                    this.props.experiment.fullProtocols.map((protocol) => {
+                      return (
                         <p
-                          key={ selectedProtocol }
+                          key={ `p-${protocol._id}` }
                           style={ {
                             margin: '0px 0px 5px 0px',
                           } }
                         >
-                          &bull; { this.props.protocols.items[index].name }
+                          &bull; { protocol.name }
                           <IconButton
+                            key={ `button-${protocol._id}` }
                             onTouchTap={ () => {
-                              this.props.selectProtocol(selectedProtocol);
+                              this.props.selectProtocol(protocol);
                               this.props.dialog.open('protocol');
                             } }
                             iconStyle={ {
@@ -274,20 +272,12 @@ class DisplayExperiment extends React.Component {
                             tooltipPosition="top-center"
                           >
                             <VisibilityIcon
+                              key={ `icon-${protocol._id}` }
                               color={ this.props.muiTheme.palette.alternateTextColor }
                             />
                           </IconButton>
                         </p>
-                        :
-                        <p
-                          key={ selectedProtocol }
-                          style={ {
-                            margin: '5px 0px 5px 0px',
-                          } }
-                        >
-                          &bull; { `Protocol with id ${selectedProtocol} could not be found` }
-                        </p>
-                      ;
+                      );
                     })
                   }
                 </div>
@@ -424,7 +414,9 @@ class DisplayExperiment extends React.Component {
                       paddingTop: 0,
                     } }
                     multiple={ true }
-                    onChange={ (e, index, value) => { this.props.inputChange('protocols', value); } }
+                    onChange={ (e, index, value) => {
+                      this.props.inputChange('protocols', value);
+                    } }
                     style={ displayStyle.inputWithHelpSelect }
                     value={ this.props.experiment.protocols }
                   >
@@ -536,6 +528,9 @@ DisplayExperiment.propTypes = {
     creatorEmail: PropTypes.string,
     creatorName: PropTypes.string,
     description: PropTypes.string,
+    fullProtocols: PropTypes.arrayOf(
+      PropTypes.shape({}),
+    ),
     name: PropTypes.string,
     protocols: PropTypes.arrayOf(
       PropTypes.number,

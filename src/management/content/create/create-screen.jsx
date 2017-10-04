@@ -10,27 +10,12 @@ import React from 'react';
 import SelectField from 'material-ui/SelectField';
 import TextField from 'material-ui/TextField';
 
+import createStyle from './create-style';
 import Fields from '../modules/fields';
-import { uppercaseFirst } from '../../../helpers/helpers';
 import SelectInput from './select-input/select-input-container';
 import SpeciesDataSource from '../../../assets/data/species';
 import CellsDataSource from '../../../assets/data/cells';
-
-const helpIconStyle = {
-  marginTop: 25,
-};
-
-const inputStyle = {
-  marginLeft: 4,
-  marginRight: 4,
-  maxWidth: 500,
-};
-
-const inputWithChildrenStyle = {
-  display: 'flex',
-  marginLeft: 4,
-  marginRight: 4,
-};
+import { uppercaseFirst } from '../../../helpers/helpers';
 
 class CreateScreen extends React.Component {
   dialogClose = () => {
@@ -83,7 +68,7 @@ class CreateScreen extends React.Component {
             onChange={ this.inputChangeName }
             rows={ 1 }
             rowsMax={ 2 }
-            style={ inputStyle }
+            style={ createStyle.input }
             value={ this.props.formData.name }
           />
           <TextField
@@ -94,7 +79,7 @@ class CreateScreen extends React.Component {
             onChange={ this.inputChangeDescription }
             rows={ 1 }
             rowsMax={ 5 }
-            style={ inputStyle }
+            style={ createStyle.input }
             value={ this.props.formData.description }
           />
           <SelectField
@@ -106,7 +91,7 @@ class CreateScreen extends React.Component {
               paddingTop: 0,
             } }
             onChange={ this.inputChangeType }
-            style={ inputStyle }
+            style={ createStyle.input }
             value={ this.props.formData.type }
           >
             { Fields.screen.type.values.map((type) => {
@@ -142,7 +127,7 @@ class CreateScreen extends React.Component {
           <div
             style={ Object.assign(
               {},
-              inputWithChildrenStyle,
+              createStyle.inputWithHelp,
               {
                 width: this.props.inputWidth,
               },
@@ -161,7 +146,6 @@ class CreateScreen extends React.Component {
               onTouchTap={ () => {
                 this.props.dialog.open('Help for the "Condition" field', Fields.screen.condition.help);
               } }
-              style={ helpIconStyle }
               tooltip="Help"
               tooltipPosition="top-center"
             >
@@ -186,7 +170,7 @@ class CreateScreen extends React.Component {
                     onChange={ (e, index, value) => {
                       this.props.inputChange(field.name, value, true, this.props.formData.type);
                     } }
-                    style={ inputStyle }
+                    style={ createStyle.input }
                     value={ this.props.formData.other[field.name] }
                   >
                     { field.options.map((option) => {
@@ -208,7 +192,7 @@ class CreateScreen extends React.Component {
                     onChange={ (e) => { this.props.inputChange(field.name, e.target.value); } }
                     rows={ 1 }
                     rowsMax={ 2 }
-                    style={ inputStyle }
+                    style={ createStyle.input }
                     value={ this.props.formData.other[field.name] }
                   />
               );
@@ -221,7 +205,7 @@ class CreateScreen extends React.Component {
             onChange={ this.inputChangeComment }
             rows={ 1 }
             rowsMax={ 5 }
-            style={ inputStyle }
+            style={ createStyle.input }
             value={ this.props.formData.comment }
           />
         </div>

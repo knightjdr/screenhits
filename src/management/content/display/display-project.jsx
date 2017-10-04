@@ -243,7 +243,7 @@ class DisplayProject extends React.Component {
           ] }
           modal={ false }
           onRequestClose={ this.props.dialog.close }
-          open={ this.props.dialog.bool }
+          open={ this.props.dialog.delete }
           title="Confirmation"
         >
           This action will permanently delete the project (and all screens, experiments,
@@ -257,8 +257,8 @@ class DisplayProject extends React.Component {
 DisplayProject.propTypes = {
   deleteProject: PropTypes.func.isRequired,
   dialog: PropTypes.shape({
-    bool: PropTypes.bool,
     close: PropTypes.func,
+    delete: PropTypes.bool,
     open: PropTypes.func,
   }).isRequired,
   edit: PropTypes.bool.isRequired,

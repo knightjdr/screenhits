@@ -1,3 +1,4 @@
+import deepEqual from 'deep-equal';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
@@ -25,6 +26,15 @@ class DisplayExperimentContainer extends React.Component {
   }
   componentWillMount = () => {
     this.props.protocolGet();
+  }
+  componentWillReceiveProps = (nextProps) => {
+    const { item } = nextProps;
+    // update item when store item updates
+    if (!deepEqual(item, this.props.item)) {
+      this.setState({
+        item: Object.assign({}, item),
+      });
+    }
   }
   deleteExperiment = (_id) => {
     this.dialogClose();
@@ -74,24 +84,16 @@ class DisplayExperimentContainer extends React.Component {
       typeof updateObject[field] === 'object' &&
       updateObject[field].isArray
     ) {
-      const index = updateObject[field].indexOf(value);
-      if (index > -1) {
-        updateObject[field].splice(index, 1);
-      } else {
-        updateObject[field].push(value);
-      }
+      updateObject[field] = Object.assign([], value);
     } else {
       updateObject[field] = value;
     }
     this.setState({ item: updateObject });
     this.props.updateItem(updateObject);
   }
-  selectProtocol = (_id) => {
-    const index = this.props.protocols.items.findIndex((protocol) => {
-      return protocol._id === _id;
-    });
+  selectProtocol = (protocol) => {
     this.setState({
-      selectedProtocol: this.props.protocols.items[index],
+      selectedProtocol: protocol,
     });
   }
   render() {
@@ -135,7 +137,13 @@ DisplayExperimentContainer.propTypes = {
     creatorEmail: PropTypes.string,
     creatorName: PropTypes.string,
     description: PropTypes.string,
+    fullProtocols: PropTypes.arrayOf(
+      PropTypes.shape({}),
+    ),
     name: PropTypes.string,
+    protocols: PropTypes.arrayOf(
+      PropTypes.number,
+    ),
     timepoint: PropTypes.string,
     creationDate: PropTypes.string,
     updateDate: PropTypes.string,

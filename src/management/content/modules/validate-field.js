@@ -68,6 +68,22 @@ const Validate = {
       return errorObj;
     },
   },
+  sample: {
+    checkFields: [
+      'name',
+    ],
+    name: (value) => {
+      const errorObj = {
+        error: false,
+        message: null,
+      };
+      if (!value) {
+        errorObj.error = true;
+        errorObj.message = 'This field is required';
+      }
+      return errorObj;
+    },
+  },
   screen: {
     checkFields: [
       'cell',

@@ -9,7 +9,9 @@ class DisplayProjectContainer extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      dialogBoolean: false,
+      dialog: {
+        delete: false,
+      },
       item: Object.assign({}, this.props.item),
       warning: null,
     };
@@ -20,12 +22,16 @@ class DisplayProjectContainer extends React.Component {
   }
   dialogClose = () => {
     this.setState({
-      dialogBoolean: false,
+      dialog: {
+        delete: false,
+      },
     });
   }
   dialogOpen = () => {
     this.setState({
-      dialogBoolean: true,
+      dialog: {
+        delete: true,
+      },
     });
   }
   inputChange = (field, value) => {
@@ -50,7 +56,7 @@ class DisplayProjectContainer extends React.Component {
       <DisplayProject
         deleteProject={ this.deleteProject }
         dialog={ {
-          bool: this.state.dialogBoolean,
+          delete: this.state.dialog.delete,
           close: this.dialogClose,
           open: this.dialogOpen,
         } }

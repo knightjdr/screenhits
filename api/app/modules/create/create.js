@@ -1,5 +1,7 @@
+const available = require('../available/available');
 const create = require('../crud/create');
 const counter = require('../helpers/counter');
+const query = require('../query/query');
 const validate = require('../validation/validation');
 
 const Create = {
@@ -16,13 +18,18 @@ const Create = {
           return create.insert('experiment', objCreate);
         })
         .then(() => {
+          const protocolIds = available.getProtocolIds([objCreate]);
+          return query.get('protocol', { _id: { $in: protocolIds } });
+        })
+        .then((protocols) => {
+          const formattedObj = available.formatExperiments([objCreate], protocols)[0];
           resolve({
             status: 200,
             clientResponse: {
               status: 200,
-              _id: objCreate._id,
-              message: `Screen successfully created with ID ${objCreate._id}`,
-              obj: objCreate,
+              _id: formattedObj._id,
+              message: `Screen successfully created with ID ${formattedObj._id}`,
+              obj: formattedObj,
             },
           });
         })

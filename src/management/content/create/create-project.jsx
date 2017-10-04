@@ -6,11 +6,7 @@ import SelectField from 'material-ui/SelectField';
 import TextField from 'material-ui/TextField';
 import React from 'react';
 
-const inputStyle = {
-  marginLeft: 4,
-  marginRight: 4,
-  maxWidth: 500,
-};
+import createStyle from './create-style';
 
 class CreateProject extends React.Component {
   inputChangeComment = (e) => {
@@ -49,7 +45,7 @@ class CreateProject extends React.Component {
             onChange={ this.inputChangeName }
             rows={ 1 }
             rowsMax={ 2 }
-            style={ inputStyle }
+            style={ createStyle.input }
             value={ this.props.formData.name }
           />
           <TextField
@@ -60,7 +56,7 @@ class CreateProject extends React.Component {
             onChange={ this.inputChangeDescription }
             rows={ 1 }
             rowsMax={ 5 }
-            style={ inputStyle }
+            style={ createStyle.input }
             value={ this.props.formData.description }
           />
           <SelectField
@@ -71,7 +67,7 @@ class CreateProject extends React.Component {
               paddingTop: 0,
             } }
             onChange={ this.inputChangePermission }
-            style={ inputStyle }
+            style={ createStyle.input }
             value={ this.props.formData.permission }
           >
             <MenuItem key="lr" value="lr" primaryText="Read - lab (all lab members can view this project)" />
@@ -87,7 +83,7 @@ class CreateProject extends React.Component {
             onChange={ this.inputChangeComment }
             rows={ 1 }
             rowsMax={ 5 }
-            style={ inputStyle }
+            style={ createStyle.input }
             value={ this.props.formData.comment }
           />
         </div>

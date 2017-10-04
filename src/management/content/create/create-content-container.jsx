@@ -81,12 +81,7 @@ class CreateContentContainer extends React.Component {
         typeof stateObject[field] === 'object' &&
         stateObject[field].isArray
       ) {
-        const index = stateObject[field].indexOf(value);
-        if (index > -1) {
-          stateObject[field].splice(index, 1);
-        } else {
-          stateObject[field].push(value);
-        }
+        stateObject[field] = Object.assign([], value);
       } else {
         stateObject[field] = value;
       }

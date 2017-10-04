@@ -14,6 +14,12 @@ const Fields = {
   },
   project: {
   },
+  sample: {
+    replicate: {
+      help: `Use this field to indicate what biological and or technical replicate
+      this sample is`,
+    },
+  },
   screen: {
     cell: {
       values: [

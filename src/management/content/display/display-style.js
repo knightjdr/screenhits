@@ -14,7 +14,7 @@ const displayStyle = {
     width: '100%',
   },
   elementContainer: {
-    alignItems: 'flex-start',
+    alignItems: 'flex-stretch',
     display: 'flex',
     margin: '5px 0px 5px 0px',
     width: '100%',

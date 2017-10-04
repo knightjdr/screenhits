@@ -38,6 +38,24 @@ const FormatSubmission = {
     }
     return submitObj;
   },
+  sample: (form, user, selected) => {
+    const submitObj = {};
+    submitObj.creatorEmail = user.email;
+    submitObj.creatorName = user.name;
+    submitObj.experiment = selected.experiment;
+    submitObj.name = form.name;
+    submitObj.project = selected.project;
+    submitObj.screen = selected.screen;
+    submitObj.type = 'sample';
+    // optional fields
+    if (form.replicate) {
+      submitObj.replicate = form.replicate;
+    }
+    if (form.comment) {
+      submitObj.comment = form.comment;
+    }
+    return submitObj;
+  },
   screen: (form, user, selected) => {
     const submitObj = {};
     submitObj.creatorEmail = user.email;

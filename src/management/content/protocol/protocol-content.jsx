@@ -27,7 +27,7 @@ const displayStyle = {
 };
 
 const elementContainerStyle = {
-  alignItems: 'flex-start',
+  alignItems: 'flex-stretch',
   display: 'flex',
   margin: '5px 0px 5px 0px',
 };
