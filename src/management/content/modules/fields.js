@@ -16,8 +16,8 @@ const Fields = {
   },
   sample: {
     replicate: {
-      help: `Use this field to indicate what biological and or technical replicate
-      this sample is`,
+      help: `Use this field to indicate the replicate number and type (biological
+      or technical)`,
     },
   },
   screen: {
