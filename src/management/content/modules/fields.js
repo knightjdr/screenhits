@@ -15,9 +15,17 @@ const Fields = {
   project: {
   },
   sample: {
+    concentration: {
+      help: `Specificy the drug or treatment concentration used on the sample if
+      the experiment was performed at a fixed timepoint.`,
+    },
     replicate: {
       help: `Use this field to indicate the replicate number and type (biological
       or technical)`,
+    },
+    timepoint: {
+      help: `Specificy the time point of the sample if the experiment was performed
+      with a fixed drug concentration.`,
     },
   },
   screen: {

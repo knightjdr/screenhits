@@ -71,8 +71,20 @@ const Validate = {
   sample: {
     checkFields: [
       'name',
+      'replicate',
     ],
     name: (value) => {
+      const errorObj = {
+        error: false,
+        message: null,
+      };
+      if (!value) {
+        errorObj.error = true;
+        errorObj.message = 'This field is required';
+      }
+      return errorObj;
+    },
+    replicate: (value) => {
       const errorObj = {
         error: false,
         message: null,

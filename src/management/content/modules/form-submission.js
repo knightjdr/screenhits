@@ -48,11 +48,17 @@ const FormatSubmission = {
     submitObj.screen = selected.screen;
     submitObj.type = 'sample';
     // optional fields
+    if (form.comment) {
+      submitObj.comment = form.comment;
+    }
+    if (form.concentration) {
+      submitObj.concentration = form.concentration;
+    }
     if (form.replicate) {
       submitObj.replicate = form.replicate;
     }
-    if (form.comment) {
-      submitObj.comment = form.comment;
+    if (form.timepoint) {
+      submitObj.timepoint = form.timepoint;
     }
     return submitObj;
   },

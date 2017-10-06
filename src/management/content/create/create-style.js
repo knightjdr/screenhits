@@ -1,5 +1,8 @@
 // styling for creation elements
 const createStyle = {
+  divFileParsed: {
+    marginBottom: 10,
+  },
   icon: {
     marginTop: 25,
   },
@@ -38,6 +41,9 @@ const createStyle = {
     marginLeft: 4,
     marginRight: 4,
     maxWidth: 442,
+  },
+  paragraphSmallMargin: {
+    marginBottom: 5,
   },
 };
 export default createStyle;

@@ -30,7 +30,11 @@ class CreateSample extends React.Component {
   }
   render() {
     return (
-      <div>
+      <div
+        style={ {
+          marginBottom: 20,
+        } }
+      >
         <div
           style={ {
             color: this.props.muiTheme.palette.alternateTextColor,
@@ -77,6 +81,66 @@ class CreateSample extends React.Component {
             <IconButton
               onTouchTap={ () => {
                 this.props.dialog.open('Help for the "Replicate" field', Fields.sample.replicate.help);
+              } }
+              tooltip="Help"
+              tooltipPosition="top-center"
+            >
+              <HelpIcon
+                color={ this.props.muiTheme.palette.alternateTextColor }
+              />
+            </IconButton>
+          </div>
+          <div
+            style={ Object.assign(
+              {},
+              createStyle.inputWithHelp,
+              {
+                width: this.props.inputWidth,
+              },
+            ) }
+          >
+            <TextField
+              floatingLabelText="Time point (optional)"
+              fullWidth={ true }
+              multiLine={ true }
+              onChange={ (e) => { this.props.inputChange('timepoint', e.target.value); } }
+              rows={ 1 }
+              rowsMax={ 2 }
+              value={ this.props.formData.timepoint }
+            />
+            <IconButton
+              onTouchTap={ () => {
+                this.props.dialog.open('Help for the "Time point" field', Fields.sample.timepoint.help);
+              } }
+              tooltip="Help"
+              tooltipPosition="top-center"
+            >
+              <HelpIcon
+                color={ this.props.muiTheme.palette.alternateTextColor }
+              />
+            </IconButton>
+          </div>
+          <div
+            style={ Object.assign(
+              {},
+              createStyle.inputWithHelp,
+              {
+                width: this.props.inputWidth,
+              },
+            ) }
+          >
+            <TextField
+              floatingLabelText="Concentration (optional)"
+              fullWidth={ true }
+              multiLine={ true }
+              onChange={ (e) => { this.props.inputChange('concentration', e.target.value); } }
+              rows={ 1 }
+              rowsMax={ 2 }
+              value={ this.props.formData.concentration }
+            />
+            <IconButton
+              onTouchTap={ () => {
+                this.props.dialog.open('Help for the "Concentration" field', Fields.sample.concentration.help);
               } }
               tooltip="Help"
               tooltipPosition="top-center"
@@ -167,13 +231,31 @@ class CreateSample extends React.Component {
         {
           this.props.file.name &&
           <div
-            style={ {
-              color: this.props.muiTheme.palette.alternateTextColor,
-            } }
+            style={
+              Object.assign(
+                {},
+                createStyle.divFileParsed,
+                {
+                  color: this.props.muiTheme.palette.alternateTextColor,
+                }
+              )
+            }
           >
             <hr />
             <p>
-              The following columns with be defined as indicated:
+              {
+                this.props.file.header.length === 0 ?
+                  <span>
+                    <FontAwesome name="exclamation-triangle " /> There are currently
+                    no columns from the input file to be stored. Select columns using
+                    the dropdown below.
+                  </span>
+                  :
+                  <span>
+                    <strong>Definitions:</strong> the following columns with be
+                    defined as indicated:
+                  </span>
+              }
             </p>
             {
               this.props.file.header.map((column, index) => {
@@ -188,7 +270,7 @@ class CreateSample extends React.Component {
                     } }
                   >
                     <div>
-                      { `${column.value}: ${column.name}` }
+                      { `${column.value}: ${column.layName}` }
                       {
                         column.type &&
                         ` (${column.type})`
@@ -213,12 +295,101 @@ class CreateSample extends React.Component {
               })
             }
             {
+              this.props.file.needMandatory &&
+              <div>
+                <hr />
+                <p
+                  style={ createStyle.paragraphSmallMargin }
+                >
+                  <strong>Required:</strong> the following propeties have not been assigned to
+                  columns in your file and are required. Select the appropiate column
+                  from the dropdown:
+                </p>
+                {
+                  this.props.file.mandatoryProperties.map((mandatoryProperty) => {
+                    if (mandatoryProperty.matched === false) {
+                      return (
+                        <div
+                          key={ `mandatoryContainer-${mandatoryProperty.name}` }
+                          style={ {
+                            display: 'flex',
+                            flexWrap: 'wrap',
+                          } }
+                        >
+                          <div
+                            key={ `mandatoryName-${mandatoryProperty.name}` }
+                            style={ {
+                              position: 'relative',
+                              top: 42,
+                            } }
+                          >
+                            { `${mandatoryProperty.layName} (${mandatoryProperty.type})` }
+                          </div>
+                          <SelectField
+                            floatingLabelText="Unused columns"
+                            fullWidth={ true }
+                            key={ `mandatorySelected-${mandatoryProperty.name}` }
+                            listStyle={ {
+                              paddingBottom: 0,
+                              paddingTop: 0,
+                            } }
+                            onChange={ (e, index, value) => {
+                              this.props.defineMandatory(
+                                mandatoryProperty.name,
+                                value,
+                              );
+                            } }
+                            style={
+                              Object.assign(
+                                {},
+                                createStyle.inputSmall,
+                                {
+                                  marginLeft: 20,
+                                }
+                              )
+                            }
+                            value={ this.props.file.mandatory[mandatoryProperty.name] }
+                          >
+                            {
+                              this.props.file.unusedColumns.map((column, index) => {
+                                return (
+                                  <MenuItem
+                                    key={ `mandatoryMenu-${column.name}` }
+                                    value={ index }
+                                    primaryText={ column.name }
+                                  />
+                                );
+                              })
+                            }
+                          </SelectField>
+                          {
+                            Object.keys(this.props.file.mandatory).length > 0 &&
+                            <IconButton
+                              onTouchTap={ this.props.addMandatory }
+                              style={ createStyle.icon }
+                              tooltip="Add column"
+                              tooltipPosition="top-center"
+                            >
+                              <AddBoxIcon
+                                color={ this.props.muiTheme.palette.alternateTextColor }
+                              />
+                            </IconButton>
+                          }
+                        </div>
+                      );
+                    }
+                    return null;
+                  })
+                }
+              </div>
+            }
+            {
               !objectEmpty(this.props.file.parsing) &&
                 <div>
                   <hr />
                   <p>
-                    The following columns will be parsed as indicated in the
-                    example to extract relevant values:
+                    <strong>Parsing rules:</strong> the following columns will be parsed as
+                    indicated in the example to extract relevant values:
                   </p>
                   {
                     Object.keys(this.props.file.parsing).map((key) => {
@@ -243,14 +414,13 @@ class CreateSample extends React.Component {
               <div>
                 <hr />
                 <p
-                  style={ {
-                    marginBottom: 5,
-                  } }
+                  style={ createStyle.paragraphSmallMargin }
                 >
-                  Columns listed in the dropdown below will not be stored with this
-                  sample. To save a column, select it from the dropdown and change
-                  its name as needed. You can also define the type of information it
-                  contains: metric (readout), abundance measure, score or metadata.
+                  <strong>Unused columns:</strong> columns listed in the dropdown below will not
+                  be stored with this sample. To save a column, select it from the
+                  dropdown and change its storage name as needed. You can also define the
+                  type of information it contains: metric (readout), abundance
+                  measure, score or metadata.
                 </p>
                 <div
                   style={ {
@@ -290,6 +460,7 @@ class CreateSample extends React.Component {
                   {
                     typeof this.props.columnToUse.index === 'number' &&
                     <TextField
+                      errorText={ this.props.columnToUse.error }
                       floatingLabelText="Name"
                       fullWidth={ true }
                       onChange={ (e) => { this.props.changeColumnToUse('name', e.target.value); } }
@@ -366,13 +537,16 @@ class CreateSample extends React.Component {
 }
 
 CreateSample.propTypes = {
+  addMandatory: PropTypes.func.isRequired,
   changeColumnToUse: PropTypes.func.isRequired,
   changeFileType: PropTypes.func.isRequired,
   columnToUse: PropTypes.shape({
+    error: PropTypes.string,
     index: PropTypes.number,
     name: PropTypes.string,
     type: PropTypes.string,
   }).isRequired,
+  defineMandatory: PropTypes.func.isRequired,
   dialog: PropTypes.shape({
     close: PropTypes.func,
     help: PropTypes.bool,
@@ -388,7 +562,12 @@ CreateSample.propTypes = {
     header: PropTypes.arrayOf(
       PropTypes.shape({})
     ),
+    mandatory: PropTypes.shape({}),
+    mandatoryProperties: PropTypes.arrayOf(
+      PropTypes.shape({})
+    ),
     name: PropTypes.string,
+    needMandatory: PropTypes.bool,
     parsing: PropTypes.shape({
       original: PropTypes.string,
       parsed: PropTypes.string,
@@ -405,9 +584,11 @@ CreateSample.propTypes = {
   ).isRequired,
   formData: PropTypes.shape({
     comment: PropTypes.string,
+    concentration: PropTypes.string,
     fileType: PropTypes.string,
     name: PropTypes.string,
     replicate: PropTypes.string,
+    timepoint: PropTypes.string,
   }).isRequired,
   inputChange: PropTypes.func.isRequired,
   inputWidth: PropTypes.number.isRequired,

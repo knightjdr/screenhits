@@ -17,13 +17,17 @@ const fileReader = {
 
       const seek = () => {
         if (lineCount === maxLines) {
+          fr.abort();
           resolve(lines);
+          return;
         }
         if (
           offset !== 0 &&
           offset >= inputFile.size
         ) { // We did not find all lines, but there are no more lines.
+          fr.abort();
           resolve(lines);
+          return;
         }
         const slice = inputFile.slice(offset, offset + CHUNK_SIZE);
         fr.readAsArrayBuffer(slice);
@@ -32,7 +36,7 @@ const fileReader = {
       fr.onload = () => {
         // Use stream:true in case we cut the file in the middle of a multi-byte character
         results += decoder.decode(fr.result, { stream: true });
-        lines = results.split('\n');
+        lines = results.split(/[\r\n]+/);
         results = lines.pop(); // In case the line did not end yet.
         lineCount += lines.length;
 

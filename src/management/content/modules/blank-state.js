@@ -31,9 +31,11 @@ const BlankState = {
   sample: {
     formData: {
       comment: '',
+      concentration: '',
       fileType: '',
       name: '',
       replicate: '',
+      timepoint: '',
     },
     errors: {
       name: null,
