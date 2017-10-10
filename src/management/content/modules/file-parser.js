@@ -20,13 +20,13 @@ const fileParser = {
           name: 'guideSequence',
           index: 0,
           layName: 'guide sequence',
-          type: 'metric',
+          type: 'readout',
         },
         {
           name: 'gene',
           index: 1,
           layName: 'gene identifier',
-          type: 'metric',
+          type: 'readout',
         },
       ],
       mandatory: [
@@ -34,7 +34,7 @@ const fileParser = {
           matched: false,
           name: 'readCount',
           layName: ' read count',
-          type: 'abundance',
+          type: 'metric',
         },
       ],
       name: 'tab-separated text file with read counts',
@@ -63,6 +63,12 @@ const fileParser = {
       mandatory: [],
       name: 'comma-separated text file',
       type: 'text/csv',
+    },
+  ],
+  Microscopy: [
+    {
+      name: 'image',
+      type: 'text/tab-separated-values',
     },
   ],
 };

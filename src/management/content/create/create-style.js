@@ -45,5 +45,22 @@ const createStyle = {
   paragraphSmallMargin: {
     marginBottom: 5,
   },
+  userHeader: {
+    alignItems: 'flex-start',
+    display: 'flex',
+    marginBottom: 5,
+  },
+  userHeaderKey: {
+    borderRadius: 2,
+    textAlign: 'right',
+    padding: '5px 5px 5px 5px',
+    minWidth: 130,
+  },
+  userHeaderContent: {
+    padding: '7px 5px 5px 5px',
+  },
+  userContent: {
+    marginLeft: 135,
+  },
 };
 export default createStyle;

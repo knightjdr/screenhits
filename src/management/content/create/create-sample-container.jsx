@@ -208,7 +208,6 @@ class CreateSampleContainer extends React.Component {
     const fileName = e.target.files[0].name;
     fileReader.nLines(e.target.files[0], 2)
       .then((lines) => {
-        console.log(lines);
         const parsedLines = this.parseLines(lines);
         this.setState((prevState) => {
           return {

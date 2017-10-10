@@ -100,17 +100,17 @@ class CreateSample extends React.Component {
             ) }
           >
             <TextField
-              floatingLabelText="Time point (optional)"
+              floatingLabelText="Concentration (optional)"
               fullWidth={ true }
               multiLine={ true }
-              onChange={ (e) => { this.props.inputChange('timepoint', e.target.value); } }
+              onChange={ (e) => { this.props.inputChange('concentration', e.target.value); } }
               rows={ 1 }
               rowsMax={ 2 }
-              value={ this.props.formData.timepoint }
+              value={ this.props.formData.concentration }
             />
             <IconButton
               onTouchTap={ () => {
-                this.props.dialog.open('Help for the "Time point" field', Fields.sample.timepoint.help);
+                this.props.dialog.open('Help for the "Concentration" field', Fields.sample.concentration.help);
               } }
               tooltip="Help"
               tooltipPosition="top-center"
@@ -130,17 +130,17 @@ class CreateSample extends React.Component {
             ) }
           >
             <TextField
-              floatingLabelText="Concentration (optional)"
+              floatingLabelText="Time point (optional)"
               fullWidth={ true }
               multiLine={ true }
-              onChange={ (e) => { this.props.inputChange('concentration', e.target.value); } }
+              onChange={ (e) => { this.props.inputChange('timepoint', e.target.value); } }
               rows={ 1 }
               rowsMax={ 2 }
-              value={ this.props.formData.concentration }
+              value={ this.props.formData.timepoint }
             />
             <IconButton
               onTouchTap={ () => {
-                this.props.dialog.open('Help for the "Concentration" field', Fields.sample.concentration.help);
+                this.props.dialog.open('Help for the "Time point" field', Fields.sample.timepoint.help);
               } }
               tooltip="Help"
               tooltipPosition="top-center"
@@ -242,69 +242,104 @@ class CreateSample extends React.Component {
             }
           >
             <hr />
-            <p>
-              {
-                this.props.file.header.length === 0 ?
-                  <span>
-                    <FontAwesome name="exclamation-triangle " /> There are currently
-                    no columns from the input file to be stored. Select columns using
-                    the dropdown below.
-                  </span>
-                  :
-                  <span>
-                    <strong>Definitions:</strong> the following columns with be
-                    defined as indicated:
-                  </span>
-              }
-            </p>
             {
-              this.props.file.header.map((column, index) => {
-                return (
-                  <div
-                    key={ column.name }
-                    style={ {
-                      alignItems: 'flex-start',
-                      display: 'flex',
-                      height: 18,
-                      margin: '4px 0px 4px 0px',
-                    } }
-                  >
-                    <div>
-                      { `${column.value}: ${column.layName}` }
-                      {
-                        column.type &&
-                        ` (${column.type})`
-                      }
-                    </div>
-                    {
-                      column.other &&
-                      <IconButton
-                        iconStyle={ createStyle.iconFontSmall }
-                        onTouchTap={ () => { this.props.removeFromHeader(index); } }
-                        style={ createStyle.iconSmall }
-                        tooltip="Remove column"
-                        tooltipPosition="top-center"
-                      >
-                        <RemoveCircleIcon
-                          color={ this.props.muiTheme.palette.alternateTextColor }
-                        />
-                      </IconButton>
-                    }
+              this.props.file.header.length === 0 ?
+                <div>
+                  <FontAwesome name="exclamation-triangle " /> There are currently
+                  no columns from the input file to be stored. Select columns using
+                  the dropdown below.
                   </div>
-                );
-              })
+                  :
+                <div>
+                  <div
+                    style={ createStyle.userHeader }
+                  >
+                    <div
+                      style={ Object.assign(
+                        {},
+                        createStyle.userHeaderKey,
+                        {
+                          backgroundColor: this.props.muiTheme.palette.keyColor,
+                          border: `1px solid ${this.props.muiTheme.palette.keyColorBorder}`,
+                        },
+                      ) }
+                    >
+                      Required:
+                    </div>
+                    <div
+                      style={ createStyle.userHeaderContent }
+                    >
+                      The following propeties have not been assigned to
+                      columns in your file and are required. Select the appropiate column
+                      from the dropdown.
+                    </div>
+                  </div>
+                  {
+                    this.props.file.header.map((column, index) => {
+                      return (
+                        <div
+                          key={ column.name }
+                          style={ {
+                            alignItems: 'flex-start',
+                            display: 'flex',
+                            height: 18,
+                            margin: '4px 0px 4px 150px',
+                          } }
+                        >
+                          <div>
+                            { `${column.value}: ${column.layName}` }
+                            {
+                              column.type &&
+                              ` (${column.type})`
+                            }
+                          </div>
+                          {
+                            column.other &&
+                            <IconButton
+                              iconStyle={ createStyle.iconFontSmall }
+                              onTouchTap={ () => { this.props.removeFromHeader(index); } }
+                              style={ createStyle.iconSmall }
+                              tooltip="Remove column"
+                              tooltipPosition="top-center"
+                            >
+                              <RemoveCircleIcon
+                                color={ this.props.muiTheme.palette.alternateTextColor }
+                              />
+                            </IconButton>
+                          }
+                        </div>
+                      );
+                    })
+                  }
+                </div>
             }
             {
               this.props.file.needMandatory &&
               <div>
                 <hr />
-                <p
-                  style={ createStyle.paragraphSmallMargin }
+                <div
+                  style={ createStyle.userHeader }
                 >
-                  <strong>Required:</strong> the following propeties have not been assigned to
-                  columns in your file and are required. Select the appropiate column
-                  from the dropdown:
-                </p>
+                  <div
+                    style={ Object.assign(
+                      {},
+                      createStyle.userHeaderKey,
+                      {
+                        backgroundColor: this.props.muiTheme.palette.keyColor,
+                        border: `1px solid ${this.props.muiTheme.palette.keyColorBorder}`,
+                      },
+                    ) }
+                  >
+                    Required:
+                  </div>
+                  <div
+                    style={ createStyle.userHeaderContent }
+                  >
+                    The following propeties have not been assigned to
+                    columns in your file and are required. Select the appropiate column
+                    from the dropdown.
+                  </div>
+                </div>
                 {
                   this.props.file.mandatoryProperties.map((mandatoryProperty) => {
                     if (mandatoryProperty.matched === false) {
@@ -314,6 +349,7 @@ class CreateSample extends React.Component {
                           style={ {
                             display: 'flex',
                             flexWrap: 'wrap',
+                            marginLeft: 150,
                           } }
                         >
                           <div
@@ -387,25 +423,49 @@ class CreateSample extends React.Component {
               !objectEmpty(this.props.file.parsing) &&
                 <div>
                   <hr />
-                  <p>
-                    <strong>Parsing rules:</strong> the following columns will be parsed as
-                    indicated in the example to extract relevant values:
-                  </p>
-                  {
-                    Object.keys(this.props.file.parsing).map((key) => {
-                      return (
-                        <div
-                          key={ key }
-                          style={ {
-                            margin: '4px 0px 4px 0px',
-                          } }
-                        >
-                          { `${key} - original value: ${this.props.file.parsing[key].original},
-                          parsed value: ${this.props.file.parsing[key].parsed}` }
-                        </div>
-                      );
-                    })
-                  }
+                  <div
+                    style={ createStyle.userHeader }
+                  >
+                    <div
+                      style={ Object.assign(
+                        {},
+                        createStyle.userHeaderKey,
+                        {
+                          backgroundColor: this.props.muiTheme.palette.keyColor,
+                          border: `1px solid ${this.props.muiTheme.palette.keyColorBorder}`,
+                        },
+                      ) }
+                    >
+                      Parsing rules:
+                    </div>
+                    <div
+                      style={ createStyle.userHeaderContent }
+                    >
+                      The following columns will be parsed as
+                      indicated in the example to extract relevant values:
+                    </div>
+                  </div>
+                  <div
+                    style={ {
+                      margin: '10px 0px 0px 150px',
+                    } }
+                  >
+                    {
+                      Object.keys(this.props.file.parsing).map((key) => {
+                        return (
+                          <div
+                            key={ key }
+                            style={ {
+                              margin: '4px 0px 4px 0px',
+                            } }
+                          >
+                            { `${key} - original value: ${this.props.file.parsing[key].original},
+                            parsed value: ${this.props.file.parsing[key].parsed}` }
+                          </div>
+                        );
+                      })
+                    }
+                  </div>
                 </div>
 
             }
@@ -413,19 +473,36 @@ class CreateSample extends React.Component {
               !objectEmpty(this.props.file.unusedColumns) &&
               <div>
                 <hr />
-                <p
-                  style={ createStyle.paragraphSmallMargin }
+                <div
+                  style={ createStyle.userHeader }
                 >
-                  <strong>Unused columns:</strong> columns listed in the dropdown below will not
-                  be stored with this sample. To save a column, select it from the
-                  dropdown and change its storage name as needed. You can also define the
-                  type of information it contains: metric (readout), abundance
-                  measure, score or metadata.
-                </p>
+                  <div
+                    style={ Object.assign(
+                      {},
+                      createStyle.userHeaderKey,
+                      {
+                        backgroundColor: this.props.muiTheme.palette.keyColor,
+                        border: `1px solid ${this.props.muiTheme.palette.keyColorBorder}`,
+                      },
+                    ) }
+                  >
+                    Unused columns:
+                  </div>
+                  <div
+                    style={ createStyle.userHeaderContent }
+                  >
+                    Columns listed in the dropdown below will not be stored with this
+                    sample. To save a column, select it from the dropdown and change
+                    its storage name as needed. You can also define the type of
+                    information it contains: readout, metric (abundance, etc), score
+                    or metadata.
+                  </div>
+                </div>
                 <div
                   style={ {
                     display: 'flex',
                     flexWrap: 'wrap',
+                    marginLeft: 150,
                   } }
                 >
                   <SelectField
@@ -488,8 +565,8 @@ class CreateSample extends React.Component {
                     >
                       {
                         [
+                          'readout',
                           'metric',
-                          'abundance',
                           'score',
                           'metadata',
                         ].map((type) => {
@@ -597,6 +674,8 @@ CreateSample.propTypes = {
       alternateTextColor: PropTypes.string,
       buttonColor: PropTypes.string,
       buttonColorHover: PropTypes.string,
+      keyColor: PropTypes.string,
+      keyColorBorder: PropTypes.string,
       offWhite: PropTypes.string,
       warning: PropTypes.string,
       warningHover: PropTypes.string,

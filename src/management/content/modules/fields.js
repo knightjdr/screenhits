@@ -47,8 +47,8 @@ const Fields = {
           helpTitle: 'Help from the "Library" field.',
           name: 'library',
           options: [
-            'tko v1 Base library',
-            'tko v2 Base library',
+            'TKO v1',
+            'TKO v2',
           ],
           type: 'select',
         },

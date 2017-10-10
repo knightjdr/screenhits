@@ -14,6 +14,7 @@ class ManagementContainer extends React.Component {
     super(props);
     this.state = {
       activeLevel: 'project',
+      transitionState: 'entering',
       showList: false,
       viewIcon: 'sitemap',
       viewType: 'hierarchy',
@@ -236,6 +237,7 @@ class ManagementContainer extends React.Component {
         selected={ this.props.selected }
         showList={ this.showList }
         showListBoolean={ this.state.showList }
+        transitionState={ this.state.transitionState }
         viewIcon={ this.state.viewIcon }
         viewType={ this.state.viewType }
 
