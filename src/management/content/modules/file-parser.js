@@ -11,7 +11,7 @@ const fileParser = {
         regex: [
           {
             keep: 1,
-            pattern: /.+_(.+)/,
+            pattern: '.+_(.+)',
           },
         ],
       },

@@ -112,6 +112,81 @@ const validate = {
       resolve(validateObj);
     });
   },
+  sample: (obj, dateType, creation = true) => {
+    return new Promise((resolve, reject) => {
+      const validateObj = obj;
+      if (
+        !validateObj.creatorEmail ||
+        !validators.email(validateObj.creatorEmail)
+      ) {
+        reject('invalid email');
+      }
+      if (!validateObj.creatorName) {
+        reject('missing user name');
+      }
+      if (!validateObj.name) {
+        reject('missing sample name');
+      }
+      if (
+        creation &&
+        !validateObj.project
+      ) {
+        reject('missing project');
+      }
+      if (
+        creation &&
+        !validateObj.screen
+      ) {
+        reject('missing screen');
+      }
+      if (
+        creation &&
+        !validateObj.experiment
+      ) {
+        reject('missing experiment');
+      }
+      let fileType;
+      let header;
+      let parser;
+      if (validateObj.fileType) {
+        fileType = validateObj.fileType;
+        delete validateObj.fileType;
+      }
+      if (validateObj.header) {
+        header = JSON.parse(validateObj.header);
+        delete validateObj.header;
+      }
+      if (validateObj.parser) {
+        parser = JSON.parse(validateObj.parser);
+        delete validateObj.parser;
+      }
+      if (creation) {
+        validateObj.group = {
+          experiment: validateObj.experiment,
+          project: validateObj.project,
+          screen: validateObj.screen,
+        };
+      }
+      delete validateObj.experiment;
+      delete validateObj.project;
+      delete validateObj.screen;
+      if (validateObj.target) {
+        delete validateObj.target;
+      }
+      validateObj[dateType] = moment().format('MMMM Do YYYY, h:mm a');
+      resolve(Object.assign(
+        {},
+        {
+          data: validateObj,
+        },
+        {
+          fileType,
+          header,
+          parser,
+        }
+      ));
+    });
+  },
   screen: (obj, dateType, creation = true) => {
     return new Promise((resolve, reject) => {
       const validateObj = obj;

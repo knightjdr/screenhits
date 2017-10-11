@@ -2,13 +2,14 @@ const available = require('../available/available');
 const create = require('../crud/create');
 const counter = require('../helpers/counter');
 const query = require('../query/query');
+const readFile = require('./read-file');
 const validate = require('../validation/validation');
 
 const Create = {
-  experiment: (obj) => {
+  experiment: (req) => {
     return new Promise((resolve) => {
       let objCreate = {};
-      validate.experiment(obj, 'creationDate')
+      validate.experiment(req.body, 'creationDate')
         .then((newObj) => {
           objCreate = newObj;
           return counter.get('experiment');
@@ -45,10 +46,10 @@ const Create = {
       ;
     });
   },
-  project: (obj) => {
+  project: (req) => {
     return new Promise((resolve) => {
       let objCreate = {};
-      validate.project(obj, 'creationDate')
+      validate.project(req.body, 'creationDate')
         .then((newObj) => {
           objCreate = newObj;
           return counter.get('project');
@@ -81,10 +82,10 @@ const Create = {
       ;
     });
   },
-  protocol: (obj) => {
+  protocol: (req) => {
     return new Promise((resolve) => {
       let objCreate = {};
-      validate.protocol(obj, 'creationDate')
+      validate.protocol(req.body, 'creationDate')
         .then((newObj) => {
           objCreate = newObj;
           return counter.get('protocol');
@@ -116,10 +117,54 @@ const Create = {
       ;
     });
   },
-  screen: (obj) => {
+  sample: (req) => {
     return new Promise((resolve) => {
       let objCreate = {};
-      validate.screen(obj, 'creationDate')
+      validate.sample(req.body, 'creationDate')
+        .then((validatObj) => {
+          objCreate = validatObj.data;
+          return readFile[validatObj.data.type](
+            req.files,
+            validatObj.fileType,
+            validatObj.header,
+            validatObj.parser
+          );
+        })
+        .then((data) => {
+          objCreate.data = data;
+          return counter.get('sample');
+        })
+        .then((sequence) => {
+          objCreate._id = sequence;
+          // return create.insert('sample', objCreate);
+        })
+        .then(() => {
+          resolve({
+            status: 200,
+            clientResponse: {
+              status: 200,
+              _id: objCreate._id,
+              message: `Sample successfully created with ID ${objCreate._id}`,
+              obj: objCreate,
+            },
+          });
+        })
+        .catch((error) => {
+          resolve({
+            status: 500,
+            clientResponse: {
+              status: 500,
+              message: `There was an error creating this sample: ${error}`,
+            },
+          });
+        })
+      ;
+    });
+  },
+  screen: (req) => {
+    return new Promise((resolve) => {
+      let objCreate = {};
+      validate.screen(req.body, 'creationDate')
         .then((newObj) => {
           objCreate = newObj;
           return counter.get('screen');

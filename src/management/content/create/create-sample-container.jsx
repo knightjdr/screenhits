@@ -2,10 +2,15 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
 
+import BlankState from '../modules/blank-state';
 import CreateSample from './create-sample';
 import fileReader from '../../../helpers/file-reader';
 import FileTypes from '../modules/file-parser';
+import FormSubmission from '../modules/form-submission';
 import stringParser from '../../../helpers/string-parser';
+import ValidateField from '../modules/validate-field';
+import { objectEmpty } from '../../../helpers/helpers';
+import { submitPost } from '../../../state/post/actions';
 
 const reset = {
   columnToUse: {
@@ -16,6 +21,7 @@ const reset = {
   },
   file: {
     error: null,
+    file: null,
     header: [],
     mandatory: {},
     mandatoryProperties: [],
@@ -40,15 +46,12 @@ class CreateSampleContainer extends React.Component {
         FileTypes[screenType]
         :
         [],
+      formData: Object.assign({}, BlankState.sample.formData),
+      errors: Object.assign({}, BlankState.sample.errors),
       lines: Object.assign([], reset.lines),
       screenType,
+      warning: BlankState.sample.warning,
     };
-  }
-  componentWillReceiveProps = (nextProps) => {
-    const { formData } = nextProps;
-    if (!formData.fileType) {
-      this.resetFileInput();
-    }
   }
   addMandatory = () => {
     this.setState((prevState) => {
@@ -100,8 +103,13 @@ class CreateSampleContainer extends React.Component {
             unusedColumns,
           }
         ),
+        warning: false,
       };
     });
+  }
+  cancelForm = () => {
+    this.resetForm();
+    this.props.cancel();
   }
   changeColumnToUse = (type, value, name) => {
     this.setState((prevState) => {
@@ -117,7 +125,7 @@ class CreateSampleContainer extends React.Component {
     });
   }
   changeFileType = (e, index, value) => {
-    this.props.inputChange('fileType', value);
+    this.inputChange('fileType', value);
     this.setState((prevState) => {
       return {
         columnToUse: Object.assign({}, reset.columnToUse),
@@ -159,6 +167,32 @@ class CreateSampleContainer extends React.Component {
     });
     return this.props.screens[index];
   }
+  inputChange = (field, value) => {
+    const errors = JSON.parse(JSON.stringify(this.state.errors));
+    const stateObject = Object.assign({}, this.state.formData);
+    const validate = ValidateField.sample[field] ?
+      ValidateField.sample[field](value)
+      : {
+        error: false,
+        message: null,
+      }
+    ;
+    if (
+      typeof stateObject[field] === 'object' &&
+      stateObject[field].isArray
+    ) {
+      stateObject[field] = Object.assign([], value);
+    } else {
+      stateObject[field] = value;
+    }
+    errors[field] = validate.error ? validate.message : null;
+    const warning = !objectEmpty(errors);
+    this.setState({
+      errors,
+      formData: stateObject,
+      warning,
+    });
+  }
   parseLines = (lines) => {
     const header = stringParser[this.state.fileParser.delimiter](lines[0]);
     const headerArray = [];
@@ -185,7 +219,7 @@ class CreateSampleContainer extends React.Component {
     this.state.fileParser.firstLine.toParse.forEach((column, index) => {
       const columnName = header[column];
       const keep = this.state.fileParser.firstLine.regex[index].keep;
-      const regex = this.state.fileParser.firstLine.regex[index].pattern;
+      const regex = new RegExp(this.state.fileParser.firstLine.regex[index].pattern);
       const matched = firstLine[column].match(regex);
       parsingObject[columnName] = {
         original: firstLine[index],
@@ -205,8 +239,9 @@ class CreateSampleContainer extends React.Component {
     };
   }
   readFileInput = (e) => {
-    const fileName = e.target.files[0].name;
-    fileReader.nLines(e.target.files[0], 2)
+    const file = e.target.files[0];
+    const fileName = file.name;
+    fileReader.nLines(file, 2)
       .then((lines) => {
         const parsedLines = this.parseLines(lines);
         this.setState((prevState) => {
@@ -216,6 +251,7 @@ class CreateSampleContainer extends React.Component {
               {},
               prevState.file,
               {
+                file,
                 error: null,
                 header: parsedLines.header,
                 mandatory: {},
@@ -277,13 +313,58 @@ class CreateSampleContainer extends React.Component {
       };
     });
   }
-  resetFileInput = () => {
-    this.setState({
-      columnToUse: Object.assign({}, reset.columnToUse),
-      file: JSON.parse(JSON.stringify(reset.file)),
-      fileParser: Object.assign({}, reset.fileParser),
-      lines: Object.assign([], reset.lines),
+  resetForm = () => {
+    this.setState((prevState) => {
+      return {
+        columnToUse: Object.assign({}, reset.columnToUse),
+        file: JSON.parse(JSON.stringify(reset.file)),
+        fileParser: Object.assign({}, reset.fileParser),
+        fileTypes: FileTypes[prevState.screenType] ?
+          FileTypes[prevState.screenType]
+          :
+          [],
+        formData: Object.assign({}, BlankState.sample.formData),
+        errors: Object.assign({}, BlankState.sample.errors),
+        lines: Object.assign([], reset.lines),
+        warning: BlankState.sample.warning,
+      };
     });
+  }
+  submitSample = () => {
+    let error = false;
+    const errors = JSON.parse(JSON.stringify(this.state.errors));
+    Object.keys(this.state.formData).forEach((field) => {
+      if (ValidateField.sample.checkFields.indexOf(field) > -1) {
+        const validation = ValidateField.sample[field](this.state.formData[field]);
+        if (validation.error) {
+          error = true;
+          errors[field] = validation.message;
+        }
+      }
+    });
+    // check if file has been properly parsed and assigned
+    if (
+      this.state.file.file &&
+      this.state.file.needMandatory
+    ) {
+      error = true;
+      errors.file = `There are errors with the input file. Make sure all
+      mandatory fields have been assigned`;
+    }
+    // if there are no errors, submit
+    if (error) {
+      this.setState({ errors, warning: true });
+    } else {
+      const submitObj = FormSubmission.sample(
+        this.state.formData,
+        this.state.file,
+        this.props.user,
+        this.props.selected,
+        this.state.screenType,
+        this.state.fileParser.firstLine,
+      );
+      this.props.create('sample', submitObj, true);
+    }
   }
   updateUnused = () => {
     this.setState((prevState) => {
@@ -342,28 +423,44 @@ class CreateSampleContainer extends React.Component {
   render() {
     return (
       <CreateSample
+        actions={ {
+          cancel: this.cancelForm,
+          reset: this.resetForm,
+          submit: this.submitSample,
+        } }
         addMandatory={ this.addMandatory }
         changeColumnToUse={ this.changeColumnToUse }
         changeFileType={ this.changeFileType }
         columnToUse={ this.state.columnToUse }
         defineMandatory={ this.defineMandatory }
         dialog={ this.props.dialog }
-        errors={ this.props.errors }
+        errors={ this.state.errors }
         file={ this.state.file }
         fileTypes={ this.state.fileTypes }
-        formData={ this.props.formData }
-        inputChange={ this.props.inputChange }
+        formData={ this.state.formData }
+        inputChange={ this.inputChange }
         inputWidth={ this.props.inputWidth }
         readFileInput={ this.readFileInput }
         removeFromHeader={ this.removeFromHeader }
-        resetFileInput={ this.resetFileInput }
+        resetForm={ this.resetForm }
         updateUnused={ this.updateUnused }
+        warning={ this.state.warning }
       />
     );
   }
 }
 
+CreateSampleContainer.defaultProps = {
+  user: {
+    email: null,
+    lab: null,
+    name: null,
+  },
+};
+
 CreateSampleContainer.propTypes = {
+  cancel: PropTypes.func.isRequired,
+  create: PropTypes.func.isRequired,
   dialog: PropTypes.shape({
     close: PropTypes.func,
     help: PropTypes.bool,
@@ -371,18 +468,6 @@ CreateSampleContainer.propTypes = {
     text: PropTypes.string,
     title: PropTypes.string,
   }).isRequired,
-  errors: PropTypes.shape({
-    name: PropTypes.string,
-  }).isRequired,
-  formData: PropTypes.shape({
-    comment: PropTypes.string,
-    concentration: PropTypes.string,
-    fileType: PropTypes.string,
-    name: PropTypes.string,
-    replicate: PropTypes.string,
-    timepoint: PropTypes.string,
-  }).isRequired,
-  inputChange: PropTypes.func.isRequired,
   inputWidth: PropTypes.number.isRequired,
   screens: PropTypes.arrayOf(
     PropTypes.shape({}),
@@ -393,17 +478,32 @@ CreateSampleContainer.propTypes = {
     sample: PropTypes.number,
     screen: PropTypes.number,
   }).isRequired,
+  user: PropTypes.shape({
+    email: PropTypes.string,
+    lab: PropTypes.string,
+    name: PropTypes.string,
+  }),
+};
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    create: (activeLevel, obj, isFormData) => {
+      dispatch(submitPost(activeLevel, obj, isFormData));
+    },
+  };
 };
 
 const mapStateToProps = (state) => {
   return {
     screens: state.available.screen.items,
     selected: state.selected,
+    user: state.user,
   };
 };
 
 const Details = connect(
   mapStateToProps,
+  mapDispatchToProps,
 )(CreateSampleContainer);
 
 export default Details;

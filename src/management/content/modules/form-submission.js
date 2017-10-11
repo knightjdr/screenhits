@@ -1,3 +1,5 @@
+/* global FormData */
+
 const FormatSubmission = {
   experiment: (form, user, selected) => {
     const submitObj = {};
@@ -38,27 +40,37 @@ const FormatSubmission = {
     }
     return submitObj;
   },
-  sample: (form, user, selected) => {
-    const submitObj = {};
-    submitObj.creatorEmail = user.email;
-    submitObj.creatorName = user.name;
-    submitObj.experiment = selected.experiment;
-    submitObj.name = form.name;
-    submitObj.project = selected.project;
-    submitObj.screen = selected.screen;
-    submitObj.type = 'sample';
+  sample: (form, file, user, selected, screenType, parser) => {
+    const submitObj = new FormData();
+    submitObj.append('creatorEmail', user.email);
+    submitObj.append('creatorName', user.name);
+    submitObj.append('experiment', selected.experiment);
+    submitObj.append('name', form.name);
+    submitObj.append('project', selected.project);
+    submitObj.append('screen', selected.screen);
+    submitObj.append('target', 'sample');
+    submitObj.append('type', screenType);
     // optional fields
     if (form.comment) {
-      submitObj.comment = form.comment;
+      submitObj.append('comment', form.comment);
     }
     if (form.concentration) {
-      submitObj.concentration = form.concentration;
+      submitObj.append('concentration', form.concentration);
+    }
+    if (form.fileType) {
+      submitObj.append('fileType', form.fileType);
     }
     if (form.replicate) {
-      submitObj.replicate = form.replicate;
+      submitObj.append('replicate', form.replicate);
     }
     if (form.timepoint) {
-      submitObj.timepoint = form.timepoint;
+      submitObj.append('timepoint', form.timepoint);
+    }
+    // if submitting a file
+    if (file.file) {
+      submitObj.append('file', file.file);
+      submitObj.append('header', JSON.stringify(file.header));
+      submitObj.append('parser', JSON.stringify(parser));
     }
     return submitObj;
   },

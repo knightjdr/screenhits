@@ -31,15 +31,14 @@ class CreateContent extends React.Component {
           autoHeight={ true }
           autoHeightMax={ 'calc(100vh - 180px)' }
         >
-          { this.props.activeLevel === 'project' ?
+          { this.props.activeLevel === 'project' &&
             <CreateProject
               errors={ this.props.errors }
               formData={ this.props.formData }
               inputChange={ this.props.inputChange }
             />
-              : null
           }
-          { this.props.activeLevel === 'screen' ?
+          { this.props.activeLevel === 'screen' &&
             <CreateScreen
               dialog={ this.props.dialog }
               errors={ this.props.errors }
@@ -47,9 +46,8 @@ class CreateContent extends React.Component {
               inputChange={ this.props.inputChange }
               inputWidth={ this.props.inputWidth }
             />
-              : null
           }
-          { this.props.activeLevel === 'experiment' ?
+          { this.props.activeLevel === 'experiment' &&
             <CreateExperiment
               dialog={ this.props.dialog }
               errors={ this.props.errors }
@@ -59,17 +57,13 @@ class CreateContent extends React.Component {
               protocolGet={ this.props.protocolGet }
               protocols={ this.props.protocols }
             />
-              : null
           }
-          { this.props.activeLevel === 'sample' ?
+          { this.props.activeLevel === 'sample' &&
             <CreateSample
               dialog={ this.props.dialog }
-              errors={ this.props.errors }
-              formData={ this.props.formData }
-              inputChange={ this.props.inputChange }
+              cancel={ this.props.cancelForm }
               inputWidth={ this.props.inputWidth }
             />
-              : null
           }
           { this.props.warning &&
             <div
@@ -86,21 +80,24 @@ class CreateContent extends React.Component {
               marginTop: 10,
             } }
           >
-            <ActionButtons
-              cancel={ {
-                func: this.props.cancelForm,
-                toolTipText: `Cancel ${this.props.activeLevel} creation`,
-              } }
-              idSuffix={ `create-${this.props.activeLevel}` }
-              reset={ {
-                func: this.props.resetForm,
-                toolTipText: 'Reset the form',
-              } }
-              update={ {
-                func: this.props.submitForm,
-                label: 'Create',
-              } }
-            />
+            {
+              this.props.activeLevel !== 'sample' &&
+              <ActionButtons
+                cancel={ {
+                  func: this.props.cancelForm,
+                  toolTipText: `Cancel ${this.props.activeLevel} creation`,
+                } }
+                idSuffix={ `create-${this.props.activeLevel}` }
+                reset={ {
+                  func: this.props.resetForm,
+                  toolTipText: 'Reset the form',
+                } }
+                update={ {
+                  func: this.props.submitForm,
+                  label: 'Create',
+                } }
+              />
+            }
             <Notice
               fail={ this.props.postState[this.props.activeLevel].didSubmitFail }
               failMessage={ `${uppercaseFirst(this.props.activeLevel)} creation failed.

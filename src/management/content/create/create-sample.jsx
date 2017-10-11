@@ -12,6 +12,7 @@ import RemoveCircleIcon from 'material-ui/svg-icons/content/remove-circle';
 import SelectField from 'material-ui/SelectField';
 import TextField from 'material-ui/TextField';
 
+import ActionButtons from '../../../action-buttons/action-buttons-container';
 import createStyle from './create-style';
 import Fields from '../modules/fields';
 import { objectEmpty } from '../../../helpers/helpers';
@@ -40,8 +41,8 @@ class CreateSample extends React.Component {
             color: this.props.muiTheme.palette.alternateTextColor,
           } }
         >
-          <FontAwesome name="info-circle" />
-          Name your sample, provide all details below and then select a file for upload.
+          <FontAwesome name="info-circle" /> Name your sample, provide all
+          details below and then select a file for upload.
         </div>
         <div
           style={ {
@@ -70,6 +71,7 @@ class CreateSample extends React.Component {
             ) }
           >
             <TextField
+              errorText={ this.props.errors.replicate }
               floatingLabelText="Replicate"
               fullWidth={ true }
               multiLine={ true }
@@ -264,14 +266,12 @@ class CreateSample extends React.Component {
                         },
                       ) }
                     >
-                      Required:
+                      Definitions:
                     </div>
                     <div
                       style={ createStyle.userHeaderContent }
                     >
-                      The following propeties have not been assigned to
-                      columns in your file and are required. Select the appropiate column
-                      from the dropdown.
+                      The following columns with be defined as indicated.
                     </div>
                   </div>
                   {
@@ -599,6 +599,37 @@ class CreateSample extends React.Component {
             }
           </div>
         }
+        <div
+          style={ {
+            marginTop: 10,
+          } }
+        >
+          { this.props.warning &&
+            <div
+              style={ {
+                color: this.props.muiTheme.palette.alternateTextColor,
+                marginBottom: 10,
+              } }
+            >
+              <FontAwesome name="exclamation-triangle " /> There are errors in the form. Please correct before proceeding.
+            </div>
+          }
+          <ActionButtons
+            cancel={ {
+              func: this.props.actions.cancel,
+              toolTipText: 'Cancel sample creation',
+            } }
+            idSuffix="create-sample"
+            reset={ {
+              func: this.props.actions.reset,
+              toolTipText: 'Reset the form',
+            } }
+            update={ {
+              func: this.props.actions.submit,
+              label: 'Create',
+            } }
+          />
+        </div>
         <Dialog
           actions={ this.dialogClose() }
           modal={ false }
@@ -614,6 +645,11 @@ class CreateSample extends React.Component {
 }
 
 CreateSample.propTypes = {
+  actions: PropTypes.shape({
+    cancel: PropTypes.func,
+    reset: PropTypes.func,
+    submit: PropTypes.func,
+  }).isRequired,
   addMandatory: PropTypes.func.isRequired,
   changeColumnToUse: PropTypes.func.isRequired,
   changeFileType: PropTypes.func.isRequired,
@@ -632,7 +668,9 @@ CreateSample.propTypes = {
     title: PropTypes.string,
   }).isRequired,
   errors: PropTypes.shape({
+    file: PropTypes.string,
     name: PropTypes.string,
+    replicate: PropTypes.string,
   }).isRequired,
   file: PropTypes.shape({
     error: PropTypes.string,
@@ -684,7 +722,7 @@ CreateSample.propTypes = {
   readFileInput: PropTypes.func.isRequired,
   removeFromHeader: PropTypes.func.isRequired,
   updateUnused: PropTypes.func.isRequired,
-  // resetFileInput: PropTypes.func.isRequired,
+  warning: PropTypes.bool.isRequired,
 };
 
 export default muiThemeable()(CreateSample);

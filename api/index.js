@@ -1,4 +1,5 @@
 const bodyparser = require('body-parser');
+const busboyBodyParser = require('busboy-body-parser');
 const config = require('./config');
 const cors = require('cors');
 const database = require('./app/connections/database');
@@ -14,7 +15,7 @@ const app = express();
 const server = http.createServer(app);
 app.use(cors());
 app.use(bodyparser.json({ limit: '100mb' }));
-app.use(bodyparser.urlencoded({ limit: '100mb', extended: true }));
+app.use(busboyBodyParser({ limit: '100mb' }));
 routes.configure(app);
 
 // start server

@@ -12,7 +12,6 @@ const routes = {
   configure: (app) => {
     // deleting
     app.delete('/management', auth.validate, (req, res) => {
-      console.log(req.query);
       deleteQuery.item(req.query.target, Number(req.query._id))
         .then((response) => {
           routes.response(res, response);
@@ -65,9 +64,9 @@ const routes = {
         error: routes.messages.invalidRoute,
       });
     });
-    // create new projects, screens, etc
+    // create new projects, screens or experiments
     app.post('/management', auth.validate, (req, res) => {
-      create[req.body.target](req.body)
+      create[req.body.target](req)
         .then((response) => {
           routes.response(res, response);
         })

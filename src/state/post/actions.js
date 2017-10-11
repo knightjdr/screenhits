@@ -38,15 +38,18 @@ export function successPost(_id, message, target) {
 }
 
 // thunks
-const submitPost = (target, obj) => {
+const submitPost = (target, obj, isFormData = false) => {
   return (dispatch) => {
     dispatch(requestPost(target));
     const headers = new Headers();
     headers.append('Accept', 'application/json');
     headers.append('Auth', 'James Knight:knightjdr@gmail.com:Gingras:auth_token');
-    headers.append('Content-Type', 'application/json');
+    if (!isFormData) {
+      headers.append('Content-Type', 'application/json');
+    }
+    const body = isFormData ? obj : JSON.stringify(obj);
     return fetch('http://localhost:8003/management/', {
-      body: JSON.stringify(obj),
+      body,
       cache: 'default',
       headers,
       method: 'POST',
