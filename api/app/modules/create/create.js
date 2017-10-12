@@ -3,6 +3,7 @@ const create = require('../crud/create');
 const counter = require('../helpers/counter');
 const query = require('../query/query');
 const readFile = require('./read-file');
+const update = require('../crud/update');
 const validate = require('../validation/validation');
 
 const Create = {
@@ -119,24 +120,32 @@ const Create = {
   },
   sample: (req) => {
     return new Promise((resolve) => {
-      let objCreate = {};
+      const objCreate = {};
       validate.sample(req.body, 'creationDate')
-        .then((validatObj) => {
-          objCreate = validatObj.data;
-          return readFile[validatObj.data.type](
-            req.files,
-            validatObj.fileType,
-            validatObj.header,
-            validatObj.parser
-          );
+        .then((validatedObj) => {
+          return Promise.all([
+            counter.get('sample'),
+            validatedObj,
+          ]);
         })
         .then((data) => {
-          objCreate.data = data;
-          return counter.get('sample');
+          objCreate._id = data[0];
+          return readFile[data[1].data.type](
+            req.files,
+            data[1].data,
+            data[1].fileType,
+            data[1].header,
+            data[1].parser,
+            data[0]
+          );
         })
-        .then((sequence) => {
-          objCreate._id = sequence;
-          // return create.insert('sample', objCreate);
+        .then((documents) => {
+          objCreate.data = documents.sample;
+          return Promise.all([
+            create.insert('sample', documents.sample),
+            update.insertMany('CRISPRgene', 'name', 'records', documents.gene),
+            update.insertMany('CRISPRguide', 'sequence', 'records', documents.guide),
+          ]);
         })
         .then(() => {
           resolve({

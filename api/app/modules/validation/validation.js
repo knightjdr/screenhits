@@ -154,6 +154,13 @@ const validate = {
       }
       if (validateObj.header) {
         header = JSON.parse(validateObj.header);
+        validateObj.properties = header.map((column) => {
+          return {
+            layName: column.layName,
+            name: column.name,
+            type: column.type,
+          };
+        });
         delete validateObj.header;
       }
       if (validateObj.parser) {

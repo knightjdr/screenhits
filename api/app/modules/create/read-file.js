@@ -7,7 +7,7 @@ const delimiter = {
 };
 
 const ReadFile = {
-  CRISPR: (file, fileType, header, parser) => {
+  CRISPR: (file, sample, fileType, header, parser, sampleID) => {
     return new Promise((resolve, reject) => {
       // define header columns to keep
       const headerToKeep = [];
@@ -41,20 +41,29 @@ const ReadFile = {
         });
         return newEntry;
       };
-      // add record for gene
-      const parsedGene = {};
-      const addGeneRecord = (line) => {
-        const currGene = line.gene;
+      // add record for genes and guides
+      const parsed = {
+        gene: {},
+        guideSequence: {},
+        sample: [],
+      };
+      const addRecord = (line, type) => {
+        const currKey = line[type];
         const currLine = Object.assign({}, line);
-        delete currLine.gene;
-        if (currGene in parsedGene) {
-          parsedGene[currGene].push(currLine);
+        delete currLine[type];
+        const currEntry = Object.assign(
+          {},
+          currLine,
+          {
+            sample: sampleID,
+          }
+        );
+        if (currKey in parsed[type]) {
+          parsed[type][currKey].push(currEntry);
         } else {
-          parsedGene[currGene] = [currLine];
+          parsed[type][currKey] = [currEntry];
         }
       };
-      // create stream
-      const parsedSample = [];
       const bufferStream = new stream.PassThrough();
       bufferStream.end(new Buffer(file.file.data));
       bufferStream
@@ -64,14 +73,22 @@ const ReadFile = {
         }))
         .on('data', (data) => {
           const line = parseLine(data);
-          addGeneRecord(line);
-          parsedSample.push(line);
+          addRecord(line, 'gene');
+          addRecord(line, 'guideSequence');
+          parsed.sample.push(line);
         })
         .on('end', () => {
-          console.log(parsedGene);
           resolve({
-            gene: parsedGene,
-            sample: parsedSample,
+            gene: parsed.gene,
+            guide: parsed.guideSequence,
+            sample: Object.assign(
+              {},
+              sample,
+              {
+                _id: sampleID,
+                records: parsed.sample,
+              }
+            ),
           });
         })
         .on('error', (error) => {
