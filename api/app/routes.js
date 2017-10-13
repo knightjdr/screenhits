@@ -4,6 +4,7 @@ const create = require('./modules/create/create');
 const deleteQuery = require('./modules/delete/delete');
 const loadRoute = require('./modules/available/load-route');
 const permission = require('./modules/permission/permission');
+const queue = require('./modules/queue/queue');
 const search = require('./modules/search/search');
 const update = require('./modules/update/update');
 const users = require('./modules/users/users');
@@ -36,6 +37,14 @@ const routes = {
     // returns available projects, screens, etc, based on user
     app.get('/management', auth.validate, (req, res) => {
       available.get(req.query.target, req.email, req.lab, req.query.filters)
+        .then((response) => {
+          routes.response(res, response);
+        })
+      ;
+    });
+    // returns available projects, screens, etc, based on user
+    app.get('/queue', auth.validate, (req, res) => {
+      queue.get(req.query.target)
         .then((response) => {
           routes.response(res, response);
         })

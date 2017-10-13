@@ -37,6 +37,14 @@ class ManagementMenu extends React.Component {
               paddingTop: 0,
             } }
           >
+            {
+              this.props.activeLevel === 'sample' &&
+              <MenuItem
+                key="update"
+                onClick={ this.props.updateMenuAction }
+                primaryText={ [<FontAwesome key="update" name="refresh" />, ' Update ', this.props.activeLevel, ' store'] }
+              />
+            }
             { this.props.activeLevel === 'project' &&
               this.props.selected &&
               <MenuItem
@@ -92,6 +100,7 @@ ManagementMenu.propTypes = {
   selected: PropTypes.number,
   showList: PropTypes.bool.isRequired,
   showManagementList: PropTypes.func.isRequired,
+  updateMenuAction: PropTypes.func.isRequired,
 };
 
 export default muiThemeable()(ManagementMenu);

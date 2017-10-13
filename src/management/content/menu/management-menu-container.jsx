@@ -38,6 +38,10 @@ class ManagementMenuContent extends React.Component {
       showList: true,
     });
   }
+  updateMenuAction = () => {
+    this.hideManagementList();
+    this.props.menuActions.update();
+  }
   render() {
     return (
       <ManagementMenu
@@ -51,6 +55,7 @@ class ManagementMenuContent extends React.Component {
         selected={ this.props.selected }
         showList={ this.state.showList }
         showManagementList={ this.showManagementList }
+        updateMenuAction={ this.updateMenuAction }
       />
     );
   }
@@ -67,6 +72,7 @@ ManagementMenuContent.propTypes = {
     edit: PropTypes.func,
     manage: PropTypes.func,
     protocol: PropTypes.func,
+    update: PropTypes.func,
   }).isRequired,
   selected: PropTypes.number,
 };

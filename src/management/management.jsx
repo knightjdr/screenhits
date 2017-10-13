@@ -169,7 +169,7 @@ class Management extends React.Component {
         >
           <ManagementContent
             activeLevel={ this.props.activeLevel }
-            selected={ this.props.selected[this.props.activeLevel] }
+            selected={ this.props.selected }
           />
         </div>
       </div>

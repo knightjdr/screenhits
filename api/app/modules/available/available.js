@@ -61,6 +61,8 @@ const available = {
       }
       const queryObj = available.getFilters(target, email, lab, queryFilters);
 
+      const returnObj = target === 'sample' ? { records: 0 } : {};
+
       const resolveGet = (documents) => {
         resolve({
           status: 200,
@@ -92,7 +94,7 @@ const available = {
           ;
           break;
         default:
-          available.getGeneral(target, queryObj)
+          available.getGeneral(target, queryObj, returnObj)
             .then((documents) => {
               resolveGet(documents);
             })
@@ -136,6 +138,7 @@ const available = {
     return new Promise((resolve, reject) => {
       const queryFilters = filters ? JSON.parse(JSON.stringify(filters)) : {};
       const queryObj = available.getFilters(target, email, lab, queryFilters);
+      const returnObj = target === 'sample' ? { records: 0 } : {};
 
       switch (target) {
         case 'experiment':
@@ -149,7 +152,7 @@ const available = {
           ;
           break;
         default:
-          available.getGeneral(target, queryObj)
+          available.getGeneral(target, queryObj, returnObj)
             .then((documents) => {
               resolve(documents);
             })
@@ -162,8 +165,8 @@ const available = {
     });
   },
   // general get method for retrieving protocols, screen, etc information
-  getGeneral: (target, queryObj) => {
-    return query.get(target, queryObj);
+  getGeneral: (target, queryObj, returnObj) => {
+    return query.get(target, queryObj, returnObj);
   },
   getProtocolIds: (experiments) => {
     let protocols = [];

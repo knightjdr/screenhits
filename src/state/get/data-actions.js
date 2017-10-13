@@ -78,7 +78,8 @@ const getData = (target, filters, selected) => {
       }
     })
     .catch((error) => {
-      dispatch(fillFailed(target, error));
+      const writeError = typeof error !== 'string' ? 'unknown error' : error;
+      dispatch(fillFailed(target, writeError));
     });
   };
 };
@@ -128,7 +129,8 @@ const getRouteData = (selected) => {
     .catch((error) => {
       Object.keys(selected).forEach((target) => {
         if (target) {
-          dispatch(fillFailed(target, error));
+          const writeError = typeof error !== 'string' ? 'unknown error' : error;
+          dispatch(fillFailed(target, writeError));
         }
       });
       dispatch(routeLoaded());

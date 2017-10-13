@@ -11,9 +11,9 @@ const loadRoute = {
         },
         project: {},
         sample: {
+          experiment: querySelected.experiment,
           project: querySelected.project,
           screen: querySelected.screen,
-          experiment: querySelected.experiment,
         },
         screen: {
           project: querySelected.project,

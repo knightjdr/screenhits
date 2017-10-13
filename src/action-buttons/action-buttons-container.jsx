@@ -43,6 +43,43 @@ class ActionButtonsContainer extends React.Component {
   componentDidMount = () => {
     window.addEventListener('resize', this.setbuttonLabels);
   }
+  componentWillReceiveProps = (nextProps) => {
+    const newLabels = {};
+    if (
+      nextProps.cancel &&
+      nextProps.cancel.label &&
+      nextProps.cancel.label !== this.props.cancel.label
+    ) {
+      newLabels.cancel = {
+        func: nextProps.cancel.func,
+        label: nextProps.cancel.label ? nextProps.cancel.label : null,
+        toolTipText: nextProps.cancel.toolTipText ? nextProps.cancel.toolTipText : null,
+      };
+    }
+    if (
+      nextProps.reset &&
+      nextProps.reset.label &&
+      nextProps.reset.label !== this.props.reset.label
+    ) {
+      newLabels.reset = {
+        func: nextProps.reset.func,
+        label: nextProps.reset.label ? nextProps.reset.label : null,
+        toolTipText: nextProps.reset.toolTipText ? nextProps.reset.toolTipText : null,
+      };
+    }
+    if (
+      nextProps.update &&
+      nextProps.update.label &&
+      nextProps.update.label !== this.props.update.label
+    ) {
+      newLabels.update = {
+        func: nextProps.update.func,
+        label: nextProps.update.label ? nextProps.update.label : null,
+        toolTipText: nextProps.update.toolTipText ? nextProps.update.toolTipText : null,
+      };
+    }
+    this.setState(newLabels);
+  }
   componentWillUnmount = () => {
     window.removeEventListener('resize', this.setbuttonLabels);
   }

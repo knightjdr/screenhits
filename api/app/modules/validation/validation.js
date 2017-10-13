@@ -37,8 +37,8 @@ const validate = {
       }
       if (creation) {
         validateObj.group = {
-          project: validateObj.project,
-          screen: validateObj.screen,
+          project: Number(validateObj.project),
+          screen: Number(validateObj.screen),
         };
       }
       delete validateObj.project;
@@ -169,9 +169,9 @@ const validate = {
       }
       if (creation) {
         validateObj.group = {
-          experiment: validateObj.experiment,
-          project: validateObj.project,
-          screen: validateObj.screen,
+          experiment: Number(validateObj.experiment),
+          project: Number(validateObj.project),
+          screen: Number(validateObj.screen),
         };
       }
       delete validateObj.experiment;
@@ -229,7 +229,7 @@ const validate = {
       }
       if (creation) {
         validateObj.group = {
-          project: validateObj.project,
+          project: Number(validateObj.project),
         };
       }
       delete validateObj.project;

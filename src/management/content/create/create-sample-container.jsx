@@ -13,6 +13,10 @@ import { objectEmpty } from '../../../helpers/helpers';
 import { submitPost } from '../../../state/post/actions';
 
 const reset = {
+  cancelButton: {
+    label: 'Cancel',
+    tooltio: 'Cancel sample creation',
+  },
   columnToUse: {
     error: '',
     index: null,
@@ -39,6 +43,7 @@ class CreateSampleContainer extends React.Component {
     super(props);
     const screenType = this.findScreen().type;
     this.state = {
+      cancelButton: Object.assign({}, reset.cancelButton),
       columnToUse: Object.assign({}, reset.columnToUse),
       file: JSON.parse(JSON.stringify(reset.file)),
       fileParser: Object.assign({}, reset.fileParser),
@@ -316,6 +321,7 @@ class CreateSampleContainer extends React.Component {
   resetForm = () => {
     this.setState((prevState) => {
       return {
+        cancelButton: Object.assign({}, reset.cancelButton),
         columnToUse: Object.assign({}, reset.columnToUse),
         file: JSON.parse(JSON.stringify(reset.file)),
         fileParser: Object.assign({}, reset.fileParser),
@@ -342,6 +348,11 @@ class CreateSampleContainer extends React.Component {
         }
       }
     });
+    // make sure file has been selected
+    if (!this.state.file.file) {
+      error = true;
+      errors.file = 'Please select a file for upload';
+    }
     // check if file has been properly parsed and assigned
     if (
       this.state.file.file &&
@@ -364,6 +375,12 @@ class CreateSampleContainer extends React.Component {
         this.state.fileParser.firstLine,
       );
       this.props.create('sample', submitObj, true);
+      this.setState({
+        cancelButton: {
+          label: 'Close',
+          tooltip: 'Close creation form',
+        },
+      });
     }
   }
   updateUnused = () => {
@@ -429,6 +446,7 @@ class CreateSampleContainer extends React.Component {
           submit: this.submitSample,
         } }
         addMandatory={ this.addMandatory }
+        cancelButton={ this.state.cancelButton }
         changeColumnToUse={ this.changeColumnToUse }
         changeFileType={ this.changeFileType }
         columnToUse={ this.state.columnToUse }

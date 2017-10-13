@@ -23,12 +23,13 @@ const Update = {
           const queryObj = {};
           queryObj[queryField] = array[index];
           const updateObj = {};
-          updateObj[updateField] = insertObj[array[index]];
+          updateObj[updateField] = { $each: insertObj[array[index]] };
           Update.insert(collection, queryObj, { $push: updateObj }, true)
             .then(() => {
               next(array, index + 1);
             })
             .catch((error) => {
+              console.log(error);
               reject(error);
             })
           ;

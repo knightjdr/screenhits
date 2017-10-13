@@ -50,7 +50,6 @@ class ManagementContainer extends React.Component {
       this.updateState(selected, this.props.selected);
     }
   }
-  should
   changeLevel = (type) => {
     if (type !== this.state.activeLevel) {
       const newState = this.state.showList ?

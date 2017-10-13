@@ -163,6 +163,7 @@ class CreateSample extends React.Component {
             value={ this.props.formData.comment }
           />
           <SelectField
+            errorText={ this.props.errors.file }
             floatingLabelText="File type"
             fullWidth={ true }
             listStyle={ {
@@ -597,39 +598,40 @@ class CreateSample extends React.Component {
                 </div>
               </div>
             }
-          </div>
-        }
-        <div
-          style={ {
-            marginTop: 10,
-          } }
-        >
-          { this.props.warning &&
             <div
               style={ {
-                color: this.props.muiTheme.palette.alternateTextColor,
-                marginBottom: 10,
+                marginTop: 10,
               } }
             >
-              <FontAwesome name="exclamation-triangle " /> There are errors in the form. Please correct before proceeding.
+              { this.props.warning &&
+                <div
+                  style={ {
+                    color: this.props.muiTheme.palette.alternateTextColor,
+                    marginBottom: 10,
+                  } }
+                >
+                  <FontAwesome name="exclamation-triangle " /> There are errors in the form. Please correct before proceeding.
+                </div>
+              }
+              <ActionButtons
+                cancel={ {
+                  func: this.props.actions.cancel,
+                  label: this.props.cancelButton.label,
+                  toolTipText: this.props.cancelButton.tooltip,
+                } }
+                idSuffix="create-sample"
+                reset={ {
+                  func: this.props.actions.reset,
+                  toolTipText: 'Reset the form',
+                } }
+                update={ {
+                  func: this.props.actions.submit,
+                  label: 'Create',
+                } }
+              />
             </div>
-          }
-          <ActionButtons
-            cancel={ {
-              func: this.props.actions.cancel,
-              toolTipText: 'Cancel sample creation',
-            } }
-            idSuffix="create-sample"
-            reset={ {
-              func: this.props.actions.reset,
-              toolTipText: 'Reset the form',
-            } }
-            update={ {
-              func: this.props.actions.submit,
-              label: 'Create',
-            } }
-          />
-        </div>
+          </div>
+        }
         <Dialog
           actions={ this.dialogClose() }
           modal={ false }
@@ -651,6 +653,10 @@ CreateSample.propTypes = {
     submit: PropTypes.func,
   }).isRequired,
   addMandatory: PropTypes.func.isRequired,
+  cancelButton: PropTypes.shape({
+    label: PropTypes.string,
+    tooltip: PropTypes.string,
+  }).isRequired,
   changeColumnToUse: PropTypes.func.isRequired,
   changeFileType: PropTypes.func.isRequired,
   columnToUse: PropTypes.shape({

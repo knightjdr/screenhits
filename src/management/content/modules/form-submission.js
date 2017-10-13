@@ -66,12 +66,9 @@ const FormatSubmission = {
     if (form.timepoint) {
       submitObj.append('timepoint', form.timepoint);
     }
-    // if submitting a file
-    if (file.file) {
-      submitObj.append('file', file.file);
-      submitObj.append('header', JSON.stringify(file.header));
-      submitObj.append('parser', JSON.stringify(parser));
-    }
+    submitObj.append('file', file.file);
+    submitObj.append('header', JSON.stringify(file.header));
+    submitObj.append('parser', JSON.stringify(parser));
     return submitObj;
   },
   screen: (form, user, selected) => {

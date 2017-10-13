@@ -37,7 +37,10 @@ class CreateContentContainer extends React.Component {
       !postState[activeLevel].isSubmitted &&
       !postState[activeLevel].didSubmitFail
     ;
-    if (success) {
+    if (
+      success &&
+      activeLevel !== 'sample'
+    ) {
       this.props.setIndex(activeLevel, postState[activeLevel]._id);
       this.props.cancelMenuAction();
     }

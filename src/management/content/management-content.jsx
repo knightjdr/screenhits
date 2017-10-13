@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 
+import ActionMenu from './menu/action-menu-container';
 import CreateContent from './create/create-content-container';
 import DisplayContent from './display/display-content-container';
 import ManageContent from './manage/manage-content-container';
@@ -84,6 +85,16 @@ class ManagementContent extends React.Component {
             selected={ this.props.selected }
           />
         </div>
+        <div
+          style={ {
+            bottom: 0,
+            position: 'absolute',
+            right: 5,
+            width: 50,
+          } }
+        >
+          <ActionMenu />
+        </div>
         { content }
       </div>
     );
@@ -103,6 +114,7 @@ ManagementContent.propTypes = {
     edit: PropTypes.func,
     manage: PropTypes.func,
     protocol: PropTypes.func,
+    update: PropTypes.func,
   }).isRequired,
   menuBoolean: PropTypes.shape({
     create: PropTypes.bool,

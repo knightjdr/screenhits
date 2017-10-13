@@ -4,6 +4,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 
 import ManagementContent from './management-content';
+import { getData } from '../../state/get/data-actions';
 import { resetPost } from '../../state/post/actions';
 import { resetPut } from '../../state/put/actions';
 
@@ -32,7 +33,7 @@ class ManagementContentContainer extends React.Component {
       const newState = {};
       // update item if needed
       const index = available[activeLevel].items.findIndex((obj) => {
-        return obj._id === selected;
+        return obj._id === selected[activeLevel];
       });
       if (
         index > -1 &&
@@ -43,7 +44,8 @@ class ManagementContentContainer extends React.Component {
       // if switching between items and currently on "creation" page, reset to default view
       if (
         selected &&
-        selected !== this.props.selected
+        selected[activeLevel] &&
+        selected[activeLevel] !== this.props.selected[activeLevel]
       ) {
         if (prevState.menuBooleans.create) {
           this.cancelMenuAction();
@@ -100,6 +102,36 @@ class ManagementContentContainer extends React.Component {
   top = () => {
     return this.element ? this.element.getBoundingClientRect().top : 105;
   }
+  updateMenuAction = () => {
+    let filters = {};
+    switch (this.props.activeLevel) {
+      case 'experiment':
+        filters = {
+          project: this.props.selected.project,
+          screen: this.props.selected.screen,
+        };
+        break;
+      case 'project':
+        filters = {};
+        break;
+      case 'sample':
+        filters = {
+          experiment: this.props.selected.experiment,
+          project: this.props.selected.project,
+          screen: this.props.selected.screen,
+        };
+        break;
+      case 'screen':
+        filters = {
+          project: this.props.selected.project,
+        };
+        break;
+      default:
+        filters = {};
+        break;
+    }
+    this.props.getData(filters);
+  }
   render() {
     return (
       <div
@@ -119,8 +151,9 @@ class ManagementContentContainer extends React.Component {
             edit: this.editMenuAction,
             manage: this.manageMenuAction,
             protocol: this.protocolMenuAction,
+            update: this.updateMenuAction,
           } }
-          selected={ this.props.selected }
+          selected={ this.props.selected[this.props.activeLevel] }
           top={ this.top }
         />
       </div>
@@ -164,13 +197,22 @@ ManagementContentContainer.propTypes = {
       message: PropTypes.string,
     }),
   }).isRequired,
+  getData: PropTypes.func.isRequired,
   resetPost: PropTypes.func.isRequired,
   resetPut: PropTypes.func.isRequired,
-  selected: PropTypes.number,
+  selected: PropTypes.shape({
+    experiment: PropTypes.number,
+    project: PropTypes.number,
+    sample: PropTypes.number,
+    screen: PropTypes.number,
+  }),
 };
 
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
+    getData: (filters) => {
+      dispatch(getData(ownProps.activeLevel, filters));
+    },
     resetPost: () => {
       dispatch(resetPost(ownProps.activeLevel));
     },

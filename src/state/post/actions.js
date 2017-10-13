@@ -60,7 +60,9 @@ const submitPost = (target, obj, isFormData = false) => {
     })
     .then((json) => {
       if (json.status === 200) {
-        dispatch(pushData(json.obj, target));
+        if (target !== 'sample') {
+          dispatch(pushData(json.obj, target));
+        }
         dispatch(successPost(json._id, json.message, target));
       } else {
         const error = `Status code: ${json.status}; ${json.message}`;
@@ -68,7 +70,8 @@ const submitPost = (target, obj, isFormData = false) => {
       }
     })
     .catch((error) => {
-      dispatch(failPost(target, error));
+      const writeError = typeof error !== 'string' ? 'unknown error' : error;
+      dispatch(failPost(target, writeError));
     });
   };
 };
