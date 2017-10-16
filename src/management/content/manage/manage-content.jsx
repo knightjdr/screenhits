@@ -61,7 +61,6 @@ class ManageContent extends React.Component {
       >
         <div
           style={ {
-            color: this.props.muiTheme.palette.alternateTextColor,
             height: 35,
             position: 'relative',
           } }
@@ -100,7 +99,7 @@ class ManageContent extends React.Component {
           <Tab
             label={ this.props.tabNames.current }
             style={ {
-              color: this.props.muiTheme.palette.alternateTextColor2,
+              color: this.props.muiTheme.palette.alternateTextColor,
             } }
           >
             { this.props.users.isGet &&
@@ -279,7 +278,7 @@ class ManageContent extends React.Component {
           <Tab
             label={ this.props.tabNames.manage }
             style={ {
-              color: this.props.muiTheme.palette.alternateTextColor2,
+              color: this.props.muiTheme.palette.alternateTextColor,
             } }
           >
             <Paper
@@ -289,11 +288,7 @@ class ManageContent extends React.Component {
               } }
               zDepth={ 2 }
             >
-              <div
-                style={ {
-                  color: this.props.muiTheme.palette.alternateTextColor,
-                } }
-              >
+              <div>
                 <u>Search for and add individual users</u>
               </div>
               <div
@@ -523,11 +518,7 @@ class ManageContent extends React.Component {
               } }
               zDepth={ 2 }
             >
-              <div
-                style={ {
-                  color: this.props.muiTheme.palette.alternateTextColor,
-                } }
-              >
+              <div>
                 <u>Change permissions in bulk</u>
               </div>
               <SelectField
@@ -620,7 +611,6 @@ ManageContent.propTypes = {
   muiTheme: PropTypes.shape({
     palette: PropTypes.shape({
       alternateTextColor: PropTypes.string,
-      alternateTextColor2: PropTypes.string,
       buttonColor: PropTypes.string,
       buttonColorHover: PropTypes.string,
     }),

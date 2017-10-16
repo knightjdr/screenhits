@@ -1,9 +1,7 @@
 import AutoComplete from 'material-ui/AutoComplete';
 import Checkbox from 'material-ui/Checkbox';
 import MenuItem from 'material-ui/MenuItem';
-import muiThemeable from 'material-ui/styles/muiThemeable';
 import PropTypes from 'prop-types';
-// import TextField from 'material-ui/TextField';
 import React from 'react';
 import SelectField from 'material-ui/SelectField';
 
@@ -71,13 +69,9 @@ class SelectInput extends React.Component {
           checked={ this.props.inputType === 'text' }
           checkedIcon={ <RadioButtonChecked /> }
           iconStyle={ {
-            fill: this.props.muiTheme.palette.alternateTextColor,
             marginRight: 5,
           } }
           label="Free text"
-          labelStyle={ {
-            color: this.props.muiTheme.palette.alternateTextColor,
-          } }
           onCheck={ this.props.changeType }
           style={ {
             marginLeft: 10,
@@ -85,9 +79,7 @@ class SelectInput extends React.Component {
             width: 150,
           } }
           uncheckedIcon={
-            <RadioButtonUnchecked
-              color={ this.props.muiTheme.palette.alternateTextColor }
-            />
+            <RadioButtonUnchecked />
           }
         />
       </div>
@@ -112,11 +104,6 @@ SelectInput.propTypes = {
   inputChange: PropTypes.func.isRequired,
   inputType: PropTypes.string.isRequired,
   inputWidth: PropTypes.number.isRequired,
-  muiTheme: PropTypes.shape({
-    palette: PropTypes.shape({
-      alternateTextColor: PropTypes.string,
-    }),
-  }).isRequired,
   options: PropTypes.arrayOf(
     PropTypes.string,
   ).isRequired,
@@ -125,4 +112,4 @@ SelectInput.propTypes = {
   value: PropTypes.string,
 };
 
-export default muiThemeable()(SelectInput);
+export default SelectInput;

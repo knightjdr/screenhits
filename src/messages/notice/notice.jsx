@@ -1,6 +1,5 @@
 import CSSTransitionGroup from 'react-transition-group/CSSTransitionGroup';
 import FontAwesome from 'react-fontawesome';
-import muiThemeable from 'material-ui/styles/muiThemeable';
 import PropTypes from 'prop-types';
 import React from 'react';
 
@@ -42,9 +41,6 @@ class Notice extends React.Component {
         ) }
       >
         <CSSTransitionGroup
-          style={ {
-            color: this.props.muiTheme.palette.alternateTextColor,
-          } }
           transitionName="notice-message-text"
           transitionEnterTimeout={ 500 }
           transitionLeaveTimeout={ 500 }
@@ -132,11 +128,6 @@ Notice.propTypes = {
   fail: PropTypes.bool,
   failMessage: PropTypes.string,
   label: PropTypes.string.isRequired,
-  muiTheme: PropTypes.shape({
-    palette: PropTypes.shape({
-      alternateTextColor: PropTypes.string,
-    }),
-  }).isRequired,
   other: PropTypes.oneOfType([
     PropTypes.bool,
     PropTypes.string,
@@ -151,4 +142,4 @@ Notice.propTypes = {
   textAlign: PropTypes.string,
 };
 
-export default muiThemeable()(Notice);
+export default Notice;

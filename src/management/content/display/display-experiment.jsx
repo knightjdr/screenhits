@@ -273,7 +273,6 @@ class DisplayExperiment extends React.Component {
                           >
                             <VisibilityIcon
                               key={ `icon-${protocol._id}` }
-                              color={ this.props.muiTheme.palette.alternateTextColor }
                             />
                           </IconButton>
                         </p>
@@ -353,9 +352,7 @@ class DisplayExperiment extends React.Component {
                 tooltip="Help"
                 tooltipPosition="top-center"
               >
-                <HelpIcon
-                  color={ this.props.muiTheme.palette.alternateTextColor }
-                />
+                <HelpIcon />
               </IconButton>
             </div>
             <div
@@ -384,9 +381,7 @@ class DisplayExperiment extends React.Component {
                 tooltip="Help"
                 tooltipPosition="top-center"
               >
-                <HelpIcon
-                  color={ this.props.muiTheme.palette.alternateTextColor }
-                />
+                <HelpIcon />
               </IconButton>
             </div>
             {
@@ -443,9 +438,7 @@ class DisplayExperiment extends React.Component {
                     tooltip="Help"
                     tooltipPosition="top-center"
                   >
-                    <HelpIcon
-                      color={ this.props.muiTheme.palette.alternateTextColor }
-                    />
+                    <HelpIcon />
                   </IconButton>
                 </div>
             }
@@ -555,7 +548,6 @@ DisplayExperiment.propTypes = {
   }).isRequired,
   muiTheme: PropTypes.shape({
     palette: PropTypes.shape({
-      alternateTextColor: PropTypes.string,
       keyColor: PropTypes.string,
       keyColorBorder: PropTypes.string,
       success: PropTypes.string,

@@ -1,5 +1,4 @@
 import FontAwesome from 'react-fontawesome';
-import muiThemeable from 'material-ui/styles/muiThemeable';
 import Paper from 'material-ui/Paper';
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -68,7 +67,6 @@ class CreateContent extends React.Component {
           { this.props.warning &&
             <div
               style={ {
-                color: this.props.muiTheme.palette.alternateTextColor,
                 margin: '10px 0px 10px 0px',
               } }
             >
@@ -139,11 +137,6 @@ CreateContent.propTypes = {
   }).isRequired,
   inputChange: PropTypes.func.isRequired,
   inputWidth: PropTypes.number.isRequired,
-  muiTheme: PropTypes.shape({
-    palette: PropTypes.shape({
-      alternateTextColor: PropTypes.string,
-    }),
-  }).isRequired,
   postState: PropTypes.shape({
     didSubmitFail: PropTypes.bool,
     _id: PropTypes.number,
@@ -165,4 +158,4 @@ CreateContent.propTypes = {
   warning: PropTypes.bool.isRequired,
 };
 
-export default muiThemeable()(CreateContent);
+export default CreateContent;

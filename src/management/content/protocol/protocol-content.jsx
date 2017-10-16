@@ -118,11 +118,7 @@ class ProtocolContent extends React.Component {
           autoHeight={ true }
           autoHeightMax={ 'calc(100vh - 180px)' }
         >
-          <div
-            style={ {
-              color: this.props.muiTheme.palette.alternateTextColor,
-            } }
-          >
+          <div>
             { this.props.protocols.items.length > 0 ?
               `Edit an existing protocol by selecting it from the dropdown or create a new
               protocol using the "New" button.`
@@ -338,9 +334,7 @@ class ProtocolContent extends React.Component {
                           tooltip="Remove field"
                           tooltipPosition="top-center"
                         >
-                          <RemoveCircleIcon
-                            color={ this.props.muiTheme.palette.alternateTextColor }
-                          />
+                          <RemoveCircleIcon />
                         </IconButton>
                       </div>
                     );
@@ -364,9 +358,7 @@ class ProtocolContent extends React.Component {
                     tooltip="Add field"
                     tooltipPosition="top-center"
                   >
-                    <AddBoxIcon
-                      color={ this.props.muiTheme.palette.alternateTextColor }
-                    />
+                    <AddBoxIcon />
                   </IconButton>
                 </div>
                 <div
@@ -449,9 +441,7 @@ class ProtocolContent extends React.Component {
                             tooltip="Remove field"
                             tooltipPosition="top-center"
                           >
-                            <RemoveCircleIcon
-                              color={ this.props.muiTheme.palette.alternateTextColor }
-                            />
+                            <RemoveCircleIcon />
                           </IconButton>
                         </div>
                       );
@@ -475,9 +465,7 @@ class ProtocolContent extends React.Component {
                     tooltip="Add field"
                     tooltipPosition="top-center"
                   >
-                    <AddBoxIcon
-                      color={ this.props.muiTheme.palette.alternateTextColor }
-                    />
+                    <AddBoxIcon />
                   </IconButton>
                 </div>
                 { this.props.fieldError &&
@@ -613,8 +601,6 @@ ProtocolContent.propTypes = {
   inputChangeSubField: PropTypes.func.isRequired,
   muiTheme: PropTypes.shape({
     palette: PropTypes.shape({
-      alternateTextColor: PropTypes.string,
-      alternateTextColor2: PropTypes.string,
       buttonColor: PropTypes.string,
       buttonColorHover: PropTypes.string,
       blueGrey100: PropTypes.string,

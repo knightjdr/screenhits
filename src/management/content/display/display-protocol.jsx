@@ -66,7 +66,6 @@ DisplayProtocol.propTypes = {
   }).isRequired,
   muiTheme: PropTypes.shape({
     palette: PropTypes.shape({
-      alternateTextColor: PropTypes.string,
       keyColor: PropTypes.string,
       keyColorBorder: PropTypes.string,
     }),

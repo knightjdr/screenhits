@@ -47,11 +47,7 @@ class CreateScreen extends React.Component {
   render() {
     return (
       <div>
-        <div
-          style={ {
-            color: this.props.muiTheme.palette.alternateTextColor,
-          } }
-        >
+        <div>
           <FontAwesome name="info-circle" /> Name your screen and provide all details below.
         </div>
         <div
@@ -149,9 +145,7 @@ class CreateScreen extends React.Component {
               tooltip="Help"
               tooltipPosition="top-center"
             >
-              <HelpIcon
-                color={ this.props.muiTheme.palette.alternateTextColor }
-              />
+              <HelpIcon />
             </IconButton>
           </div>
           { this.props.formData.type &&
@@ -254,7 +248,6 @@ CreateScreen.propTypes = {
   inputWidth: PropTypes.number.isRequired,
   muiTheme: PropTypes.shape({
     palette: PropTypes.shape({
-      alternateTextColor: PropTypes.string,
       warning: PropTypes.string,
       warningHover: PropTypes.string,
     }),

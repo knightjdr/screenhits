@@ -52,8 +52,8 @@ class Management extends React.Component {
             icon={ <FontAwesome name={ this.props.viewIcon } /> }
             onClick={ this.props.changeView }
             style={ {
-              border: `1px solid ${this.props.muiTheme.palette.alternateTextColor}`,
-              color: this.props.muiTheme.palette.alternateTextColor,
+              border: `1px solid ${this.props.muiTheme.palette.darkButtonColor}`,
+              color: this.props.muiTheme.palette.darkButtonColor,
               minWidth: 50,
               width: 50,
             } }
@@ -112,7 +112,6 @@ class Management extends React.Component {
               <RaisedButton
                 backgroundColor={ this.props.muiTheme.palette.alternativeButtonColor }
                 label={ this.props.activeLevel ? `${this.props.activeLevel}s` : 'Level:' }
-                labelColor={ this.props.muiTheme.palette.alternateTextColor }
                 onClick={ this.props.showList }
               />
               <Popover
@@ -230,7 +229,8 @@ Management.propTypes = {
   muiTheme: PropTypes.shape({
     palette: PropTypes.shape({
       alternativeButtonColor: PropTypes.string,
-      alternateTextColor: PropTypes.string,
+      darkButtonColor: PropTypes.string,
+      darkButtonColorHover: PropTypes.string,
       offWhite: PropTypes.string,
     }),
   }).isRequired,

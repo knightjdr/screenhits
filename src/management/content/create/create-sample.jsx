@@ -36,11 +36,7 @@ class CreateSample extends React.Component {
           marginBottom: 20,
         } }
       >
-        <div
-          style={ {
-            color: this.props.muiTheme.palette.alternateTextColor,
-          } }
-        >
+        <div>
           <FontAwesome name="info-circle" /> Name your sample, provide all
           details below and then select a file for upload.
         </div>
@@ -87,9 +83,7 @@ class CreateSample extends React.Component {
               tooltip="Help"
               tooltipPosition="top-center"
             >
-              <HelpIcon
-                color={ this.props.muiTheme.palette.alternateTextColor }
-              />
+              <HelpIcon />
             </IconButton>
           </div>
           <div
@@ -117,9 +111,7 @@ class CreateSample extends React.Component {
               tooltip="Help"
               tooltipPosition="top-center"
             >
-              <HelpIcon
-                color={ this.props.muiTheme.palette.alternateTextColor }
-              />
+              <HelpIcon />
             </IconButton>
           </div>
           <div
@@ -147,9 +139,7 @@ class CreateSample extends React.Component {
               tooltip="Help"
               tooltipPosition="top-center"
             >
-              <HelpIcon
-                color={ this.props.muiTheme.palette.alternateTextColor }
-              />
+              <HelpIcon />
             </IconButton>
           </div>
           <TextField
@@ -234,15 +224,7 @@ class CreateSample extends React.Component {
         {
           this.props.file.name &&
           <div
-            style={
-              Object.assign(
-                {},
-                createStyle.divFileParsed,
-                {
-                  color: this.props.muiTheme.palette.alternateTextColor,
-                }
-              )
-            }
+            style={ createStyle.divFileParsed }
           >
             <hr />
             {
@@ -303,9 +285,7 @@ class CreateSample extends React.Component {
                               tooltip="Remove column"
                               tooltipPosition="top-center"
                             >
-                              <RemoveCircleIcon
-                                color={ this.props.muiTheme.palette.alternateTextColor }
-                              />
+                              <RemoveCircleIcon />
                             </IconButton>
                           }
                         </div>
@@ -407,9 +387,7 @@ class CreateSample extends React.Component {
                               tooltip="Add column"
                               tooltipPosition="top-center"
                             >
-                              <AddBoxIcon
-                                color={ this.props.muiTheme.palette.alternateTextColor }
-                              />
+                              <AddBoxIcon />
                             </IconButton>
                           }
                         </div>
@@ -590,9 +568,7 @@ class CreateSample extends React.Component {
                       tooltip="Add column"
                       tooltipPosition="top-center"
                     >
-                      <AddBoxIcon
-                        color={ this.props.muiTheme.palette.alternateTextColor }
-                      />
+                      <AddBoxIcon />
                     </IconButton>
                   }
                 </div>
@@ -606,7 +582,6 @@ class CreateSample extends React.Component {
               { this.props.warning &&
                 <div
                   style={ {
-                    color: this.props.muiTheme.palette.alternateTextColor,
                     marginBottom: 10,
                   } }
                 >
@@ -715,7 +690,6 @@ CreateSample.propTypes = {
   inputWidth: PropTypes.number.isRequired,
   muiTheme: PropTypes.shape({
     palette: PropTypes.shape({
-      alternateTextColor: PropTypes.string,
       buttonColor: PropTypes.string,
       buttonColorHover: PropTypes.string,
       keyColor: PropTypes.string,

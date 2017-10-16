@@ -15,7 +15,7 @@ class ManagementMenu extends React.Component {
           mini={ true }
           onClick={ this.props.showManagementList }
           iconStyle={ {
-            color: this.props.muiTheme.palette.alternateTextColor2,
+            color: this.props.muiTheme.palette.alternateTextColor,
           } }
           style={ {
             zIndex: 5,
@@ -93,7 +93,7 @@ ManagementMenu.propTypes = {
   manageMenuAction: PropTypes.func.isRequired,
   muiTheme: PropTypes.shape({
     palette: PropTypes.shape({
-      alternateTextColor2: PropTypes.string,
+      alternateTextColor: PropTypes.string,
     }),
   }).isRequired,
   protocolMenuAction: PropTypes.func.isRequired,

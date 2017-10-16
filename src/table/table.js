@@ -105,11 +105,7 @@ class CustomTable extends React.Component {
                         pageButtonStyle,
                         {
                           backgroundColor: this.props.muiTheme.palette.offWhite,
-                          border: `1px solid ${this.props.muiTheme.palette.alternateTextColor}`,
-                          color: this.props.muiTheme.palette.alternateTextColor,
-                          ':hover': {
-                            color: this.props.muiTheme.palette.alternateTextColor2,
-                          },
+                          border: `1px solid ${this.props.muiTheme.palette.primary2Color}`,
                         },
                       ) }
                     />
@@ -124,11 +120,7 @@ class CustomTable extends React.Component {
                         pageButtonStyle,
                         {
                           backgroundColor: this.props.muiTheme.palette.offWhite,
-                          border: `1px solid ${this.props.muiTheme.palette.alternateTextColor}`,
-                          color: this.props.muiTheme.palette.alternateTextColor,
-                          ':hover': {
-                            color: this.props.muiTheme.palette.alternateTextColor2,
-                          },
+                          border: `1px solid ${this.props.muiTheme.palette.primary2Color}`,
                         },
                       ) }
                     />
@@ -163,8 +155,7 @@ CustomTable.propTypes = {
   muiTheme: PropTypes.shape({
     palette: PropTypes.shape({
       offWhite: PropTypes.string,
-      alternateTextColor: PropTypes.string,
-      alternateTextColor2: PropTypes.string,
+      primary2Color: PropTypes.string,
     }),
   }).isRequired,
   page: PropTypes.number.isRequired,

@@ -1,6 +1,5 @@
 import FontAwesome from 'react-fontawesome';
 import MenuItem from 'material-ui/MenuItem';
-import muiThemeable from 'material-ui/styles/muiThemeable';
 import PropTypes from 'prop-types';
 import SelectField from 'material-ui/SelectField';
 import TextField from 'material-ui/TextField';
@@ -24,11 +23,7 @@ class CreateProject extends React.Component {
   render() {
     return (
       <div>
-        <div
-          style={ {
-            color: this.props.muiTheme.palette.alternateTextColor,
-          } }
-        >
+        <div>
           <FontAwesome name="info-circle" /> Name your project and provide a description.
         </div>
         <div
@@ -105,11 +100,6 @@ CreateProject.propTypes = {
     permission: PropTypes.string,
   }).isRequired,
   inputChange: PropTypes.func.isRequired,
-  muiTheme: PropTypes.shape({
-    palette: PropTypes.shape({
-      alternateTextColor: PropTypes.string,
-    }),
-  }).isRequired,
 };
 
-export default muiThemeable()(CreateProject);
+export default CreateProject;

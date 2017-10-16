@@ -412,9 +412,7 @@ class DisplayScreen extends React.Component {
                 tooltip="Help"
                 tooltipPosition="top-center"
               >
-                <HelpIcon
-                  color={ this.props.muiTheme.palette.alternateTextColor }
-                />
+                <HelpIcon />
               </IconButton>
             </div>
             {
@@ -552,7 +550,6 @@ DisplayScreen.propTypes = {
   }).isRequired,
   muiTheme: PropTypes.shape({
     palette: PropTypes.shape({
-      alternateTextColor: PropTypes.string,
       keyColor: PropTypes.string,
       keyColorBorder: PropTypes.string,
       success: PropTypes.string,

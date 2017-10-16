@@ -34,15 +34,15 @@ class ManagementSelection extends React.Component {
           backgroundColor={ this.setButtonColor(this.props.buttonClass, this.props.hovered) }
           buttonStyle={ {
             color: this.props.buttonClass === 'default' ?
-            this.props.muiTheme.palette.alternateTextColor :
-            this.props.muiTheme.palette.alternateTextColor2,
+            this.props.muiTheme.palette.primary2Color :
+            this.props.muiTheme.palette.alternateTextColor,
           } }
           icon={ this.props.toggleIcon }
           label={ [this.props.buttonName, ': ', this.props.selected ? this.props.selected : '∅'] }
           labelColor={
             this.props.buttonClass === 'default' ?
-            this.props.muiTheme.palette.alternateTextColor :
-            this.props.muiTheme.palette.alternateTextColor2
+            this.props.muiTheme.palette.primary2Color :
+            this.props.muiTheme.palette.alternateTextColor
           }
           onClick={ this.props.changeLevel }
           onMouseEnter={ this.props.onHoverEnter }
@@ -122,9 +122,9 @@ ManagementSelection.propTypes = {
       alternativeButtonColor: PropTypes.string,
       alternativeButtonColorHover: PropTypes.string,
       alternateTextColor: PropTypes.string,
-      alternateTextColor2: PropTypes.string,
       buttonColor: PropTypes.string,
       buttonColorHover: PropTypes.string,
+      primary2Color: PropTypes.string,
     }),
   }).isRequired,
   onHoverEnter: PropTypes.func.isRequired,

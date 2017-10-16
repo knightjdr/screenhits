@@ -50,11 +50,7 @@ class CreateExperiment extends React.Component {
   render() {
     return (
       <div>
-        <div
-          style={ {
-            color: this.props.muiTheme.palette.alternateTextColor,
-          } }
-        >
+        <div>
           <FontAwesome name="info-circle" /> Name your experiment and provide all details below.
         </div>
         <div
@@ -110,9 +106,7 @@ class CreateExperiment extends React.Component {
               tooltip="Help"
               tooltipPosition="top-center"
             >
-              <HelpIcon
-                color={ this.props.muiTheme.palette.alternateTextColor }
-              />
+              <HelpIcon />
             </IconButton>
           </div>
           <div
@@ -140,9 +134,7 @@ class CreateExperiment extends React.Component {
               tooltip="Help"
               tooltipPosition="top-center"
             >
-              <HelpIcon
-                color={ this.props.muiTheme.palette.alternateTextColor }
-              />
+              <HelpIcon />
             </IconButton>
           </div>
           <div
@@ -196,9 +188,7 @@ class CreateExperiment extends React.Component {
               tooltip="Help"
               tooltipPosition="top-center"
             >
-              <HelpIcon
-                color={ this.props.muiTheme.palette.alternateTextColor }
-              />
+              <HelpIcon />
             </IconButton>
           </div>
           <TextField
@@ -250,7 +240,6 @@ CreateExperiment.propTypes = {
   inputWidth: PropTypes.number.isRequired,
   muiTheme: PropTypes.shape({
     palette: PropTypes.shape({
-      alternateTextColor: PropTypes.string,
       warning: PropTypes.string,
       warningHover: PropTypes.string,
     }),
