@@ -34,7 +34,7 @@ class CustomTable extends React.Component {
           <TableRow>
             { this.props.header.map((column, index) => {
               const onClickFunc = column.sort ?
-                () => { this.props.sortTable(index); } :
+                () => { this.props.sortTable(index, column.type); } :
                 () => {}
               ;
               const style = column.style ? column.style : { textAlign: 'center' };

@@ -5,6 +5,7 @@ const deleteQuery = require('./modules/delete/delete');
 const loadRoute = require('./modules/available/load-route');
 const permission = require('./modules/permission/permission');
 const queue = require('./modules/queue/queue');
+const sample = require('./modules/sample/sample');
 const search = require('./modules/search/search');
 const update = require('./modules/update/update');
 const users = require('./modules/users/users');
@@ -42,6 +43,14 @@ const routes = {
         })
       ;
     });
+    // gets a list of available users for a project (for user management)
+    app.get('/project/users', auth.validate, (req, res) => {
+      users.get(req.query._id, req.query.lab, req.query.permission)
+        .then((response) => {
+          routes.response(res, response);
+        })
+      ;
+    });
     // returns available projects, screens, etc, based on user
     app.get('/queue', auth.validate, (req, res) => {
       queue.get(req.query.target)
@@ -50,9 +59,9 @@ const routes = {
         })
       ;
     });
-    // gets a list of available users for a project (for user management)
-    app.get('/project/users', auth.validate, (req, res) => {
-      users.get(req.query._id, req.query.lab, req.query.permission)
+    // returns sample details according to format
+    app.get('/sample', auth.validate, (req, res) => {
+      sample.get(req.query.target, req.query.format)
         .then((response) => {
           routes.response(res, response);
         })

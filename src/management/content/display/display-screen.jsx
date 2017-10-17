@@ -1,3 +1,4 @@
+import DeleteForever from 'material-ui/svg-icons/action/delete-forever';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import IconButton from 'material-ui/IconButton';
@@ -9,7 +10,6 @@ import React from 'react';
 import SelectField from 'material-ui/SelectField';
 import TextField from 'material-ui/TextField';
 
-import ActionButtons from '../../../action-buttons/action-buttons-container';
 import CellsDataSource from '../../../assets/data/cells';
 import displayStyle from './display-style';
 import Fields from '../modules/fields';
@@ -303,18 +303,16 @@ class DisplayScreen extends React.Component {
             <div
               style={ displayStyle.deleteContainer }
             >
-              <div
-                style={ displayStyle.actionButton }
+              <IconButton
+                iconStyle={ {
+                  color: this.props.muiTheme.palette.warning,
+                } }
+                onTouchTap={ () => { this.props.dialog.open('delete'); } }
+                tooltip="Delete experiment"
+                tooltipPosition="bottom-left"
               >
-                <ActionButtons
-                  cancel={ {
-                    func: () => { this.props.dialog.open('delete'); },
-                    label: 'Delete',
-                    toolTipText: 'Delete screen',
-                  } }
-                  idSuffix="delete-screen"
-                />
-              </div>
+                <DeleteForever />
+              </IconButton>
             </div>
           </div>
         }

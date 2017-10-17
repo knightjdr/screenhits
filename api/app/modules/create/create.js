@@ -144,8 +144,8 @@ const Create = {
           objCreate.data = documents.sample;
           return Promise.all([
             create.insert('sample', documents.sample),
-            // update.insertMany('CRISPRgene', 'name', 'records', documents.gene),
-            // update.insertMany('CRISPRguide', 'sequence', 'records', documents.guide),
+            update.insertMany('CRISPRgene', 'name', 'records', documents.gene),
+            update.insertMany('CRISPRguide', 'sequence', 'records', documents.guide),
           ]);
         })
         .then(() => {

@@ -11,6 +11,10 @@ const Format = {
       name: null,
       permission: null,
     },
+    sample: {
+      name: null,
+      replicate: null,
+    },
     screen: {
       cell: null,
       description: null,

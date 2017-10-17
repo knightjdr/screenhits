@@ -1,23 +1,17 @@
 import DeleteForever from 'material-ui/svg-icons/action/delete-forever';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
-import FontAwesome from 'react-fontawesome';
 import IconButton from 'material-ui/IconButton';
 import HelpIcon from 'material-ui/svg-icons/action/help';
-import MenuItem from 'material-ui/MenuItem';
 import muiThemeable from 'material-ui/styles/muiThemeable';
 import PropTypes from 'prop-types';
 import React from 'react';
-import SelectField from 'material-ui/SelectField';
 import TextField from 'material-ui/TextField';
-import VisibilityIcon from 'material-ui/svg-icons/action/visibility';
 
-import DisplayProtocol from './display-protocol';
 import displayStyle from './display-style';
 import Fields from '../modules/fields';
-import { customSort } from '../../../helpers/helpers';
 
-class DisplayExperiment extends React.Component {
+class DisplaySample extends React.Component {
   confirmDeletion = () => {
     return (
     [
@@ -25,7 +19,7 @@ class DisplayExperiment extends React.Component {
         backgroundColor={ this.props.muiTheme.palette.success }
         hoverColor={ this.props.muiTheme.palette.successHover }
         label="Confirm"
-        onTouchTap={ () => { this.props.deleteExperiment(this.props.experiment._id); } }
+        onTouchTap={ () => { this.props.deleteSample(this.props.sample._id); } }
       />,
     ]);
   }
@@ -68,7 +62,7 @@ class DisplayExperiment extends React.Component {
               <div
                 style={ displayStyle.elementValue }
               >
-                { this.props.experiment.name }
+                { this.props.sample.name }
               </div>
             </div>
             <div
@@ -85,17 +79,17 @@ class DisplayExperiment extends React.Component {
                 ) }
               >
                 <span>
-                  Description:
+                  Replicate:
                 </span>
               </div>
               <div
                 style={ displayStyle.elementValue }
               >
-                { this.props.experiment.description }
+                { this.props.sample.replicate }
               </div>
             </div>
             {
-              this.props.experiment.concentration &&
+              this.props.sample.concentration &&
               <div
                 style={ displayStyle.elementContainer }
               >
@@ -116,12 +110,12 @@ class DisplayExperiment extends React.Component {
                 <div
                   style={ displayStyle.elementValue }
                 >
-                  { this.props.experiment.concentration }
+                  { this.props.sample.concentration }
                 </div>
               </div>
             }
             {
-              this.props.experiment.timepoint &&
+              this.props.sample.timepoint &&
               <div
                 style={ displayStyle.elementContainer }
               >
@@ -142,12 +136,12 @@ class DisplayExperiment extends React.Component {
                 <div
                   style={ displayStyle.elementValue }
                 >
-                  { this.props.experiment.timepoint }
+                  { this.props.sample.timepoint }
                 </div>
               </div>
             }
             {
-              this.props.experiment.comment &&
+              this.props.sample.comment &&
               <div
                 style={ displayStyle.elementContainer }
               >
@@ -168,7 +162,7 @@ class DisplayExperiment extends React.Component {
                 <div
                   style={ displayStyle.elementValue }
                 >
-                  { this.props.experiment.comment }
+                  { this.props.sample.comment }
                 </div>
               </div>
             }
@@ -192,7 +186,7 @@ class DisplayExperiment extends React.Component {
               <div
                 style={ displayStyle.elementValue }
               >
-                { this.props.experiment.creatorName }
+                { this.props.sample.creatorName }
               </div>
             </div>
             <div
@@ -215,73 +209,24 @@ class DisplayExperiment extends React.Component {
               <div
                 style={ displayStyle.elementValue }
               >
-                { this.props.experiment.creationDate}
+                { this.props.sample.creationDate}
               </div>
             </div>
-            {
-              this.props.experiment.protocols.length > 0 &&
-              <div
-                style={ displayStyle.elementContainer }
-              >
-                <div
-                  style={ Object.assign(
-                    {},
-                    displayStyle.elementKey,
-                    {
-                      backgroundColor: this.props.muiTheme.palette.keyColor,
-                      border: `1px solid ${this.props.muiTheme.palette.keyColorBorder}`,
-                    },
-                  ) }
-                >
-                  <span>
-                    Protocols:
-                  </span>
-                </div>
-                <div
-                  style={ displayStyle.elementValue }
-                >
-                  {
-                    this.props.experiment.fullProtocols.map((protocol) => {
-                      return (
-                        <p
-                          key={ `p-${protocol._id}` }
-                          style={ {
-                            margin: '0px 0px 5px 0px',
-                          } }
-                        >
-                          &bull; { protocol.name }
-                          <IconButton
-                            key={ `button-${protocol._id}` }
-                            onTouchTap={ () => {
-                              this.props.selectProtocol(protocol);
-                              this.props.dialog.open('protocol');
-                            } }
-                            iconStyle={ {
-                              height: 18,
-                              width: 18,
-                            } }
-                            style={ {
-                              height: 22,
-                              left: 10,
-                              padding: '0px 0px 0px 0px',
-                              position: 'relative',
-                              top: 3,
-                              width: 22,
-                            } }
-                            tooltip="View protocol"
-                            tooltipPosition="top-center"
-                          >
-                            <VisibilityIcon
-                              key={ `icon-${protocol._id}` }
-                            />
-                          </IconButton>
-                        </p>
-                      );
-                    })
-                  }
-                </div>
-              </div>
-            }
+            <div
+              style={ {
+                float: 'right',
+              } }
+            >
+              <FlatButton
+                backgroundColor={ this.props.muiTheme.palette.buttonColor }
+                hoverColor={ this.props.muiTheme.palette.buttonColorHover }
+                label="Data"
+                labelStyle={ {
+                  color: this.props.muiTheme.palette.offWhite,
+                } }
+                onTouchTap={ this.props.viewSample }
+              />
+            </div>
             <div
               style={ displayStyle.deleteContainer }
             >
@@ -290,7 +235,7 @@ class DisplayExperiment extends React.Component {
                   color: this.props.muiTheme.palette.warning,
                 } }
                 onTouchTap={ () => { this.props.dialog.open('delete'); } }
-                tooltip="Delete experiment"
+                tooltip="Delete sample"
                 tooltipPosition="bottom-left"
               >
                 <DeleteForever />
@@ -304,26 +249,45 @@ class DisplayExperiment extends React.Component {
           >
             <TextField
               errorText={ this.props.errors.name }
-              floatingLabelText="Experiment name (short)"
+              floatingLabelText="Sample name (short)"
               fullWidth={ true }
               multiLine={ true }
               onChange={ (e) => { this.props.inputChange('name', e.target.value); } }
               rows={ 1 }
               rowsMax={ 2 }
               style={ displayStyle.input }
-              value={ this.props.experiment.name }
+              value={ this.props.sample.name }
             />
-            <TextField
-              errorText={ this.props.errors.description }
-              floatingLabelText="Experiment description"
-              fullWidth={ true }
-              multiLine={ true }
-              onChange={ (e) => { this.props.inputChange('description', e.target.value); } }
-              rows={ 1 }
-              rowsMax={ 2 }
-              style={ displayStyle.input }
-              value={ this.props.experiment.description }
-            />
+            <div
+              style={ Object.assign(
+                {},
+                displayStyle.inputWithHelp,
+                {
+                  width: this.props.inputWidth,
+                },
+              ) }
+            >
+              <TextField
+                errorText={ this.props.errors.replicate }
+                floatingLabelText="Replicate"
+                fullWidth={ true }
+                multiLine={ true }
+                onChange={ (e) => { this.props.inputChange('replicate', e.target.value); } }
+                rows={ 1 }
+                rowsMax={ 2 }
+                style={ displayStyle.inputWithHelpInput }
+                value={ this.props.sample.replicate }
+              />
+              <IconButton
+                onTouchTap={ () => {
+                  this.props.dialog.open('help', 'Help for the "Replicate" field', Fields.sample.replicate.help);
+                } }
+                tooltip="Help"
+                tooltipPosition="top-center"
+              >
+                <HelpIcon />
+              </IconButton>
+            </div>
             <div
               style={ Object.assign(
                 {},
@@ -341,11 +305,11 @@ class DisplayExperiment extends React.Component {
                 rows={ 1 }
                 rowsMax={ 2 }
                 style={ displayStyle.inputWithHelpInput }
-                value={ this.props.experiment.concentration }
+                value={ this.props.sample.concentration }
               />
               <IconButton
                 onTouchTap={ () => {
-                  this.props.dialog.open('help', 'Help for the "Concentration" field', Fields.experiment.concentration.help);
+                  this.props.dialog.open('help', 'Help for the "Concentration" field', Fields.sample.concentration.help);
                 } }
                 tooltip="Help"
                 tooltipPosition="top-center"
@@ -370,11 +334,11 @@ class DisplayExperiment extends React.Component {
                 rows={ 1 }
                 rowsMax={ 2 }
                 style={ displayStyle.inputWithHelpInput }
-                value={ this.props.experiment.timepoint }
+                value={ this.props.sample.timepoint }
               />
               <IconButton
                 onTouchTap={ () => {
-                  this.props.dialog.open('help', 'Help for the "Time point" field', Fields.experiment.timepoint.help);
+                  this.props.dialog.open('help', 'Help for the "Time point" field', Fields.sample.timepoint.help);
                 } }
                 tooltip="Help"
                 tooltipPosition="top-center"
@@ -382,64 +346,6 @@ class DisplayExperiment extends React.Component {
                 <HelpIcon />
               </IconButton>
             </div>
-            {
-              this.props.protocols.isFetching ?
-                <span
-                  style={ displayStyle.input }
-                >
-                  <FontAwesome key="fetching" name="spinner" pulse={ true } /> Fetching protocols...
-                </span>
-                :
-                <div
-                  style={ Object.assign(
-                    {},
-                    displayStyle.inputWithHelp,
-                    {
-                      width: this.props.inputWidth,
-                    },
-                  ) }
-                >
-                  <SelectField
-                    floatingLabelText="Protocols"
-                    fullWidth={ true }
-                    listStyle={ {
-                      paddingBottom: 0,
-                      paddingTop: 0,
-                    } }
-                    multiple={ true }
-                    onChange={ (e, index, value) => {
-                      this.props.inputChange('protocols', value);
-                    } }
-                    style={ displayStyle.inputWithHelpSelect }
-                    value={ this.props.experiment.protocols }
-                  >
-                    {
-                      customSort.arrayOfObjectByKey(
-                        this.props.protocols.items,
-                        'name',
-                        'asc',
-                      ).map((protocol) => {
-                        return (
-                          <MenuItem
-                            key={ protocol._id }
-                            value={ protocol._id }
-                            primaryText={ protocol.name }
-                          />
-                        );
-                      })
-                    }
-                  </SelectField>
-                  <IconButton
-                    onTouchTap={ () => {
-                      this.props.dialog.open('help', 'Help for the "Protocols" field', Fields.experiment.protocols.help);
-                    } }
-                    tooltip="Help"
-                    tooltipPosition="top-center"
-                  >
-                    <HelpIcon />
-                  </IconButton>
-                </div>
-            }
             <TextField
               floatingLabelText="Comments (optional)"
               fullWidth={ true }
@@ -448,7 +354,7 @@ class DisplayExperiment extends React.Component {
               rows={ 1 }
               rowsMax={ 5 }
               style={ displayStyle.input }
-              value={ this.props.experiment.comment }
+              value={ this.props.sample.comment }
             />
           </div>
         }
@@ -462,8 +368,7 @@ class DisplayExperiment extends React.Component {
           open={ this.props.dialog.delete }
           title="Confirmation"
         >
-          This action will permanently delete the experiment (and all samples and
-          analysis associated with it). Press confirm to proceed.
+          This action will permanently delete the sample. Press confirm to proceed.
         </Dialog>
         <Dialog
           actions={ this.dialogClose() }
@@ -474,84 +379,55 @@ class DisplayExperiment extends React.Component {
         >
           { this.props.dialog.text }
         </Dialog>
-        <Dialog
-          actions={ this.dialogClose() }
-          autoScrollBodyContent={ true }
-          modal={ false }
-          onRequestClose={ this.props.dialog.close }
-          open={ this.props.dialog.protocol }
-          title={ this.props.selectedProtocol.name }
-        >
-          <DisplayProtocol
-            protocol={ this.props.selectedProtocol }
-          />
-        </Dialog>
       </div>
     );
   }
 }
 
-DisplayExperiment.propTypes = {
-  deleteExperiment: PropTypes.func.isRequired,
+DisplaySample.propTypes = {
+  deleteSample: PropTypes.func.isRequired,
   dialog: PropTypes.shape({
     close: PropTypes.func,
     delete: PropTypes.bool,
     help: PropTypes.bool,
     open: PropTypes.func,
-    protocol: PropTypes.bool,
     text: PropTypes.string,
     title: PropTypes.string,
   }).isRequired,
   edit: PropTypes.bool.isRequired,
   errors: PropTypes.shape({
-    description: PropTypes.string,
     name: PropTypes.string,
+    replicate: PropTypes.string,
   }).isRequired,
   inputChange: PropTypes.func.isRequired,
   inputWidth: PropTypes.number.isRequired,
-  experiment: PropTypes.shape({
+  sample: PropTypes.shape({
     _id: PropTypes.number,
     comment: PropTypes.string,
     concentration: PropTypes.string,
     creatorEmail: PropTypes.string,
     creatorName: PropTypes.string,
     description: PropTypes.string,
-    fullProtocols: PropTypes.arrayOf(
-      PropTypes.shape({}),
-    ),
     name: PropTypes.string,
-    protocols: PropTypes.arrayOf(
-      PropTypes.number,
-    ),
+    replicate: PropTypes.string,
     timepoint: PropTypes.string,
     creationDate: PropTypes.string,
     updateDate: PropTypes.string,
   }).isRequired,
-  protocols: PropTypes.shape({
-    didInvalidate: PropTypes.bool,
-    isFetching: PropTypes.bool,
-    items: PropTypes.arrayOf(
-      PropTypes.shape({
-        _id: PropTypes.number,
-        name: PropTypes.string,
-      }),
-    ),
-    message: PropTypes.string,
-  }).isRequired,
-  selectedProtocol: PropTypes.shape({
-    name: PropTypes.string,
-  }).isRequired,
   muiTheme: PropTypes.shape({
     palette: PropTypes.shape({
+      buttonColor: PropTypes.string,
+      buttonColorHover: PropTypes.string,
       keyColor: PropTypes.string,
       keyColorBorder: PropTypes.string,
+      offWhite: PropTypes.string,
       success: PropTypes.string,
       successHover: PropTypes.string,
       warning: PropTypes.string,
       warningHover: PropTypes.string,
     }),
   }).isRequired,
-  selectProtocol: PropTypes.func.isRequired,
+  viewSample: PropTypes.func.isRequired,
 };
 
-export default muiThemeable()(DisplayExperiment);
+export default muiThemeable()(DisplaySample);

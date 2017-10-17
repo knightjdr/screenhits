@@ -1,17 +1,14 @@
 // styling for display elements
 const displayStyle = {
-  actionButton: {
-    float: 'right',
-    margin: '10px 10px 0px 0px',
-  },
   container: {
     alignItems: 'flex-start',
     display: 'flex',
     flexWrap: 'wrap',
   },
   deleteContainer: {
-    height: 60,
-    width: '100%',
+    position: 'absolute',
+    right: 1,
+    top: 0,
   },
   elementContainer: {
     alignItems: 'flex-stretch',

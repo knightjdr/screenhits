@@ -380,6 +380,7 @@ ProtocolContentContainer.defaultProps = {
     email: null,
     lab: null,
     name: null,
+    token: null,
   },
 };
 
@@ -423,6 +424,7 @@ ProtocolContentContainer.propTypes = {
     email: PropTypes.string,
     lab: PropTypes.string,
     name: PropTypes.string,
+    token: PropTypes.string,
   }),
 };
 

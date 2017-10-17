@@ -1,3 +1,4 @@
+import moment from 'moment';
 import PropTypes from 'prop-types';
 import React from 'react';
 
@@ -111,14 +112,22 @@ class TableContainer extends React.Component {
       };
     });
   }
-  sortInputData = (arr, index, direction) => {
+  sortInputData = (arr, index, direction, isDate) => {
     if (index < 0) {
       return arr;
     }
     const returnValue = direction === 'asc' ? -1 : 1;
     arr.sort((a, b) => {
-      const nameA = a.columns[index].value.toUpperCase();
-      const nameB = b.columns[index].value.toUpperCase();
+      const nameA = !isDate ?
+        a.columns[index].value.toUpperCase()
+        :
+        moment(a.columns[index].value, 'MMMM Do YYYY, h:mm a').format('x')
+      ;
+      const nameB = !isDate ?
+        b.columns[index].value.toUpperCase()
+        :
+        moment(b.columns[index].value, 'MMMM Do YYYY, h:mm a').format('x')
+      ;
       if (nameA < nameB) {
         return returnValue;
       }
@@ -138,7 +147,7 @@ class TableContainer extends React.Component {
     });
     return arr;
   }
-  sortTable = (index) => {
+  sortTable = (index, type) => {
     const sortCursor = this.state.sortCursor;
     sortCursor[index] = sortCursor[index] === 'n-resize' ? 's-resize' : 'n-resize';
     const sortDirection = this.state.sortDirection;
@@ -152,6 +161,7 @@ class TableContainer extends React.Component {
             this.props.data.list,
             index,
             sortDirection[index],
+            type === 'date',
           ),
         ),
         sortCursor,
@@ -196,6 +206,7 @@ TableContainer.propTypes = {
         columns: PropTypes.arrayOf(
           PropTypes.shape({
             style: PropTypes.shape({}),
+            type: PropTypes.string,
             value: PropTypes.oneOfType([
               PropTypes.number,
               PropTypes.shape({}),

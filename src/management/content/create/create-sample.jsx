@@ -222,6 +222,24 @@ class CreateSample extends React.Component {
           </div>
         }
         {
+          !this.props.file.name &&
+          <div
+            style={ {
+              marginTop: 20,
+            } }
+          >
+            <ActionButtons
+              cancel={ {
+                func: this.props.actions.cancel,
+                label: this.props.cancelButton.label,
+                toolTipText: this.props.cancelButton.tooltip,
+              } }
+              idSuffix="cancel-sample"
+            />
+          </div>
+
+        }
+        {
           this.props.file.name &&
           <div
             style={ createStyle.divFileParsed }

@@ -10,13 +10,15 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { Tabs, Tab } from 'material-ui/Tabs';
 
+import Queue from '../actions/queue-container';
+
 const tabContent = {
   marginTop: 20,
 };
 
-const tabTaleContent = {
+/* const tabTableContent = {
   marginTop: 20,
-};
+};*/
 
 class ActionMenu extends React.Component {
   dialogClose = () => {
@@ -73,9 +75,17 @@ class ActionMenu extends React.Component {
           actions={ [
             this.dialogClose(),
           ] }
+          autoScrollBodyContent={ true }
+          contentStyle={ {
+            left: '50%',
+            position: 'absolute',
+            top: '5%',
+            transform: 'translate(-50%, 0%)',
+          } }
           modal={ false }
           onRequestClose={ this.props.dialog.close }
           open={ this.props.dialog.queue }
+          repositionOnUpdate={ false }
           title="Queue"
         >
           <div>
@@ -113,18 +123,28 @@ class ActionMenu extends React.Component {
                           {
                             this.props.queue.details.queue.length > 0 ?
                               <div>
-                                <div>Samples that are queued.</div>
-                                {
-                                  this.props.queue.details.queue.map((sample) => {
-                                    return (
-                                      <div
-                                        key={ `${sample.date}-${sample.sampleName}` }
-                                      >
-                                        { sample.date } { sample.sampleName } { sample.userName }
-                                      </div>
-                                    );
-                                  })
-                                }
+                                <p>Samples that are queued.</p>
+                                <Queue
+                                  header={ [
+                                    {
+                                      name: 'Position',
+                                      sort: true,
+                                      type: 'position',
+                                    },
+                                    {
+                                      name: 'User',
+                                      sort: true,
+                                      type: 'userName',
+                                    },
+                                    {
+                                      name: 'Sample',
+                                      sort: true,
+                                      type: 'sampleName',
+                                    },
+                                  ] }
+                                  keyName="position"
+                                  queue={ this.props.queue.details.queue }
+                                />
                               </div>
                               :
                               <div>No samples are currently queued.</div>
@@ -149,22 +169,28 @@ class ActionMenu extends React.Component {
                           {
                             this.props.queue.details.finished.length > 0 ?
                               <div>
-                                <div>Samples that have been processed.</div>
-                                <div
-                                  style={ tabTaleContent }
-                                >
-                                  {
-                                    this.props.queue.details.finished.map((sample) => {
-                                      return (
-                                        <div
-                                          key={ `${sample.date}-${sample.sampleName}` }
-                                        >
-                                          { sample.date } { sample.sampleName } { sample.userName }
-                                        </div>
-                                      );
-                                    })
-                                  }
-                                </div>
+                                <p>Samples that have been processed.</p>
+                                <Queue
+                                  header={ [
+                                    {
+                                      name: 'Date',
+                                      sort: true,
+                                      type: 'date',
+                                    },
+                                    {
+                                      name: 'User',
+                                      sort: true,
+                                      type: 'userName',
+                                    },
+                                    {
+                                      name: 'Sample',
+                                      sort: true,
+                                      type: 'sampleName',
+                                    },
+                                  ] }
+                                  keyName="date"
+                                  queue={ this.props.queue.details.finished }
+                                />
                               </div>
                               :
                               <div>No samples have recently finished.</div>
@@ -189,19 +215,33 @@ class ActionMenu extends React.Component {
                           {
                             this.props.queue.details.errors.length > 0 ?
                               <div>
-                                <div>Samples produced errors and could not be processed.</div>
-                                {
-                                  this.props.queue.details.errors.map((sample) => {
-                                    return (
-                                      <div
-                                        key={ `${sample.date}-${sample.sampleName}` }
-                                      >
-                                        { sample.date }: { sample.sampleName },
-                                        user: { sample.userName }
-                                      </div>
-                                    );
-                                  })
-                                }
+                                <p>Samples produced errors and could not be processed.</p>
+                                <Queue
+                                  header={ [
+                                    {
+                                      name: 'Date',
+                                      sort: true,
+                                      type: 'date',
+                                    },
+                                    {
+                                      name: 'User',
+                                      sort: true,
+                                      type: 'userName',
+                                    },
+                                    {
+                                      name: 'Sample',
+                                      sort: true,
+                                      type: 'sampleName',
+                                    },
+                                    {
+                                      name: 'Error',
+                                      sort: false,
+                                      type: 'error',
+                                    },
+                                  ] }
+                                  keyName="date"
+                                  queue={ this.props.queue.details.queue }
+                                />
                               </div>
                               :
                               <div>There are no samples with errors.</div>

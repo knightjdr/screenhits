@@ -55,9 +55,6 @@ const muiTheme = getMuiTheme({
     warning: red400,
     warningHover: red700,
   },
-  menuItem: {
-    color: blueGrey800,
-  },
 });
 
 export default class Theme extends React.Component {

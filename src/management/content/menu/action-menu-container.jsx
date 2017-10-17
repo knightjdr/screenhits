@@ -3,7 +3,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 
 import ActionMenu from './action-menu';
-import Queue from '../actions/queue';
+import Queue from '../actions/queue-get';
 
 class ActionMenuContainer extends React.Component {
   constructor(props) {

@@ -9,6 +9,7 @@ import ActionButtons from '../../../action-buttons/action-buttons-container';
 import DisplayProject from './display-project-container';
 import DisplayScreen from './display-screen-container';
 import DisplayExperiment from './display-experiment-container';
+import DisplaySample from './display-sample-container';
 import Notice from '../../../messages/notice/notice';
 import { uppercaseFirst } from '../../../helpers/helpers';
 
@@ -59,6 +60,20 @@ class DisplayContent extends React.Component {
           }
           { this.props.activeLevel === 'experiment' ?
             <DisplayExperiment
+              cancel={ this.props.cancel }
+              delete={ this.props.delete }
+              edit={ this.props.edit }
+              errors={ this.props.errors }
+              inputWidth={ this.props.inputWidth }
+              item={ this.props.item }
+              key={ this.props.resetKey }
+              updateErrors={ this.props.updateErrors }
+              updateItem={ this.props.updateItem }
+            />
+              : null
+          }
+          { this.props.activeLevel === 'sample' ?
+            <DisplaySample
               cancel={ this.props.cancel }
               delete={ this.props.delete }
               edit={ this.props.edit }
@@ -155,11 +170,7 @@ DisplayContent.propTypes = {
     isPut: PropTypes.bool,
     message: PropTypes.string,
   }).isRequired,
-  errors: PropTypes.shape({
-    description: PropTypes.string,
-    name: PropTypes.string,
-    permission: PropTypes.string,
-  }).isRequired,
+  errors: PropTypes.shape({}).isRequired,
   inputWidth: PropTypes.number.isRequired,
   item: PropTypes.shape({
     _id: PropTypes.number,

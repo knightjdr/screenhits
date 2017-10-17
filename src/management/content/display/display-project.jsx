@@ -1,11 +1,12 @@
+import DeleteForever from 'material-ui/svg-icons/action/delete-forever';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
+import IconButton from 'material-ui/IconButton';
 import muiThemeable from 'material-ui/styles/muiThemeable';
 import PropTypes from 'prop-types';
 import React from 'react';
 import TextField from 'material-ui/TextField';
 
-import ActionButtons from '../../../action-buttons/action-buttons-container';
 import displayStyle from './display-style';
 
 class DisplayProject extends React.Component {
@@ -184,18 +185,16 @@ class DisplayProject extends React.Component {
             <div
               style={ displayStyle.deleteContainer }
             >
-              <div
-                style={ displayStyle.actionButton }
+              <IconButton
+                iconStyle={ {
+                  color: this.props.muiTheme.palette.warning,
+                } }
+                onTouchTap={ () => { this.props.dialog.open('delete'); } }
+                tooltip="Delete experiment"
+                tooltipPosition="bottom-left"
               >
-                <ActionButtons
-                  cancel={ {
-                    func: this.props.dialog.open,
-                    label: 'Delete',
-                    toolTipText: 'Delete project',
-                  } }
-                  idSuffix="delete-project"
-                />
-              </div>
+                <DeleteForever />
+              </IconButton>
             </div>
           </div>
         }
