@@ -3,6 +3,10 @@ const query = require('../query/query');
 const Sample = {
   get: (target, format) => {
     return new Promise((resolve) => {
+      const contentType = {
+        html: 'text/html',
+        tsv: 'text/tab-separated-values',
+      };
       const formatSample = (sample) => {
         let returnElement = '';
         switch (format) {
@@ -29,6 +33,21 @@ const Sample = {
             ;
             break;
           }
+          case 'tsv': {
+            const columns = [];
+            returnElement = sample.properties.map((prop) => {
+              columns.push(prop.name);
+              return prop.layName;
+            }).join('\t');
+            returnElement += '\n';
+            sample.records.forEach((record) => {
+              returnElement += columns.map((column) => {
+                return `${record[column]}`;
+              }).join('\t');
+              returnElement += '\n';
+            });
+            break;
+          }
           default:
             break;
         }
@@ -41,6 +60,7 @@ const Sample = {
               status: 200,
               clientResponse: {
                 status: 200,
+                contentType: contentType[format],
                 data: formatSample(sample),
               },
             });

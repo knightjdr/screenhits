@@ -1,5 +1,7 @@
 import DeleteForever from 'material-ui/svg-icons/action/delete-forever';
+import Description from 'material-ui/svg-icons/action/description';
 import Dialog from 'material-ui/Dialog';
+import FileDownload from 'material-ui/svg-icons/file/file-download';
 import FlatButton from 'material-ui/FlatButton';
 import IconButton from 'material-ui/IconButton';
 import HelpIcon from 'material-ui/svg-icons/action/help';
@@ -213,23 +215,22 @@ class DisplaySample extends React.Component {
               </div>
             </div>
             <div
-              style={ {
-                float: 'right',
-              } }
-            >
-              <FlatButton
-                backgroundColor={ this.props.muiTheme.palette.buttonColor }
-                hoverColor={ this.props.muiTheme.palette.buttonColorHover }
-                label="Data"
-                labelStyle={ {
-                  color: this.props.muiTheme.palette.offWhite,
-                } }
-                onTouchTap={ this.props.viewSample }
-              />
-            </div>
-            <div
               style={ displayStyle.deleteContainer }
             >
+              <IconButton
+                onTouchTap={ this.props.viewSample }
+                tooltip="View sample"
+                tooltipPosition="bottom-left"
+              >
+                <Description />
+              </IconButton>
+              <IconButton
+                onTouchTap={ this.props.downloadSample }
+                tooltip="Download sample"
+                tooltipPosition="bottom-left"
+              >
+                <FileDownload />
+              </IconButton>
               <IconButton
                 iconStyle={ {
                   color: this.props.muiTheme.palette.warning,
@@ -394,6 +395,7 @@ DisplaySample.propTypes = {
     text: PropTypes.string,
     title: PropTypes.string,
   }).isRequired,
+  downloadSample: PropTypes.func.isRequired,
   edit: PropTypes.bool.isRequired,
   errors: PropTypes.shape({
     name: PropTypes.string,

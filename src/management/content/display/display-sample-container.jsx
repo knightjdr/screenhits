@@ -4,7 +4,8 @@ import React from 'react';
 import { connect } from 'react-redux';
 
 import DisplaySample from './display-sample';
-import ViewSample from './view-sample';
+import DownloadSample from './sample/download-sample';
+import ViewSample from './sample/view-sample';
 // import { objectEmpty } from '../../../helpers/helpers';
 // import ValidateField from '../modules/validate-field';
 
@@ -62,6 +63,20 @@ class DisplaySampleContainer extends React.Component {
       };
     });
   }
+  downloadSample = () => {
+    DownloadSample(this.state.item._id, this.state.item.name, 'tsv', this.props.user)
+      .catch((error) => {
+        this.setState({
+          dialog: {
+            delete: false,
+            help: true,
+            text: error.text,
+            title: error.title,
+          },
+        });
+      })
+    ;
+  }
   inputChange = (field, value) => {
     console.log(field, value);
   }
@@ -81,6 +96,7 @@ class DisplaySampleContainer extends React.Component {
             text: this.state.dialog.text,
             title: this.state.dialog.title,
           } }
+          downloadSample={ this.downloadSample }
           edit={ this.props.edit }
           errors={ this.props.errors }
           inputChange={ this.inputChange }
