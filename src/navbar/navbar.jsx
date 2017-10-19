@@ -1,6 +1,7 @@
 import muiThemeable from 'material-ui/styles/muiThemeable';
 import PropTypes from 'prop-types';
 import React from 'react';
+import { Link } from 'react-router';
 
 import CompactRefList from './compact-ref-list-container';
 import Details from './navbar-details.json';
@@ -29,14 +30,16 @@ class Navbar extends React.Component {
           zIndex: 5,
         } }
       >
-        <img
-          alt="ScreenHits logo"
-          src={ LogoImg }
-          style={ {
-            marginLeft: '2%',
-            marginTop: 4,
-          } }
-        />
+        <Link to="/">
+          <img
+            alt="ScreenHits logo"
+            src={ LogoImg }
+            style={ {
+              marginLeft: '2%',
+              marginTop: 4,
+            } }
+          />
+        </Link>
         <span
           style={ {
             float: 'right',

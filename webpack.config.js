@@ -1,8 +1,8 @@
-const CompressionPlugin = require('compression-webpack-plugin');
+// const CompressionPlugin = require('compression-webpack-plugin');
 const eslintFormatter = require('eslint-friendly-formatter');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const path = require('path');
-const webpack = require('webpack');
+// const webpack = require('webpack');
 
 const buildPath = path.join(__dirname, 'dist');
 const srcPath = path.join(__dirname, 'src');
