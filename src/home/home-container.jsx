@@ -7,8 +7,9 @@ import Home from './home';
 import Random from '../helpers/random-number';
 
 const dotDiameter = 30;
+const dotFraction = 0.33;
 const numberOfColors = 100;
-const proportionToChange = 0.1;
+const proportionToChange = 0.15;
 
 class HomeContainer extends React.Component {
   constructor(props) {
@@ -28,17 +29,24 @@ class HomeContainer extends React.Component {
     };
   }
   componentDidMount = () => {
-    setInterval(this.backdropInterval, 1000);
+    setInterval(this.backdropInterval, 2000);
+    window.addEventListener('resize', this.resize);
+  }
+  componentWillUnmount() {
+    window.removeEventListener('resize', this.resize);
   }
   backdropInterval = () => {
     this.setState((prevState) => {
+      const backdrop = JSON.parse(JSON.stringify(prevState.backdrop));
+      const newDots = [];
       return {
-        backdrop: prevState.backdrop.map((dot) => {
+        backdrop: backdrop.map((dot) => {
           if (Math.random() < proportionToChange) {
-            const { x, y } = this.coordinates(prevState.backdrop, prevState.windowSettings);
+            const { x, y } = this.coordinates(backdrop.concat(newDots), prevState.windowSettings);
+            newDots.push({ x, y });
             return {
               fill: `#${prevState.colorRange.colorAt(Random.int(0, 100))}`,
-              key: dot.key,
+              key: dot.key + prevState.windowSettings.dotNumber,
               radius: Random.int(0, prevState.windowSettings.radius),
               x,
               y,
@@ -82,6 +90,20 @@ class HomeContainer extends React.Component {
     } while (i < windowSettings.dotNumber);
     return backdrop;
   }
+  doResize
+  resize = () => {
+    const setBackdrop = () => {
+      const windowSettings = this.windowSettings();
+      this.setState((prevState) => {
+        return {
+          backdrop: this.createBackdrop(prevState.colorRange, windowSettings),
+          windowSettings,
+        };
+      });
+    };
+    clearTimeout(this.doResize);
+    this.doResize = setTimeout(setBackdrop, 500);
+  }
   windowSettings = () => {
     const radiusWithPadding = (dotDiameter / 2) + 6;
     const diameterWithPadding = radiusWithPadding * 2;
@@ -105,7 +127,7 @@ class HomeContainer extends React.Component {
         (point, index) => {
           return point + (diameterWithPadding * index) + radiusWithPadding;
         }),
-      dotNumber: Math.floor((xGridLength * yGridLength) * 0.25),
+      dotNumber: Math.floor((xGridLength * yGridLength) * dotFraction),
     };
   }
   render() {

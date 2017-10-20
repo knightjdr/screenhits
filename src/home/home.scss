@@ -1,0 +1,7 @@
+.test-transition-appear {
+  opacity: 0.01;
+}
+.test-transition-appear.test-transition-appear-active {
+  opacity: 1;
+  transition: opacity 1500ms ease-in;
+}

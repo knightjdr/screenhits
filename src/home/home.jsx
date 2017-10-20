@@ -1,11 +1,27 @@
 import PropTypes from 'prop-types';
-import Radium from 'radium';
 import React from 'react';
+import { CSSTransitionGroup } from 'react-transition-group';
+import { TransitionMotion, spring } from 'react-motion';
 
 import LogoImg from '../assets/logo/main-logo-for-web.png';
 import Signin from '../signin/signin-container';
 
+import './home.scss';
+
+const springConfig = {
+  stiffness: 125,
+  damping: 67,
+};
+
 class Home extends React.Component {
+  dotWillEnter = () => {
+    return {
+      opacity: 0,
+    };
+  }
+  dotWillLeave = () => {
+    return { opacity: spring(0, springConfig) };
+  }
   render() {
     return (
       <div
@@ -14,57 +30,85 @@ class Home extends React.Component {
           position: 'relative',
         } }
       >
-        <svg
-          style={ {
-            height: 'inherit',
-            position: 'absolute',
-            width: '100%',
-            zIndex: -1,
-          } }
+        <TransitionMotion
+          willEnter={ this.dotWillEnter }
+          willLeave={ this.dotWillLeave }
+          styles={ this.props.backdrop.map((dot) => {
+            return {
+              data: {
+                fill: dot.fill,
+                radius: dot.radius,
+                x: dot.x,
+                y: dot.y,
+              },
+              key: `${dot.key}-dot`,
+              style: {
+                opacity: spring(0.4, springConfig),
+              },
+            };
+          }) }
         >
-          {
-            this.props.backdrop.map((dot) => {
-              return (
-                <circle
-                  cx={ dot.x }
-                  cy={ dot.y }
-                  fill={ dot.fill }
-                  key={ dot.key }
-                  opacity="0.4"
-                  r={ dot.radius }
-                >
-                  <animate
-                    attributeName="opacity"
-                    values="0;0.4"
-                    dur="1000ms"
-                  />
-                </circle>
-              );
-            })
-          }
-        </svg>
-        <div
-          style={ {
-            alignItems: 'center',
-            display: 'flex',
-            flexDirection: 'column',
-            height: 'calc(100vh - 65px)',
-            justifyContent: 'center',
-            width: '100%',
+          { (interpolatedStyles) => {
+            return (
+              <svg
+                style={ {
+                  height: 'inherit',
+                  position: 'absolute',
+                  width: '100%',
+                  zIndex: -1,
+                } }
+              >
+                { interpolatedStyles.map((dot) => {
+                  return (
+                    <circle
+                      cx={ dot.data.x }
+                      cy={ dot.data.y }
+                      fill={ dot.data.fill }
+                      key={ dot.key }
+                      r={ dot.data.radius }
+                      style={ dot.style }
+                    />
+                  );
+                }) }
+              </svg>
+            );
           } }
+        </TransitionMotion>
+        <CSSTransitionGroup
+          transitionAppear={ true }
+          transitionAppearTimeout={ 1500 }
+          transitionName="test-transition"
+          transitionEnter={ false }
+          transitionLeave={ false }
         >
-          <img
-            alt="ScreenHits logo"
-            src={ LogoImg }
-          />
           <div
+            key="logo-container"
             style={ {
-              marginTop: 30,
+              alignItems: 'center',
+              display: 'flex',
+              flexDirection: 'column',
+              height: 'calc(100vh - 65px)',
+              justifyContent: 'center',
+              width: '100%',
             } }
           >
-            <Signin />
+            <img
+              alt="ScreenHits logo"
+              key="logo"
+              src={ LogoImg }
+            />
+            <div
+              key="signin"
+              style={ {
+                marginTop: 30,
+              } }
+            >
+              <Signin
+                key="signin"
+              />
+            </div>
           </div>
-        </div>
+        </CSSTransitionGroup>
       </div>
     );
   }
@@ -82,4 +126,4 @@ Home.propTypes = {
   ).isRequired,
 };
 
-export default Radium(Home);
+export default Home;
