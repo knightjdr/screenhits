@@ -462,8 +462,8 @@ class DisplayExperiment extends React.Component {
           open={ this.props.dialog.delete }
           title="Confirmation"
         >
-          This action will permanently delete the experiment (and all samples and
-          analysis associated with it). Press confirm to proceed.
+          This action will permanently delete the experiment and all samples
+          associated with it. Press confirm to proceed.
         </Dialog>
         <Dialog
           actions={ this.dialogClose() }

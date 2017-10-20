@@ -15,6 +15,7 @@ import TextField from 'material-ui/TextField';
 import ActionButtons from '../../../action-buttons/action-buttons-container';
 import createStyle from './create-style';
 import Fields from '../modules/fields';
+import Notice from '../../../messages/notice/notice';
 import { objectEmpty } from '../../../helpers/helpers';
 
 class CreateSample extends React.Component {
@@ -606,22 +607,48 @@ class CreateSample extends React.Component {
                   <FontAwesome name="exclamation-triangle " /> There are errors in the form. Please correct before proceeding.
                 </div>
               }
-              <ActionButtons
-                cancel={ {
-                  func: this.props.actions.cancel,
-                  label: this.props.cancelButton.label,
-                  toolTipText: this.props.cancelButton.tooltip,
+              <div
+                style={ {
+                  display: 'flex',
                 } }
-                idSuffix="create-sample"
-                reset={ {
-                  func: this.props.actions.reset,
-                  toolTipText: 'Reset the form',
-                } }
-                update={ {
-                  func: this.props.actions.submit,
-                  label: 'Create',
-                } }
-              />
+              >
+                <ActionButtons
+                  cancel={ {
+                    func: this.props.actions.cancel,
+                    label: this.props.cancelButton.label,
+                    toolTipText: this.props.cancelButton.tooltip,
+                  } }
+                  idSuffix="create-sample"
+                  reset={ {
+                    func: this.props.actions.reset,
+                    toolTipText: 'Reset the form',
+                  } }
+                  update={ {
+                    func: this.props.actions.submit,
+                    label: 'Create',
+                  } }
+                />
+                <div
+                  style={ {
+                    flexGrow: 1,
+                    margin: '10px 20px 0px 10px',
+                    textAlign: 'left',
+                  } }
+                >
+                  <Notice
+                    fail={ this.props.postState.didSubmitFail }
+                    failMessage={ `sample creation failed.
+                    ${this.props.postState.message}.` }
+                    label="create-notification"
+                    submit={ this.props.postState.isSubmitted }
+                    submitMessage="sample submitted"
+                    succeed={ this.props.postState.message &&
+                      !this.props.postState.didSubmitFail
+                    }
+                    succeedMessage={ this.props.postState.message }
+                  />
+                </div>
+              </div>
             </div>
           </div>
         }
@@ -716,6 +743,12 @@ CreateSample.propTypes = {
       warning: PropTypes.string,
       warningHover: PropTypes.string,
     }),
+  }).isRequired,
+  postState: PropTypes.shape({
+    didSubmitFail: PropTypes.bool,
+    _id: PropTypes.number,
+    isSubmitted: PropTypes.bool,
+    message: PropTypes.string,
   }).isRequired,
   readFileInput: PropTypes.func.isRequired,
   removeFromHeader: PropTypes.func.isRequired,

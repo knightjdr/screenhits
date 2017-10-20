@@ -493,8 +493,8 @@ class DisplayScreen extends React.Component {
           open={ this.props.dialog.delete }
           title="Confirmation"
         >
-          This action will permanently delete the screen (and all experiments,
-          samples and analysis associated with it). Press confirm to proceed.
+          This action will permanently delete the screen, and all experiments and
+          samples associated with it. Press confirm to proceed.
         </Dialog>
         <Dialog
           actions={ this.dialogClose() }

@@ -5,7 +5,7 @@ import CustomTable from '../../../table/table-container';
 
 class Queue extends React.Component {
   list = () => {
-    const tableList = this.props.queue.map((sample) => {
+    const tableList = this.props.queue.map((sample, index) => {
       const columns = this.props.header.map((header) => {
         return {
           type: header.type,
@@ -13,7 +13,7 @@ class Queue extends React.Component {
         };
       });
       return {
-        key: sample[this.props.keyName],
+        key: `${sample[this.props.keyName]}-${index}`,
         columns,
       };
     });

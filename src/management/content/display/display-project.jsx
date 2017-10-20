@@ -245,8 +245,8 @@ class DisplayProject extends React.Component {
           open={ this.props.dialog.delete }
           title="Confirmation"
         >
-          This action will permanently delete the project (and all screens, experiments,
-          samples and analysis associated with it). Press confirm to proceed.
+          This action will permanently delete the project, and all screens, experiments,
+          and samples associated with it. Press confirm to proceed.
         </Dialog>
       </div>
     );

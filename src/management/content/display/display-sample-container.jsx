@@ -6,8 +6,8 @@ import { connect } from 'react-redux';
 import DisplaySample from './display-sample';
 import DownloadSample from './sample/download-sample';
 import ViewSample from './sample/view-sample';
-// import { objectEmpty } from '../../../helpers/helpers';
-// import ValidateField from '../modules/validate-field';
+import { objectEmpty } from '../../../helpers/helpers';
+import ValidateField from '../modules/validate-field';
 
 class DisplaySampleContainer extends React.Component {
   constructor(props) {
@@ -78,7 +78,28 @@ class DisplaySampleContainer extends React.Component {
     ;
   }
   inputChange = (field, value) => {
-    console.log(field, value);
+    // check if field is valid and update errors object
+    const errors = Object.assign({}, this.props.errors);
+    const validate = ValidateField.sample.checkFields.indexOf(field) > 0 ?
+      ValidateField.sample[field](value)
+      :
+      { error: false }
+    ;
+    errors[field] = validate.error ? validate.message : null;
+    const warning = !objectEmpty(errors);
+    this.props.updateErrors(errors, warning);
+    // update item state
+    const updateObject = JSON.parse(JSON.stringify(this.state.item));
+    if (
+      typeof updateObject[field] === 'object' &&
+      updateObject[field].isArray
+    ) {
+      updateObject[field] = Object.assign([], value);
+    } else {
+      updateObject[field] = value;
+    }
+    this.setState({ item: updateObject });
+    this.props.updateItem(updateObject);
   }
   viewSample = () => {
     ViewSample(this.state.item._id, this.state.item.name, 'html', this.props.user);
@@ -152,8 +173,8 @@ DisplaySampleContainer.propTypes = {
     name: PropTypes.string,
     token: PropTypes.string,
   }),
-  // updateErrors: PropTypes.func.isRequired,
-  // updateItem: PropTypes.func.isRequired,
+  updateErrors: PropTypes.func.isRequired,
+  updateItem: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = (state) => {

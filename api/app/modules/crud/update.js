@@ -40,5 +40,19 @@ const Update = {
       next(Object.keys(insertObj), 0);
     });
   },
+  subField: (collection, queryObj, updateObj, options) => {
+    return new Promise((resolve, reject) => {
+      database.acquire(config.settings().database.name)
+        .collection(collection)
+        .update(queryObj, updateObj, options, (err) => {
+          if (!err) {
+            resolve();
+          } else {
+            reject(`There was an error updaing the ${collection}`);
+          }
+        })
+      ;
+    });
+  },
 };
 module.exports = Update;

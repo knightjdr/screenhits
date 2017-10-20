@@ -1,3 +1,4 @@
+import deepEqual from 'deep-equal';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
@@ -10,7 +11,7 @@ import FormSubmission from '../modules/form-submission';
 import stringParser from '../../../helpers/string-parser';
 import ValidateField from '../modules/validate-field';
 import { objectEmpty } from '../../../helpers/helpers';
-import { submitPost } from '../../../state/post/actions';
+import { resetPost, submitPost } from '../../../state/post/actions';
 
 const reset = {
   cancelButton: {
@@ -57,6 +58,12 @@ class CreateSampleContainer extends React.Component {
       screenType,
       warning: BlankState.sample.warning,
     };
+  }
+  componentDidUpdate = (prevProps, prevState) => {
+    const { formData } = prevState;
+    if (!deepEqual(this.state.formData, formData)) {
+      this.props.resetPost();
+    }
   }
   addMandatory = () => {
     this.setState((prevState) => {
@@ -458,6 +465,7 @@ class CreateSampleContainer extends React.Component {
         formData={ this.state.formData }
         inputChange={ this.inputChange }
         inputWidth={ this.props.inputWidth }
+        postState={ this.props.postState }
         readFileInput={ this.readFileInput }
         removeFromHeader={ this.removeFromHeader }
         resetForm={ this.resetForm }
@@ -469,6 +477,12 @@ class CreateSampleContainer extends React.Component {
 }
 
 CreateSampleContainer.defaultProps = {
+  postState: {
+    didSubmitFail: false,
+    _id: null,
+    isSubmitted: false,
+    message: null,
+  },
   user: {
     email: null,
     lab: null,
@@ -487,6 +501,13 @@ CreateSampleContainer.propTypes = {
     title: PropTypes.string,
   }).isRequired,
   inputWidth: PropTypes.number.isRequired,
+  postState: PropTypes.shape({
+    didSubmitFail: PropTypes.bool,
+    _id: PropTypes.number,
+    isSubmitted: PropTypes.bool,
+    message: PropTypes.string,
+  }),
+  resetPost: PropTypes.func.isRequired,
   screens: PropTypes.arrayOf(
     PropTypes.shape({}),
   ).isRequired,
@@ -508,11 +529,15 @@ const mapDispatchToProps = (dispatch) => {
     create: (activeLevel, obj, isFormData) => {
       dispatch(submitPost(activeLevel, obj, isFormData));
     },
+    resetPost: () => {
+      dispatch(resetPost('sample'));
+    },
   };
 };
 
 const mapStateToProps = (state) => {
   return {
+    postState: state.post.sample,
     screens: state.available.screen.items,
     selected: state.selected,
     user: state.user,

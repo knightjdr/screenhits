@@ -29,10 +29,11 @@ class HomeContainer extends React.Component {
     };
   }
   componentDidMount = () => {
-    setInterval(this.backdropInterval, 2000);
+    this.interval = setInterval(this.backdropInterval, 2000);
     window.addEventListener('resize', this.resize);
   }
   componentWillUnmount() {
+    clearInterval(this.interval);
     window.removeEventListener('resize', this.resize);
   }
   backdropInterval = () => {
@@ -104,6 +105,7 @@ class HomeContainer extends React.Component {
     clearTimeout(this.doResize);
     this.doResize = setTimeout(setBackdrop, 500);
   }
+  interval
   windowSettings = () => {
     const radiusWithPadding = (dotDiameter / 2) + 6;
     const diameterWithPadding = radiusWithPadding * 2;
