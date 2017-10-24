@@ -1,11 +1,18 @@
 import React from 'react';
 
-export default class Analysis extends React.Component {
+import NewAnalysis from './new-analysis/new-analysis-container';
+
+class Analysis extends React.Component {
   render() {
     return (
-      <div>
-        analysis
+      <div
+        style={ {
+          padding: '0px 5px 5px 5px',
+        } }
+      >
+        <NewAnalysis />
       </div>
     );
   }
 }
+export default Analysis;

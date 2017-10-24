@@ -3,9 +3,9 @@ import React from 'react';
 import { connect } from 'react-redux';
 
 import DisplayScreen from './display-screen';
-import Fields from '../modules/fields';
+import Fields from '../../../modules/fields';
 import { objectEmpty } from '../../../helpers/helpers';
-import ValidateField from '../modules/validate-field';
+import ValidateField from '../../../modules/validate-field';
 
 class DisplayScreenContainer extends React.Component {
   constructor(props) {

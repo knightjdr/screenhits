@@ -14,7 +14,7 @@ import VisibilityIcon from 'material-ui/svg-icons/action/visibility';
 
 import DisplayProtocol from './display-protocol';
 import displayStyle from './display-style';
-import Fields from '../modules/fields';
+import Fields from '../../../modules/fields';
 import { customSort } from '../../../helpers/helpers';
 
 class DisplayExperiment extends React.Component {

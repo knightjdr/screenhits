@@ -2,7 +2,7 @@ import React from 'react';
 import { browserHistory, IndexRoute, Route, Router } from 'react-router';
 import { syncHistoryWithStore } from 'react-router-redux';
 
-import Analysis from '../analysis/analysis';
+import Analysis from '../analysis/analysis-container';
 import App from '../app';
 import Help from '../help/help';
 import Home from '../home/home-container';

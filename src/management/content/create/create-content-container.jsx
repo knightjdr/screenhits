@@ -2,15 +2,15 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import React from 'react';
 
-import BlankState from '../modules/blank-state';
+import BlankState from '../../../modules/blank-state';
 import CreateContent from './create-content';
-import Fields from '../modules/fields';
-import FormSubmission from '../modules/form-submission';
+import Fields from '../../../modules/fields';
+import FormSubmission from '../../../modules/form-submission';
 import { getData } from '../../../state/get/data-actions';
 import { objectEmpty } from '../../../helpers/helpers';
 import { resetPost, submitPost } from '../../../state/post/actions';
 import { setIndex } from '../../../state/set/index-actions';
-import ValidateField from '../modules/validate-field';
+import ValidateField from '../../../modules/validate-field';
 
 class CreateContentContainer extends React.Component {
   constructor(props) {

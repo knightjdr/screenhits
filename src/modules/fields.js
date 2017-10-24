@@ -49,6 +49,7 @@ const Fields = {
           options: [
             'TKO v1',
             'TKO v2',
+            'TKO v3',
           ],
           type: 'select',
         },

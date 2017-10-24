@@ -12,7 +12,7 @@ import TextField from 'material-ui/TextField';
 
 import CellsDataSource from '../../../assets/data/cells';
 import displayStyle from './display-style';
-import Fields from '../modules/fields';
+import Fields from '../../../modules/fields';
 import SelectInput from '../create/select-input/select-input-container';
 import SpeciesDataSource from '../../../assets/data/species';
 import { objectEmpty, uppercaseFirst } from '../../../helpers/helpers';
@@ -308,7 +308,7 @@ class DisplayScreen extends React.Component {
                   color: this.props.muiTheme.palette.warning,
                 } }
                 onTouchTap={ () => { this.props.dialog.open('delete'); } }
-                tooltip="Delete experiment"
+                tooltip="Delete screen"
                 tooltipPosition="bottom-left"
               >
                 <DeleteForever />

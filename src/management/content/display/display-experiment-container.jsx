@@ -6,7 +6,7 @@ import { connect } from 'react-redux';
 import DisplayExperiment from './display-experiment';
 import { getData } from '../../../state/get/data-actions';
 import { objectEmpty } from '../../../helpers/helpers';
-import ValidateField from '../modules/validate-field';
+import ValidateField from '../../../modules/validate-field';
 
 class DisplayExperimentContainer extends React.Component {
   constructor(props) {

@@ -119,30 +119,48 @@ class DisplayContent extends React.Component {
               />
             </div>
           }
-          <Notice
-            fail={ this.props.editMessages.didPutFail }
-            failMessage={ `${uppercaseFirst(this.props.activeLevel)} edit failed.
-            ${this.props.editMessages.message}` }
-            label="edit-notification"
-            other={ this.props.postMessage }
-            otherMessage={ this.props.postMessage }
-            submit={ this.props.editMessages.isPut }
-            submitMessage={ `${uppercaseFirst(this.props.activeLevel)} edit submitted` }
-            succeed={ this.props.editMessages.message &&
-              !this.props.editMessages.didPutFail }
-            succeedMessage={ this.props.editMessages.message }
-          />
-          <Notice
-            fail={ this.props.deleteMessages.didDeleteFail }
-            failMessage={ `${uppercaseFirst(this.props.activeLevel)} deletion failed.
-            ${this.props.deleteMessages.message}` }
-            label="delete-notification"
-            submit={ this.props.deleteMessages.isDelete }
-            submitMessage={ `${uppercaseFirst(this.props.activeLevel)} deletion requested` }
-            succeed={ this.props.deleteMessages.message &&
-              !this.props.deleteMessages.didDeleteFail }
-            succeedMessage={ this.props.deleteMessages.message }
-          />
+          {
+            this.props.editMessages &&
+            this.props.editMessages._id &&
+            this.props.editMessages._id === this.props.item._id &&
+            <Notice
+              fail={ this.props.editMessages.didPutFail }
+              failMessage={ `${uppercaseFirst(this.props.activeLevel)} edit failed.
+              ${this.props.editMessages.message}` }
+              label="edit-notification"
+              submit={ this.props.editMessages.isPut }
+              submitMessage={ `${uppercaseFirst(this.props.activeLevel)} edit submitted` }
+              succeed={ this.props.editMessages.message &&
+                !this.props.editMessages.didPutFail }
+              succeedMessage={ this.props.editMessages.message }
+            />
+          }
+          {
+            this.props.postMessage &&
+            this.props.postMessage._id &&
+            this.props.postMessage._id === this.props.item._id &&
+            <Notice
+              label="submit-notification"
+              other={ this.props.postMessage.message }
+              otherMessage={ this.props.postMessage.message }
+            />
+          }
+          {
+            this.props.deleteMessages &&
+            this.props.deleteMessages._id &&
+            this.props.deleteMessages._id === this.props.item._id &&
+            <Notice
+              fail={ this.props.deleteMessages.didDeleteFail }
+              failMessage={ `${uppercaseFirst(this.props.activeLevel)} deletion failed.
+              ${this.props.deleteMessages.message}` }
+              label="delete-notification"
+              submit={ this.props.deleteMessages.isDelete }
+              submitMessage={ `${uppercaseFirst(this.props.activeLevel)} deletion requested` }
+              succeed={ this.props.deleteMessages.message &&
+                !this.props.deleteMessages.didDeleteFail }
+              succeedMessage={ this.props.deleteMessages.message }
+            />
+          }
         </Scrollbars>
       </Paper>
     );
@@ -150,7 +168,10 @@ class DisplayContent extends React.Component {
 }
 
 DisplayContent.defaultProps = {
-  postMessage: null,
+  postMessage: {
+    _id: null,
+    message: null,
+  },
 };
 
 DisplayContent.propTypes = {
@@ -190,7 +211,10 @@ DisplayContent.propTypes = {
       primary2Color: PropTypes.string,
     }),
   }).isRequired,
-  postMessage: PropTypes.string,
+  postMessage: PropTypes.shape({
+    _id: PropTypes.number,
+    message: PropTypes.string,
+  }),
   reset: PropTypes.func.isRequired,
   resetKey: PropTypes.number.isRequired,
   update: PropTypes.func.isRequired,

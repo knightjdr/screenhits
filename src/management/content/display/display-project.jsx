@@ -190,7 +190,7 @@ class DisplayProject extends React.Component {
                   color: this.props.muiTheme.palette.warning,
                 } }
                 onTouchTap={ () => { this.props.dialog.open('delete'); } }
-                tooltip="Delete experiment"
+                tooltip="Delete project"
                 tooltipPosition="bottom-left"
               >
                 <DeleteForever />

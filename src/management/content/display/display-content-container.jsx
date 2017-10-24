@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 
 import DisplayContent from './display-content';
 import Format from './format-edit';
-import ValidateField from '../modules/validate-field';
+import ValidateField from '../../../modules/validate-field';
 import { setIndex } from '../../../state/set/index-actions';
 import { resetDelete, submitDelete } from '../../../state/delete/actions';
 import { resetPost } from '../../../state/post/actions';
@@ -70,9 +70,15 @@ class DisplayContentContainer extends React.Component {
   }
   setPostMessage = (postState, activeLevel, selected) => {
     return postState[activeLevel]._id === selected ?
-      postState[activeLevel].message
-      :
-      null
+    {
+      _id: selected,
+      message: postState[activeLevel].message,
+    }
+    :
+    {
+      _id: null,
+      message: null,
+    }
     ;
   }
   cancel = () => {

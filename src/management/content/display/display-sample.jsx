@@ -11,7 +11,7 @@ import React from 'react';
 import TextField from 'material-ui/TextField';
 
 import displayStyle from './display-style';
-import Fields from '../modules/fields';
+import Fields from '../../../modules/fields';
 
 class DisplaySample extends React.Component {
   confirmDeletion = () => {

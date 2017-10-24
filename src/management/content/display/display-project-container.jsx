@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 
 import DisplayProject from './display-project';
-import ValidateField from '../modules/validate-field';
+import ValidateField from '../../../modules/validate-field';
 import { objectEmpty } from '../../../helpers/helpers';
 
 class DisplayProjectContainer extends React.Component {

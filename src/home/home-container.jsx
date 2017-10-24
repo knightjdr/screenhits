@@ -29,7 +29,7 @@ class HomeContainer extends React.Component {
     };
   }
   componentDidMount = () => {
-    this.interval = setInterval(this.backdropInterval, 2000);
+    this.interval = setInterval(this.backdropInterval, 1500);
     window.addEventListener('resize', this.resize);
   }
   componentWillUnmount() {

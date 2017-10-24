@@ -3,13 +3,13 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
 
-import BlankState from '../modules/blank-state';
+import BlankState from '../../../modules/blank-state';
 import CreateSample from './create-sample';
 import fileReader from '../../../helpers/file-reader';
-import FileTypes from '../modules/file-parser';
-import FormSubmission from '../modules/form-submission';
+import FileTypes from '../../../modules/file-parser';
+import FormSubmission from '../../../modules/form-submission';
 import stringParser from '../../../helpers/string-parser';
-import ValidateField from '../modules/validate-field';
+import ValidateField from '../../../modules/validate-field';
 import { objectEmpty } from '../../../helpers/helpers';
 import { resetPost, submitPost } from '../../../state/post/actions';
 

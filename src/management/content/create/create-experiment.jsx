@@ -11,7 +11,7 @@ import SelectField from 'material-ui/SelectField';
 import TextField from 'material-ui/TextField';
 
 import createStyle from './create-style';
-import Fields from '../modules/fields';
+import Fields from '../../../modules/fields';
 import { customSort } from '../../../helpers/helpers';
 
 class CreateExperiment extends React.Component {

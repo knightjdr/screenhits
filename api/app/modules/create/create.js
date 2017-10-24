@@ -1,6 +1,7 @@
 const available = require('../available/available');
 const create = require('../crud/create');
 const counter = require('../helpers/counter');
+const deleteSample = require('../delete/delete').sample();
 const moment = require('moment');
 const query = require('../query/query');
 const readFile = require('./read-file');
@@ -193,6 +194,9 @@ const Create = {
           })
           .catch((error) => {
             Create.updateQueue('errors', error);
+            if (array[0]._id) {
+              deleteSample({ _id: array[0]._id });
+            }
             next(Create.queue.running);
           })
         ;

@@ -7,7 +7,7 @@ import DisplaySample from './display-sample';
 import DownloadSample from './sample/download-sample';
 import ViewSample from './sample/view-sample';
 import { objectEmpty } from '../../../helpers/helpers';
-import ValidateField from '../modules/validate-field';
+import ValidateField from '../../../modules/validate-field';
 
 class DisplaySampleContainer extends React.Component {
   constructor(props) {

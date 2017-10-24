@@ -11,7 +11,7 @@ import SelectField from 'material-ui/SelectField';
 import TextField from 'material-ui/TextField';
 
 import createStyle from './create-style';
-import Fields from '../modules/fields';
+import Fields from '../../../modules/fields';
 import SelectInput from './select-input/select-input-container';
 import SpeciesDataSource from '../../../assets/data/species';
 import CellsDataSource from '../../../assets/data/cells';

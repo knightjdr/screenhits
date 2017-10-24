@@ -14,7 +14,7 @@ import TextField from 'material-ui/TextField';
 
 import ActionButtons from '../../../action-buttons/action-buttons-container';
 import createStyle from './create-style';
-import Fields from '../modules/fields';
+import Fields from '../../../modules/fields';
 import Notice from '../../../messages/notice/notice';
 import { objectEmpty } from '../../../helpers/helpers';
 

@@ -81,18 +81,18 @@ class ManagementContainer extends React.Component {
       activeLevel: this.findActiveLevel(selected),
     });
   }
-  findActiveLevel = (selected) => {
-    let activeLevel;
+  findActiveLevel = (selected, /* activeLevel */) => {
+    let newActiveLevel;
     if (selected.sample) {
-      activeLevel = 'sample';
+      newActiveLevel = 'sample';
     } else if (selected.experiment) {
-      activeLevel = 'experiment';
+      newActiveLevel = 'experiment';
     } else if (selected.screen) {
-      activeLevel = 'screen';
+      newActiveLevel = 'screen';
     } else {
-      activeLevel = 'project';
+      newActiveLevel = 'project';
     }
-    return activeLevel;
+    return newActiveLevel;
   }
   hideList = () => {
     this.setState({
@@ -222,7 +222,9 @@ class ManagementContainer extends React.Component {
       lastExists ? browserHistory.push(path) : browserHistory.replace(path);
     }
     // update state
-    this.setState({ activeLevel: this.findActiveLevel(setSelected) });
+    this.setState((prevState) => {
+      return { activeLevel: this.findActiveLevel(setSelected, prevState.activeLevel) };
+    });
   }
   render() {
     return (
