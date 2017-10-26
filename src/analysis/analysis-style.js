@@ -1,5 +1,21 @@
 // styling for creation elements
 const analysisStyle = {
+  dateContainer: {
+    display: 'inline-flex',
+  },
+  dateSubField: {
+    marginLeft: 10,
+  },
+  dateTextField: {
+    cursor: 'pointer',
+  },
+  dateSubText: {
+    marginTop: 42,
+  },
+  filterField: {
+    marginRight: 10,
+    maxWidth: 300,
+  },
   helpBox: {
     backgroundColor: '#607d8b',
     borderRadius: 4,

@@ -1,4 +1,4 @@
-import moment from 'moment';
+import Moment from 'moment';
 import PropTypes from 'prop-types';
 import React from 'react';
 
@@ -121,12 +121,12 @@ class TableContainer extends React.Component {
       const nameA = !isDate ?
         a.columns[index].value.toUpperCase()
         :
-        moment(a.columns[index].value, 'MMMM Do YYYY, h:mm a').format('x')
+        Moment(a.columns[index].value, 'MMMM Do YYYY, h:mm a').format('x')
       ;
       const nameB = !isDate ?
         b.columns[index].value.toUpperCase()
         :
-        moment(b.columns[index].value, 'MMMM Do YYYY, h:mm a').format('x')
+        Moment(b.columns[index].value, 'MMMM Do YYYY, h:mm a').format('x')
       ;
       if (nameA < nameB) {
         return returnValue;
