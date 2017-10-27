@@ -1,5 +1,38 @@
 // styling for creation elements
+const helpBox = {
+  backgroundColor: '#607d8b',
+  borderRadius: 4,
+  color: '#f5f5f5',
+  margin: '5px 0px 5px 0px',
+  padding: '10px 10px 10px 10px',
+  textAlign: 'center',
+};
+
+const helpBoxSub = {
+  backgroundColor: '#607d8b',
+  borderRadius: 4,
+  color: '#f5f5f5',
+  margin: '5px 0px 5px 0px',
+  maxWidth: 500,
+  minWidth: 250,
+  padding: '10px 10px 10px 10px',
+  textAlign: 'left',
+  width: '33%',
+};
+
 const analysisStyle = {
+  checkbox: {
+    top: -12,
+    position: 'relative',
+    width: 150,
+  },
+  checkboxWithHelp: {
+    alignItems: 'flex-end',
+    display: 'inline-flex',
+    marginLeft: 4,
+    marginRight: 4,
+    maxWidth: 200,
+  },
   dateContainer: {
     display: 'inline-flex',
   },
@@ -16,15 +49,33 @@ const analysisStyle = {
     marginRight: 10,
     maxWidth: 300,
   },
-  helpBox: {
-    backgroundColor: '#607d8b',
-    borderRadius: 4,
-    color: '#f5f5f5',
-    margin: '5px 0px 5px 0px',
-    padding: '10px 10px 10px 10px',
-    textAlign: 'center',
-  },
+  helpBox,
+  helpBoxLarge: Object.assign(
+    {},
+    helpBox,
+    {
+      textAlign: 'left',
+    },
+  ),
+  helpBoxSub,
+  helpBoxSubSmall: Object.assign(
+    {},
+    helpBoxSub,
+    {
+      maxWidth: 'none',
+      minWidth: 'none',
+      textAlign: 'center',
+      width: '100%',
+    },
+  ),
   input: {
+    marginLeft: 4,
+    marginRight: 4,
+    maxWidth: 500,
+  },
+  inputWithHelp: {
+    alignItems: 'flex-end',
+    display: 'inline-flex',
     marginLeft: 4,
     marginRight: 4,
     maxWidth: 500,
@@ -35,6 +86,17 @@ const analysisStyle = {
   },
   menuItemSelected: {
     backgroundColor: '#d4d6d7',
+  },
+  selectedItemsContainer: {
+    border: '1px solid #d4d6d7',
+    height: 278,
+    userSelect: 'none',
+    width: 250,
+  },
+  selectWithHelp: {
+    marginLeft: 4,
+    marginRight: 4,
+    maxWidth: 442,
   },
 };
 export default analysisStyle;

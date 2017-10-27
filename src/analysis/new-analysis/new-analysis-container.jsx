@@ -3,9 +3,12 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
 
+import AnalysisOptions from '../../modules/analysis-new';
 import NewAnalysis from './new-analysis';
 
 import available from './test-data';
+
+const defaultFormFields = ['analysisType', 'screenType'];
 
 class NewAnalysisContainer extends React.Component {
   constructor(props) {
@@ -14,25 +17,47 @@ class NewAnalysisContainer extends React.Component {
     const defaultFilters = this.defaultFilters(dateRange);
     this.state = {
       dateRange: this.assignDateRange(dateRange),
+      dialog: {
+        defaultValue: null,
+        help: false,
+        text: null,
+        title: null,
+      },
       filters: defaultFilters,
       errors: {
-        type: null,
+        analysisType: null,
+        screenType: null,
       },
       formData: {
-        type: null,
+        analysisType: null,
+        screenType: 'CRISPR',
       },
+      inputWidth: window.innerWidth >= 555 ? 500 : window.innerWidth - 55,
       isFiltered: false,
-      samplesAdded: [],
       samplesToAdd: [],
       samplesToRemove: [],
+      screenSize: {
+        isLarge: window.innerWidth > 1500,
+        isSmall: window.innerWidth <= 680,
+      },
+      selected: {
+        items: [],
+        last: null,
+      },
       selection: {
         isDrawerOpen: true,
         items: this.checkFilters(available.sample, defaultFilters),
         last: null,
         level: 'sample',
       },
-      stepIndex: 1,
+      stepIndex: 2,
     };
+  }
+  componentDidMount() {
+    window.addEventListener('resize', this.resize);
+  }
+  componentWillUnmount() {
+    window.removeEventListener('resize', this.resize);
   }
   getDateRange = (items) => {
     const itemsForSort = JSON.parse(JSON.stringify(items));
@@ -50,7 +75,7 @@ class NewAnalysisContainer extends React.Component {
     };
   }
   addSamples = () => {
-    this.setState(({ samplesAdded, samplesToAdd, selection }) => {
+    this.setState(({ selected, samplesToAdd, selection }) => {
       const availableItems = available.sample;
       const newSamplesToAdd = [];
       availableItems.forEach((sample) => {
@@ -67,7 +92,10 @@ class NewAnalysisContainer extends React.Component {
         }
       });
       return {
-        samplesAdded: [...new Set(samplesAdded.concat(newSamplesToAdd))].sort(),
+        selected: {
+          items: [...new Set(selected.items.concat(newSamplesToAdd))].sort(),
+          last: null,
+        },
         samplesToAdd: [],
       };
     });
@@ -81,9 +109,6 @@ class NewAnalysisContainer extends React.Component {
       toStart: dateRange.start,
       start: dateRange.start,
     };
-  }
-  removeSamples = () => {
-
   }
   applyFilters = () => {
     this.setState(({ selection }) => {
@@ -171,6 +196,26 @@ class NewAnalysisContainer extends React.Component {
       name: '',
       user: this.props.user.name,
     };
+  }
+  dialogClose = () => {
+    this.setState({
+      dialog: {
+        defaultValue: null,
+        help: false,
+        text: null,
+        title: null,
+      },
+    });
+  }
+  dialogOpen = (title, text, defaultValue) => {
+    this.setState({
+      dialog: {
+        defaultValue,
+        help: true,
+        text,
+        title,
+      },
+    });
   }
   filterFromDate = (date) => {
     this.setState(({ dateRange, filters }) => {
@@ -297,6 +342,7 @@ class NewAnalysisContainer extends React.Component {
     this.setState(({ samplesToAdd, selection }) => {
       const toAdd = [];
       if (
+
         shiftKey &&
         selection.last
       ) {
@@ -356,15 +402,112 @@ class NewAnalysisContainer extends React.Component {
       };
     });
   }
-  highlightSampleToRemove = () => {
+  highlightSampleToRemove = (e, _id) => {
+    let lastSelected = _id;
+    // shift key allows for multiple selections
+    const shiftKey = e.nativeEvent.shiftKey;
+    this.setState(({ samplesToRemove, selected }) => {
+      const toRemove = [];
+      if (
+        shiftKey &&
+        selected.last
+      ) {
+        const last = selected.last;
+        const { end, start } = last >= _id ?
+          { end: last, start: _id }
+          :
+          { end: _id, start: last }
+        ;
+        let get = false;
+        selected.items.forEach((item) => {
+          if (item === start) {
+            get = true;
+          }
+          if (item === end) {
+            get = false;
+            toRemove.push(item);
+          }
+          if (get) {
+            toRemove.push(item);
+          }
+        });
+      } else {
+        toRemove.push(_id);
+      }
+      toRemove.forEach((newSample) => {
+        const index = samplesToRemove.indexOf(newSample);
+        if (
+          shiftKey &&
+          index < 0
+        ) {
+          samplesToRemove.push(newSample);
+        } else if (
+          !shiftKey &&
+          index > -1
+        ) {
+          samplesToRemove.splice(index, 1);
+          if (newSample === _id) {
+            lastSelected = null;
+          }
+        } else if (
+          !shiftKey &&
+          index < 0
+        ) {
+          samplesToRemove.push(newSample);
+        }
+      });
+      return {
+        selected: Object.assign(
+          {},
+          selected,
+          {
+            last: lastSelected,
+          },
+        ),
+      };
+    });
   }
   inputChange = (type, value) => {
-    const { errors, formData } = this.state;
-    errors[type] = null;
-    formData[type] = value;
-    this.setState({
-      errors,
-      formData,
+    this.setState(({ errors, formData }) => {
+      const newErrors = Object.assign({}, errors);
+      const newFormData = Object.assign({}, formData);
+      // if the analysis type change, remove non-default fields and add new
+      if (type === 'analysisType') {
+        Object.keys(newFormData).forEach((key) => {
+          if (!defaultFormFields.includes(key)) {
+            delete newFormData[key];
+          }
+        });
+        AnalysisOptions[formData.screenType][value].parameters.forEach((parameters) => {
+          newFormData[parameters.name] = parameters.defaultValue;
+        });
+      }
+      newFormData[type] = value;
+      return {
+        errors: newErrors,
+        formData: newFormData,
+      };
+    });
+  }
+  removeSamples = () => {
+    this.setState(({ samplesToAdd, selected, samplesToRemove }) => {
+      const newSamplesToAdd = Object.assign([], samplesToAdd);
+      const newSelectedItems = Object.assign([], selected.items);
+      samplesToRemove.forEach((sample) => {
+        const selectedIndex = newSelectedItems.indexOf(sample);
+        newSelectedItems.splice(selectedIndex, 1);
+        // in case the user clicked to highlight a sample after it was already added
+        const toAddIndex = newSamplesToAdd.indexOf(sample);
+        newSamplesToAdd.splice(toAddIndex, 1);
+      });
+      return {
+        samplesToAdd: newSamplesToAdd,
+        selected: {
+          items: newSelectedItems,
+          last: null,
+        },
+        samplesToRemove: [],
+      };
     });
   }
   resetFilters = () => {
@@ -375,12 +518,44 @@ class NewAnalysisContainer extends React.Component {
       };
     });
   }
+  resetParameters = () => {
+    this.setState(({ errors, formData }) => {
+      const newErrors = Object.assign({}, errors);
+      const newFormData = Object.assign({}, formData);
+      AnalysisOptions[formData.screenType][formData.analysisType]
+      .parameters.forEach((parameter) => {
+        newErrors[parameter.name] = null;
+        newFormData[parameter.name] = parameter.defaultValue;
+      });
+      return {
+        errors: newErrors,
+        formData: newFormData,
+      };
+    });
+  }
+  resize = () => {
+    this.setState({
+      inputWidth: window.innerWidth >= 555 ? 500 : window.innerWidth - 55,
+      screenSize: {
+        isLarge: window.innerWidth > 1500,
+        isSmall: window.innerWidth <= 680,
+      },
+    });
+  }
   render() {
     return (
       <NewAnalysis
         addSamples={ this.addSamples }
         applyFilters={ this.applyFilters }
         dateRange={ this.state.dateRange }
+        dialog={ {
+          close: this.dialogClose,
+          defaultValue: this.state.dialog.defaultValue,
+          help: this.state.dialog.help,
+          open: this.dialogOpen,
+          text: this.state.dialog.text,
+          title: this.state.dialog.title,
+        } }
         errors={ this.state.errors }
         filterFuncs={ {
           fromDate: this.filterFromDate,
@@ -396,12 +571,15 @@ class NewAnalysisContainer extends React.Component {
         highlightSampleToAdd={ this.highlightSampleToAdd }
         highlightSampleToRemove={ this.highlightSampleToRemove }
         inputChange={ this.inputChange }
+        inputWidth={ this.state.inputWidth }
         removeSamples={ this.removeSamples }
         resetFilters={ this.resetFilters }
+        resetParameters={ this.resetParameters }
         samples={ available.sample }
-        samplesAdded={ this.state.samplesAdded }
         samplesToAdd={ this.state.samplesToAdd }
         samplesToRemove={ this.state.samplesToRemove }
+        screenSize={ this.state.screenSize }
+        selected={ this.state.selected }
         selection={ this.state.selection }
         stepIndex={ this.state.stepIndex }
       />
