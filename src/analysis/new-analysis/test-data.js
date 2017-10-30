@@ -48,7 +48,7 @@ const testData = {
   sample: [
     {
       _id: 1,
-      name: 'Sample 1',
+      name: 'Sample 1 with a long name',
       group: { experiment: 1, project: 1, screen: 1 },
       creatorName: 'Someone else',
       creationDate: 'October 21rd 2017, 2:34 pm',

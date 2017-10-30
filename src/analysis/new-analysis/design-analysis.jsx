@@ -15,6 +15,7 @@ import TextField from 'material-ui/TextField';
 
 import analysisStyle from '../analysis-style';
 import AnalysisOptions from '../../modules/analysis-new';
+import SampleGrid from './sample-grid-container';
 
 class DesignAnalysis extends React.Component {
   getInputType = (parameter) => {
@@ -69,6 +70,7 @@ class DesignAnalysis extends React.Component {
             onChange={ (e) => {
               this.props.inputChange(parameter.name, e.target.value);
             } }
+            onDrop={ (e) => { e.preventDefault(); } }
             type={ parameter.inputType }
             value={ this.props.formData[parameter.name] }
           />
@@ -212,6 +214,24 @@ class DesignAnalysis extends React.Component {
                 </ReactTooltip>
               </div>
             </div>
+            <div
+              style={ Object.assign(
+                {},
+                this.props.screenSize.isSmall ?
+                analysisStyle.helpBoxSubSmall
+                :
+                analysisStyle.helpBoxSub,
+                {
+                  marginTop: 20,
+                }
+              ) }
+            >
+              Sample design
+            </div>
+            <SampleGrid
+              availableSamples={ this.props.availableSamples }
+              selected={ this.props.selected }
+            />
           </div>
         }
         <Dialog
@@ -239,6 +259,17 @@ class DesignAnalysis extends React.Component {
 }
 
 DesignAnalysis.propTypes = {
+  availableSamples: PropTypes.arrayOf(
+    PropTypes.shape({
+      _id: PropTypes.number,
+      name: PropTypes.string,
+      group: PropTypes.shape({
+        experiment: PropTypes.number,
+        project: PropTypes.number,
+        screen: PropTypes.number,
+      }),
+    })
+  ).isRequired,
   dialog: PropTypes.shape({
     close: PropTypes.func,
     defaultValue: PropTypes.oneOfType([
@@ -272,6 +303,9 @@ DesignAnalysis.propTypes = {
     isLarge: PropTypes.bool,
     isSmall: PropTypes.bool,
   }).isRequired,
+  selected: PropTypes.arrayOf(
+    PropTypes.number
+  ).isRequired,
 };
 
 export default muiThemeable()(DesignAnalysis);

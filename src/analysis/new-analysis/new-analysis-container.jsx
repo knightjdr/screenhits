@@ -41,7 +41,7 @@ class NewAnalysisContainer extends React.Component {
         isSmall: window.innerWidth <= 680,
       },
       selected: {
-        items: [],
+        items: [1, 2, 3],
         last: null,
       },
       selection: {
@@ -547,6 +547,7 @@ class NewAnalysisContainer extends React.Component {
       <NewAnalysis
         addSamples={ this.addSamples }
         applyFilters={ this.applyFilters }
+        availableSamples={ available.sample }
         dateRange={ this.state.dateRange }
         dialog={ {
           close: this.dialogClose,

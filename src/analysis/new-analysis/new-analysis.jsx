@@ -50,6 +50,7 @@ class NewAnalysis extends React.Component {
       case 2:
         return (
           <DesignAnalysis
+            availableSamples={ this.props.availableSamples }
             dialog={ this.props.dialog }
             errors={ errors }
             formData={ formData }
@@ -57,6 +58,7 @@ class NewAnalysis extends React.Component {
             inputWidth={ this.props.inputWidth }
             resetParameters={ this.props.resetParameters }
             screenSize={ this.props.screenSize }
+            selected={ this.props.selected.items }
           />
         );
       default:
@@ -145,6 +147,17 @@ class NewAnalysis extends React.Component {
 NewAnalysis.propTypes = {
   addSamples: PropTypes.func.isRequired,
   applyFilters: PropTypes.func.isRequired,
+  availableSamples: PropTypes.arrayOf(
+    PropTypes.shape({
+      _id: PropTypes.number,
+      name: PropTypes.string,
+      group: PropTypes.shape({
+        experiment: PropTypes.number,
+        project: PropTypes.number,
+        screen: PropTypes.number,
+      }),
+    })
+  ).isRequired,
   dateRange: PropTypes.shape({
     end: PropTypes.instanceOf(Date),
     fromEnd: PropTypes.instanceOf(Date),
