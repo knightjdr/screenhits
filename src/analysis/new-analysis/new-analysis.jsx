@@ -1,6 +1,5 @@
 import FlatButton from 'material-ui/FlatButton';
 import muiThemeable from 'material-ui/styles/muiThemeable';
-import Paper from 'material-ui/Paper';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { Scrollbars } from 'react-custom-scrollbars';
@@ -74,21 +73,35 @@ class NewAnalysis extends React.Component {
   }
   render() {
     return (
-      <Paper
+      <div
         style={ {
           color: this.props.muiTheme.palette.textColor,
-          maxHeight: 'calc(100vh - 70px)',
           overflowY: 'hidden',
-          padding: '15px 15px 10px 15px',
         } }
-        zDepth={ 2 }
       >
         <Scrollbars
           autoHide={ true }
           autoHideTimeout={ 1000 }
           autoHideDuration={ 200 }
           autoHeight={ true }
-          autoHeightMax={ 'calc(100vh - 90px)' }
+          autoHeightMax={ 'calc(100vh - 70px)' }
+          renderThumbVertical={ ({ style, props }) => {
+            return (
+              <div
+                { ...props }
+                style={ Object.assign(
+                  {},
+                  style,
+                  {
+                    backgroundColor: this.props.muiTheme.palette.alternativeButtonColor,
+                    borderRadius: 4,
+                    opacity: 0.5,
+                    width: 8,
+                  }
+                ) }
+              />
+            );
+          } }
         >
           <Stepper activeStep={ this.props.stepIndex }>
             <Step>
@@ -126,20 +139,22 @@ class NewAnalysis extends React.Component {
                   marginRight: 10,
                 } }
               />
-              <FlatButton
-                backgroundColor={ this.props.muiTheme.palette.darkButtonColor }
-                hoverColor={ this.props.muiTheme.palette.darkButtonColorHover }
-                label="Next"
-                disabled={ this.props.stepIndex === 2 }
-                onTouchTap={ this.props.handleNext }
-                style={ {
-                  color: this.props.muiTheme.palette.offWhite,
-                } }
-              />
+              {
+                this.props.formData.analysisType &&
+                <FlatButton
+                  backgroundColor={ this.props.muiTheme.palette.darkButtonColor }
+                  hoverColor={ this.props.muiTheme.palette.darkButtonColorHover }
+                  label={ this.props.stepIndex === 2 ? 'Submit' : 'Next' }
+                  onTouchTap={ this.props.handleNext }
+                  style={ {
+                    color: this.props.muiTheme.palette.offWhite,
+                  } }
+                />
+              }
             </div>
           </div>
         </Scrollbars>
-      </Paper>
+      </div>
     );
   }
 }
