@@ -4,36 +4,87 @@ import React from 'react';
 
 import Tooltip from './tooltip';
 
+let canvas;
+const defaults = {
+  containerWidth: 200,
+  family: 'sans-serif',
+  size: '12px',
+};
+
 class TooltipContainer extends React.Component {
   constructor(props) {
     super(props);
+    canvas = document.createElement('canvas');
+    const textWidth = this.getTextWidth(
+      this.props.text,
+      this.props.tooltipStyle
+    );
+    const tooltipPosition = this.getTooltipPosition(
+      this.props.position,
+      this.props.rect,
+      this.props.text,
+      this.props.tooltipStyle,
+      textWidth
+    );
     this.state = {
-      tooltipPosition: this.getTooltipPosition(
-        this.props.position,
-        this.props.rect,
-        this.props.text,
-        this.props.tooltipStyle
-      ),
+      show: this.props.show,
+      tooltipPosition,
+      textWidth,
     };
   }
+  componentDidMount = () => {
+    window.addEventListener('resize', this.hideTooltip);
+    window.addEventListener('scroll', this.hideTooltip);
+    window.addEventListener('wheel', this.hideTooltip);
+  }
   componentWillReceiveProps = (nextProps) => {
-    if (
-      !deepEqual(nextProps.rect, this.props.rect) ||
-      nextProps.position !== this.props.position
-    ) {
+    if (!deepEqual(nextProps, this.props)) {
+      const textWidth = this.getTextWidth(
+        nextProps.text,
+        nextProps.tooltipStyle
+      );
+      const tooltipPosition = this.getTooltipPosition(
+        nextProps.position,
+        nextProps.rect,
+        nextProps.text,
+        nextProps.tooltipStyle,
+        textWidth
+      );
       this.setState({
-        tooltipPosition: this.getTooltipPosition(
-          nextProps.position,
-          nextProps.rect,
-          nextProps.text,
-          nextProps.tooltipStyle
-        ),
+        show: nextProps.show,
+        tooltipPosition,
+        textWidth,
       });
     }
   }
-  getTooltipPosition = (position, rect, text, style) => {
+  componentWillUnmount = () => {
+    document.removeChild(canvas);
+    window.removeEventListener('resize', this.hideTooltip);
+    window.removeEventListener('scroll', this.hideTooltip);
+    window.removeEventListener('wheel', this.hideTooltip);
+  }
+  getTextWidth = (text, tooltipStyle) => {
+    const context = canvas.getContext('2d');
+    const font = tooltipStyle.fontFamily ? tooltipStyle.fontFamily : defaults.family;
+    const fontSize = tooltipStyle.fontSize ? tooltipStyle.fontSize : defaults.size;
+    context.font = `${fontSize} ${font}`;
+    let width = 0;
+    if (typeof text === 'string') {
+      width = context.measureText(text).width;
+    } else {
+      text.forEach((textString) => {
+        const currWidth = context.measureText(textString).width;
+        if (currWidth > width) {
+          width = currWidth;
+        }
+      });
+    }
+    const padding = tooltipStyle.padding ? tooltipStyle.padding : 10;
+    return Math.ceil(width) + padding;
+  }
+  getTooltipPosition = (position, rect, text, style, textWidth) => {
     const containerPadding = style.padding ? style.padding * 2 : 10;
-    const lineHeight = style.lineHeight ? style.lineHeight : 12;
+    const lineHeight = style.lineHeight ? parseInt(style.lineHeight, 10) : 12;
     const linePadding = typeof text === 'string' ? 4 : text.length * 4;
     const textHeight = typeof text === 'string' ?
       lineHeight
@@ -44,36 +95,44 @@ class TooltipContainer extends React.Component {
     switch (position) {
       case 'right':
         return {
-          top: (rect.top + (rect.height / 2)) - ((bodyHeight / 2) + this.props.offsetTop),
+          top: (rect.top + (rect.height / 2)) - ((bodyHeight / 2)),
           left: rect.right + 5,
         }
       ;
       case 'bottom':
         return {
-          top: '100%',
-          left: '50%',
+          left: rect.left + ((rect.width - textWidth) / 2),
+          top: rect.bottom + 5,
         }
       ;
       case 'left':
         return {
-          right: '105%',
-          top: (rect.top + (rect.height / 2)) - ((bodyHeight / 2) + this.props.offsetTop),
+          left: rect.left - 5 - textWidth,
+          top: (rect.top + (rect.height / 2)) - ((bodyHeight / 2)),
         }
       ;
       default:
         return {
-          left: rect.left,
-          top: (rect.top) - (5 + bodyHeight + this.props.offsetTop),
+          left: rect.left + ((rect.width - textWidth) / 2),
+          top: (rect.top) - (5 + bodyHeight),
         }
       ;
     }
   }
+  hideTooltip = () => {
+    this.props.hideTooltip();
+    this.setState(({ show }) => {
+      return show ? { show: false } : {};
+    });
+  }
   render() {
     return (
       <Tooltip
+        hideTooltip={ this.hideTooltip }
         position={ this.props.position }
-        show={ this.props.show }
+        show={ this.state.show }
         text={ this.props.text }
+        tooltipContainerStyle={ this.props.tooltipContainerStyle }
         tooltipPosition={ this.state.tooltipPosition }
         tooltipStyle={ this.props.tooltipStyle }
       />
@@ -82,12 +141,12 @@ class TooltipContainer extends React.Component {
 }
 
 TooltipContainer.defaultProps = {
-  offsetTop: 0,
+  tooltipContainerStyle: {},
   tooltipStyle: {},
 };
 
 TooltipContainer.propTypes = {
-  offsetTop: PropTypes.number,
+  hideTooltip: PropTypes.func.isRequired,
   position: PropTypes.string.isRequired,
   rect: PropTypes.shape({
     bottom: PropTypes.number,
@@ -106,6 +165,7 @@ TooltipContainer.propTypes = {
     ),
     PropTypes.string,
   ]).isRequired,
+  tooltipContainerStyle: PropTypes.shape({}),
   tooltipStyle: PropTypes.shape({}),
 };
 

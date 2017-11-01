@@ -29,7 +29,7 @@ class NewAnalysisContainer extends React.Component {
         screenType: null,
       },
       formData: {
-        analysisType: null,
+        analysisType: 'BAGEL',
         screenType: 'CRISPR',
       },
       inputWidth: window.innerWidth >= 555 ? 500 : window.innerWidth - 55,
@@ -41,7 +41,7 @@ class NewAnalysisContainer extends React.Component {
         isSmall: window.innerWidth <= 680,
       },
       selected: {
-        items: [1, 2, 3],
+        items: [1, 2, 3, 4, 5, 6],
         last: null,
       },
       selection: {

@@ -8,6 +8,11 @@ import RemoveCircle from 'material-ui/svg-icons/content/remove-circle';
 
 import Tooltip from '../../tooltip/tooltip-container';
 
+// parameters
+const cellWidth = 150;
+const minRows = 5;
+
+// style
 const cellStyle = {
   borderRadius: 2,
   cursor: 'pointer',
@@ -18,7 +23,7 @@ const cellStyle = {
   textAlign: 'left',
   textOverflow: 'ellipsis',
   whiteSpace: 'nowrap',
-  width: 110,
+  width: cellWidth,
   ':focus': {
     outline: 0,
   },
@@ -26,18 +31,18 @@ const cellStyle = {
 const emptyCellStyle = {
   borderRadius: 2,
   height: 30,
-  width: 110,
+  width: cellWidth,
 };
 const selectedHeaderStyle = {
   height: 20,
   marginBottom: 5,
   textAlign: 'center',
-  width: 110,
+  width: cellWidth,
 };
 const unselectedHeaderStyle = {
   height: 20,
   textAlign: 'center',
-  width: 120,
+  width: cellWidth + 10,
 };
 const unselectedContainer = {
   display: 'inline-flex',
@@ -48,7 +53,7 @@ const unselectedGrid = {
   flexDirection: 'column',
   marginTop: 5,
   padding: 5,
-  width: 110,
+  width: cellWidth,
 };
 
 class SampleGrid extends React.Component {
@@ -73,8 +78,8 @@ class SampleGrid extends React.Component {
               unselectedGrid,
               {
                 backgroundColor: this.props.muiTheme.palette.shading1,
-                minHeight: (this.props.gridDimensions.rows * 30) +
-                  ((this.props.gridDimensions.rows - 1) * 5),
+                minHeight: (Math.max(minRows, this.props.gridDimensions.rows) * 30) +
+                  (Math.max(minRows - 1, this.props.gridDimensions.rows - 1) * 5),
               }
             ) }
           >
@@ -84,12 +89,12 @@ class SampleGrid extends React.Component {
                   <button
                     draggable={ true }
                     key={ `unselected-${sample._id}` }
-                    onClick={ (e) => { this.props.sampleTooltip.func(e, sample._id); } }
+                    onClick={ (e) => { this.props.sampleTooltip.func(e, sample._id, 'right'); } }
                     onDragEnd={ () => {
                       this.props.dragFuncs.dragEndOrigin();
                     } }
                     onDragStart={ (e) => {
-                      this.props.dragFuncs.dragStartOrigin(e, sample._id, sample.name, 'unselected');
+                      this.props.dragFuncs.dragStartOrigin(e, sample._id, sample.name, 'unselected', sample.replicate);
                     } }
                     onDrag={ () => {
                       this.props.dragFuncs.dragOrigin(sample._id);
@@ -106,7 +111,7 @@ class SampleGrid extends React.Component {
                       }
                     ) }
                   >
-                    { `${sample._id}: ${sample.name}`}
+                    { `${sample._id}: ${sample.name}, rep: ${sample.replicate}`}
                   </button>
                 );
               })
@@ -117,8 +122,8 @@ class SampleGrid extends React.Component {
           style={ {
             display: 'inline-grid',
             marginLeft: 30,
-            gridAutoColumns: `repeat(${this.props.gridDimensions.cols}, 110px)`,
-            gridAutoRows: `repeat(${this.props.gridDimensions.rows + 1}, 30px)`,
+            gridAutoColumns: `repeat(${this.props.gridDimensions.cols}, ${cellWidth}px)`,
+            gridAutoRows: `repeat(${this.props.gridDimensions.rows + 2}, 30px)`,
             gridGap: 5,
           } }
         >
@@ -183,6 +188,7 @@ class SampleGrid extends React.Component {
                       <button
                         draggable={ true }
                         key={ `col-${sample.col}-row-${sample.row}-selected-${sample._id}` }
+                        onClick={ (e) => { this.props.sampleTooltip.func(e, sample._id, 'top'); } }
                         onDragEnd={ () => {
                           this.props.dragFuncs.dragEndOrigin();
                         } }
@@ -201,7 +207,7 @@ class SampleGrid extends React.Component {
                           }
                         ) }
                       >
-                        { `${sample._id}: ${sample.name}`}
+                        { `${sample._id}: ${sample.name}, rep: ${sample.replicate}`}
                       </button>
                     </div>
 
@@ -210,6 +216,41 @@ class SampleGrid extends React.Component {
               );
             })
           }
+          <div
+            style={ {
+              gridColumn: 1,
+              gridRow: this.props.gridDimensions.rows + 2,
+            } }
+          >
+            <IconButton
+              onTouchTap={ this.props.addRow }
+              style={ {
+                height: 18,
+                padding: '0px 0px 0px 0px',
+                width: 18,
+              } }
+              tooltip="Add row"
+              tooltipPosition="top-center"
+            >
+              <AddBoxIcon />
+            </IconButton>
+            {
+              this.props.gridDimensions.rows > 1 &&
+              <IconButton
+                onTouchTap={ this.props.removeRow }
+                style={ {
+                  height: 18,
+                  marginLeft: 12,
+                  padding: '0px 0px 0px 0px',
+                  width: 30,
+                } }
+                tooltip="Remove row"
+                tooltipPosition="top-center"
+              >
+                <RemoveCircle />
+              </IconButton>
+            }
+          </div>
         </div>
         <div
           style={ {
@@ -244,8 +285,8 @@ class SampleGrid extends React.Component {
           }
         </div>
         <Tooltip
-          offsetTop={ 60 }
-          position="left"
+          hideTooltip={ this.props.hideTooltip }
+          position={ this.props.sampleTooltip.position }
           rect={ this.props.sampleTooltip.rect }
           show={ this.props.sampleTooltip.show }
           text={ this.props.sampleTooltip.text }
@@ -264,6 +305,7 @@ SampleGrid.defaultProps = {
 
 SampleGrid.propTypes = {
   addColumn: PropTypes.func.isRequired,
+  addRow: PropTypes.func.isRequired,
   design: PropTypes.arrayOf(
     PropTypes.shape({
       items: PropTypes.arrayOf(
@@ -284,6 +326,7 @@ SampleGrid.propTypes = {
     cols: PropTypes.number,
     rows: PropTypes.number,
   }).isRequired,
+  hideTooltip: PropTypes.func.isRequired,
   muiTheme: PropTypes.shape({
     palette: PropTypes.shape({
       accent1Color: PropTypes.string,
@@ -293,9 +336,11 @@ SampleGrid.propTypes = {
     }),
   }).isRequired,
   removeColumn: PropTypes.func.isRequired,
+  removeRow: PropTypes.func.isRequired,
   sampleTooltip: PropTypes.shape({
     _id: PropTypes.number,
-    func: PropTypes.func.string,
+    func: PropTypes.func,
+    position: PropTypes.string,
     rect: PropTypes.shape({
       bottom: PropTypes.number,
       height: PropTypes.number,
@@ -323,6 +368,7 @@ SampleGrid.propTypes = {
         project: PropTypes.number,
         screen: PropTypes.number,
       }),
+      replicate: PropTypes.string,
     })
   ).isRequired,
 };

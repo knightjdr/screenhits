@@ -31,12 +31,19 @@ class SampleGridContainer extends React.Component {
       },
       tooltip: {
         _id: null,
+        position: 'right',
         rect: emptyRect,
         show: false,
         text: '',
       },
       unselectedSamples: this.getAllSamples(this.props.selected, this.props.availableSamples),
     };
+  }
+  componentDidMount = () => {
+    window.addEventListener('wheel', this.handleScroll);
+  }
+  componentWillUnmount = () => {
+    window.removeEventListener('wheel', this.onWindowScroll);
   }
   getAllSamples = (selected, available) => {
     return selected.map((_id) => {
@@ -68,6 +75,16 @@ class SampleGridContainer extends React.Component {
       };
     });
   }
+  addRow = () => {
+    this.setState(({ gridDimensions }) => {
+      return {
+        gridDimensions: {
+          cols: gridDimensions.cols,
+          rows: gridDimensions.rows + 1,
+        },
+      };
+    });
+  }
   dragEndOrigin = () => {
     this.setState({
       dragID: null,
@@ -81,11 +98,12 @@ class SampleGridContainer extends React.Component {
   dragOverTargetCell = (e) => {
     e.preventDefault();
   }
-  dragStartOrigin = (e, _id, name, origin, selectedColumn) => {
+  dragStartOrigin = (e, _id, name, origin, replicate, selectedColumn) => {
     e.dataTransfer.setData('text/plain', JSON.stringify({ _id, name, origin, selectedColumn }));
     this.setState({
       tooltip: {
         _id: null,
+        position: 'right',
         rect: emptyRect,
         show: false,
         text: '',
@@ -93,7 +111,7 @@ class SampleGridContainer extends React.Component {
     });
   }
   droppedTargetCell = (e, destination, col, row) => {
-    const { _id, name, origin, selectedColumn } = JSON.parse(e.dataTransfer.getData('text/plain'));
+    const { _id, name, origin, replicate, selectedColumn } = JSON.parse(e.dataTransfer.getData('text/plain'));
     this.setState(({ design, unselectedSamples }) => {
       const newDesign = JSON.parse(JSON.stringify(design));
       const newUnselectedSamples = Object.assign([], unselectedSamples);
@@ -138,6 +156,7 @@ class SampleGridContainer extends React.Component {
         newDesign[col - 1].items.push({
           _id,
           name,
+          replicate,
           col,
           row,
         });
@@ -148,6 +167,28 @@ class SampleGridContainer extends React.Component {
         design: newDesign,
         unselectedSamples: newUnselectedSamples,
       };
+    });
+  }
+  handleScroll = () => {
+    this.setState({
+      tooltip: {
+        _id: null,
+        position: 'right',
+        rect: emptyRect,
+        show: false,
+        text: '',
+      },
+    });
+  }
+  hideTooltip = () => {
+    this.setState({
+      tooltip: {
+        _id: null,
+        position: 'right',
+        rect: emptyRect,
+        show: false,
+        text: '',
+      },
     });
   }
   removeColumn = () => {
@@ -175,7 +216,37 @@ class SampleGridContainer extends React.Component {
       return {};
     });
   }
-  showSampleTooltip = (e, _id) => {
+  removeRow = () => {
+    this.setState(({ design, gridDimensions, unselectedSamples }) => {
+      if (gridDimensions.rows > 1) {
+        const newDesign = [];
+        const newUnselectedSamples = JSON.parse(JSON.stringify(unselectedSamples));
+        const removeRow = gridDimensions.rows + 1;
+        design.forEach((sampleSet) => {
+          const currSampleSet = JSON.parse(JSON.stringify(sampleSet));
+          currSampleSet.items.forEach((sample, index) => {
+            if (sample.row === removeRow) {
+              const availableIndex = this.getAvailableIndex(sample._id);
+              newUnselectedSamples.push(this.props.availableSamples[availableIndex]);
+              currSampleSet.items.splice(index, 1);
+            }
+          });
+          newDesign.push(currSampleSet);
+        });
+        newUnselectedSamples.sort((a, b) => { return a._id - b._id; });
+        return {
+          design: newDesign,
+          gridDimensions: {
+            cols: gridDimensions.cols,
+            rows: gridDimensions.rows - 1,
+          },
+          unselectedSamples: newUnselectedSamples,
+        };
+      }
+      return {};
+    });
+  }
+  showSampleTooltip = (e, _id, position) => {
     const availableIndex = this.getAvailableIndex(_id);
     const sample = this.props.availableSamples[availableIndex];
     const domRect = e.target.getBoundingClientRect();
@@ -192,6 +263,7 @@ class SampleGridContainer extends React.Component {
     const tooltipText = [
       `ID: ${sample._id}`,
       `Name: ${sample.name}`,
+      `Rep: ${sample.replicate}`,
       `Project: ${sample.group.project}`,
       `Screen: ${sample.group.screen}`,
       `Experiment: ${sample.group.experiment}`,
@@ -201,6 +273,7 @@ class SampleGridContainer extends React.Component {
       return {
         tooltip: {
           _id: hideTooltip ? null : _id,
+          position,
           rect: hideTooltip ? emptyRect : rect,
           show: !hideTooltip,
           text: hideTooltip ? '' : tooltipText,
@@ -212,6 +285,7 @@ class SampleGridContainer extends React.Component {
     return (
       <SampleGrid
         addColumn={ this.addColumn }
+        addRow={ this.addRow }
         design={ this.state.design }
         dragFuncs={ {
           dragEndOrigin: this.dragEndOrigin,
@@ -222,7 +296,9 @@ class SampleGridContainer extends React.Component {
         } }
         dragID={ this.state.dragID }
         gridDimensions={ this.state.gridDimensions }
+        hideTooltip={ this.hideTooltip }
         removeColumn={ this.removeColumn }
+        removeRow={ this.removeRow }
         sampleTooltip={ Object.assign(
           {},
           this.state.tooltip,
@@ -246,6 +322,7 @@ SampleGridContainer.propTypes = {
         project: PropTypes.number,
         screen: PropTypes.number,
       }),
+      replicate: PropTypes.string,
     })
   ).isRequired,
   selected: PropTypes.arrayOf(

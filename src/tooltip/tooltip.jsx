@@ -2,11 +2,24 @@ import PropTypes from 'prop-types';
 import Radium from 'radium';
 import React from 'react';
 
+const modalStyle = {
+  backgroundColor: 'transparent',
+  border: 'none',
+  display: 'none',
+  left: 0,
+  position: 'fixed',
+  top: 0,
+  zIndex: 1000,
+  ':focus': {
+    outline: 0,
+  },
+};
+
 const tooltipBasicStyle = {
   backgroundColor: 'rgba(0, 0, 0, 0.8)',
   borderRadius: 4,
   color: '#fff',
-  display: 'none',
+  fontFamily: 'sans-serif',
   fontSize: 12,
   lineHeight: '12px',
   padding: 5,
@@ -16,11 +29,11 @@ const tooltipBasicStyle = {
 
 const tooltipContainer = {
   position: 'absolute',
-  zIndex: 1000,
+  zIndex: 1001,
 };
 
 const tooltipArrowBottom = {
-  borderColor: 'transparent transparent gba(0, 0, 0, 0.8) transparent',
+  borderColor: 'transparent transparent rgba(0, 0, 0, 0.8) transparent',
   borderStyle: 'solid',
   borderWidth: 5,
   bottom: '100%',
@@ -71,51 +84,63 @@ class Tooltip extends React.Component {
   }
   render() {
     return (
-      <span
+      <button
+        onClick={ this.props.hideTooltip }
         style={ Object.assign(
           {},
-          tooltipContainer,
-          this.props.tooltipPosition,
+          modalStyle,
+          {
+            display: this.props.show ? 'block' : 'none',
+            height: window.innerHeight,
+            width: window.innerWidth,
+          }
         ) }
       >
         <span
           style={ Object.assign(
             {},
-            tooltipBasicStyle,
-            this.props.tooltipStyle,
-            {
-              display: this.props.show ? 'block' : 'none',
-            }
+            tooltipContainer,
+            this.props.tooltipContainerStyle,
+            this.props.tooltipPosition,
           ) }
         >
-          {
-            typeof this.props.text === 'string' ?
-              this.props.text
-            :
-            this.props.text.map((textString, index) => {
-              const key = index;
-              return (
-                <div
-                  key={ `tooltipRow-${key}` }
-                  style={ {
-                    padding: '2px 0px',
-                  } }
-                >
-                  { textString }
-                </div>
-              );
-            })
-          }
+          <div
+            style={ Object.assign(
+              {},
+              tooltipBasicStyle,
+              this.props.tooltipStyle,
+            ) }
+          >
+            {
+              typeof this.props.text === 'string' ?
+                this.props.text
+              :
+              this.props.text.map((textString, index) => {
+                const key = index;
+                return (
+                  <div
+                    key={ `tooltipRow-${key}` }
+                    style={ {
+                      padding: '2px 0px',
+                    } }
+                  >
+                    { textString }
+                  </div>
+                );
+              })
+            }
+          </div>
+          <span
+            style={ this.getArrowStyle(this.props.position) }
+          />
         </span>
-        <span
-          style={ this.getArrowStyle(this.props.position) }
-        />
-      </span>
+      </button>
     );
   }
 }
 
 Tooltip.propTypes = {
+  hideTooltip: PropTypes.func.isRequired,
   position: PropTypes.string.isRequired,
   show: PropTypes.bool.isRequired,
   text: PropTypes.oneOfType([
@@ -124,6 +149,7 @@ Tooltip.propTypes = {
     ),
     PropTypes.string,
   ]).isRequired,
+  tooltipContainerStyle: PropTypes.shape({}).isRequired,
   tooltipPosition: PropTypes.shape({}).isRequired,
   tooltipStyle: PropTypes.shape({}).isRequired,
 };
