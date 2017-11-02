@@ -53,10 +53,10 @@ class NewAnalysisContainer extends React.Component {
       stepIndex: 2,
     };
   }
-  componentDidMount() {
+  componentDidMount = () => {
     window.addEventListener('resize', this.resize);
   }
-  componentWillUnmount() {
+  componentWillUnmount = () => {
     window.removeEventListener('resize', this.resize);
   }
   getDateRange = (items) => {

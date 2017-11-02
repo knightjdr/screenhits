@@ -3,6 +3,16 @@ import React from 'react';
 
 import SampleGrid from './sample-grid';
 
+// parameters
+const cellWidth = 150;
+const gridGap = 5;
+
+const emptyDesign = [
+  {
+    name: 'Control',
+    items: [],
+  },
+];
 const emptyRect = {
   bottom: null,
   height: null,
@@ -18,17 +28,15 @@ class SampleGridContainer extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      design: [
-        {
-          name: 'Control',
-          items: [],
-        },
-      ],
+      cellWidth,
+      design: emptyDesign,
       dragID: null,
       gridDimensions: {
         cols: 1,
         rows: 3,
       },
+      gridScrollPosition: 0,
+      gridWidth: cellWidth + 48, // 48 is for icon buttons
       tooltip: {
         _id: null,
         position: 'right',
@@ -58,8 +66,13 @@ class SampleGridContainer extends React.Component {
       return availableSample._id === _id;
     });
   }
-  addColumn = () => {
-    this.setState(({ design, gridDimensions }) => {
+  setGridWidth = (width) => {
+    this.setState({
+      gridWidth: width - 58, // 48 is for icon buttons, 10 is for padding
+    });
+  }
+  addColumn = (scrollWidth) => {
+    this.setState(({ design, gridDimensions, gridScrollPosition, gridWidth }) => {
       const newColumnNumber = gridDimensions.cols + 1;
       const newDesign = JSON.parse(JSON.stringify(design));
       newDesign.push({
@@ -72,6 +85,15 @@ class SampleGridContainer extends React.Component {
           cols: newColumnNumber,
           rows: gridDimensions.rows,
         },
+        gridScrollPosition: newColumnNumber * (cellWidth + 5) > gridWidth ?
+          this.scrollPosition(
+            gridScrollPosition,
+            cellWidth + gridGap,
+            scrollWidth + (cellWidth + gridGap),
+            gridWidth,
+          )
+          :
+          0,
       };
     });
   }
@@ -82,6 +104,15 @@ class SampleGridContainer extends React.Component {
           cols: gridDimensions.cols,
           rows: gridDimensions.rows + 1,
         },
+      };
+    });
+  }
+  changeColumnHeader = (index, value) => {
+    this.setState(({ design }) => {
+      const newDesign = JSON.parse(JSON.stringify(design));
+      newDesign[index].name = value;
+      return {
+        design: newDesign,
       };
     });
   }
@@ -246,6 +277,52 @@ class SampleGridContainer extends React.Component {
       return {};
     });
   }
+  resetDesign = () => {
+    this.setState(({ design, unselectedSamples }) => {
+      const newDesign = JSON.parse(JSON.stringify(design));
+      const newUnselectedSamples = JSON.parse(JSON.stringify(unselectedSamples));
+      newDesign.forEach((column) => {
+        column.items.forEach((sample) => {
+          const availableIndex = this.getAvailableIndex(sample._id);
+          newUnselectedSamples.push(this.props.availableSamples[availableIndex]);
+        });
+      });
+      newUnselectedSamples.sort((a, b) => { return a._id - b._id; });
+      return {
+        design: emptyDesign,
+        gridDimensions: {
+          cols: 1,
+          rows: 3,
+        },
+        gridScrollPosition: 0,
+        unselectedSamples: newUnselectedSamples,
+      };
+    });
+  }
+  scrollGrid = (e, scrollWidth) => {
+    e.preventDefault();
+    const deltaY = e.deltaY;
+    this.setState(({ gridScrollPosition, gridWidth }) => {
+      return {
+        gridScrollPosition: this.scrollPosition(
+          gridScrollPosition,
+          deltaY,
+          scrollWidth,
+          gridWidth
+        ),
+      };
+    });
+  }
+  scrollPosition = (start, delta, scrollWidth, gridWidth) => {
+    const max = scrollWidth - gridWidth;
+    let newPosition = start + delta;
+    if (newPosition < 0) {
+      newPosition = 0;
+    } else if (newPosition > max) {
+      newPosition = max;
+    }
+    return newPosition;
+  }
   showSampleTooltip = (e, _id, position) => {
     const availableIndex = this.getAvailableIndex(_id);
     const sample = this.props.availableSamples[availableIndex];
@@ -281,11 +358,18 @@ class SampleGridContainer extends React.Component {
       };
     });
   }
+  updateScrollPosition = (left) => {
+    this.setState({
+      gridScrollPosition: left,
+    });
+  }
   render() {
     return (
       <SampleGrid
         addColumn={ this.addColumn }
         addRow={ this.addRow }
+        cellWidth={ this.state.cellWidth }
+        changeColumnHeader={ this.changeColumnHeader }
         design={ this.state.design }
         dragFuncs={ {
           dragEndOrigin: this.dragEndOrigin,
@@ -296,9 +380,12 @@ class SampleGridContainer extends React.Component {
         } }
         dragID={ this.state.dragID }
         gridDimensions={ this.state.gridDimensions }
+        gridScrollPosition={ this.state.gridScrollPosition }
+        gridWidth={ this.state.gridWidth }
         hideTooltip={ this.hideTooltip }
         removeColumn={ this.removeColumn }
         removeRow={ this.removeRow }
+        resetDesign={ this.resetDesign }
         sampleTooltip={ Object.assign(
           {},
           this.state.tooltip,
@@ -306,7 +393,10 @@ class SampleGridContainer extends React.Component {
             func: this.showSampleTooltip,
           }
         ) }
+        scrollGrid={ this.scrollGrid }
+        setGridWidth={ this.setGridWidth }
         unselectedSamples={ this.state.unselectedSamples }
+        updateScrollPosition={ this.updateScrollPosition }
       />
     );
   }

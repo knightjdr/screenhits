@@ -24,14 +24,14 @@ const analysisStyle = {
   checkbox: {
     top: -12,
     position: 'relative',
-    width: 150,
+    maxWidth: 250,
   },
   checkboxWithHelp: {
     alignItems: 'flex-end',
     display: 'inline-flex',
     marginLeft: 4,
     marginRight: 4,
-    maxWidth: 200,
+    maxWidth: 300,
   },
   dateContainer: {
     display: 'inline-flex',
@@ -97,6 +97,13 @@ const analysisStyle = {
     marginLeft: 4,
     marginRight: 4,
     maxWidth: 442,
+  },
+  textAreaBlank: {
+    border: 'none',
+    ':focus': {
+      outline: 0,
+    },
+    resize: 'none',
   },
 };
 export default analysisStyle;

@@ -1,5 +1,5 @@
+import Cached from 'material-ui/svg-icons/action/cached';
 import Checkbox from 'material-ui/Checkbox';
-import ClearIcon from 'material-ui/svg-icons/content/clear';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import FloatingActionButton from 'material-ui/FloatingActionButton';
@@ -202,7 +202,7 @@ class DesignAnalysis extends React.Component {
                     margin: '20px 0px 0px 15px',
                   } }
                 >
-                  <ClearIcon />
+                  <Cached />
                 </FloatingActionButton>
                 <ReactTooltip
                   effect="solid"
