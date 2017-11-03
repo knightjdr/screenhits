@@ -22,13 +22,15 @@ const helpBoxSub = {
 
 const analysisStyle = {
   checkbox: {
-    top: -12,
-    position: 'relative',
     maxWidth: 250,
+    position: 'relative',
+    top: -12,
+    verticalAlign: 'center',
   },
   checkboxWithHelp: {
     alignItems: 'flex-end',
     display: 'inline-flex',
+    height: 72,
     marginLeft: 4,
     marginRight: 4,
     maxWidth: 300,

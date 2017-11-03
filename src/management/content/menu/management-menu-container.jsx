@@ -8,6 +8,7 @@ class ManagementMenuContent extends React.Component {
     super(props);
     this.state = {
       anchorEl: null,
+      radius: 30,
       showList: false,
     };
   }
@@ -18,6 +19,11 @@ class ManagementMenuContent extends React.Component {
   editMenuAction = () => {
     this.hideManagementList();
     this.props.menuActions.edit();
+  }
+  enlargeMenu = () => {
+    this.setState({
+      radius: 50,
+    });
   }
   hideManagementList = () => {
     this.setState({
@@ -38,6 +44,11 @@ class ManagementMenuContent extends React.Component {
       showList: true,
     });
   }
+  shrinkMenu = () => {
+    this.setState({
+      radius: 30,
+    });
+  }
   updateMenuAction = () => {
     this.hideManagementList();
     this.props.menuActions.update();
@@ -49,12 +60,15 @@ class ManagementMenuContent extends React.Component {
         anchorEl={ this.state.anchorEl }
         createMenuAction={ this.createMenuAction }
         editMenuAction={ this.editMenuAction }
+        enlargeMenu={ this.enlargeMenu }
         hideManagementList={ this.hideManagementList }
         manageMenuAction={ this.manageMenuAction }
         protocolMenuAction={ this.protocolMenuAction }
+        radius={ this.state.radius }
         selected={ this.props.selected }
         showList={ this.state.showList }
         showManagementList={ this.showManagementList }
+        shrinkMenu={ this.shrinkMenu }
         updateMenuAction={ this.updateMenuAction }
       />
     );

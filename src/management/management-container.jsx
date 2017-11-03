@@ -7,7 +7,7 @@ import Management from './management';
 import { getData, getRouteData } from '../state/get/data-actions';
 import { isObjectLooseEqual, objectEmpty } from '../helpers/helpers';
 import { routeLoaded } from '../state/routing/routeload-actions';
-import { setIndex } from '../state/set/index-actions';
+import { resetIndices, setIndex } from '../state/set/index-actions';
 
 class ManagementContainer extends React.Component {
   constructor(props) {
@@ -49,6 +49,9 @@ class ManagementContainer extends React.Component {
     ) {
       this.updateState(selected, this.props.selected);
     }
+  }
+  componentWillUnmount = () => {
+    this.props.resetIndices();
   }
   changeLevel = (type) => {
     if (type !== this.state.activeLevel) {
@@ -291,6 +294,7 @@ ManagementContainer.propTypes = {
   location: PropTypes.shape({}).isRequired,
   path: PropTypes.string.isRequired,
   queryParams: PropTypes.shape({}).isRequired,
+  resetIndices: PropTypes.func.isRequired,
   routeLoaded: PropTypes.func.isRequired,
   routeLoading: PropTypes.bool.isRequired,
   selected: PropTypes.shape({
@@ -309,6 +313,9 @@ const mapDispatchToProps = (dispatch) => {
     },
     getRouteData: (selected) => {
       dispatch(getRouteData(selected));
+    },
+    resetIndices: () => {
+      dispatch(resetIndices());
     },
     routeLoaded: () => {
       dispatch(routeLoaded());

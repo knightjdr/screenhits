@@ -58,7 +58,6 @@ class TooltipContainer extends React.Component {
     }
   }
   componentWillUnmount = () => {
-    document.removeChild(canvas);
     window.removeEventListener('resize', this.hideTooltip);
     window.removeEventListener('scroll', this.hideTooltip);
     window.removeEventListener('wheel', this.hideTooltip);

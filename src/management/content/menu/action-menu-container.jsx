@@ -16,6 +16,7 @@ class ActionMenuContainer extends React.Component {
       queue: {
         retrieving: false,
       },
+      radius: 30,
       showList: false,
     };
   }
@@ -25,6 +26,11 @@ class ActionMenuContainer extends React.Component {
         error: null,
         queue: false,
       },
+    });
+  }
+  enlargeMenu = () => {
+    this.setState({
+      radius: 50,
     });
   }
   hideActionList = () => {
@@ -71,6 +77,11 @@ class ActionMenuContainer extends React.Component {
       showList: true,
     });
   }
+  shrinkMenu = () => {
+    this.setState({
+      radius: 30,
+    });
+  }
   render() {
     return (
       <ActionMenu
@@ -82,11 +93,14 @@ class ActionMenuContainer extends React.Component {
             close: this.dialogClose,
           }
         ) }
+        enlargeMenu={ this.enlargeMenu }
         hideActionList={ this.hideActionList }
         queue={ this.state.queue }
         queueMenuAction={ this.queueMenuAction }
+        radius={ this.state.radius }
         showList={ this.state.showList }
         showActionList={ this.showActionList }
+        shrinkMenu={ this.shrinkMenu }
       />
     );
   }

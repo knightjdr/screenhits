@@ -12,13 +12,22 @@ import { Tabs, Tab } from 'material-ui/Tabs';
 
 import Queue from '../actions/queue-container';
 
+const containerStyle = {
+  bottom: 0,
+  height: 50,
+  right: 0,
+  position: 'absolute',
+  width: 50,
+};
+const fabStyle = {
+  zIndex: 5,
+};
+const fontStyle = {
+  transition: 'all 450ms cubic-bezier(0.23, 1, 0.32, 1) 0ms',
+};
 const tabContent = {
   marginTop: 20,
 };
-
-/* const tabTableContent = {
-  marginTop: 20,
-};*/
 
 class ActionMenu extends React.Component {
   dialogClose = () => {
@@ -37,228 +46,252 @@ class ActionMenu extends React.Component {
   }
   render() {
     return (
-      <span>
-        <FloatingActionButton
-          mini={ true }
-          onClick={ this.props.showActionList }
-          iconStyle={ {
-            color: this.props.muiTheme.palette.alternateTextColor,
-          } }
+      <div
+        onMouseOut={ this.props.shrinkMenu }
+        onMouseOver={ this.props.enlargeMenu }
+        style={ containerStyle }
+      >
+        <span
           style={ {
-            zIndex: 5,
-          } }
-        >
-          <FontAwesome name="info" />
-        </FloatingActionButton>
-        <Popover
-          anchorEl={ this.props.anchorEl }
-          anchorOrigin={ { horizontal: 'middle', vertical: 'center' } }
-          animation={ PopoverAnimationVertical }
-          onRequestClose={ this.props.hideActionList }
-          open={ this.props.showList }
-          targetOrigin={ { horizontal: 'left', vertical: 'bottom' } }
-        >
-          <Menu
-            listStyle={ {
-              paddingBottom: 0,
-              paddingTop: 0,
-            } }
-          >
-            <MenuItem
-              key="queue"
-              onClick={ this.props.queueMenuAction }
-              primaryText={ [<FontAwesome key="queue" name="list-ol" />, ' View queue'] }
-            />
-          </Menu>
-        </Popover>
-        <Dialog
-          actions={ [
-            this.dialogClose(),
-          ] }
-          autoScrollBodyContent={ true }
-          contentStyle={ {
-            left: '50%',
+            bottom: 0,
             position: 'absolute',
-            top: '5%',
-            transform: 'translate(-50%, 0%)',
+            right: 0,
           } }
-          modal={ false }
-          onRequestClose={ this.props.dialog.close }
-          open={ this.props.dialog.queue }
-          repositionOnUpdate={ false }
-          title="Queue"
         >
-          <div>
-            {
-              this.props.queue.retrieving &&
-              <div>
-                <FontAwesome key="fetching" name="spinner" pulse={ true } /> Getting
-                queue...
-              </div>
-            }
-            {
-              !this.props.queue.retrieving &&
-              this.props.queue.details ?
+          <FloatingActionButton
+            mini={ true }
+            onClick={ this.props.showActionList }
+            iconStyle={ {
+              color: this.props.muiTheme.palette.alternateTextColor,
+              height: this.props.radius,
+              width: this.props.radius,
+            } }
+            style={ fabStyle }
+          >
+            <FontAwesome
+              name="info"
+              style={ Object.assign(
+                {},
+                fontStyle,
+                {
+                  fontSize: Math.ceil(this.props.radius / 2),
+                  height: this.props.radius,
+                  lineHeight: `${this.props.radius}px`,
+                  width: this.props.radius,
+                }
+              ) }
+            />
+          </FloatingActionButton>
+          <Popover
+            anchorEl={ this.props.anchorEl }
+            anchorOrigin={ { horizontal: 'middle', vertical: 'center' } }
+            animation={ PopoverAnimationVertical }
+            onRequestClose={ this.props.hideActionList }
+            open={ this.props.showList }
+            targetOrigin={ { horizontal: 'left', vertical: 'bottom' } }
+          >
+            <Menu
+              listStyle={ {
+                paddingBottom: 0,
+                paddingTop: 0,
+              } }
+            >
+              <MenuItem
+                key="queue"
+                onClick={ this.props.queueMenuAction }
+                primaryText={ [<FontAwesome key="queue" name="list-ol" />, ' View queue'] }
+              />
+            </Menu>
+          </Popover>
+          <Dialog
+            actions={ [
+              this.dialogClose(),
+            ] }
+            autoScrollBodyContent={ true }
+            contentStyle={ {
+              left: '50%',
+              position: 'absolute',
+              top: '5%',
+              transform: 'translate(-50%, 0%)',
+            } }
+            modal={ false }
+            onRequestClose={ this.props.dialog.close }
+            open={ this.props.dialog.queue }
+            repositionOnUpdate={ false }
+            title="Queue"
+          >
+            <div>
+              {
+                this.props.queue.retrieving &&
                 <div>
-                  {
-                    this.props.queue.error ?
-                    this.props.queue.error
-                    :
-                    <Tabs>
-                      <Tab
-                        label="Queued"
-                        style={ {
-                          color: this.props.muiTheme.palette.alternateTextColor,
-                        } }
-                      >
-                        <div
-                          style={ Object.assign(
-                            {},
-                            tabContent,
-                            {
-                              color: this.props.muiTheme.palette.textColor,
-                            }
-                          ) }
-                        >
-                          {
-                            this.props.queue.details.queue.length > 0 ?
-                              <div>
-                                <p>Samples that are queued.</p>
-                                <Queue
-                                  header={ [
-                                    {
-                                      name: 'Position',
-                                      sort: true,
-                                      type: 'position',
-                                    },
-                                    {
-                                      name: 'User',
-                                      sort: true,
-                                      type: 'userName',
-                                    },
-                                    {
-                                      name: 'Sample',
-                                      sort: true,
-                                      type: 'sampleName',
-                                    },
-                                  ] }
-                                  keyName="position"
-                                  queue={ this.props.queue.details.queue }
-                                />
-                              </div>
-                              :
-                              <div>No samples are currently queued.</div>
-                          }
-                        </div>
-                      </Tab>
-                      <Tab
-                        label="Finished"
-                        style={ {
-                          color: this.props.muiTheme.palette.alternateTextColor,
-                        } }
-                      >
-                        <div
-                          style={ Object.assign(
-                            {},
-                            tabContent,
-                            {
-                              color: this.props.muiTheme.palette.textColor,
-                            }
-                          ) }
-                        >
-                          {
-                            this.props.queue.details.finished.length > 0 ?
-                              <div>
-                                <p>Samples that have been processed.</p>
-                                <Queue
-                                  header={ [
-                                    {
-                                      name: 'Date',
-                                      sort: true,
-                                      type: 'date',
-                                    },
-                                    {
-                                      name: 'User',
-                                      sort: true,
-                                      type: 'userName',
-                                    },
-                                    {
-                                      name: 'Sample',
-                                      sort: true,
-                                      type: 'sampleName',
-                                    },
-                                  ] }
-                                  keyName="date"
-                                  queue={ this.props.queue.details.finished }
-                                />
-                              </div>
-                              :
-                              <div>No samples have recently finished.</div>
-                          }
-                        </div>
-                      </Tab>
-                      <Tab
-                        label="Errors"
-                        style={ {
-                          color: this.props.muiTheme.palette.alternateTextColor,
-                        } }
-                      >
-                        <div
-                          style={ Object.assign(
-                            {},
-                            tabContent,
-                            {
-                              color: this.props.muiTheme.palette.textColor,
-                            }
-                          ) }
-                        >
-                          {
-                            this.props.queue.details.errors.length > 0 ?
-                              <div>
-                                <p>Samples produced errors and could not be processed.</p>
-                                <Queue
-                                  header={ [
-                                    {
-                                      name: 'Date',
-                                      sort: true,
-                                      type: 'date',
-                                    },
-                                    {
-                                      name: 'User',
-                                      sort: true,
-                                      type: 'userName',
-                                    },
-                                    {
-                                      name: 'Sample',
-                                      sort: true,
-                                      type: 'sampleName',
-                                    },
-                                    {
-                                      name: 'Error',
-                                      sort: false,
-                                      type: 'error',
-                                    },
-                                  ] }
-                                  keyName="date"
-                                  queue={ this.props.queue.details.queue }
-                                />
-                              </div>
-                              :
-                              <div>There are no samples with errors.</div>
-                          }
-                        </div>
-                      </Tab>
-                    </Tabs>
-                  }
+                  <FontAwesome key="fetching" name="spinner" pulse={ true } /> Getting
+                  queue...
                 </div>
-                :
-                <div>
-                  The queue is currently empty.
-                </div>
-            }
-          </div>
-        </Dialog>
-      </span>
+              }
+              {
+                !this.props.queue.retrieving &&
+                this.props.queue.details ?
+                  <div>
+                    {
+                      this.props.queue.error ?
+                      this.props.queue.error
+                      :
+                      <Tabs>
+                        <Tab
+                          label="Queued"
+                          style={ {
+                            color: this.props.muiTheme.palette.alternateTextColor,
+                          } }
+                        >
+                          <div
+                            style={ Object.assign(
+                              {},
+                              tabContent,
+                              {
+                                color: this.props.muiTheme.palette.textColor,
+                              }
+                            ) }
+                          >
+                            {
+                              this.props.queue.details.queue.length > 0 ?
+                                <div>
+                                  <p>Samples that are queued.</p>
+                                  <Queue
+                                    header={ [
+                                      {
+                                        name: 'Position',
+                                        sort: true,
+                                        type: 'position',
+                                      },
+                                      {
+                                        name: 'User',
+                                        sort: true,
+                                        type: 'userName',
+                                      },
+                                      {
+                                        name: 'Sample',
+                                        sort: true,
+                                        type: 'sampleName',
+                                      },
+                                    ] }
+                                    keyName="position"
+                                    queue={ this.props.queue.details.queue }
+                                  />
+                                </div>
+                                :
+                                <div>No samples are currently queued.</div>
+                            }
+                          </div>
+                        </Tab>
+                        <Tab
+                          label="Finished"
+                          style={ {
+                            color: this.props.muiTheme.palette.alternateTextColor,
+                          } }
+                        >
+                          <div
+                            style={ Object.assign(
+                              {},
+                              tabContent,
+                              {
+                                color: this.props.muiTheme.palette.textColor,
+                              }
+                            ) }
+                          >
+                            {
+                              this.props.queue.details.finished.length > 0 ?
+                                <div>
+                                  <p>Samples that have been processed.</p>
+                                  <Queue
+                                    header={ [
+                                      {
+                                        name: 'Date',
+                                        sort: true,
+                                        type: 'date',
+                                      },
+                                      {
+                                        name: 'User',
+                                        sort: true,
+                                        type: 'userName',
+                                      },
+                                      {
+                                        name: 'Sample',
+                                        sort: true,
+                                        type: 'sampleName',
+                                      },
+                                    ] }
+                                    keyName="date"
+                                    queue={ this.props.queue.details.finished }
+                                  />
+                                </div>
+                                :
+                                <div>No samples have recently finished.</div>
+                            }
+                          </div>
+                        </Tab>
+                        <Tab
+                          label="Errors"
+                          style={ {
+                            color: this.props.muiTheme.palette.alternateTextColor,
+                          } }
+                        >
+                          <div
+                            style={ Object.assign(
+                              {},
+                              tabContent,
+                              {
+                                color: this.props.muiTheme.palette.textColor,
+                              }
+                            ) }
+                          >
+                            {
+                              this.props.queue.details.errors.length > 0 ?
+                                <div>
+                                  <p>Samples produced errors and could not be processed.</p>
+                                  <Queue
+                                    header={ [
+                                      {
+                                        name: 'Date',
+                                        sort: true,
+                                        type: 'date',
+                                      },
+                                      {
+                                        name: 'User',
+                                        sort: true,
+                                        type: 'userName',
+                                      },
+                                      {
+                                        name: 'Sample',
+                                        sort: true,
+                                        type: 'sampleName',
+                                      },
+                                      {
+                                        name: 'Error',
+                                        sort: false,
+                                        type: 'error',
+                                      },
+                                    ] }
+                                    keyName="date"
+                                    queue={ this.props.queue.details.queue }
+                                  />
+                                </div>
+                                :
+                                <div>There are no samples with errors.</div>
+                            }
+                          </div>
+                        </Tab>
+                      </Tabs>
+                    }
+                  </div>
+                  :
+                  <div>
+                    The queue is currently empty.
+                  </div>
+              }
+            </div>
+          </Dialog>
+        </span>
+      </div>
     );
   }
 }
@@ -273,6 +306,7 @@ ActionMenu.propTypes = {
     queue: PropTypes.bool,
     close: PropTypes.func,
   }).isRequired,
+  enlargeMenu: PropTypes.func.isRequired,
   hideActionList: PropTypes.func.isRequired,
   muiTheme: PropTypes.shape({
     palette: PropTypes.shape({
@@ -292,8 +326,10 @@ ActionMenu.propTypes = {
     retrieving: PropTypes.bool,
   }).isRequired,
   queueMenuAction: PropTypes.func.isRequired,
+  radius: PropTypes.number.isRequired,
   showList: PropTypes.bool.isRequired,
   showActionList: PropTypes.func.isRequired,
+  shrinkMenu: PropTypes.func.isRequired,
 };
 
 export default muiThemeable()(ActionMenu);

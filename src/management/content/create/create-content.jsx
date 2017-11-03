@@ -17,7 +17,7 @@ class CreateContent extends React.Component {
     return (
       <Paper
         style={ {
-          maxHeight: 'calc(100vh - 160px)',
+          maxHeight: 'calc(100vh - 130px)',
           overflowY: 'hidden',
           padding: '15px 15px 10px 15px',
         } }
@@ -28,7 +28,7 @@ class CreateContent extends React.Component {
           autoHideTimeout={ 1000 }
           autoHideDuration={ 200 }
           autoHeight={ true }
-          autoHeightMax={ 'calc(100vh - 180px)' }
+          autoHeightMax={ 'calc(100vh - 150px)' }
         >
           { this.props.activeLevel === 'project' &&
             <CreateProject

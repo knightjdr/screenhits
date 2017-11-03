@@ -71,30 +71,12 @@ class ManagementContent extends React.Component {
           top: 0,
         } }
       >
-        <div
-          style={ {
-            bottom: 0,
-            left: 5,
-            position: 'absolute',
-            width: 50,
-          } }
-        >
-          <ManagementMenu
-            activeLevel={ this.props.activeLevel }
-            menuActions={ this.props.menuActions }
-            selected={ this.props.selected }
-          />
-        </div>
-        <div
-          style={ {
-            bottom: 0,
-            position: 'absolute',
-            right: 5,
-            width: 50,
-          } }
-        >
-          <ActionMenu />
-        </div>
+        <ManagementMenu
+          activeLevel={ this.props.activeLevel }
+          menuActions={ this.props.menuActions }
+          selected={ this.props.selected }
+        />
+        <ActionMenu />
         { content }
       </div>
     );

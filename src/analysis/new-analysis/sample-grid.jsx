@@ -35,8 +35,7 @@ const cellStyle = {
 };
 const gridContainer = {
   display: 'flex',
-  flex: 'wrap',
-  marginTop: 20,
+  flexWrap: 'wrap',
 };
 const emptyCellStyle = {
   borderRadius: 2,
@@ -58,6 +57,8 @@ const unselectedHeaderStyle = {
 const unselectedContainer = {
   display: 'inline-flex',
   flexDirection: 'column',
+  marginRight: 20,
+  marginTop: 20,
 };
 const unselectedGrid = {
   display: 'inline-flex',
@@ -151,13 +152,14 @@ class SampleGrid extends React.Component {
           ref={ (container) => { this.gridSelected = container; } }
           style={ {
             display: 'inline-flex',
+            flexBasis: 'auto',
             flexGrow: 1,
+            marginTop: 20,
             minWidth: cellWidth + 58,
           } }
         >
           <div
             style={ {
-              marginLeft: 20,
               overflowX: 'hidden',
               maxWidth: this.props.gridWidth,
             } }

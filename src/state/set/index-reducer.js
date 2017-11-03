@@ -1,4 +1,5 @@
 import {
+  RESET_INDICES,
   SET_INDEX,
 } from './index-actions';
 
@@ -33,6 +34,8 @@ const Selected = (state = Object.assign({}, defaultState), action) => {
         }
       }
       return Object.assign({}, state, modifiedFields);
+    case RESET_INDICES:
+      return Object.assign({}, state, defaultState);
     default:
       return state;
   }
