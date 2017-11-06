@@ -2,6 +2,7 @@ import MenuItem from 'material-ui/MenuItem';
 import PropTypes from 'prop-types';
 import React from 'react';
 import SelectField from 'material-ui/SelectField';
+import TextField from 'material-ui/TextField';
 
 import analysisStyle from '../analysis-style';
 import Fields from '../../modules/fields';
@@ -27,31 +28,50 @@ class SelectScreenType extends React.Component {
         >
           Choose the type of Screen you would like to analyze. Samples will
           be filtered based on the type of screen selected and
-          your user permissions.</div>
-        <SelectField
-          errorText={ this.props.errors.screenType }
-          floatingLabelText="Screen type"
-          fullWidth={ true }
-          listStyle={ {
-            paddingBottom: 0,
-            paddingTop: 0,
+          your user permissions.
+        </div>
+        <div
+          style={ {
+            display: 'flex',
           } }
-          onChange={ (e, index, value) => { this.props.inputChange('screenType', value); } }
-          style={ analysisStyle.input }
-          value={ this.props.formData.screenType }
         >
-          {
-            Fields.screen.type.values.map((type) => {
-              return (
-                <MenuItem
-                  key={ type }
-                  value={ type }
-                  primaryText={ type }
-                />
-              );
-            })
-          }
-        </SelectField>
+          <SelectField
+            errorText={ this.props.errors.screenType }
+            floatingLabelText="Screen type"
+            fullWidth={ true }
+            listStyle={ {
+              paddingBottom: 0,
+              paddingTop: 0,
+            } }
+            onChange={ (e, index, value) => {
+              this.props.inputChange('screenType', value);
+            } }
+            style={ analysisStyle.input }
+            value={ this.props.formData.screenType }
+          >
+            {
+              Fields.screen.type.values.map((type) => {
+                return (
+                  <MenuItem
+                    key={ type }
+                    value={ type }
+                    primaryText={ type }
+                  />
+                );
+              })
+            }
+          </SelectField>
+          <TextField
+            errorText={ this.props.errors.analysisName }
+            floatingLabelText="Name for analysis"
+            fullWidth={ true }
+            onChange={ (e) => {
+              this.props.inputChange('analysisName', e.target.value);
+            } }
+            style={ analysisStyle.input }
+            value={ this.props.formData.analysisName }
+          />
+        </div>
       </div>
     );
   }
@@ -59,10 +79,12 @@ class SelectScreenType extends React.Component {
 
 SelectScreenType.propTypes = {
   errors: PropTypes.shape({
+    analysisName: PropTypes.string,
     analysisType: PropTypes.string,
     screenType: PropTypes.string,
   }).isRequired,
   formData: PropTypes.shape({
+    analysisName: PropTypes.string,
     analysisType: PropTypes.string,
     screenType: PropTypes.string,
   }).isRequired,

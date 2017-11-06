@@ -2,11 +2,12 @@ import PropTypes from 'prop-types';
 import Radium from 'radium';
 import React from 'react';
 
-const modalStyle = {
+const defaultModalStyle = {
   backgroundColor: 'transparent',
   border: 'none',
   display: 'none',
   left: 0,
+  pointerEvents: 'none',
   position: 'fixed',
   top: 0,
   zIndex: 1000,
@@ -88,7 +89,8 @@ class Tooltip extends React.Component {
         onClick={ this.props.hideTooltip }
         style={ Object.assign(
           {},
-          modalStyle,
+          defaultModalStyle,
+          this.props.modalStyle,
           {
             display: this.props.show ? 'block' : 'none',
             height: window.innerHeight,
@@ -141,6 +143,7 @@ class Tooltip extends React.Component {
 
 Tooltip.propTypes = {
   hideTooltip: PropTypes.func.isRequired,
+  modalStyle: PropTypes.shape({}).isRequired,
   position: PropTypes.string.isRequired,
   show: PropTypes.bool.isRequired,
   text: PropTypes.oneOfType([

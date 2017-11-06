@@ -31,6 +31,7 @@ class NewAnalysis extends React.Component {
             addSamples={ this.props.addSamples }
             applyFilters={ this.props.applyFilters }
             dateRange={ this.props.dateRange }
+            errors={ this.props.errors }
             filterFuncs={ this.props.filterFuncs }
             filters={ this.props.filters }
             handleLevelChange={ this.props.handleLevelChange }
@@ -41,6 +42,7 @@ class NewAnalysis extends React.Component {
             resetFilters={ this.props.resetFilters }
             samples={ this.props.samples }
             samplesToAdd={ this.props.samplesToAdd }
+            sampleTooltip={ this.props.sampleTooltip }
             samplesToRemove={ this.props.samplesToRemove }
             selected={ this.props.selected }
             selection={ selection }
@@ -58,6 +60,7 @@ class NewAnalysis extends React.Component {
             resetParameters={ this.props.resetParameters }
             screenSize={ this.props.screenSize }
             selected={ this.props.selected.items }
+            updateDesign={ this.props.updateDesign }
           />
         );
       default:
@@ -132,20 +135,23 @@ class NewAnalysis extends React.Component {
                 backgroundColor={ this.props.muiTheme.palette.alternativeButtonColor }
                 hoverColor={ this.props.muiTheme.palette.alternativeButtonColorHover }
                 label="Back"
-                disabled={ this.props.stepIndex === 0 }
                 onTouchTap={ this.props.handlePrev }
                 style={ {
                   color: this.props.muiTheme.palette.offWhite,
+                  display: this.props.stepIndex === 0 ? 'none' : 'inline',
                   marginRight: 10,
                 } }
               />
               {
-                this.props.formData.analysisType &&
                 <FlatButton
                   backgroundColor={ this.props.muiTheme.palette.darkButtonColor }
                   hoverColor={ this.props.muiTheme.palette.darkButtonColorHover }
                   label={ this.props.stepIndex === 2 ? 'Submit' : 'Next' }
-                  onTouchTap={ this.props.handleNext }
+                  onTouchTap={ this.props.stepIndex === 2 ?
+                    this.props.submit
+                    :
+                    this.props.handleNext
+                  }
                   style={ {
                     color: this.props.muiTheme.palette.offWhite,
                   } }
@@ -194,8 +200,10 @@ NewAnalysis.propTypes = {
     title: PropTypes.string,
   }).isRequired,
   errors: PropTypes.shape({
+    analysisName: PropTypes.string,
     analysisType: PropTypes.string,
     screenType: PropTypes.string,
+    selectedSamples: PropTypes.string,
   }).isRequired,
   filterFuncs: PropTypes.shape({
     fromDate: PropTypes.func,
@@ -212,6 +220,7 @@ NewAnalysis.propTypes = {
     user: PropTypes.string,
   }).isRequired,
   formData: PropTypes.shape({
+    analysisName: PropTypes.string,
     analysisType: PropTypes.string,
     screenType: PropTypes.string,
   }).isRequired,
@@ -245,6 +254,29 @@ NewAnalysis.propTypes = {
   samplesToAdd: PropTypes.arrayOf(
     PropTypes.number,
   ).isRequired,
+  sampleTooltip: PropTypes.shape({
+    _id: PropTypes.number,
+    hideFunc: PropTypes.func,
+    position: PropTypes.string,
+    rect: PropTypes.shape({
+      bottom: PropTypes.number,
+      height: PropTypes.number,
+      left: PropTypes.number,
+      right: PropTypes.number,
+      top: PropTypes.number,
+      width: PropTypes.number,
+      x: PropTypes.number,
+      y: PropTypes.number,
+    }),
+    show: PropTypes.bool,
+    showFunc: PropTypes.func,
+    text: PropTypes.oneOfType([
+      PropTypes.arrayOf(
+        PropTypes.string,
+      ),
+      PropTypes.string,
+    ]),
+  }).isRequired,
   samplesToRemove: PropTypes.arrayOf(
     PropTypes.number,
   ).isRequired,
@@ -267,6 +299,8 @@ NewAnalysis.propTypes = {
     level: PropTypes.string,
   }).isRequired,
   stepIndex: PropTypes.number.isRequired,
+  submit: PropTypes.func.isRequired,
+  updateDesign: PropTypes.func.isRequired,
 };
 
 export default muiThemeable()(NewAnalysis);

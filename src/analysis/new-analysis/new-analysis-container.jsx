@@ -4,11 +4,32 @@ import React from 'react';
 import { connect } from 'react-redux';
 
 import AnalysisOptions from '../../modules/analysis-new';
+import convertCamel from '../../helpers/convertCamel';
 import NewAnalysis from './new-analysis';
+import { uppercaseFirst } from '../../helpers/helpers';
 
 import available from './test-data';
 
-const defaultFormFields = ['analysisType', 'screenType'];
+const defaultFormFields = [
+  'anaylsisName',
+  'analysisType',
+  'screenType',
+];
+const emptyRect = {
+  bottom: null,
+  height: null,
+  left: null,
+  right: null,
+  top: null,
+  width: null,
+  x: null,
+  y: null,
+};
+const omitFromTooltip = [
+  '_id',
+  'name',
+  'creationDate',
+];
 
 class NewAnalysisContainer extends React.Component {
   constructor(props) {
@@ -17,6 +38,7 @@ class NewAnalysisContainer extends React.Component {
     const defaultFilters = this.defaultFilters(dateRange);
     this.state = {
       dateRange: this.assignDateRange(dateRange),
+      design: null,
       dialog: {
         defaultValue: null,
         help: false,
@@ -25,12 +47,15 @@ class NewAnalysisContainer extends React.Component {
       },
       filters: defaultFilters,
       errors: {
+        analysisName: null,
         analysisType: null,
+        selectedSamples: null,
         screenType: null,
       },
       formData: {
-        analysisType: 'BAGEL',
-        screenType: 'CRISPR',
+        analysisName: '',
+        analysisType: null,
+        screenType: null,
       },
       inputWidth: window.innerWidth >= 555 ? 500 : window.innerWidth - 55,
       isFiltered: false,
@@ -41,7 +66,7 @@ class NewAnalysisContainer extends React.Component {
         isSmall: window.innerWidth <= 680,
       },
       selected: {
-        items: [1, 2, 3, 4, 5, 6],
+        items: [],
         last: null,
       },
       selection: {
@@ -50,7 +75,14 @@ class NewAnalysisContainer extends React.Component {
         last: null,
         level: 'sample',
       },
-      stepIndex: 2,
+      stepIndex: 0,
+      tooltip: {
+        _id: null,
+        position: 'right',
+        rect: emptyRect,
+        show: false,
+        text: '',
+      },
     };
   }
   componentDidMount = () => {
@@ -75,7 +107,7 @@ class NewAnalysisContainer extends React.Component {
     };
   }
   addSamples = () => {
-    this.setState(({ selected, samplesToAdd, selection }) => {
+    this.setState(({ errors, selected, samplesToAdd, selection }) => {
       const availableItems = available.sample;
       const newSamplesToAdd = [];
       availableItems.forEach((sample) => {
@@ -92,6 +124,13 @@ class NewAnalysisContainer extends React.Component {
         }
       });
       return {
+        errors: Object.assign(
+          {},
+          errors,
+          {
+            selectedSamples: null,
+          }
+        ),
         selected: {
           items: [...new Set(selected.items.concat(newSamplesToAdd))].sort(),
           last: null,
@@ -137,27 +176,32 @@ class NewAnalysisContainer extends React.Component {
     }, 1000);
   }
   checkErrors = (index) => {
+    const errors = {};
+    let isError = false;
     switch (index) {
       case 0:
-        return !this.state.formData.type ?
-        {
-          isError: true,
-          errors: {
-            type: 'Please specify a screen type',
-          },
+        if (!this.state.formData.screenType) {
+          isError = true;
+          errors.screenType = 'Please specify a screen type';
         }
-        :
-        {
-          isError: false,
-          errors: {
-            type: null,
-          },
+        if (!this.state.formData.analysisName) {
+          isError = true;
+          errors.analysisName = 'Please name the analysis';
         }
-      ;
+        break;
+      case 1:
+        if (this.state.selected.items.length === 0) {
+          isError = true;
+          errors.selectedSamples = 'Please select samples to analyze';
+        }
+        break;
       default:
-        return { isError: false }
-      ;
+        break;
     }
+    return {
+      errors,
+      isError,
+    };
   }
   checkFilters = (items, filters) => {
     const newItems = [];
@@ -297,8 +341,8 @@ class NewAnalysisContainer extends React.Component {
           filteredItems = this.checkFilters(items, filters);
           newFilters = filters;
         } else {
-          filteredItems = items;
           newFilters = this.defaultFilters(dateRange);
+          filteredItems = this.checkFilters(items, newFilters);
         }
         return {
           dateRange: this.assignDateRange(dateRange),
@@ -316,16 +360,25 @@ class NewAnalysisContainer extends React.Component {
   handleNext = () => {
     const { stepIndex } = this.state;
     const { isError, errors } = this.checkErrors(stepIndex);
-    if (isError) {
-      this.setState({
-        errors,
-      });
-    } else {
-      this.setState({
-        errors,
+    this.setState(({ prevErrors }) => {
+      return isError ?
+      {
+        errors: Object.assign(
+          {},
+          prevErrors,
+          errors,
+        ),
+      }
+      :
+      {
+        errors: Object.assign(
+          {},
+          prevErrors,
+          errors,
+        ),
         stepIndex: stepIndex + 1,
-      });
-    }
+      };
+    });
   };
   handlePrev = () => {
     const { stepIndex } = this.state;
@@ -471,7 +524,7 @@ class NewAnalysisContainer extends React.Component {
     this.setState(({ errors, formData }) => {
       const newErrors = Object.assign({}, errors);
       const newFormData = Object.assign({}, formData);
-      // if the analysis type change, remove non-default fields and add new
+      // if the analysis type changes, remove non-default fields and add new
       if (type === 'analysisType') {
         Object.keys(newFormData).forEach((key) => {
           if (!defaultFormFields.includes(key)) {
@@ -483,6 +536,8 @@ class NewAnalysisContainer extends React.Component {
         });
       }
       newFormData[type] = value;
+      // reset error for this field
+      newErrors[type] = null;
       return {
         errors: newErrors,
         formData: newFormData,
@@ -542,6 +597,89 @@ class NewAnalysisContainer extends React.Component {
       },
     });
   }
+  hideSampleTooltip = () => {
+    this.setState({
+      tooltip: {
+        _id: null,
+        position: 'right',
+        rect: emptyRect,
+        show: false,
+        text: '',
+      },
+    });
+  }
+  showSampleTooltip = (e, item, position) => {
+    const domRect = e.target.getBoundingClientRect();
+    const rect = {
+      bottom: domRect.bottom,
+      height: domRect.height,
+      left: domRect.left,
+      right: domRect.right,
+      top: domRect.top,
+      width: domRect.width,
+      x: domRect.x,
+      y: domRect.y,
+    };
+    const otherFields = [];
+    Object.keys(item).forEach((field) => {
+      if (
+        omitFromTooltip.indexOf(field) < 0 &&
+        typeof item[field] !== 'object'
+      ) {
+        const str = `${uppercaseFirst(convertCamel.toLower(field))}: ${item[field]}`;
+        otherFields.push(str);
+      }
+    });
+    const tooltipText = [
+      `ID: ${item._id}`,
+      `Name: ${item.name}`,
+    ].concat(otherFields);
+    this.setState({
+      tooltip: {
+        _id: item._id,
+        position,
+        rect,
+        show: true,
+        text: tooltipText,
+      },
+    });
+  }
+  formatDesign = (design) => {
+    const formattedDesign = [];
+    design.forEach((sampleSet, index) => {
+      if (index > 0) {
+        const controls = [];
+        const replicates = [];
+        sampleSet.items.forEach((sample) => {
+          const row = sample.row;
+          const controlIndex = design[0].items.findIndex((controlSample) => {
+            return controlSample.row === row;
+          });
+          if (controlIndex > -1) {
+            controls.push(design[0].items[controlIndex]._id);
+            replicates.push(sample._id);
+          }
+        });
+        if (replicates.length > 0) {
+          formattedDesign.push({
+            controls,
+            name: sampleSet.name,
+            replicates,
+          });
+        }
+      }
+    });
+    return formattedDesign;
+  }
+  submit = () => {
+    // const design = this.formatDesign(this.state.design);
+    // submit design and this.state.formData to server
+  }
+  updateDesign = (newDesign) => {
+    this.setState({
+      design: JSON.parse(JSON.stringify(newDesign)),
+    });
+  }
   render() {
     return (
       <NewAnalysis
@@ -578,11 +716,21 @@ class NewAnalysisContainer extends React.Component {
         resetParameters={ this.resetParameters }
         samples={ available.sample }
         samplesToAdd={ this.state.samplesToAdd }
+        sampleTooltip={ Object.assign(
+          {},
+          this.state.tooltip,
+          {
+            hideFunc: this.hideSampleTooltip,
+            showFunc: this.showSampleTooltip,
+          }
+        ) }
         samplesToRemove={ this.state.samplesToRemove }
         screenSize={ this.state.screenSize }
         selected={ this.state.selected }
         selection={ this.state.selection }
         stepIndex={ this.state.stepIndex }
+        submit={ this.submit }
+        updateDesign={ this.updateDesign }
       />
     );
   }

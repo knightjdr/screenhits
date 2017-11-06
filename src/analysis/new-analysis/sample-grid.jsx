@@ -406,6 +406,9 @@ class SampleGrid extends React.Component {
         </div>
         <Tooltip
           hideTooltip={ this.props.hideTooltip }
+          modalStyle={ {
+            pointerEvents: 'auto',
+          } }
           position={ this.props.sampleTooltip.position }
           rect={ this.props.sampleTooltip.rect }
           show={ this.props.sampleTooltip.show }

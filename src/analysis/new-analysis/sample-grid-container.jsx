@@ -193,6 +193,8 @@ class SampleGridContainer extends React.Component {
         });
         newDesign[col - 1].items.sort((a, b) => { return a.row - b.row; });
       }
+      // update form state in parent container
+      this.props.updateDesign(newDesign);
       return {
         dragID: null,
         design: newDesign,
@@ -418,6 +420,7 @@ SampleGridContainer.propTypes = {
   selected: PropTypes.arrayOf(
     PropTypes.number
   ).isRequired,
+  updateDesign: PropTypes.func.isRequired,
 };
 
 export default SampleGridContainer;

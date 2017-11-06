@@ -19,7 +19,7 @@ export default class Routing extends React.Component {
         <Route path="/" component={ App }>
           <IndexRoute component={ Home } />
           <Route path="management" component={ Management } />
-          <Route path="analysis" component={ Analysis } />
+          <Route path="analysis(/:view)" component={ Analysis } />
           <Route path="help" component={ Help } />
           <Route path="*" component={ NoMatch } />
         </Route>

@@ -76,8 +76,6 @@ const Fields = {
     type: {
       values: [
         'CRISPR',
-        'Generic',
-        'Microscopy',
       ],
     },
   },

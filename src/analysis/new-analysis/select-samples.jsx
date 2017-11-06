@@ -14,6 +14,7 @@ import UpdateIcon from 'material-ui/svg-icons/action/update';
 import { List, ListItem, makeSelectable } from 'material-ui/List';
 
 import analysisStyle from '../analysis-style';
+import Tooltip from '../../tooltip/tooltip-container';
 import { uppercaseFirst } from '../../helpers/helpers';
 
 const SelectableList = makeSelectable(List);
@@ -119,6 +120,10 @@ class SelectSamples extends React.Component {
                     return (
                       <MenuItem
                         key={ item._id }
+                        onMouseEnter={ (e) => {
+                          this.props.sampleTooltip.showFunc(e, item, 'right');
+                        } }
+                        onMouseLeave={ this.props.sampleTooltip.hideFunc }
                         onTouchTap={ (e) => {
                           this.props.highlightSampleToAdd(e, item._id);
                         } }
@@ -191,6 +196,10 @@ class SelectSamples extends React.Component {
                       return (
                         <MenuItem
                           key={ sample._id }
+                          onMouseEnter={ (e) => {
+                            this.props.sampleTooltip.showFunc(e, sample, 'left');
+                          } }
+                          onMouseLeave={ this.props.sampleTooltip.hideFunc }
                           onTouchTap={ (e) => {
                             this.props.highlightSampleToRemove(e, sample._id);
                           } }
@@ -213,6 +222,19 @@ class SelectSamples extends React.Component {
               </div>
           }
         </div>
+        {
+          this.props.errors.selectedSamples &&
+          <div
+            style={ {
+              color: 'red',
+              fontSize: 14,
+              marginTop: 5,
+              marginLeft: 205,
+            } }
+          >
+            { this.props.errors.selectedSamples }
+          </div>
+        }
         <div
           style={ {
             marginTop: 20,
@@ -340,6 +362,15 @@ class SelectSamples extends React.Component {
         >
           Remove samples
         </ReactTooltip>
+        <Tooltip
+          position={ this.props.sampleTooltip.position }
+          rect={ this.props.sampleTooltip.rect }
+          show={ this.props.sampleTooltip.show }
+          text={ this.props.sampleTooltip.text }
+          tooltipStyle={ {
+            textAlign: 'left',
+          } }
+        />
       </div>
     );
   }
@@ -355,6 +386,9 @@ SelectSamples.propTypes = {
     toEnd: PropTypes.instanceOf(Date),
     toStart: PropTypes.instanceOf(Date),
     start: PropTypes.instanceOf(Date),
+  }).isRequired,
+  errors: PropTypes.shape({
+    selectedSamples: PropTypes.string,
   }).isRequired,
   filterFuncs: PropTypes.shape({
     fromDate: PropTypes.func,
@@ -384,6 +418,29 @@ SelectSamples.propTypes = {
   samplesToAdd: PropTypes.arrayOf(
     PropTypes.number,
   ).isRequired,
+  sampleTooltip: PropTypes.shape({
+    _id: PropTypes.number,
+    hideFunc: PropTypes.func,
+    position: PropTypes.string,
+    rect: PropTypes.shape({
+      bottom: PropTypes.number,
+      height: PropTypes.number,
+      left: PropTypes.number,
+      right: PropTypes.number,
+      top: PropTypes.number,
+      width: PropTypes.number,
+      x: PropTypes.number,
+      y: PropTypes.number,
+    }),
+    show: PropTypes.bool,
+    showFunc: PropTypes.func,
+    text: PropTypes.oneOfType([
+      PropTypes.arrayOf(
+        PropTypes.string,
+      ),
+      PropTypes.string,
+    ]),
+  }).isRequired,
   samplesToRemove: PropTypes.arrayOf(
     PropTypes.number,
   ).isRequired,

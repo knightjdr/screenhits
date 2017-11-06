@@ -231,6 +231,7 @@ class DesignAnalysis extends React.Component {
             <SampleGrid
               availableSamples={ this.props.availableSamples }
               selected={ this.props.selected }
+              updateDesign={ this.props.updateDesign }
             />
           </div>
         }
@@ -306,6 +307,7 @@ DesignAnalysis.propTypes = {
   selected: PropTypes.arrayOf(
     PropTypes.number
   ).isRequired,
+  updateDesign: PropTypes.func.isRequired,
 };
 
 export default muiThemeable()(DesignAnalysis);

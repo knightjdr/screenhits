@@ -128,6 +128,7 @@ class TooltipContainer extends React.Component {
     return (
       <Tooltip
         hideTooltip={ this.hideTooltip }
+        modalStyle={ this.props.modalStyle }
         position={ this.props.position }
         show={ this.state.show }
         text={ this.props.text }
@@ -140,12 +141,15 @@ class TooltipContainer extends React.Component {
 }
 
 TooltipContainer.defaultProps = {
+  hideTooltip: () => {},
+  modalStyle: {},
   tooltipContainerStyle: {},
   tooltipStyle: {},
 };
 
 TooltipContainer.propTypes = {
-  hideTooltip: PropTypes.func.isRequired,
+  hideTooltip: PropTypes.func,
+  modalStyle: PropTypes.shape({}),
   position: PropTypes.string.isRequired,
   rect: PropTypes.shape({
     bottom: PropTypes.number,
