@@ -1,4 +1,5 @@
 const auth = require('./modules/auth/validate');
+const analysisAvailable = require('./modules/analysis/analysis-available');
 const available = require('./modules/available/available');
 const create = require('./modules/create/create');
 const deleteQuery = require('./modules/delete/delete');
@@ -26,6 +27,14 @@ const routes = {
         status: 404,
         error: routes.messages.invalidRoute,
       });
+    });
+    // returns all available project, screens, experiments and samples for a user
+    app.get('/analysis-samples', auth.validate, (req, res) => {
+      analysisAvailable.get(req.query.screenType, req.email)
+        .then((response) => {
+          routes.response(res, response);
+        })
+      ;
     });
     // returns available projects, screens, etc, based on user
     app.get('/loadRoute', auth.validate, (req, res) => {

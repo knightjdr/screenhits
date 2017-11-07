@@ -32,6 +32,7 @@ class NewAnalysis extends React.Component {
             applyFilters={ this.props.applyFilters }
             dateRange={ this.props.dateRange }
             errors={ this.props.errors }
+            fetchStatus={ this.props.fetchStatus }
             filterFuncs={ this.props.filterFuncs }
             filters={ this.props.filters }
             handleLevelChange={ this.props.handleLevelChange }
@@ -51,7 +52,7 @@ class NewAnalysis extends React.Component {
       case 2:
         return (
           <DesignAnalysis
-            availableSamples={ this.props.availableSamples }
+            availableSamples={ this.props.samples }
             dialog={ this.props.dialog }
             errors={ errors }
             formData={ formData }
@@ -168,17 +169,6 @@ class NewAnalysis extends React.Component {
 NewAnalysis.propTypes = {
   addSamples: PropTypes.func.isRequired,
   applyFilters: PropTypes.func.isRequired,
-  availableSamples: PropTypes.arrayOf(
-    PropTypes.shape({
-      _id: PropTypes.number,
-      name: PropTypes.string,
-      group: PropTypes.shape({
-        experiment: PropTypes.number,
-        project: PropTypes.number,
-        screen: PropTypes.number,
-      }),
-    })
-  ).isRequired,
   dateRange: PropTypes.shape({
     end: PropTypes.instanceOf(Date),
     fromEnd: PropTypes.instanceOf(Date),
@@ -204,6 +194,11 @@ NewAnalysis.propTypes = {
     analysisType: PropTypes.string,
     screenType: PropTypes.string,
     selectedSamples: PropTypes.string,
+  }).isRequired,
+  fetchStatus: PropTypes.shape({
+    isFetcing: PropTypes.bool,
+    didInvalidate: PropTypes.bool,
+    message: PropTypes.string,
   }).isRequired,
   filterFuncs: PropTypes.shape({
     fromDate: PropTypes.func,
@@ -249,7 +244,12 @@ NewAnalysis.propTypes = {
     PropTypes.shape({
       _id: PropTypes.number,
       name: PropTypes.string,
-    }),
+      group: PropTypes.shape({
+        experiment: PropTypes.number,
+        project: PropTypes.number,
+        screen: PropTypes.number,
+      }),
+    })
   ).isRequired,
   samplesToAdd: PropTypes.arrayOf(
     PropTypes.number,

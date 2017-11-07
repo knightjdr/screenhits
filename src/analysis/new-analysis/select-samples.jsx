@@ -20,6 +20,63 @@ import { uppercaseFirst } from '../../helpers/helpers';
 const SelectableList = makeSelectable(List);
 
 class SelectSamples extends React.Component {
+  getMenuItems = (items, status) => {
+    if (status.isFetching) {
+      return (
+        <MenuItem
+          disabled={ true }
+          key="disabled-warning"
+        >
+          <FontAwesome key="fetching" name="spinner" pulse={ true } /> Fetching samples...
+        </MenuItem>
+      );
+    } else if (status.didInvalidate) {
+      return (
+        <MenuItem
+          disabled={ true }
+          key="disabled-warning"
+        >
+          <FontAwesome key="fetch-failed" name="exclamation-triangle" /> Error fetching samples
+        </MenuItem>
+      );
+    } else if (items.length === 0) {
+      return (
+        <MenuItem
+          disabled={ true }
+          key="disabled-warning"
+        >
+          { `No matching ${this.props.selection.level}s`}
+        </MenuItem>
+      );
+    }
+    return [
+      items.map((item) => {
+        return (
+          <MenuItem
+            key={ item._id }
+            onMouseEnter={ (e) => {
+              this.props.sampleTooltip.showFunc(e, item, 'right');
+            } }
+            onMouseLeave={ this.props.sampleTooltip.hideFunc }
+            onTouchTap={ (e) => {
+              this.props.highlightSampleToAdd(e, item._id);
+            } }
+            style={
+              this.highlightMenuItem(
+                item._id,
+                items,
+                this.props.samplesToAdd,
+                this.props.selection.level,
+              )
+            }
+            value={ item._id }
+          >
+            { `${item._id}: ${item.name}` }
+          </MenuItem>
+        );
+      }),
+    ];
+  }
   highlightMenuItem = (_id, arr1, arr2, level) => {
     return (arr1.includes(_id) && level === 'sample') || arr2.includes(_id) ?
       analysisStyle.menuItemSelected
@@ -108,39 +165,10 @@ class SelectSamples extends React.Component {
               } }
             >
               {
-                this.props.selection.items.length === 0 ?
-                  <MenuItem
-                    disabled={ true }
-                    key="disabled-warning"
-                  >
-                    { `No matching ${this.props.selection.level}s`}
-                  </MenuItem>
-                  :
-                  this.props.selection.items.map((item) => {
-                    return (
-                      <MenuItem
-                        key={ item._id }
-                        onMouseEnter={ (e) => {
-                          this.props.sampleTooltip.showFunc(e, item, 'right');
-                        } }
-                        onMouseLeave={ this.props.sampleTooltip.hideFunc }
-                        onTouchTap={ (e) => {
-                          this.props.highlightSampleToAdd(e, item._id);
-                        } }
-                        style={
-                          this.highlightMenuItem(
-                            item._id,
-                            this.props.selected.items,
-                            this.props.samplesToAdd,
-                            this.props.selection.level,
-                          )
-                        }
-                        value={ item._id }
-                      >
-                        { `${item._id}: ${item.name}` }
-                      </MenuItem>
-                    );
-                  })
+                this.getMenuItems(
+                  this.props.selection.items,
+                  this.props.fetchStatus,
+                )
               }
             </Drawer>
           </div>
@@ -389,6 +417,11 @@ SelectSamples.propTypes = {
   }).isRequired,
   errors: PropTypes.shape({
     selectedSamples: PropTypes.string,
+  }).isRequired,
+  fetchStatus: PropTypes.shape({
+    isFetcing: PropTypes.bool,
+    didInvalidate: PropTypes.bool,
+    message: PropTypes.string,
   }).isRequired,
   filterFuncs: PropTypes.shape({
     fromDate: PropTypes.func,

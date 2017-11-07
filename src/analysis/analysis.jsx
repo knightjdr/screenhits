@@ -5,7 +5,7 @@ import React from 'react';
 import { RadioButton, RadioButtonGroup } from 'material-ui/RadioButton';
 
 import AnalysisMenu from './menu/analysis-menu-container';
-import CompletedAnalysis from './completed-analysis/completed-analysis-container';
+import Archive from './archive/archive-container';
 import NewAnalysis from './new-analysis/new-analysis-container';
 import Visualization from './visualization/visualization-container';
 
@@ -26,7 +26,7 @@ const containerStyle = {
 };
 const radioButtonGroupStyle = {
   borderRadius: 5,
-  marginLeft: 10,
+  margin: 10,
   padding: 5,
 };
 const radioButtonStyle = {
@@ -44,7 +44,7 @@ const textBoxStyle = {
   textAlign: 'center',
 };
 const viewHelp = {
-  complete: 'Manage existing analysis and view results in tabular format',
+  archive: 'Manage and view existing analyses',
   new: 'Perform new analysis',
   visualization: 'View analysis graphically',
 };
@@ -52,8 +52,8 @@ const viewHelp = {
 class Analysis extends React.Component {
   getView = (viewType) => {
     switch (viewType) {
-      case 'complete':
-        return <CompletedAnalysis />;
+      case 'archive':
+        return <Archive />;
       case 'new':
         return <NewAnalysis />;
       case 'visualization':
@@ -91,10 +91,10 @@ class Analysis extends React.Component {
                   value="new"
                 />
                 <RadioButton
-                  label="Completed analysis"
-                  onClick={ () => { this.props.highlightView('complete'); } }
+                  label="Archive"
+                  onClick={ () => { this.props.highlightView('archive'); } }
                   style={ radioButtonStyle }
-                  value="complete"
+                  value="archive"
                 />
                 <RadioButton
                   label="Visualizaiton"

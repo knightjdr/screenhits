@@ -1,3 +1,4 @@
+import deepEqual from 'deep-equal';
 import Moment from 'moment';
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -6,9 +7,10 @@ import { connect } from 'react-redux';
 import AnalysisOptions from '../../modules/analysis-new';
 import convertCamel from '../../helpers/convertCamel';
 import NewAnalysis from './new-analysis';
+import getAnalysisSamples from '../../state/get/analysis-samples-actions';
 import { uppercaseFirst } from '../../helpers/helpers';
 
-import available from './test-data';
+// import available from './test-data';
 
 const defaultFormFields = [
   'anaylsisName',
@@ -28,22 +30,29 @@ const emptyRect = {
 const omitFromTooltip = [
   '_id',
   'name',
-  'creationDate',
 ];
 
 class NewAnalysisContainer extends React.Component {
   constructor(props) {
     super(props);
-    const dateRange = this.getDateRange(available.sample);
+    const dateRange = {
+      end: new Date(),
+      start: new Date(),
+    };
     const defaultFilters = this.defaultFilters(dateRange);
     this.state = {
-      dateRange: this.assignDateRange(dateRange),
+      dateRange,
       design: null,
       dialog: {
         defaultValue: null,
         help: false,
         text: null,
         title: null,
+      },
+      fetchStatus: {
+        isFetching: false,
+        didInvalidate: false,
+        message: null,
       },
       filters: defaultFilters,
       errors: {
@@ -71,7 +80,7 @@ class NewAnalysisContainer extends React.Component {
       },
       selection: {
         isDrawerOpen: true,
-        items: this.checkFilters(available.sample, defaultFilters),
+        items: [],
         last: null,
         level: 'sample',
       },
@@ -87,6 +96,46 @@ class NewAnalysisContainer extends React.Component {
   }
   componentDidMount = () => {
     window.addEventListener('resize', this.resize);
+  }
+  componentWillReceiveProps = (nextProps) => {
+    if (!deepEqual(nextProps.analysisSamples, this.props.analysisSamples)) {
+      const itemsUpdated = nextProps.analysisSamples.items.sample.length > 0;
+      let newDateRange;
+      let newDefaultFilters;
+      if (itemsUpdated) {
+        newDateRange = this.getDateRange(nextProps.analysisSamples.items.sample);
+        newDefaultFilters = this.defaultFilters(newDateRange);
+      }
+      this.setState(({ dateRange, selection }) => {
+        return {
+          dateRange: itemsUpdated ? this.assignDateRange(newDateRange) : dateRange,
+          fetchStatus: {
+            isFetching: nextProps.analysisSamples.isFetching,
+            didInvalidate: nextProps.analysisSamples.didInvalidate,
+            message: nextProps.analysisSamples.message,
+          },
+          selection: itemsUpdated ?
+          {
+            isDrawerOpen: true,
+            items: this.checkFilters(
+              nextProps.analysisSamples.items.sample,
+              newDefaultFilters),
+            last: null,
+            level: 'sample',
+          }
+          :
+          selection,
+        };
+      });
+    }
+  }
+  componentDidUpdate = (prevProps, prevState) => {
+    if (
+      prevState.stepIndex === 0 &&
+      this.state.stepIndex === 1
+    ) {
+      this.props.getAnalysisSamples(this.props.user, this.state.formData.screenType);
+    }
   }
   componentWillUnmount = () => {
     window.removeEventListener('resize', this.resize);
@@ -108,7 +157,7 @@ class NewAnalysisContainer extends React.Component {
   }
   addSamples = () => {
     this.setState(({ errors, selected, samplesToAdd, selection }) => {
-      const availableItems = available.sample;
+      const availableItems = this.props.analysisSamples.items.sample;
       const newSamplesToAdd = [];
       availableItems.forEach((sample) => {
         if (
@@ -167,7 +216,7 @@ class NewAnalysisContainer extends React.Component {
           isFiltered: true,
           selection: {
             isDrawerOpen: true,
-            items: this.checkFilters(available[selection.level], filters),
+            items: this.checkFilters(this.props.analysisSamples.items[selection.level], filters),
             last: null,
             level: selection.level,
           },
@@ -322,7 +371,7 @@ class NewAnalysisContainer extends React.Component {
     });
   }
   handleLevelChange = (e, level) => {
-    const items = available[level];
+    const items = this.props.analysisSamples.items[level];
     this.setState({
       samplesToAdd: [],
       selection: {
@@ -361,22 +410,13 @@ class NewAnalysisContainer extends React.Component {
     const { stepIndex } = this.state;
     const { isError, errors } = this.checkErrors(stepIndex);
     this.setState(({ prevErrors }) => {
-      return isError ?
-      {
+      return {
         errors: Object.assign(
           {},
           prevErrors,
           errors,
         ),
-      }
-      :
-      {
-        errors: Object.assign(
-          {},
-          prevErrors,
-          errors,
-        ),
-        stepIndex: stepIndex + 1,
+        stepIndex: isError ? stepIndex : stepIndex + 1,
       };
     });
   };
@@ -621,7 +661,7 @@ class NewAnalysisContainer extends React.Component {
       y: domRect.y,
     };
     const otherFields = [];
-    Object.keys(item).forEach((field) => {
+    Object.keys(item).sort().forEach((field) => {
       if (
         omitFromTooltip.indexOf(field) < 0 &&
         typeof item[field] !== 'object'
@@ -630,6 +670,16 @@ class NewAnalysisContainer extends React.Component {
         otherFields.push(str);
       }
     });
+    if (
+      item.other &&
+      Object.keys(item.other).length > 0
+    ) {
+      otherFields.push('Screen specific fields...');
+      Object.keys(item.other).sort().forEach((field) => {
+        const str = `${uppercaseFirst(convertCamel.toLower(field))}: ${item.other[field]}`;
+        otherFields.push(str);
+      });
+    }
     const tooltipText = [
       `ID: ${item._id}`,
       `Name: ${item.name}`,
@@ -685,7 +735,6 @@ class NewAnalysisContainer extends React.Component {
       <NewAnalysis
         addSamples={ this.addSamples }
         applyFilters={ this.applyFilters }
-        availableSamples={ available.sample }
         dateRange={ this.state.dateRange }
         dialog={ {
           close: this.dialogClose,
@@ -696,6 +745,7 @@ class NewAnalysisContainer extends React.Component {
           title: this.state.dialog.title,
         } }
         errors={ this.state.errors }
+        fetchStatus={ this.state.fetchStatus }
         filterFuncs={ {
           fromDate: this.filterFromDate,
           name: this.filterName,
@@ -714,7 +764,7 @@ class NewAnalysisContainer extends React.Component {
         removeSamples={ this.removeSamples }
         resetFilters={ this.resetFilters }
         resetParameters={ this.resetParameters }
-        samples={ available.sample }
+        samples={ this.props.analysisSamples.items.sample }
         samplesToAdd={ this.state.samplesToAdd }
         sampleTooltip={ Object.assign(
           {},
@@ -743,19 +793,49 @@ NewAnalysisContainer.defaultProps = {
 };
 
 NewAnalysisContainer.propTypes = {
+  analysisSamples: PropTypes.shape({
+    didInvalidate: PropTypes.bool,
+    isFetching: PropTypes.bool,
+    items: PropTypes.shape({
+      experiment: PropTypes.arrayOf(
+        PropTypes.shape({})
+      ),
+      project: PropTypes.arrayOf(
+        PropTypes.shape({})
+      ),
+      sample: PropTypes.arrayOf(
+        PropTypes.shape({})
+      ),
+      screen: PropTypes.arrayOf(
+        PropTypes.shape({})
+      ),
+    }),
+    message: PropTypes.string,
+  }).isRequired,
+  getAnalysisSamples: PropTypes.func.isRequired,
   user: PropTypes.shape({
     name: PropTypes.string,
   }),
 };
 
+const mapDispatchToProps = (dispatch) => {
+  return {
+    getAnalysisSamples: (user, screenType) => {
+      dispatch(getAnalysisSamples(user, screenType));
+    },
+  };
+};
+
 const mapStateToProps = (state) => {
   return {
+    analysisSamples: state.analysisSamples,
     user: state.user,
   };
 };
 
 const Container = connect(
   mapStateToProps,
+  mapDispatchToProps,
 )(NewAnalysisContainer);
 
 export default Container;
