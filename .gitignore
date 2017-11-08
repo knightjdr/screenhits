@@ -1,6 +1,9 @@
 # data folder for tests
 data/*
 
+# task folder
+tasks/*
+
 # todo list
 todo.txt
 
