@@ -33,7 +33,7 @@ const getAnalysisSamples = (user, screenType) => {
     headers.append('Accept', 'application/json');
     headers.append('Auth', `${user.name}:${user.email}:${user.lab}:${user.token}`);
     headers.append('Content-Type', 'application/json');
-    return fetch(`http://localhost:8003/analysis-samples?screenType=${screenType}`, {
+    return fetch(`http://localhost:8003/analysis/samples?screenType=${screenType}`, {
       cache: 'default',
       headers,
       mode: 'cors',

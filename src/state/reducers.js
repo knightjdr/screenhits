@@ -3,6 +3,7 @@ import { routerReducer } from 'react-router-redux';
 
 // reducers
 import addUsers from './put/add-user-reducer';
+import analysisPost from './post/analysis-submit-reducer';
 import analysisSamples from './get/analysis-samples-reducer';
 import available from './get/data-reducer';
 import bulkPermission from './put/bulk-permission-reducer';
@@ -19,6 +20,7 @@ import users from './get/project-user-reducer';
 
 const App = combineReducers({
   addUsers,
+  analysisPost,
   analysisSamples,
   available,
   bulkPermission,

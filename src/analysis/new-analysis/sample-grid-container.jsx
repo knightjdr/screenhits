@@ -342,11 +342,19 @@ class SampleGridContainer extends React.Component {
     const tooltipText = [
       `ID: ${sample._id}`,
       `Name: ${sample.name}`,
-      `Rep: ${sample.replicate}`,
       `Project: ${sample.group.project}`,
       `Screen: ${sample.group.screen}`,
       `Experiment: ${sample.group.experiment}`,
     ];
+    if (sample.replicate) {
+      tooltipText.push(`Rep: ${sample.replicate}`);
+    }
+    if (sample.concentration) {
+      tooltipText.push(`Concentration: ${sample.concentration}`);
+    }
+    if (sample.timepoint) {
+      tooltipText.push(`Timepoint: ${sample.timepoint}`);
+    }
     this.setState(({ tooltip }) => {
       const hideTooltip = tooltip._id === _id;
       return {

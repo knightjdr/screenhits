@@ -19,7 +19,6 @@ const returnFields = {
   sample: {
     creatorEmail: 0,
     description: 0,
-    group: 0,
     records: 0,
     properties: 0,
     type: 0,

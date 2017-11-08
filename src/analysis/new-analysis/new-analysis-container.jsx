@@ -8,12 +8,13 @@ import AnalysisOptions from '../../modules/analysis-new';
 import convertCamel from '../../helpers/convertCamel';
 import NewAnalysis from './new-analysis';
 import getAnalysisSamples from '../../state/get/analysis-samples-actions';
+import submitAnalysis from '../../state/post/analysis-submit-actions';
 import { uppercaseFirst } from '../../helpers/helpers';
 
 // import available from './test-data';
 
 const defaultFormFields = [
-  'anaylsisName',
+  'analysisName',
   'analysisType',
   'screenType',
 ];
@@ -722,8 +723,20 @@ class NewAnalysisContainer extends React.Component {
     return formattedDesign;
   }
   submit = () => {
-    // const design = this.formatDesign(this.state.design);
+    const design = this.formatDesign(this.state.design);
     // submit design and this.state.formData to server
+    this.props.submitAnalysis(
+      this.props.user,
+      Object.assign(
+        {},
+        this.state.formData,
+        {
+          design,
+          creatorEmail: this.props.user.email,
+          creatorName: this.props.user.name,
+        }
+      )
+    );
   }
   updateDesign = (newDesign) => {
     this.setState({
@@ -813,7 +826,9 @@ NewAnalysisContainer.propTypes = {
     message: PropTypes.string,
   }).isRequired,
   getAnalysisSamples: PropTypes.func.isRequired,
+  submitAnalysis: PropTypes.func.isRequired,
   user: PropTypes.shape({
+    email: PropTypes.string,
     name: PropTypes.string,
   }),
 };
@@ -822,6 +837,9 @@ const mapDispatchToProps = (dispatch) => {
   return {
     getAnalysisSamples: (user, screenType) => {
       dispatch(getAnalysisSamples(user, screenType));
+    },
+    submitAnalysis: (user, formData) => {
+      dispatch(submitAnalysis(user, formData));
     },
   };
 };
