@@ -725,18 +725,20 @@ class NewAnalysisContainer extends React.Component {
   submit = () => {
     const design = this.formatDesign(this.state.design);
     // submit design and this.state.formData to server
-    this.props.submitAnalysis(
-      this.props.user,
-      Object.assign(
-        {},
-        this.state.formData,
-        {
-          design,
-          creatorEmail: this.props.user.email,
-          creatorName: this.props.user.name,
-        }
-      )
-    );
+    if (design.length > 0) {
+      this.props.submitAnalysis(
+        this.props.user,
+        Object.assign(
+          {},
+          this.state.formData,
+          {
+            design,
+            creatorEmail: this.props.user.email,
+            creatorName: this.props.user.name,
+          }
+        )
+      );
+    }
   }
   updateDesign = (newDesign) => {
     this.setState({
