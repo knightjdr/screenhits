@@ -88,8 +88,8 @@
     "react-transition-group": "^1.1.2",
     "redux": "^3.6.0",
     "redux-thunk": "^2.2.0",
+    "rimraf": "^2.6.2",
     "scroll": "^2.0.0",
-    "stream": "0.0.2",
-    "uuid": "^3.1.0"
+    "stream": "0.0.2"
   }
 }

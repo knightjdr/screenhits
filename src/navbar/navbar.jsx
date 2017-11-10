@@ -21,6 +21,7 @@ class Navbar extends React.Component {
       <div
         style={ {
           backgroundColor: this.props.muiTheme.palette.primary1Color,
+          borderBottom: `2px solid ${this.props.muiTheme.palette.primary2Color}`,
           color: this.props.muiTheme.palette.offWhite,
           height: 60,
           left: 0,
@@ -69,6 +70,7 @@ Navbar.propTypes = {
     palette: PropTypes.shape({
       offWhite: PropTypes.string,
       primary1Color: PropTypes.string,
+      primary2Color: PropTypes.string,
     }),
   }).isRequired,
   resize: PropTypes.func.isRequired,

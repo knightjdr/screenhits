@@ -65,7 +65,7 @@ class NewAnalysisContainer extends React.Component {
       formData: {
         analysisName: '',
         analysisType: null,
-        screenType: null,
+        screenType: 'CRISPR',
       },
       inputWidth: window.innerWidth >= 555 ? 500 : window.innerWidth - 55,
       isFiltered: false,
@@ -85,7 +85,13 @@ class NewAnalysisContainer extends React.Component {
         last: null,
         level: 'sample',
       },
-      stepIndex: 0,
+      snackbar: {
+        duration: 4000,
+        last: null,
+        message: 'Snackbar',
+        open: false,
+      },
+      stepIndex: 2,
       tooltip: {
         _id: null,
         position: 'right',
@@ -99,35 +105,13 @@ class NewAnalysisContainer extends React.Component {
     window.addEventListener('resize', this.resize);
   }
   componentWillReceiveProps = (nextProps) => {
+    // is the available samples have changed, updated view
     if (!deepEqual(nextProps.analysisSamples, this.props.analysisSamples)) {
-      const itemsUpdated = nextProps.analysisSamples.items.sample.length > 0;
-      let newDateRange;
-      let newDefaultFilters;
-      if (itemsUpdated) {
-        newDateRange = this.getDateRange(nextProps.analysisSamples.items.sample);
-        newDefaultFilters = this.defaultFilters(newDateRange);
-      }
-      this.setState(({ dateRange, selection }) => {
-        return {
-          dateRange: itemsUpdated ? this.assignDateRange(newDateRange) : dateRange,
-          fetchStatus: {
-            isFetching: nextProps.analysisSamples.isFetching,
-            didInvalidate: nextProps.analysisSamples.didInvalidate,
-            message: nextProps.analysisSamples.message,
-          },
-          selection: itemsUpdated ?
-          {
-            isDrawerOpen: true,
-            items: this.checkFilters(
-              nextProps.analysisSamples.items.sample,
-              newDefaultFilters),
-            last: null,
-            level: 'sample',
-          }
-          :
-          selection,
-        };
-      });
+      this.updateSamples(nextProps.analysisSamples);
+    }
+    // is an analysis task has been submitted, update snackbar
+    if (!deepEqual(nextProps.analysisPost, this.props.analysisPost)) {
+      this.updateSnackbar(nextProps.analysisPost, this.props.analysisPost);
     }
   }
   componentDidUpdate = (prevProps, prevState) => {
@@ -280,6 +264,20 @@ class NewAnalysisContainer extends React.Component {
       }
     });
     return newItems;
+  }
+  closeSnackbar = () => {
+    this.setState(({ snackbar }) => {
+      return {
+        snackbar: Object.assign(
+          {},
+          snackbar,
+          {
+            message: '',
+            open: false,
+          }
+        ),
+      };
+    });
   }
   defaultFilters = (dateRange) => {
     return {
@@ -745,6 +743,90 @@ class NewAnalysisContainer extends React.Component {
       design: JSON.parse(JSON.stringify(newDesign)),
     });
   }
+  updateSamples = (next) => {
+    const itemsUpdated = next.items.sample.length > 0;
+    let newDateRange;
+    let newDefaultFilters;
+    if (itemsUpdated) {
+      newDateRange = this.getDateRange(next.items.sample);
+      newDefaultFilters = this.defaultFilters(newDateRange);
+    }
+    this.setState(({ dateRange, selection }) => {
+      return {
+        dateRange: itemsUpdated ? this.assignDateRange(newDateRange) : dateRange,
+        fetchStatus: {
+          isFetching: next.isFetching,
+          didInvalidate: next.didInvalidate,
+          message: next.message,
+        },
+        selection: itemsUpdated ?
+        {
+          isDrawerOpen: true,
+          items: this.checkFilters(
+            next.items.sample,
+            newDefaultFilters),
+          last: null,
+          level: 'sample',
+        }
+        :
+        selection,
+      };
+    });
+  }
+  updateSnackbar = (next, current) => {
+    const currentTime = new Date();
+    const lastOpen = this.state.snackbar.last;
+    const delay = !lastOpen || currentTime - lastOpen > 2000 ?
+      0
+      :
+      2000 - (currentTime - lastOpen)
+    ;
+    const newSnackBarState = (orignalState, newValues) => {
+      return {
+        snackbar: Object.assign(
+          {},
+          orignalState,
+          newValues,
+          {
+            last: currentTime,
+          }
+        ),
+      };
+    };
+    setTimeout(() => {
+      this.setState(({ snackbar }) => {
+        if (next.isSubmitted) {
+          return newSnackBarState(
+            snackbar,
+            {
+              message: 'Task submitted',
+              open: true,
+            }
+          );
+        } else if (next.didSubmitFail) {
+          return newSnackBarState(
+            snackbar,
+            {
+              message: 'Submission failed',
+              open: true,
+            }
+          );
+        } else if (
+          current.isSubmitted &&
+          !next.isSubmitted
+        ) {
+          return newSnackBarState(
+            snackbar,
+            {
+              message: 'Task added to queue',
+              open: true,
+            }
+          );
+        }
+        return {};
+      });
+    }, delay);
+  }
   render() {
     return (
       <NewAnalysis
@@ -793,6 +875,13 @@ class NewAnalysisContainer extends React.Component {
         screenSize={ this.state.screenSize }
         selected={ this.state.selected }
         selection={ this.state.selection }
+        snackbar={ Object.assign(
+          {},
+          this.state.snackbar,
+          {
+            close: this.closeSnackbar,
+          }
+        ) }
         stepIndex={ this.state.stepIndex }
         submit={ this.submit }
         updateDesign={ this.updateDesign }
@@ -808,6 +897,11 @@ NewAnalysisContainer.defaultProps = {
 };
 
 NewAnalysisContainer.propTypes = {
+  analysisPost: PropTypes.shape({
+    didSubmitFail: PropTypes.bool,
+    isSubmitted: PropTypes.bool,
+    message: PropTypes.string,
+  }).isRequired,
   analysisSamples: PropTypes.shape({
     didInvalidate: PropTypes.bool,
     isFetching: PropTypes.bool,
@@ -848,6 +942,7 @@ const mapDispatchToProps = (dispatch) => {
 
 const mapStateToProps = (state) => {
   return {
+    analysisPost: state.analysisPost,
     analysisSamples: state.analysisSamples,
     user: state.user,
   };

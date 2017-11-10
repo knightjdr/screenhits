@@ -22,7 +22,7 @@ const helpBoxSub = {
 
 const analysisStyle = {
   checkbox: {
-    maxWidth: 250,
+    maxWidth: 452,
     position: 'relative',
     top: -12,
     verticalAlign: 'center',
@@ -33,7 +33,7 @@ const analysisStyle = {
     height: 72,
     marginLeft: 4,
     marginRight: 4,
-    maxWidth: 300,
+    maxWidth: 500,
   },
   dateContainer: {
     display: 'inline-flex',

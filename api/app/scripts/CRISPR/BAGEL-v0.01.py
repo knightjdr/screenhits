@@ -103,7 +103,7 @@ def bootstrap_resample(X, n=None):
 #
 
 
-fin  = open(args.filename)
+fin  = open(args.path + args.filename)
 skipfields = fin.readline().rstrip().split('\t')
 for i in column_list:
 	print "Using column:  " + skipfields[i+1]
@@ -210,7 +210,7 @@ for loop in range(args.numiter):
 		bf[g].append(bayes_factor)
 
 
-outfile = args.path + 'bagel-results_' + args.filename
+outfile = args.path + 'bagel_' + args.filename
 fout = open(outfile, 'w')
 fout.write('GENE\tBF\tSTD\tNumObs\n')
 for g in sorted( bf.keys() ):

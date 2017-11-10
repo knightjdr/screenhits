@@ -1,8 +1,11 @@
 const config = require('../../../config').settings();
+const counter = require('../helpers/counter');
+const crudCreate = require('../crud/create');
+const crudUpdate = require('../crud/update');
 const fs = require('mz/fs');
 const moment = require('moment');
 const pipeline = require('./pipeline');
-// const uuid = require('uuid');
+// const rimraf = require('rimraf');
 
 const Analysis = {
   create: (form) => {
@@ -21,12 +24,37 @@ const Analysis = {
       }
     });
   },
+  createTask: (taskID, userEmail, userName) => {
+    return new Promise((resolve, reject) => {
+      const insertObj = {
+        _id: taskID,
+        userEmail,
+        userName,
+        pid: 'x',
+        status: 'Task created',
+        step: 'Initializing task',
+      };
+      crudCreate.insert('analysisTasks', insertObj)
+        .then(() => { resolve(); })
+        .catch((error) => {
+          reject(error);
+        })
+      ;
+    });
+  },
   processAnalysisItem: (item) => {
     return new Promise((resolve, reject) => {
-      let taskFolder;
-      // delete task folder
+      const task = {
+        folder: null,
+        id: null,
+      };
+      // delete task folder (need to change to rimraf)
       const deleteFolder = (folderID) => {
-        if (folderID) {
+        if (
+          folderID &&
+          folderID !== '/' &&
+          folderID !== './'
+        ) {
           fs.access(folderID)
             .then(() => {
               fs.rmdir(folderID);
@@ -35,21 +63,39 @@ const Analysis = {
         }
       };
 
-      // create a unique task ID
-      // const id = uuid.v1();
-      // create a temporary folder for storing results
-      fs.mkdtemp(config.taskDir)
-        .then((folder) => {
-          taskFolder = folder;
-          return pipeline[item.screenType].init(item, taskFolder);
+      // get analysis taskID
+      counter.get('analysis')
+        .then((taskID) => {
+          task.id = taskID;
+          // create task in database
+          return Analysis.createTask(task.id, item.creatorEmail, item.creatorName);
         })
         .then(() => {
-          deleteFolder(taskFolder);
+          // create task folder
+          Analysis.updateTask(task.id, `Creating folder: ${task.folder}`, 'Task folder');
+          return fs.mkdtemp(config.taskPath);
+        })
+        .then((folder) => {
+          task.folder = folder;
+          // run analysis pipeline
+          const status = `Starting ${item.screenType}:${item.analysisType} pipeline`;
+          Analysis.updateTask(task.id, status, 'Pipeline');
+          return pipeline[item.screenType].init(
+            item,
+            task,
+            Analysis.updateTask,
+            Analysis.writeLog
+          );
+        })
+        .then(() => {
+          Analysis.updateTask(task.id, 'Task complete', 'Pipeline');
+          deleteFolder(task.folder);
         })
         .catch((error) => {
           console.log(`ERROR: ${error}`);
-          deleteFolder(taskFolder);
-          reject(error);
+          Analysis.updateTask(task.id, error);
+          deleteFolder(task.folder);
+          reject(String(error));
         })
       ;
     });
@@ -102,6 +148,22 @@ const Analysis = {
     }
     // remove sample from running queue
     Analysis.queue.running.splice(0, 1);
+  },
+  updateTask: (taskID, status, step, pid) => {
+    const updateObj = {};
+    if (pid) {
+      updateObj.pid = pid;
+    }
+    if (status) {
+      updateObj.status = String(status);
+    }
+    if (step) {
+      updateObj.step = step;
+    }
+    crudUpdate.insert('analysisTasks', { _id: taskID }, { $set: updateObj });
+  },
+  writeLog: (folder, data) => {
+    fs.appendFile(`${folder}/log.txt`, String(data));
   },
 };
 module.exports = Analysis;

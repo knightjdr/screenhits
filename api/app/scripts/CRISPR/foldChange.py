@@ -41,7 +41,7 @@ optional.add_argument(
 args = parser.parse_args()
 
 #-- Read file
-readCounts = pd.read_table(args.filename, sep = '\t', index_col = 0)
+readCounts = pd.read_table(args.path + args.filename, sep = '\t', index_col = 0)
 numGuides, numColumns = readCounts.shape
 
 #-- Get columns names, samples will be from index 1 onwards

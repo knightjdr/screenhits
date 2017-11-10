@@ -316,6 +316,8 @@ class SampleGrid extends React.Component {
             </Scrollbars>
             <div
               style={ {
+                display: 'flex',
+                justifyContent: 'flex-start',
                 margin: '10px 0px 0px 0px',
               } }
             >
@@ -347,26 +349,26 @@ class SampleGrid extends React.Component {
                   <RemoveCircle />
                 </IconButton>
               }
+              <FloatingActionButton
+                data-tip={ true }
+                data-for={ 'fab-reset-sample-design' }
+                mini={ true }
+                onTouchTap={ this.props.resetDesign }
+                style={ {
+                  margin: '0px 0px 0px 20px',
+                } }
+              >
+                <Cached />
+              </FloatingActionButton>
+              <ReactTooltip
+                effect="solid"
+                id="fab-reset-sample-design"
+                type="dark"
+                place="top"
+              >
+                Reset sample design
+              </ReactTooltip>
             </div>
-            <FloatingActionButton
-              data-tip={ true }
-              data-for={ 'fab-reset-sample-design' }
-              mini={ true }
-              onTouchTap={ this.props.resetDesign }
-              style={ {
-                margin: '10px 0px 0px 10px',
-              } }
-            >
-              <Cached />
-            </FloatingActionButton>
-            <ReactTooltip
-              effect="solid"
-              id="fab-reset-sample-design"
-              type="dark"
-              place="top"
-            >
-              Reset sample design
-            </ReactTooltip>
           </div>
           <div
             style={ {

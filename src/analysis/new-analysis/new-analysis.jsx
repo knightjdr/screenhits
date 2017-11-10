@@ -2,6 +2,7 @@ import FlatButton from 'material-ui/FlatButton';
 import muiThemeable from 'material-ui/styles/muiThemeable';
 import PropTypes from 'prop-types';
 import React from 'react';
+import Snackbar from 'material-ui/Snackbar';
 import { Scrollbars } from 'react-custom-scrollbars';
 import {
   Step,
@@ -88,7 +89,7 @@ class NewAnalysis extends React.Component {
           autoHideTimeout={ 1000 }
           autoHideDuration={ 200 }
           autoHeight={ true }
-          autoHeightMax={ 'calc(100vh - 70px)' }
+          autoHeightMax={ 'calc(100vh - 80px)' }
           renderThumbVertical={ ({ style, props }) => {
             return (
               <div
@@ -161,6 +162,12 @@ class NewAnalysis extends React.Component {
             </div>
           </div>
         </Scrollbars>
+        <Snackbar
+          autoHideDuration={ this.props.snackbar.duration }
+          message={ this.props.snackbar.message }
+          open={ this.props.snackbar.open }
+          onRequestClose={ this.props.snackbar.close }
+        />
       </div>
     );
   }
@@ -297,6 +304,12 @@ NewAnalysis.propTypes = {
     ),
     last: PropTypes.number,
     level: PropTypes.string,
+  }).isRequired,
+  snackbar: PropTypes.shape({
+    close: PropTypes.func,
+    duration: PropTypes.number,
+    message: PropTypes.string,
+    open: PropTypes.bool,
   }).isRequired,
   stepIndex: PropTypes.number.isRequired,
   submit: PropTypes.func.isRequired,
