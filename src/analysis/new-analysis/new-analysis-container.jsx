@@ -43,7 +43,7 @@ class NewAnalysisContainer extends React.Component {
     const defaultFilters = this.defaultFilters(dateRange);
     this.state = {
       dateRange,
-      design: null,
+      design: [],
       dialog: {
         defaultValue: null,
         help: false,
@@ -65,7 +65,7 @@ class NewAnalysisContainer extends React.Component {
       formData: {
         analysisName: '',
         analysisType: null,
-        screenType: 'CRISPR',
+        screenType: null,
       },
       inputWidth: window.innerWidth >= 555 ? 500 : window.innerWidth - 55,
       isFiltered: false,
@@ -88,10 +88,10 @@ class NewAnalysisContainer extends React.Component {
       snackbar: {
         duration: 4000,
         last: null,
-        message: 'Snackbar',
+        message: '',
         open: false,
       },
-      stepIndex: 2,
+      stepIndex: 0,
       tooltip: {
         _id: null,
         position: 'right',
@@ -693,7 +693,7 @@ class NewAnalysisContainer extends React.Component {
       },
     });
   }
-  formatDesign = (design) => {
+  formatDesign = (design = []) => {
     const formattedDesign = [];
     design.forEach((sampleSet, index) => {
       if (index > 0) {
@@ -722,13 +722,14 @@ class NewAnalysisContainer extends React.Component {
   }
   submit = () => {
     const design = this.formatDesign(this.state.design);
+    const formData = this.validateFormData(this.state.formData);
     // submit design and this.state.formData to server
     if (design.length > 0) {
       this.props.submitAnalysis(
         this.props.user,
         Object.assign(
           {},
-          this.state.formData,
+          formData,
           {
             design,
             creatorEmail: this.props.user.email,
@@ -826,6 +827,27 @@ class NewAnalysisContainer extends React.Component {
         return {};
       });
     }, delay);
+  }
+  validateFormData = (formData) => {
+    // convert fields that should be numbers to numbers
+    const convertedFormData = Object.assign({}, formData);
+    if (
+      convertedFormData.screenType &&
+      convertedFormData.analysisType
+    ) {
+      const params =
+        AnalysisOptions[convertedFormData.screenType][convertedFormData.analysisType].parameters;
+      Object.keys(convertedFormData).forEach((field) => {
+        const paramsIndex = params.findIndex((param) => { return param.name === field; });
+        if (
+          paramsIndex > -1 &&
+          params[paramsIndex].inputType === 'number'
+        ) {
+          convertedFormData[field] = Number(convertedFormData[field]);
+        }
+      });
+    }
+    return convertedFormData;
   }
   render() {
     return (

@@ -31,8 +31,8 @@ class Management extends React.Component {
         style={ {
           display: 'flex',
           flexFlow: 'column',
-          height: 'calc(100vh - 65px)',
-          padding: '0px 2px 5px 2px',
+          height: 'calc(100vh - 70px)',
+          padding: '5px 2px 5px 2px',
           position: 'relative',
         } }
       >

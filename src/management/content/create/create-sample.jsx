@@ -10,12 +10,12 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import RemoveCircleIcon from 'material-ui/svg-icons/content/remove-circle';
 import SelectField from 'material-ui/SelectField';
+import Snackbar from 'material-ui/Snackbar';
 import TextField from 'material-ui/TextField';
 
 import ActionButtons from '../../../action-buttons/action-buttons-container';
 import createStyle from './create-style';
 import Fields from '../../../modules/fields';
-import Notice from '../../../messages/notice/notice';
 import { objectEmpty } from '../../../helpers/helpers';
 
 class CreateSample extends React.Component {
@@ -32,11 +32,7 @@ class CreateSample extends React.Component {
   }
   render() {
     return (
-      <div
-        style={ {
-          marginBottom: 20,
-        } }
-      >
+      <div>
         <div>
           <FontAwesome name="info-circle" /> Name your sample, provide all
           details below and then select a file for upload.
@@ -628,26 +624,6 @@ class CreateSample extends React.Component {
                     label: 'Create',
                   } }
                 />
-                <div
-                  style={ {
-                    flexGrow: 1,
-                    margin: '10px 20px 0px 10px',
-                    textAlign: 'left',
-                  } }
-                >
-                  <Notice
-                    fail={ this.props.postState.didSubmitFail }
-                    failMessage={ `sample creation failed.
-                    ${this.props.postState.message}.` }
-                    label="create-notification"
-                    submit={ this.props.postState.isSubmitted }
-                    submitMessage="sample submitted"
-                    succeed={ this.props.postState.message &&
-                      !this.props.postState.didSubmitFail
-                    }
-                    succeedMessage={ this.props.postState.message }
-                  />
-                </div>
               </div>
             </div>
           </div>
@@ -661,6 +637,12 @@ class CreateSample extends React.Component {
         >
           { this.props.dialog.text }
         </Dialog>
+        <Snackbar
+          autoHideDuration={ this.props.snackbar.duration }
+          message={ this.props.snackbar.message }
+          open={ this.props.snackbar.open }
+          onRequestClose={ this.props.snackbar.close }
+        />
       </div>
     );
   }
@@ -744,14 +726,14 @@ CreateSample.propTypes = {
       warningHover: PropTypes.string,
     }),
   }).isRequired,
-  postState: PropTypes.shape({
-    didSubmitFail: PropTypes.bool,
-    _id: PropTypes.number,
-    isSubmitted: PropTypes.bool,
-    message: PropTypes.string,
-  }).isRequired,
   readFileInput: PropTypes.func.isRequired,
   removeFromHeader: PropTypes.func.isRequired,
+  snackbar: PropTypes.shape({
+    close: PropTypes.func,
+    duration: PropTypes.number,
+    message: PropTypes.string,
+    open: PropTypes.bool,
+  }).isRequired,
   updateUnused: PropTypes.func.isRequired,
   warning: PropTypes.bool.isRequired,
 };

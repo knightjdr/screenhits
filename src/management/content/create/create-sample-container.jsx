@@ -56,8 +56,20 @@ class CreateSampleContainer extends React.Component {
       errors: Object.assign({}, BlankState.sample.errors),
       lines: Object.assign([], reset.lines),
       screenType,
+      snackbar: {
+        duration: 4000,
+        last: null,
+        message: '',
+        open: false,
+      },
       warning: BlankState.sample.warning,
     };
+  }
+  componentWillReceiveProps = (nextProps) => {
+    // is an creation task has been submitted, update snackbar
+    if (!deepEqual(nextProps.postState, this.props.postState)) {
+      this.updateSnackbar(nextProps.postState, this.props.postState);
+    }
   }
   componentDidUpdate = (prevProps, prevState) => {
     const { formData } = prevState;
@@ -390,6 +402,60 @@ class CreateSampleContainer extends React.Component {
       });
     }
   }
+  updateSnackbar = (next, current) => {
+    const currentTime = new Date();
+    const lastOpen = this.state.snackbar.last;
+    const delay = !lastOpen || currentTime - lastOpen > 2000 ?
+      0
+      :
+      2000 - (currentTime - lastOpen)
+    ;
+    const newSnackBarState = (orignalState, newValues) => {
+      return {
+        snackbar: Object.assign(
+          {},
+          orignalState,
+          newValues,
+          {
+            last: currentTime,
+          }
+        ),
+      };
+    };
+    setTimeout(() => {
+      this.setState(({ snackbar }) => {
+        if (next.isSubmitted) {
+          return newSnackBarState(
+            snackbar,
+            {
+              message: 'Task submitted',
+              open: true,
+            }
+          );
+        } else if (next.didSubmitFail) {
+          return newSnackBarState(
+            snackbar,
+            {
+              message: 'Submission failed',
+              open: true,
+            }
+          );
+        } else if (
+          current.isSubmitted &&
+          !next.isSubmitted
+        ) {
+          return newSnackBarState(
+            snackbar,
+            {
+              message: 'Task added to queue',
+              open: true,
+            }
+          );
+        }
+        return {};
+      });
+    }, delay);
+  }
   updateUnused = () => {
     this.setState((prevState) => {
       const inUseIndex = prevState.file.header.findIndex((headerColumn) => {
@@ -469,6 +535,7 @@ class CreateSampleContainer extends React.Component {
         readFileInput={ this.readFileInput }
         removeFromHeader={ this.removeFromHeader }
         resetForm={ this.resetForm }
+        snackbar={ this.state.snackbar }
         updateUnused={ this.updateUnused }
         warning={ this.state.warning }
       />

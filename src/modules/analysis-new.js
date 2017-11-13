@@ -49,7 +49,7 @@ const AnalysisModule = {
           helpText: `The number of iterations to resample and recalculate the
             bagel statistic.`,
           inputType: 'number',
-          name: 'boostrapIter',
+          name: 'bootstrapIter',
           layName: 'Bootstrap iterations',
         },
         {

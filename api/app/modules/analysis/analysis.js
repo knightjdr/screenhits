@@ -1,10 +1,10 @@
 const config = require('../../../config').settings();
 const counter = require('../helpers/counter');
 const crudCreate = require('../crud/create');
-const crudUpdate = require('../crud/update');
 const fs = require('mz/fs');
 const moment = require('moment');
 const pipeline = require('./pipeline');
+const UpdateTask = require('./update-task');
 // const rimraf = require('rimraf');
 
 const Analysis = {
@@ -24,15 +24,19 @@ const Analysis = {
       }
     });
   },
-  createTask: (taskID, userEmail, userName) => {
+  createTask: (taskID, item) => {
     return new Promise((resolve, reject) => {
       const insertObj = {
         _id: taskID,
-        userEmail,
-        userName,
+        details: item,
+        folder: null,
+        kill: false,
+        log: null,
         pid: 'x',
         status: 'Task created',
         step: 'Initializing task',
+        userEmail: item.userEmail,
+        userName: item.userName,
       };
       crudCreate.insert('analysisTasks', insertObj)
         .then(() => { resolve(); })
@@ -68,32 +72,48 @@ const Analysis = {
         .then((taskID) => {
           task.id = taskID;
           // create task in database
-          return Analysis.createTask(task.id, item.creatorEmail, item.creatorName);
+          return Analysis.createTask(task.id, item);
         })
         .then(() => {
           // create task folder
-          Analysis.updateTask(task.id, `Creating folder: ${task.folder}`, 'Task folder');
-          return fs.mkdtemp(config.taskPath);
+          const taskStatus = {
+            status: `Creating folder: ${task.folder}`,
+            step: 'Task folder',
+          };
+          return Promise.all([
+            fs.mkdtemp(config.taskPath),
+            UpdateTask.async(task.id, taskStatus),
+          ]);
         })
-        .then((folder) => {
-          task.folder = folder;
+        .then((values) => {
+          task.folder = values[0];
           // run analysis pipeline
-          const status = `Starting ${item.screenType}:${item.analysisType} pipeline`;
-          Analysis.updateTask(task.id, status, 'Pipeline');
+          const taskStatus = {
+            folder: task.folder,
+            status: `Starting ${item.screenType}:${item.analysisType} pipeline`,
+            step: 'Pipeline',
+          };
+          return UpdateTask.async(task.id, taskStatus);
+        })
+        .then(() => {
           return pipeline[item.screenType].init(
             item,
             task,
-            Analysis.updateTask,
             Analysis.writeLog
           );
         })
         .then(() => {
-          Analysis.updateTask(task.id, 'Task complete', 'Pipeline');
+          const taskStatus = {
+            status: 'Task complete',
+            step: 'Pipeline',
+          };
+          return UpdateTask.async(task.id, taskStatus);
+        })
+        .then(() => {
           deleteFolder(task.folder);
         })
         .catch((error) => {
-          console.log(`ERROR: ${error}`);
-          Analysis.updateTask(task.id, error);
+          UpdateTask.sync(task.id, { status: String(error) });
           deleteFolder(task.folder);
           reject(String(error));
         })
@@ -148,19 +168,6 @@ const Analysis = {
     }
     // remove sample from running queue
     Analysis.queue.running.splice(0, 1);
-  },
-  updateTask: (taskID, status, step, pid) => {
-    const updateObj = {};
-    if (pid) {
-      updateObj.pid = pid;
-    }
-    if (status) {
-      updateObj.status = String(status);
-    }
-    if (step) {
-      updateObj.step = step;
-    }
-    crudUpdate.insert('analysisTasks', { _id: taskID }, { $set: updateObj });
   },
   writeLog: (folder, data) => {
     fs.appendFile(`${folder}/log.txt`, String(data));

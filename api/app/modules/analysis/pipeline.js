@@ -1,47 +1,41 @@
 const arrayUnique = require('../helpers/array-unique');
 const config = require('../../../config').settings();
+const Convert = require('./convert-input.js');
 const CrisprDefaults = require('./CRISPR/crispr-defaults');
 const fs = require('mz/fs');
 const query = require('../query/query');
 const samplesToFiles = require('./CRISPR/samples-to-files');
+const StoreOutput = require('./store-output.js');
 const spawn = require('child_process').spawn;
+const UpdateTask = require('./update-task');
 
 const Pipeline = {
   CRISPR: {
-    BAGEL: (fileNames, details, task, updateTask, writeLog) => {
+    BAGEL: (fileNames, details, task, writeLog) => {
       return new Promise((resolve, reject) => {
-        // get params for BAGEL
-        const getBagelParams = (analysis, defaults) => {
-          const bagelParams = {};
-          Object.keys(defaults).forEach((key) => {
-            const value = Object.prototype.hasOwnProperty.call(analysis, key) &&
-              analysis.key ?
-                analysis.key
-                :
-                defaults[key]
-            ;
-            bagelParams[key] = value;
-          });
-          return bagelParams;
-        };
-
         // generate fold change files
-        Pipeline.CRISPR.foldChange(fileNames, task, 2, updateTask, writeLog)
+        Pipeline.CRISPR.foldChange(fileNames, task, 2, writeLog)
           .then((fcFileNames) => {
             // get BAGEL params
-            const bagelParams = getBagelParams(details, CrisprDefaults.BAGEL);
+            const bagelParams = Pipeline.getParams(details, CrisprDefaults.BAGEL);
             // run BAGEL
             return Pipeline.CRISPR.bagelScript(
               fcFileNames,
               task,
               details,
               bagelParams,
-              updateTask,
               writeLog
             );
           })
-          .then((bagelFileNames) => {
-            resolve(bagelFileNames);
+          .then(() => {
+            // store log and analysis results
+            return Promise.all([
+              Pipeline.log(task),
+              StoreOutput.BAGEL(task),
+            ]);
+          })
+          .then(() => {
+            resolve();
           })
           .catch((error) => {
             reject(error);
@@ -49,7 +43,7 @@ const Pipeline = {
         ;
       });
     },
-    bagelScript: (fileNames, task, details, params, updateTask, writeLog) => {
+    bagelScript: (fileNames, task, details, params, writeLog) => {
       return new Promise((resolve, reject) => {
         const essentialList = `essential_${params.essentialVersion}.txt`;
         const nonEssentialList = `nonessential_${params.essentialVersion}.txt`;
@@ -75,10 +69,15 @@ const Pipeline = {
                 '--columns',
                 `${columns}`,
                 '--numiter',
-                `${params.boostrapIter}`,
+                `${params.bootstrapIter}`,
               ]
             );
-            updateTask(task.id, 'Starting BAGEL', 'BAGEL', bagelProcess.pid);
+            let taskStatus = {
+              pid: bagelProcess.pid,
+              status: 'Starting BAGEL',
+              step: 'BAGEL',
+            };
+            UpdateTask.sync(task.id, taskStatus);
             bagelProcess.stdout.on('data', (data) => {
               // log stdout, if any
               writeLog(task.folder, data);
@@ -89,7 +88,13 @@ const Pipeline = {
             bagelProcess.on('exit', () => {
               fs.access(`${task.folder}/bagel_${fileName}`)
                 .then(() => {
-                  updateTask(task.id, 'Complete', null, 'x');
+                  taskStatus = {
+                    pid: 'x',
+                    status: 'Complete',
+                  };
+                  return UpdateTask.async(task.id, taskStatus);
+                })
+                .then(() => {
                   resolveBagel(`bagel_${fileName}`);
                 })
                 .catch((accessError) => {
@@ -106,7 +111,7 @@ const Pipeline = {
             .then((outFileName) => {
               outFileNames.push(outFileName);
               if (index < numFiles - 1) {
-                next(fileNames, index + 1);
+                next(fileNames[index], index + 1);
               } else {
                 resolve(outFileNames);
               }
@@ -119,7 +124,7 @@ const Pipeline = {
         next(fileNames[0], 0);
       });
     },
-    foldChange: (fileNames, task, logBase, updateTask, writeLog) => {
+    foldChange: (fileNames, task, logBase, writeLog) => {
       return new Promise((resolve, reject) => {
         const numFiles = fileNames.length;
 
@@ -137,7 +142,12 @@ const Pipeline = {
                 `${logBase}`,
               ]
             );
-            updateTask(task.id, 'Calculating fold changes', 'File processing', foldChangeProcess.pid);
+            let taskStatus = {
+              pid: foldChangeProcess.pid,
+              status: 'Calculating fold changes',
+              step: 'File processing',
+            };
+            UpdateTask.sync(task.id, taskStatus);
             foldChangeProcess.stdout.on('data', (data) => {
               // log stdout, if any
               writeLog(task.folder, data);
@@ -148,7 +158,13 @@ const Pipeline = {
             foldChangeProcess.on('exit', () => {
               fs.access(`${task.folder}/foldchange_${fileName}`)
                 .then(() => {
-                  updateTask(task.id, 'Complete', null, 'x');
+                  taskStatus = {
+                    pid: 'x',
+                    status: 'Complete',
+                  };
+                  return UpdateTask.async(task.id, taskStatus);
+                })
+                .then(() => {
                   resolveFoldChange(`foldchange_${fileName}`);
                 })
                 .catch((accessError) => {
@@ -165,7 +181,7 @@ const Pipeline = {
             .then((outFileName) => {
               outFileNames.push(outFileName);
               if (index < numFiles - 1) {
-                next(fileNames, index + 1);
+                next(fileNames[index], index + 1);
               } else {
                 resolve(outFileNames);
               }
@@ -178,23 +194,8 @@ const Pipeline = {
         next(fileNames[0], 0);
       });
     },
-    init: (analysisDetails, task, updateTask, writeLog) => {
+    init: (analysisDetails, task, writeLog) => {
       return new Promise((resolve, reject) => {
-        // get params for init steps
-        const getInitParams = (analysis, defaults) => {
-          const initParams = {};
-          Object.keys(defaults).forEach((key) => {
-            const value = Object.prototype.hasOwnProperty.call(analysis, key) &&
-              analysis.key ?
-                analysis.key
-                :
-                defaults[key]
-            ;
-            initParams[key] = value;
-          });
-          return initParams;
-        };
-
         // get list of samples
         let sampleIDs = [];
         analysisDetails.design.forEach((sampleSet) => {
@@ -204,21 +205,30 @@ const Pipeline = {
         sampleIDs = arrayUnique(sampleIDs);
 
         // get samples from database
-        updateTask(task.id, 'Getting samples', 'Database query');
+        let taskStatus = {
+          status: 'Getting samples',
+          step: 'Database query',
+        };
+        UpdateTask.sync(task.id, taskStatus);
         query.get('sample', { _id: { $in: sampleIDs } }, { records: 1 })
           .then((samples) => {
             // write samples to files based on design
-            updateTask(task.id, 'Writing database samples to file system', 'File creation');
-            return samplesToFiles.fromDatabase(task.folder, analysisDetails.design, samples);
+            taskStatus = {
+              status: 'Writing database samples to file system',
+              step: 'File creation',
+            };
+            return Promise.all([
+              samplesToFiles.fromDatabase(task.folder, analysisDetails.design, samples),
+              UpdateTask.async(task.id, taskStatus),
+            ]);
           })
-          .then((fileNames) => {
+          .then((values) => {
             // apply filters and normalization
-            const initParams = getInitParams(analysisDetails, CrisprDefaults.all);
+            const initParams = Pipeline.getParams(analysisDetails, CrisprDefaults.all);
             return Pipeline.CRISPR.normalizeAndFilter(
-              fileNames,
+              values[0],
               task,
               initParams,
-              updateTask,
               writeLog
             );
           })
@@ -228,7 +238,6 @@ const Pipeline = {
               filteredFileNames,
               analysisDetails,
               task,
-              updateTask,
               writeLog
             );
           })
@@ -241,7 +250,7 @@ const Pipeline = {
         ;
       });
     },
-    normalizeAndFilter: (fileNames, task, params, updateTask, writeLog) => {
+    normalizeAndFilter: (fileNames, task, params, writeLog) => {
       return new Promise((resolve, reject) => {
         const numFiles = fileNames.length;
 
@@ -265,7 +274,12 @@ const Pipeline = {
                 `${params.normCount}`,
               ]
             );
-            updateTask(task.id, 'Filtering and normalizing files', 'File formatting', normalizeProcess.pid);
+            let taskStatus = {
+              pid: normalizeProcess.pid,
+              status: 'Filtering and normalizing files',
+              step: 'File formatting',
+            };
+            UpdateTask.sync(task.id, taskStatus);
             normalizeProcess.stdout.on('data', (data) => {
               // log stdout, if any
               writeLog(task.folder, data);
@@ -276,7 +290,13 @@ const Pipeline = {
             normalizeProcess.on('exit', () => {
               fs.access(`${task.folder}/filtered_${fileName}`)
                 .then(() => {
-                  updateTask(task.id, 'Complete', null, 'x');
+                  taskStatus = {
+                    pid: 'x',
+                    status: 'Complete',
+                  };
+                  return UpdateTask.async(task.id, taskStatus);
+                })
+                .then(() => {
                   resolveNormalize(`filtered_${fileName}`);
                 })
                 .catch((accessError) => {
@@ -293,7 +313,7 @@ const Pipeline = {
             .then((outFileName) => {
               outFileNames.push(outFileName);
               if (index < numFiles - 1) {
-                next(fileNames, index + 1);
+                next(fileNames[index], index + 1);
               } else {
                 resolve(outFileNames);
               }
@@ -306,6 +326,40 @@ const Pipeline = {
         next(fileNames[0], 0);
       });
     },
+  },
+  getParams: (analysis, defaults) => {
+    const params = {};
+    // want to ensure input field and default are both of the same type:
+    // text or numeric, if not then use the default
+    Object.keys(defaults).forEach((key) => {
+      const value = Object.prototype.hasOwnProperty.call(analysis, key) &&
+        analysis[key] &&
+        (
+          (isNaN(analysis[key]) && isNaN(defaults[key])) ||
+          (!isNaN(analysis[key]) && !isNaN(defaults[key]))
+        ) ?
+          Convert.UnknownInputType(analysis[key])
+          :
+          defaults[key]
+      ;
+      params[key] = value;
+    });
+    return params;
+  },
+  log: (task) => {
+    return new Promise((resolve, reject) => {
+      fs.readFile(`${task.folder}/log.txt`, 'utf8')
+        .then((log) => {
+          return UpdateTask.async(task.id, { log });
+        })
+        .then(() => {
+          resolve();
+        })
+        .catch((error) => {
+          reject(error);
+        })
+      ;
+    });
   },
 };
 module.exports = Pipeline;

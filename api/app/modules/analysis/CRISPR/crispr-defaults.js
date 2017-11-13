@@ -6,7 +6,7 @@ const CrisprDefaults = {
     normCount: 10000000,
   },
   BAGEL: {
-    boostrapIter: 1000,
+    bootstrapIter: 1000,
     essentialVersion: 'v1',
   },
 };
