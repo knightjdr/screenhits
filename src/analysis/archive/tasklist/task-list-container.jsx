@@ -1,60 +1,102 @@
+import deepEqual from 'deep-equal';
+import Moment from 'moment';
 import PropTypes from 'prop-types';
 import React from 'react';
 
 import TaskList from './task-list';
 
+const emptyRect = {
+  bottom: null,
+  height: null,
+  left: null,
+  right: null,
+  top: null,
+  width: null,
+  x: null,
+  y: null,
+};
+const defaultTooltip = {
+  _id: null,
+  position: 'right',
+  rect: emptyRect,
+  show: false,
+  text: '',
+};
+const tableHeader = [
+  {
+    name: 'Task ID',
+    sort: true,
+    type: '_id',
+  },
+  {
+    name: 'Name',
+    sort: true,
+    type: 'name',
+  },
+  {
+    name: 'User',
+    sort: true,
+    type: 'user',
+  },
+  {
+    name: 'Date',
+    sort: true,
+    type: 'date',
+  },
+  {
+    name: 'Step/Status',
+    sort: true,
+    type: 'status',
+  },
+  {
+    name: 'Options',
+    sort: false,
+    type: 'options',
+  },
+];
+
 class TaskListContainer extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      header: [
-        {
-          name: 'ID',
-          sort: true,
-          type: '_id',
-        },
-        {
-          name: 'Name',
-          sort: true,
-          type: 'name',
-        },
-        {
-          name: 'User',
-          sort: true,
-          type: 'user',
-        },
-        {
-          name: 'Status',
-          sort: true,
-          type: 'status',
-        },
-        {
-          name: 'Options',
-          sort: false,
-          type: 'options',
-        },
-      ],
-      tableHeight: this.getHeight(),
+      deleteDialog: {
+        _id: null,
+        show: false,
+      },
+      designDialog: {
+        body: {},
+        show: false,
+        title: '',
+      },
+      header: tableHeader,
+      logDialog: {
+        show: false,
+        text: '',
+        title: '',
+      },
+      tableHeight: this.getHeight(this.props.tasks),
+      tasks: this.sortTasks(this.props.tasks, 'date', 'desc'),
+      tooltip: defaultTooltip,
     };
   }
-  componentDidMount() {
+  componentDidMount = () => {
     window.addEventListener('resize', this.resize);
   }
-  componentWillUnmount() {
+  componentWillReceiveProps = (nextProps) => {
+    const { tasks } = nextProps;
+    if (!deepEqual(tasks, this.props.tasks)) {
+      this.setState({
+        tasks: this.sortTasks(tasks, 'date', 'desc'),
+        tableHeight: this.getHeight(tasks),
+      });
+    }
+  }
+  componentWillUnmount = () => {
     window.removeEventListener('resize', this.resize);
   }
-  getHeight = () => {
-    // top = window height * 5%
-    // dialog header = 77, dialog footer = 53
-    // tabs = 48
-    // content margin top = 20, bottom = 24
-    // paragraph + bottom margin = 34
-    // table padding = 1, header 59
-    // row = 50, footer 51
-    // based on above, content not for rows = 367
-    // max table height (want top and bottom padding of 5%, so * 0.9)
-    const maxHeightRows = (window.innerHeight * 0.90) - 440;
-    const neededHeightRows = (this.props.tasks.length * 50);
+  getHeight = (table) => {
+    const maxHeightRows = (window.innerHeight * 0.90) - 0;
+    const neededHeightRows = (table.length * 50);
     let rowHeight = neededHeightRows < maxHeightRows ? neededHeightRows : maxHeightRows;
     // must give space for at least one row
     if (rowHeight < 50) {
@@ -62,16 +104,169 @@ class TaskListContainer extends React.Component {
     }
     return rowHeight + 111;
   }
-  resize = () => {
+  deleteTask = (_id) => {
+    console.log(_id);
+    this.hideDeleteDialog();
+  }
+  hideIconTooltip = () => {
     this.setState({
-      tableHeight: this.getHeight(),
+      tooltip: defaultTooltip,
     });
+  }
+  hideDeleteDialog = () => {
+    this.setState({
+      deleteDialog: {
+        _id: null,
+        show: false,
+      },
+    });
+  }
+  hideDesignDialog = () => {
+    this.setState({
+      designDialog: {
+        body: {},
+        show: false,
+        title: '',
+      },
+    });
+  }
+  hideLogDialog = () => {
+    this.setState({
+      logDialog: {
+        show: false,
+        text: '',
+        title: '',
+      },
+    });
+  }
+  resize = () => {
+    this.setState(({ tasks }) => {
+      return {
+        tableHeight: this.getHeight(tasks),
+      };
+    });
+  }
+  showIconTooltip = (e, text, position = 'top') => {
+    const domRect = e.target.getBoundingClientRect();
+    const rect = {
+      bottom: domRect.bottom,
+      height: domRect.height,
+      left: domRect.left,
+      right: domRect.right,
+      top: domRect.top,
+      width: domRect.width,
+      x: domRect.x,
+      y: domRect.y,
+    };
+    this.setState({
+      tooltip: {
+        position,
+        rect,
+        show: true,
+        text,
+      },
+    });
+  }
+  showDeleteDialog = (_id) => {
+    this.setState({
+      deleteDialog: {
+        _id,
+        show: true,
+      },
+    });
+  }
+  showDesignDialog = (task) => {
+    console.log(task.details);
+    this.setState({
+      designDialog: {
+        body: {
+          _id: task._id,
+        },
+        show: true,
+        title: `Design for task: ${task.name}`,
+      },
+    });
+  }
+  showLogDialog = (text, title) => {
+    this.setState({
+      logDialog: {
+        show: true,
+        text,
+        title,
+      },
+    });
+  }
+  sortTasks = (tasks, sortKey, direction) => {
+    const sortedTasks = JSON.parse(JSON.stringify(tasks));
+    const returnValue = direction === 'asc' ? -1 : 1;
+    const sortValue = (val) => {
+      if (typeof val === 'number') {
+        return val;
+      } else if (Moment(val, 'MMMM Do YYYY, h:mm a').isValid()) {
+        return Moment(val, 'MMMM Do YYYY, h:mm a').format('x');
+      }
+      return val.toUpperCase();
+    };
+    sortedTasks.sort((a, b) => {
+      const nameA = sortValue(a[sortKey]);
+      const nameB = sortValue(b[sortKey]);
+      if (nameA < nameB) {
+        return returnValue;
+      }
+      if (nameA > nameB) {
+        return -returnValue;
+      }
+      // for when the value is the same, use the _id which has to be unique
+      const keyA = a._id;
+      const keyB = b._id;
+      if (keyA < keyB) {
+        return returnValue;
+      }
+      if (keyA > keyB) {
+        return -returnValue;
+      }
+      return 0;
+    });
+    return sortedTasks;
   }
   render() {
     return (
       <TaskList
+        deleteDialog={ Object.assign(
+          {},
+          this.state.deleteDialog,
+          {
+            hideFunc: this.hideDeleteDialog,
+            showFunc: this.showDeleteDialog,
+          }
+        ) }
+        deleteTask={ this.deleteTask }
+        designDialog={ Object.assign(
+          {},
+          this.state.designDialog,
+          {
+            hideFunc: this.hideDesignDialog,
+            showFunc: this.showDesignDialog,
+          }
+        ) }
         header={ this.state.header }
-        tasks={ this.props.tasks }
+        iconTooltip={ Object.assign(
+          {},
+          this.state.tooltip,
+          {
+            hideFunc: this.hideIconTooltip,
+            showFunc: this.showIconTooltip,
+          }
+        ) }
+        logDialog={ Object.assign(
+          {},
+          this.state.logDialog,
+          {
+            hideFunc: this.hideLogDialog,
+            showFunc: this.showLogDialog,
+          }
+        ) }
+        tasks={ this.state.tasks }
         tableHeight={ this.state.tableHeight }
       />
     );

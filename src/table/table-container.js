@@ -1,3 +1,4 @@
+import deepEqual from 'deep-equal';
 import Moment from 'moment';
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -42,6 +43,24 @@ class TableContainer extends React.Component {
         }),
         sortIndex: -1,
       });
+    } else if (!deepEqual(nextProps.data.list, this.props.data.list)) {
+      const pageLength = this.getPageLength(nextProps.height);
+      this.setState((prevState) => {
+        return {
+          page: prevState.page,
+          pageData: this.getPageData(
+            prevState.page,
+            pageLength,
+            this.sortInputData(
+              nextProps.data.list,
+              prevState.sortIndex,
+              prevState.sortIndex > -1 ? prevState.sortDirection[prevState.sortIndex] : null,
+            ),
+          ),
+          pageLength,
+          pageTotal: this.getPageTotal(pageLength, nextProps.data.list),
+        };
+      });
     } else if (nextProps.height !== this.props.height) {
       const pageLength = this.getPageLength(this.props.height);
       if (pageLength !== this.state.pageLength) {
@@ -66,24 +85,6 @@ class TableContainer extends React.Component {
           };
         });
       }
-    } else {
-      const pageLength = this.getPageLength(nextProps.height);
-      this.setState((prevState) => {
-        return {
-          page: prevState.page,
-          pageData: this.getPageData(
-            prevState.page,
-            pageLength,
-            this.sortInputData(
-              nextProps.data.list,
-              prevState.sortIndex,
-              prevState.sortIndex > -1 ? prevState.sortDirection[prevState.sortIndex] : null,
-            ),
-          ),
-          pageLength,
-          pageTotal: this.getPageTotal(pageLength, nextProps.data.list),
-        };
-      });
     }
   }
   getPageData = (page, pageLength, list) => {
@@ -117,17 +118,17 @@ class TableContainer extends React.Component {
       return arr;
     }
     const returnValue = direction === 'asc' ? -1 : 1;
+    const sortValue = (val) => {
+      if (isDate) {
+        return Moment(val, 'MMMM Do YYYY, h:mm a').format('x');
+      } else if (typeof val === 'number') {
+        return val;
+      }
+      return val.toUpperCase();
+    };
     arr.sort((a, b) => {
-      const nameA = !isDate ?
-        a.columns[index].value.toUpperCase()
-        :
-        Moment(a.columns[index].value, 'MMMM Do YYYY, h:mm a').format('x')
-      ;
-      const nameB = !isDate ?
-        b.columns[index].value.toUpperCase()
-        :
-        Moment(b.columns[index].value, 'MMMM Do YYYY, h:mm a').format('x')
-      ;
+      const nameA = sortValue(a.columns[index].value);
+      const nameB = sortValue(b.columns[index].value);
       if (nameA < nameB) {
         return returnValue;
       }

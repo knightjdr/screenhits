@@ -78,9 +78,9 @@ class AnalysisMenu extends React.Component {
                 primaryText={ [<FontAwesome key="visualization" name="braille" />, ' Visualize data'] }
               />
               <MenuItem
-                key="complete"
-                onClick={ () => { this.props.changeView('complete'); } }
-                primaryText={ [<FontAwesome key="complete" name="list-ol" />, ' Completed analysis'] }
+                key="archive"
+                onClick={ () => { this.props.changeView('archive'); } }
+                primaryText={ [<FontAwesome key="archive" name="list-ol" />, ' Completed analysis'] }
               />
               <MenuItem
                 key="new"

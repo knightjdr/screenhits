@@ -4,13 +4,22 @@ const crudCreate = require('../crud/create');
 const fs = require('mz/fs');
 const moment = require('moment');
 const pipeline = require('./pipeline');
+const rimraf = require('rimraf');
 const UpdateTask = require('./update-task');
-// const rimraf = require('rimraf');
 
 const Analysis = {
   create: (form) => {
     return new Promise((resolve) => {
-      Analysis.queue.running.push(form);
+      const date = moment().format('MMMM Do YYYY, h:mm a');
+      Analysis.queue.running.push(
+        Object.assign(
+          {},
+          form,
+          {
+            date,
+          }
+        )
+      );
       resolve({
         status: 200,
         clientResponse: {
@@ -28,15 +37,20 @@ const Analysis = {
     return new Promise((resolve, reject) => {
       const insertObj = {
         _id: taskID,
+        isComplete: false,
+        isOfficial: false,
+        date: item.date,
         details: item,
+        error: '',
         folder: null,
+        isRunning: true,
         kill: false,
         log: null,
         pid: 'x',
         status: 'Task created',
         step: 'Initializing task',
-        userEmail: item.userEmail,
-        userName: item.userName,
+        userEmail: item.creatorEmail,
+        userName: item.creatorName,
       };
       crudCreate.insert('analysisTasks', insertObj)
         .then(() => { resolve(); })
@@ -61,7 +75,7 @@ const Analysis = {
         ) {
           fs.access(folderID)
             .then(() => {
-              fs.rmdir(folderID);
+              rimraf(folderID, () => {});
             })
           ;
         }
@@ -104,6 +118,8 @@ const Analysis = {
         })
         .then(() => {
           const taskStatus = {
+            isComplete: true,
+            isRunning: false,
             status: 'Task complete',
             step: 'Pipeline',
           };
@@ -111,9 +127,15 @@ const Analysis = {
         })
         .then(() => {
           deleteFolder(task.folder);
+          resolve();
         })
         .catch((error) => {
-          UpdateTask.sync(task.id, { status: String(error) });
+          const taskStatus = {
+            error: String(error),
+            isRunning: false,
+            status: 'error',
+          };
+          UpdateTask.sync(task.id, taskStatus);
           deleteFolder(task.folder);
           reject(String(error));
         })

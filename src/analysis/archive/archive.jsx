@@ -16,6 +16,7 @@ class Archive extends React.Component {
       >
         <TaskList
           tasks={ this.props.tasks }
+          taskStatus={ this.props.taskStatus }
         />
       </div>
     );
@@ -31,6 +32,11 @@ Archive.propTypes = {
   tasks: PropTypes.arrayOf(
     PropTypes.shape({}),
   ).isRequired,
+  taskStatus: PropTypes.shape({
+    didInvalidate: PropTypes.bool,
+    fetching: PropTypes.bool,
+    message: PropTypes.string,
+  }).isRequired,
 };
 
 export default muiThemeable()(Archive);

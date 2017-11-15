@@ -22,11 +22,18 @@ const pageButtonStyle = {
   minWidth: 25,
   width: 25,
 };
+const tableBodyColumnStyle = {
+  textAlign: 'left',
+  whiteSpace: 'normal',
+  wordWrap: 'break-word',
+};
 
 class CustomTable extends React.Component {
   render() {
     return (
-      <Table>
+      <Table
+        fixedHeader={ false } style={ { tableLayout: 'auto' } }
+      >
         <TableHeader
           adjustForCheckbox={ false }
           displaySelectAll={ false }
@@ -37,7 +44,15 @@ class CustomTable extends React.Component {
                 () => { this.props.sortTable(index, column.type); } :
                 () => {}
               ;
-              const style = column.style ? column.style : { textAlign: 'center' };
+              const style = column.style ?
+                Object.assign(
+                  {},
+                  { textAlign: 'center' },
+                  column.style,
+                )
+                :
+                { textAlign: 'center' }
+              ;
               return (
                 <TableHeaderColumn
                   key={ column.name }
@@ -73,7 +88,15 @@ class CustomTable extends React.Component {
                 key={ row.key }
               >
                 { row.columns.map((column) => {
-                  const style = column.style ? column.style : { textAlign: 'left' };
+                  const style = column.style ?
+                    Object.assign(
+                      {},
+                      tableBodyColumnStyle,
+                      column.style,
+                    )
+                    :
+                    tableBodyColumnStyle
+                  ;
                   return (
                     <TableRowColumn
                       key={ row.key }

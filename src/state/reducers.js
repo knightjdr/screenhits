@@ -15,6 +15,7 @@ import route from './routing/routeload-reducer';
 import routerLocations from './routing/router-locations-reducer';
 import searchUser from './get/search-user-reducer';
 import selected from './set/index-reducer';
+import tasks from './get/analysis-task-reducer';
 import user from './set/user-reducer';
 import users from './get/project-user-reducer';
 
@@ -33,6 +34,7 @@ const App = combineReducers({
   routerLocations,
   searchUser,
   selected,
+  tasks,
   user,
   users,
 });

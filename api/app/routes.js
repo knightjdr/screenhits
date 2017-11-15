@@ -9,6 +9,7 @@ const permission = require('./modules/permission/permission');
 const queue = require('./modules/queue/queue');
 const sample = require('./modules/sample/sample');
 const search = require('./modules/search/search');
+const tasks = require('./modules/tasks/tasks');
 const update = require('./modules/update/update');
 const users = require('./modules/users/users');
 
@@ -32,6 +33,14 @@ const routes = {
     // returns all available project, screens, experiments and samples for a user
     app.get('/analysis/samples', auth.validate, (req, res) => {
       analysisAvailable.get(req.query.screenType, req.email)
+        .then((response) => {
+          routes.response(res, response);
+        })
+      ;
+    });
+    // get analysis tasks
+    app.get('/analysis/tasks', auth.validate, (req, res) => {
+      tasks.get(req.query)
         .then((response) => {
           routes.response(res, response);
         })
