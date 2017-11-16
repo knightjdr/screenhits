@@ -4,7 +4,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 
 import DisplaySample from './display-sample';
-import DownloadSample from './sample/download-sample';
+import Download from '../../../helpers/download';
 import ViewSample from './sample/view-sample';
 import { objectEmpty } from '../../../helpers/helpers';
 import ValidateField from '../../../modules/validate-field';
@@ -64,7 +64,14 @@ class DisplaySampleContainer extends React.Component {
     });
   }
   downloadSample = () => {
-    DownloadSample(this.state.item._id, this.state.item.name, 'tsv', this.props.user)
+    const queryString = `target=${this.state.item._id}&format=tsv`;
+    Download(
+      this.state.item.name,
+      'tsv',
+      queryString,
+      'sample',
+      this.props.user
+    )
       .catch((error) => {
         this.setState({
           dialog: {

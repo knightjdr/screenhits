@@ -1,0 +1,14 @@
+.tooltip-enter {
+  opacity: 0.01;
+}
+.tooltip-enter.tooltip-enter-active {
+  opacity: 1;
+  transition: opacity 300ms ease-in;
+}
+.tooltip-leave {
+  opacity: 1;
+}
+.tooltip-leave.tooltip-leave-active {
+  opacity: 0.01;
+  transition: opacity 200ms ease-in;
+}

@@ -1,7 +1,7 @@
-.test-transition-appear {
+.logo-transition-appear {
   opacity: 0.01;
 }
-.test-transition-appear.test-transition-appear-active {
+.logo-transition-appear.logo-transition-appear-active {
   opacity: 1;
   transition: opacity 1500ms ease-in;
 }

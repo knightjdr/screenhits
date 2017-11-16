@@ -1,11 +1,13 @@
 import PropTypes from 'prop-types';
 import Radium from 'radium';
 import React from 'react';
+import { CSSTransitionGroup } from 'react-transition-group';
+
+import './tooltip.scss';
 
 const defaultModalStyle = {
   backgroundColor: 'transparent',
   border: 'none',
-  display: 'none',
   left: 0,
   pointerEvents: 'none',
   position: 'fixed',
@@ -85,58 +87,66 @@ class Tooltip extends React.Component {
   }
   render() {
     return (
-      <button
-        onClick={ this.props.hideTooltip }
-        style={ Object.assign(
-          {},
-          defaultModalStyle,
-          this.props.modalStyle,
-          {
-            display: this.props.show ? 'block' : 'none',
-            height: window.innerHeight,
-            width: window.innerWidth,
-          }
-        ) }
+      <CSSTransitionGroup
+        transitionName="tooltip"
+        transitionEnterTimeout={ 300 }
+        transitionLeaveTimeout={ 200 }
       >
-        <span
-          style={ Object.assign(
-            {},
-            tooltipContainer,
-            this.props.tooltipContainerStyle,
-            this.props.tooltipPosition,
-          ) }
-        >
-          <div
+        {
+          this.props.show &&
+          <button
+            onClick={ this.props.hideTooltip }
             style={ Object.assign(
               {},
-              tooltipBasicStyle,
-              this.props.tooltipStyle,
+              defaultModalStyle,
+              this.props.modalStyle,
+              {
+                height: window.innerHeight,
+                width: window.innerWidth,
+              }
             ) }
           >
-            {
-              typeof this.props.text === 'string' ?
-                this.props.text
-              :
-              this.props.text.map((textString, index) => {
-                const key = index;
-                return (
-                  <div
-                    key={ `tooltipRow-${key}` }
-                    style={ {
-                      padding: '2px 0px',
-                    } }
-                  >
-                    { textString }
-                  </div>
-                );
-              })
-            }
-          </div>
-          <span
-            style={ this.getArrowStyle(this.props.position) }
-          />
-        </span>
-      </button>
+            <span
+              style={ Object.assign(
+                {},
+                tooltipContainer,
+                this.props.tooltipContainerStyle,
+                this.props.tooltipPosition,
+              ) }
+            >
+              <div
+                style={ Object.assign(
+                  {},
+                  tooltipBasicStyle,
+                  this.props.tooltipStyle,
+                ) }
+              >
+                {
+                  typeof this.props.text === 'string' ?
+                    this.props.text
+                  :
+                  this.props.text.map((textString, index) => {
+                    const key = index;
+                    return (
+                      <div
+                        key={ `tooltipRow-${key}` }
+                        style={ {
+                          padding: '2px 0px',
+                        } }
+                      >
+                        { textString }
+                      </div>
+                    );
+                  })
+                }
+              </div>
+              <span
+                style={ this.getArrowStyle(this.props.position) }
+              />
+            </span>
+          </button>
+        }
+      </CSSTransitionGroup>
     );
   }
 }

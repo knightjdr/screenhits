@@ -2,7 +2,10 @@ import deepEqual from 'deep-equal';
 import Moment from 'moment';
 import PropTypes from 'prop-types';
 import React from 'react';
+import { connect } from 'react-redux';
 
+import AnalysisModule from '../../../modules/analysis-new';
+import Download from '../../../helpers/download';
 import TaskList from './task-list';
 
 const emptyRect = {
@@ -64,8 +67,14 @@ class TaskListContainer extends React.Component {
         show: false,
       },
       designDialog: {
-        body: {},
+        design: [],
+        params: [],
         show: false,
+        title: '',
+      },
+      errorDialog: {
+        show: false,
+        text: '',
         title: '',
       },
       header: tableHeader,
@@ -108,6 +117,26 @@ class TaskListContainer extends React.Component {
     console.log(_id);
     this.hideDeleteDialog();
   }
+  downloadTask = (_id) => {
+    const queryString = 'format=tsv';
+    Download(
+      `task_${_id}`,
+      'tsv',
+      queryString,
+      `analysis/tasks/${_id}`,
+      this.props.user
+    )
+      .catch((error) => {
+        this.setState({
+          errorDialog: {
+            show: true,
+            text: error.text,
+            title: error.title,
+          },
+        });
+      })
+    ;
+  }
   hideIconTooltip = () => {
     this.setState({
       tooltip: defaultTooltip,
@@ -124,8 +153,18 @@ class TaskListContainer extends React.Component {
   hideDesignDialog = () => {
     this.setState({
       designDialog: {
-        body: {},
+        design: [],
+        params: [],
         show: false,
+        title: '',
+      },
+    });
+  }
+  hideErrorDialog = () => {
+    this.setState({
+      errorDialog: {
+        show: false,
+        text: '',
         title: '',
       },
     });
@@ -176,14 +215,21 @@ class TaskListContainer extends React.Component {
     });
   }
   showDesignDialog = (task) => {
-    console.log(task.details);
+    const fields = AnalysisModule[task.details.screenType][task.details.analysisType].parameters;
+    const params = fields.map((field) => {
+      const taskValue = task.details[field.name] ? String(task.details[field.name]) : null;
+      return {
+        name: field.layName,
+        value: taskValue || task.defaultValue,
+      };
+    });
+    params._id = task._id;
     this.setState({
       designDialog: {
-        body: {
-          _id: task._id,
-        },
+        design: task.details.design,
+        params,
         show: true,
-        title: `Design for task: ${task.name}`,
+        title: `Design for task "${task.name}", ID: ${task._id}`,
       },
     });
   }
@@ -249,6 +295,14 @@ class TaskListContainer extends React.Component {
             showFunc: this.showDesignDialog,
           }
         ) }
+        downloadTask={ this.downloadTask }
+        errorDialog={ Object.assign(
+          {},
+          this.state.errorDialog,
+          {
+            hideFunc: this.hideErrorDialog,
+          }
+        ) }
         header={ this.state.header }
         iconTooltip={ Object.assign(
           {},
@@ -267,16 +321,45 @@ class TaskListContainer extends React.Component {
           }
         ) }
         tasks={ this.state.tasks }
+        taskStatus={ this.props.taskStatus }
         tableHeight={ this.state.tableHeight }
       />
     );
   }
 }
 
+TaskListContainer.defaultProps = {
+  user: {
+    email: null,
+    lab: null,
+    name: null,
+  },
+};
+
 TaskListContainer.propTypes = {
   tasks: PropTypes.arrayOf(
     PropTypes.shape({}),
   ).isRequired,
+  taskStatus: PropTypes.shape({
+    didInvalidate: PropTypes.bool,
+    fetching: PropTypes.bool,
+    message: PropTypes.string,
+  }).isRequired,
+  user: PropTypes.shape({
+    email: PropTypes.string,
+    lab: PropTypes.string,
+    name: PropTypes.string,
+  }),
 };
 
-export default TaskListContainer;
+const mapStateToProps = (state) => {
+  return {
+    user: state.user,
+  };
+};
+
+const Container = connect(
+  mapStateToProps,
+)(TaskListContainer);
+
+export default Container;

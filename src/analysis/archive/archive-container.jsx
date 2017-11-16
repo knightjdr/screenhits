@@ -10,7 +10,7 @@ class ArchiveContainer extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      tasks: [],
+      tasks: JSON.parse(JSON.stringify(this.props.tasks.items)),
       taskStatus: {
         didInvalidate: false,
         fetching: true,

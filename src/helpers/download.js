@@ -3,12 +3,12 @@
 import fetch from 'isomorphic-fetch';
 
 // retrieves queue from server
-const Download = (_id, name, format, user) => {
+const Download = (filename, format, queryString, route, user) => {
   return new Promise((resolve, reject) => {
     const headers = new Headers();
     headers.append('Accept', 'application/json');
     headers.append('Auth', `${user.name}:${user.email}:${user.lab}:${user.token}`);
-    const url = `http://localhost:8003/sample?target=${_id}&format=${format}`;
+    const url = `http://localhost:8003/${route}?${queryString}`;
     fetch(
       url,
       {
@@ -27,7 +27,7 @@ const Download = (_id, name, format, user) => {
         document.body.appendChild(link);
         link.setAttribute('type', 'hidden');
         link.href = window.URL.createObjectURL(blob);
-        link.download = `${name}.tsv`;
+        link.download = `${filename}.${format}`;
         link.click();
         window.URL.revokeObjectURL(link.href);
         resolve();

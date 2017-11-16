@@ -23,6 +23,14 @@ class Archive extends React.Component {
   }
 }
 
+Archive.defaultProps = {
+  user: {
+    email: null,
+    lab: null,
+    name: null,
+  },
+};
+
 Archive.propTypes = {
   muiTheme: PropTypes.shape({
     palette: PropTypes.shape({

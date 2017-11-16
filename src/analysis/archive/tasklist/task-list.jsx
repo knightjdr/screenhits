@@ -3,7 +3,9 @@ import AssignmentIcon from 'material-ui/svg-icons/action/assignment-turned-in';
 import ClearIcon from 'material-ui/svg-icons/content/clear';
 import DescriptionIcon from 'material-ui/svg-icons/action/description';
 import Dialog from 'material-ui/Dialog';
+import DownloadIcon from 'material-ui/svg-icons/file/file-download';
 import FlatButton from 'material-ui/FlatButton';
+import FontAwesome from 'react-fontawesome';
 import IconButton from 'material-ui/IconButton';
 import muiThemeable from 'material-ui/styles/muiThemeable';
 import PropTypes from 'prop-types';
@@ -13,11 +15,29 @@ import { Scrollbars } from 'react-custom-scrollbars';
 import CustomTable from '../../../table/table-container';
 import Tooltip from '../../../tooltip/tooltip-container';
 
+const designDialogContainerStyle = {
+  alignItems: 'center',
+  display: 'flex',
+  margin: '5px 0px 5px 0px',
+};
+const designDialogNameStyle = {
+  display: 'inline-block',
+  textAlign: 'right',
+  width: 200,
+};
+const designDialogValueStyle = {
+  display: 'inline-block',
+  marginLeft: 10,
+};
 const iconStyle = {
   height: 24,
   margin: '0px 2px 0px 2px',
   padding: 0,
   width: 24,
+};
+const taskStatusStyle = {
+  marginTop: 20,
+  textAlign: 'center',
 };
 
 class TaskList extends React.Component {
@@ -31,6 +51,170 @@ class TaskList extends React.Component {
         onTouchTap={ () => { this.props.deleteTask(_id); } }
       />,
     ]);
+  }
+  designDialogContent = (design, params) => {
+    let rowIndex = 1;
+    return (
+      <div
+        style={ {
+          color: this.props.muiTheme.palette.textColor,
+        } }
+      >
+        <div
+          style={ {
+            backgroundColor: this.props.muiTheme.palette.primary1Color,
+            borderRadius: 4,
+            color: this.props.muiTheme.palette.offWhite,
+            marginBottom: 10,
+            padding: 5,
+          } }
+        >
+          Task parameters
+        </div>
+        { params.map((param) => {
+          return (
+            <div
+              key={ `designDialog-${param.name}-container` }
+              style={ designDialogContainerStyle }
+            >
+              <div
+                key={ `designDialog-${param.name}-name` }
+                style={ designDialogNameStyle }
+              >
+                { `${param.name}:` }
+              </div>
+              <div
+                key={ `designDialog-${param.name}-value` }
+                style={ designDialogValueStyle }
+              >
+                { param.value }
+              </div>
+            </div>
+          );
+        }) }
+        <div
+          style={ {
+            marginTop: 20,
+          } }
+        >
+          <div
+            style={ {
+              backgroundColor: this.props.muiTheme.palette.primary1Color,
+              borderRadius: 4,
+              color: this.props.muiTheme.palette.offWhite,
+              padding: 5,
+            } }
+          >
+            Sample sets
+          </div>
+          <div
+            style={ {
+              display: 'grid',
+              gridColumnGap: 5,
+              gridRowGap: 10,
+              gridTemplateColumns: '20% 40% 40%',
+              marginTop: 10,
+              padding: '0px 10px 0px 10px',
+            } }
+          >
+            <div
+              style={ {
+                borderBottom: '1px solid',
+                gridColumn: 1,
+                gridRow: 1,
+                textAlign: 'center',
+              } }
+            >
+              Name
+            </div>
+            <div
+              style={ {
+                borderBottom: '1px solid',
+                gridColumn: 2,
+                gridRow: 1,
+                textAlign: 'center',
+              } }
+            >
+              Controls
+            </div>
+            <div
+              style={ {
+                borderBottom: '1px solid',
+                gridColumn: 3,
+                gridRow: 1,
+                textAlign: 'center',
+              } }
+            >
+              Replicates
+            </div>
+            { design.map((sampleSet, sampleSetIndex) => {
+              rowIndex += 1;
+              let startingRowIndex = rowIndex;
+              const setKey = sampleSetIndex;
+              return [
+                (<div
+                  key={ `sampleSet-${setKey}-name` }
+                  style={ {
+                    gridColumn: 1,
+                    gridRow: rowIndex,
+                  } }
+                >
+                  { sampleSet.name }
+                </div>),
+                (sampleSet.controlSamples.map((control, controlIndex) => {
+                  rowIndex += controlIndex;
+                  let controlName = control.name;
+                  if (control.replicate) {
+                    controlName += `, ${control.replicate}`;
+                  }
+                  if (control.concentration) {
+                    controlName += `, ${control.concentration}`;
+                  }
+                  if (control.timepoint) {
+                    controlName += `, ${control.timepoint}`;
+                  }
+                  return (
+                    <div
+                      key={ `sampleSet-${rowIndex}-control` }
+                      style={ {
+                        gridColumn: 2,
+                        gridRow: rowIndex,
+                      } }
+                    >
+                      { controlName }
+                    </div>
+                  );
+                })),
+                (sampleSet.replicateSamples.map((replicate, replicateIndex) => {
+                  startingRowIndex += replicateIndex;
+                  let replicateName = replicate.name;
+                  if (replicate.replicate) {
+                    replicateName += `, ${replicate.replicate}`;
+                  }
+                  if (replicate.concentration) {
+                    replicateName += `, ${replicate.concentration}`;
+                  }
+                  if (replicate.timepoint) {
+                    replicateName += `, ${replicate.timepoint}`;
+                  }
+                  return (
+                    <div
+                      key={ `sampleSet-${startingRowIndex}-replicate` }
+                      style={ {
+                        gridColumn: 3,
+                        gridRow: startingRowIndex,
+                      } }
+                    >
+                      { replicateName }
+                    </div>
+                  );
+                })),
+              ];
+            }) }
+          </div>
+        </div>
+      </div>
+    );
   }
   dialogClose = (closeFunc) => {
     return (
@@ -123,6 +307,16 @@ class TaskList extends React.Component {
           </IconButton>
         }
         <IconButton
+          onClick={ () => { this.props.downloadTask(task._id); } }
+          onMouseEnter={ (e) => {
+            this.props.iconTooltip.showFunc(e, 'Download results');
+          } }
+          onMouseLeave={ this.props.iconTooltip.hideFunc }
+          style={ iconStyle }
+        >
+          <DownloadIcon />
+        </IconButton>
+        <IconButton
           onClick={ () => { this.props.deleteDialog.showFunc(task._id); } }
           onMouseEnter={ (e) => {
             this.props.iconTooltip.showFunc(e, cancelText);
@@ -141,14 +335,34 @@ class TaskList extends React.Component {
   render() {
     return (
       <div>
-        <CustomTable
-          data={ {
-            header: this.props.header,
-            list: this.list(),
-          } }
-          footer={ false }
-          height={ this.props.tableHeight }
-        />
+        {
+          this.props.taskStatus.fetching &&
+          <div
+            style={ taskStatusStyle }
+          >
+            <FontAwesome key="fetching" name="spinner" pulse={ true } /> Fetching tasks...
+          </div>
+        }
+        {
+          this.props.taskStatus.didInvalidate &&
+          <div
+            style={ taskStatusStyle }
+          >
+            There was an error retrieving tasks: { this.props.taskStatus.message }
+          </div>
+        }
+        {
+          !this.props.taskStatus.fetching &&
+          !this.props.taskStatus.didInvalidate &&
+          <CustomTable
+            data={ {
+              header: this.props.header,
+              list: this.list(),
+            } }
+            footer={ false }
+            height={ this.props.tableHeight }
+          />
+        }
         <Dialog
           actions={ [
             this.dialogClose(this.props.designDialog.hideFunc),
@@ -168,7 +382,10 @@ class TaskList extends React.Component {
             autoHeight={ true }
             autoHeightMax={ 'calc(100vh - 100px)' }
           >
-            { this.props.designDialog.body._id }
+            { this.designDialogContent(
+              this.props.designDialog.design,
+              this.props.designDialog.params
+            ) }
           </Scrollbars>
         </Dialog>
         <Dialog
@@ -207,6 +424,16 @@ class TaskList extends React.Component {
         >
           This action will permanently the analysis and any stored results.
         </Dialog>
+        <Dialog
+          actions={ [
+            this.dialogClose(this.props.errorDialog.hideFunc),
+          ] }
+          onRequestClose={ this.props.errorDialog.hideFunc }
+          open={ this.props.errorDialog.show }
+          title={ this.props.errorDialog.title }
+        >
+          { this.props.errorDialog.text }
+        </Dialog>
         <Tooltip
           position={ this.props.iconTooltip.position }
           rect={ this.props.iconTooltip.rect }
@@ -226,15 +453,25 @@ TaskList.propTypes = {
     showFunc: PropTypes.func,
   }).isRequired,
   designDialog: PropTypes.shape({
-    body: PropTypes.shape({
-      _id: PropTypes.number,
-    }),
+    design: PropTypes.arrayOf(
+      PropTypes.shape({}),
+    ),
     hideFunc: PropTypes.func,
+    params: PropTypes.arrayOf(
+      PropTypes.shape({}),
+    ),
     show: PropTypes.bool,
     showFunc: PropTypes.func,
     title: PropTypes.string,
   }).isRequired,
   deleteTask: PropTypes.func.isRequired,
+  downloadTask: PropTypes.func.isRequired,
+  errorDialog: PropTypes.shape({
+    hideFunc: PropTypes.func,
+    show: PropTypes.bool,
+    text: PropTypes.string,
+    title: PropTypes.string,
+  }).isRequired,
   header: PropTypes.arrayOf(
     PropTypes.shape({
       name: PropTypes.string,
@@ -268,9 +505,11 @@ TaskList.propTypes = {
   }).isRequired,
   muiTheme: PropTypes.shape({
     palette: PropTypes.shape({
+      offWhite: PropTypes.string,
       primary1Color: PropTypes.string,
       success: PropTypes.string,
       successHover: PropTypes.string,
+      textColor: PropTypes.string,
       warning: PropTypes.string,
       warningHover: PropTypes.string,
     }),
@@ -281,6 +520,11 @@ TaskList.propTypes = {
       isComplete: PropTypes.bool,
     }),
   ).isRequired,
+  taskStatus: PropTypes.shape({
+    didInvalidate: PropTypes.bool,
+    fetching: PropTypes.bool,
+    message: PropTypes.string,
+  }).isRequired,
 };
 
 export default muiThemeable()(TaskList);

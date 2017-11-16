@@ -77,7 +77,7 @@ class Home extends React.Component {
         <CSSTransitionGroup
           transitionAppear={ true }
           transitionAppearTimeout={ 1500 }
-          transitionName="test-transition"
+          transitionName="logo-transition"
           transitionEnter={ false }
           transitionLeave={ false }
         >

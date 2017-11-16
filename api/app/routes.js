@@ -46,6 +46,13 @@ const routes = {
         })
       ;
     });
+    app.get('/analysis/tasks/:id', auth.validate, (req, res) => {
+      tasks.getOne(req.params.id, req.query)
+        .then((response) => {
+          routes.response(res, response);
+        })
+      ;
+    });
     // returns available projects, screens, etc, based on user
     app.get('/loadRoute', auth.validate, (req, res) => {
       loadRoute.get(req.query.target, req.email, req.lab, req.query.selected)
