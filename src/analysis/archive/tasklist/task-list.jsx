@@ -10,6 +10,7 @@ import IconButton from 'material-ui/IconButton';
 import muiThemeable from 'material-ui/styles/muiThemeable';
 import PropTypes from 'prop-types';
 import React from 'react';
+import ViewIcon from 'material-ui/svg-icons/action/visibility';
 import { Scrollbars } from 'react-custom-scrollbars';
 
 import CustomTable from '../../../table/table-container';
@@ -317,6 +318,16 @@ class TaskList extends React.Component {
           <DownloadIcon />
         </IconButton>
         <IconButton
+          onClick={ () => { this.props.viewTask(task._id); } }
+          onMouseEnter={ (e) => {
+            this.props.iconTooltip.showFunc(e, 'View Results');
+          } }
+          onMouseLeave={ this.props.iconTooltip.hideFunc }
+          style={ iconStyle }
+        >
+          <ViewIcon />
+        </IconButton>
+        <IconButton
           onClick={ () => { this.props.deleteDialog.showFunc(task._id); } }
           onMouseEnter={ (e) => {
             this.props.iconTooltip.showFunc(e, cancelText);
@@ -525,6 +536,7 @@ TaskList.propTypes = {
     fetching: PropTypes.bool,
     message: PropTypes.string,
   }).isRequired,
+  viewTask: PropTypes.func.isRequired,
 };
 
 export default muiThemeable()(TaskList);

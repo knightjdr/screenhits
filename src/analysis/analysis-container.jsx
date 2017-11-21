@@ -17,25 +17,39 @@ class AnalysisContainer extends React.Component {
       highlightedView: 'new',
       textWidth: this.getTextWidth(),
       view: this.checkView(this.props.params.view),
+      viewID: this.checkID(this.props.params.view, this.props.params.id),
     };
   }
   componentWillMount = () => {
-    // if view is invalid, remove from URL
+    // if view is valid, and if view can take an ID, else remove from URL
+    const id = this.checkID(this.props.params.view, this.props.params.id);
     const view = this.checkView(this.props.params.view);
     if (
       this.props.params.view &&
       !view
     ) {
       browserHistory.replace('/analysis');
+    } else if (
+      this.props.params.id &&
+      !id
+    ) {
+      browserHistory.replace(`/analysis/${view}`);
     }
   }
   componentDidMount = () => {
     window.addEventListener('resize', this.resize);
   }
   componentWillReceiveProps = (nextProps) => {
-    this.setState(({ view }) => {
+    this.setState(({ id, view }) => {
       if (nextProps.params.view !== view) {
-        return { view: this.checkView(nextProps.params.view) };
+        return {
+          view: this.checkView(nextProps.params.view),
+          viewID: this.checkID(nextProps.params.view, nextProps.params.id),
+        };
+      } else if (nextProps.params.id !== id) {
+        return {
+          viewID: this.checkID(view, nextProps.params.id),
+        };
       }
       return {};
     });
@@ -50,6 +64,15 @@ class AnalysisContainer extends React.Component {
     if (newView !== this.state.view) {
       browserHistory.push(`/analysis/${newView}`);
     }
+  }
+  checkID = (view, id) => {
+    if (
+      view === 'archive' &&
+      id
+    ) {
+      return Number(id);
+    }
+    return null;
   }
   checkView = (desiredView) => {
     return possibleRoutes.includes(desiredView) ? desiredView : null;
@@ -72,6 +95,7 @@ class AnalysisContainer extends React.Component {
         highlightedView={ this.state.highlightedView }
         textWidth={ this.state.textWidth }
         view={ this.state.view }
+        viewID={ this.state.viewID }
       />
     );
   }
@@ -79,6 +103,7 @@ class AnalysisContainer extends React.Component {
 
 AnalysisContainer.propTypes = {
   params: PropTypes.shape({
+    id: PropTypes.string,
     view: PropTypes.string,
   }).isRequired,
 };

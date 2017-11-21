@@ -183,7 +183,7 @@ const Tasks = {
               status: 500,
               clientResponse: {
                 status: 500,
-                message: 'There was an error retrieving this sample',
+                message: 'There was an error retrieving this task: no such task',
               },
             });
           }
@@ -193,7 +193,7 @@ const Tasks = {
             status: 500,
             clientResponse: {
               status: 500,
-              message: `There was an error retrieving this sample: ${error}`,
+              message: `There was an error retrieving this task: ${error}`,
             },
           });
         })

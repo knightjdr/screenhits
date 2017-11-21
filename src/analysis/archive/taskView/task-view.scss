@@ -1,0 +1,14 @@
+.task-view-enter {
+  opacity: 0.01;
+}
+.task-view-enter.task-view-enter-active {
+  opacity: 1;
+  transition: opacity 400ms ease-in;
+}
+.task-view-leave {
+  opacity: 1;
+}
+.task-view-leave.task-view-leave-active {
+  opacity: 0.01;
+  transition: opacity 200ms ease-in;
+}

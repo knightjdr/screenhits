@@ -53,7 +53,11 @@ class Analysis extends React.Component {
   getView = (viewType) => {
     switch (viewType) {
       case 'archive':
-        return <Archive />;
+        return (
+          <Archive
+            viewID={ this.props.viewID }
+          />
+        );
       case 'new':
         return <NewAnalysis />;
       case 'visualization':
@@ -155,6 +159,7 @@ class Analysis extends React.Component {
 
 Analysis.defaultProps = {
   view: null,
+  viewID: null,
 };
 
 Analysis.propTypes = {
@@ -171,6 +176,7 @@ Analysis.propTypes = {
   }).isRequired,
   textWidth: PropTypes.number.isRequired,
   view: PropTypes.string,
+  viewID: PropTypes.number,
 };
 
 export default muiThemeable()(Analysis);

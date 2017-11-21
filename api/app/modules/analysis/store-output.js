@@ -12,7 +12,20 @@ const StoreOutput = {
       };
       const columns = {
         gene: 'GENE',
-        other: ['BF', 'STD', 'NumObs'],
+        other: [
+          {
+            name: 'BF',
+            type: 'number',
+          },
+          {
+            name: 'STD',
+            type: 'number',
+          },
+          {
+            name: 'NumObs',
+            type: 'number',
+          },
+        ],
       };
       // get sample set names
       query.get('analysisTasks', { _id: task.id }, { details: 1 }, 'findOne')
@@ -68,8 +81,8 @@ const StoreOutput = {
           const currFields = {
             sampleSet: name,
           };
-          columns.other.forEach((key) => {
-            currFields[key] = row[key];
+          columns.other.forEach((field) => {
+            currFields[field.name] = isNaN(row[field.name]) ? row[field.name] : Number(row[field.name]);
           });
           if (Object.prototype.hasOwnProperty.call(results, currGene)) {
             results[currGene].push(currFields);

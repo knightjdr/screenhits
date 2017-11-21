@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 
 import TaskList from './tasklist/task-list-container';
+import TaskView from './taskView/task-view-container';
 
 class Archive extends React.Component {
   render() {
@@ -14,10 +15,17 @@ class Archive extends React.Component {
           padding: '5px 0px 10px 0px',
         } }
       >
-        <TaskList
-          tasks={ this.props.tasks }
-          taskStatus={ this.props.taskStatus }
-        />
+        {
+          !this.props.viewID ?
+            <TaskList
+              tasks={ this.props.tasks }
+              taskStatus={ this.props.taskStatus }
+            />
+            :
+            <TaskView
+              viewID={ this.props.viewID }
+            />
+        }
       </div>
     );
   }
@@ -29,6 +37,7 @@ Archive.defaultProps = {
     lab: null,
     name: null,
   },
+  viewID: null,
 };
 
 Archive.propTypes = {
@@ -45,6 +54,7 @@ Archive.propTypes = {
     fetching: PropTypes.bool,
     message: PropTypes.string,
   }).isRequired,
+  viewID: PropTypes.number,
 };
 
 export default muiThemeable()(Archive);

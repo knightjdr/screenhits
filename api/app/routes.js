@@ -12,6 +12,7 @@ const search = require('./modules/search/search');
 const tasks = require('./modules/tasks/tasks');
 const update = require('./modules/update/update');
 const users = require('./modules/users/users');
+const view = require('./modules/view/view');
 
 const routes = {
   configure: (app) => {
@@ -96,6 +97,13 @@ const routes = {
     // for user searches
     app.get('/users', auth.validate, (req, res) => {
       search.user(req.query.type, req.query[req.query.type])
+        .then((response) => {
+          routes.response(res, response);
+        })
+      ;
+    });
+    app.get('/view/task/:id', auth.validate, (req, res) => {
+      view.get(Number(req.params.id))
         .then((response) => {
           routes.response(res, response);
         })

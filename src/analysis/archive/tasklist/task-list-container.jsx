@@ -2,6 +2,7 @@ import deepEqual from 'deep-equal';
 import Moment from 'moment';
 import PropTypes from 'prop-types';
 import React from 'react';
+import { browserHistory } from 'react-router';
 import { connect } from 'react-redux';
 
 import AnalysisModule from '../../../modules/analysis-new';
@@ -275,6 +276,9 @@ class TaskListContainer extends React.Component {
     });
     return sortedTasks;
   }
+  viewTask = (_id) => {
+    browserHistory.push(`/analysis/archive/${_id}`);
+  }
   render() {
     return (
       <TaskList
@@ -323,6 +327,7 @@ class TaskListContainer extends React.Component {
         tasks={ this.state.tasks }
         taskStatus={ this.props.taskStatus }
         tableHeight={ this.state.tableHeight }
+        viewTask={ this.viewTask }
       />
     );
   }

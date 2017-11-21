@@ -39,6 +39,7 @@ class ArchiveContainer extends React.Component {
       <Archive
         tasks={ this.state.tasks }
         taskStatus={ this.state.taskStatus }
+        viewID={ this.props.viewID }
       />
     );
   }
@@ -50,13 +51,14 @@ ArchiveContainer.defaultProps = {
     lab: null,
     name: null,
   },
+  viewID: null,
 };
 
 ArchiveContainer.propTypes = {
   getAnalysisTasks: PropTypes.func.isRequired,
   tasks: PropTypes.shape({
-    didSubmitFail: PropTypes.bool,
-    isSubmitted: PropTypes.bool,
+    didInvalidate: PropTypes.bool,
+    isFetching: PropTypes.bool,
     items: PropTypes.arrayOf(
       PropTypes.shape({})
     ),
@@ -67,6 +69,7 @@ ArchiveContainer.propTypes = {
     lab: PropTypes.string,
     name: PropTypes.string,
   }),
+  viewID: PropTypes.number,
 };
 
 const mapDispatchToProps = (dispatch) => {
