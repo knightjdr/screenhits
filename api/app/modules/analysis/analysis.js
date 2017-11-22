@@ -66,7 +66,7 @@ const Analysis = {
         folder: null,
         id: null,
       };
-      // delete task folder (need to change to rimraf)
+      // delete task folder
       const deleteFolder = (folderID) => {
         if (
           folderID &&

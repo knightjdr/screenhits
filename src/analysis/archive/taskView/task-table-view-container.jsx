@@ -89,8 +89,7 @@ class TaskTableViewContainer extends React.Component {
           width = currWidth;
         }
       });
-      const padding = headerStyle.padding ? headerStyle.padding : 10;
-      const desiredHeight = Math.ceil(width) - padding;
+      const desiredHeight = Math.ceil(width);
       return desiredHeight < defaults.headerHeight ? desiredHeight : defaults.headerHeight;
     }
     return defaults.headerHeight;

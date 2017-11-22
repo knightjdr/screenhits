@@ -77,12 +77,15 @@ if args.norm:
     normalized[columns[1:numColumns]] = readCounts.iloc[:, range(1, numColumns)] / tile(sumReads, [numGuides, 1]) * args.normCount
 
 #-- filter for miminum read count across controls
-filtered = normalized[(normalized.T >= args.minReadCount).all()]
+filtered = normalized[(normalized[controlColumns].T >= args.minReadCount).all()]
 
 #-- filter genes without minimum number of guides
 geneCounts = filtered['GENE'].value_counts()
 keepGenes = geneCounts.loc[geneCounts >= args.minGuides].index.tolist()
 filtered = filtered[filtered['GENE'].isin(keepGenes)]
+
+#-- replace small read counts in replicate columns with 1
+filtered = filtered.clip(lower = 1)
 
 #-- export filtered dataframe
 outfile = args.path + 'filtered_' + args.filename

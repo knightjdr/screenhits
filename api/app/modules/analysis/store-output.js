@@ -82,7 +82,11 @@ const StoreOutput = {
             sampleSet: name,
           };
           columns.other.forEach((field) => {
-            currFields[field.name] = isNaN(row[field.name]) ? row[field.name] : Number(row[field.name]);
+            currFields[field.name] = isNaN(row[field.name]) ?
+              row[field.name]
+              :
+              Number(row[field.name])
+            ;
           });
           if (Object.prototype.hasOwnProperty.call(results, currGene)) {
             results[currGene].push(currFields);
@@ -111,7 +115,7 @@ const StoreOutput = {
           .then((json) => {
             formatJSON(json, set.name);
             if (index < setNumber - 1) {
-              next(setNames[index], index + 1);
+              next(setNames[index + 1], index + 1);
             } else {
               resolve(formatResults());
             }

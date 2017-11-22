@@ -60,6 +60,7 @@ const headerStyle = {
   overflow: 'hidden',
   padding: '0px 0px 0px 0px',
   position: 'absolute',
+  textAlign: 'left',
   textOverflow: 'ellipsis',
   transform: 'rotate(-90deg) translateY(100%)',
   transformOrigin: 'left bottom',
@@ -190,6 +191,7 @@ class TaskTableView extends React.Component {
                           's-resize'
                           :
                           'n-resize',
+                        left: columnIndex * 30,
                         width: this.props.dimensions.headerHeight,
                       }
                     ) }
@@ -238,7 +240,7 @@ class TaskTableView extends React.Component {
               this.props.page.map((row, rowIndex) => {
                 return (
                   row.columns.map((column, columnIndex) => {
-                    const gridKeyName = `${column.name}-${rowIndex}-columnIndex`;
+                    const gridKeyName = `${column.name}-${rowIndex}-${columnIndex}`;
                     return (
                       <div
                         onMouseEnter={ (e) => {

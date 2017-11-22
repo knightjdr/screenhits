@@ -111,7 +111,7 @@ const Pipeline = {
             .then((outFileName) => {
               outFileNames.push(outFileName);
               if (index < numFiles - 1) {
-                next(fileNames[index], index + 1);
+                next(fileNames[index + 1], index + 1);
               } else {
                 resolve(outFileNames);
               }
@@ -181,7 +181,7 @@ const Pipeline = {
             .then((outFileName) => {
               outFileNames.push(outFileName);
               if (index < numFiles - 1) {
-                next(fileNames[index], index + 1);
+                next(fileNames[index + 1], index + 1);
               } else {
                 resolve(outFileNames);
               }
@@ -313,7 +313,7 @@ const Pipeline = {
             .then((outFileName) => {
               outFileNames.push(outFileName);
               if (index < numFiles - 1) {
-                next(fileNames[index], index + 1);
+                next(fileNames[index + 1], index + 1);
               } else {
                 resolve(outFileNames);
               }

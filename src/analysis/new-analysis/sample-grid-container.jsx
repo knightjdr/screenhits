@@ -51,7 +51,7 @@ class SampleGridContainer extends React.Component {
     window.addEventListener('wheel', this.handleScroll);
   }
   componentWillUnmount = () => {
-    window.removeEventListener('wheel', this.onWindowScroll);
+    window.removeEventListener('wheel', this.handleScroll);
   }
   getAllSamples = (selected, available) => {
     return selected.map((_id) => {
@@ -111,6 +111,8 @@ class SampleGridContainer extends React.Component {
     this.setState(({ design }) => {
       const newDesign = JSON.parse(JSON.stringify(design));
       newDesign[index].name = value;
+      // update form state in parent container
+      this.props.updateDesign(newDesign);
       return {
         design: newDesign,
       };
