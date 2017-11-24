@@ -10,6 +10,8 @@ import muiThemeable from 'material-ui/styles/muiThemeable';
 import PropTypes from 'prop-types';
 import Radium from 'radium';
 import React from 'react';
+import ReactTooltip from 'react-tooltip';
+import RestoreIcon from 'material-ui/svg-icons/action/restore';
 import SettingsIcon from 'material-ui/svg-icons/action/settings';
 import TextField from 'material-ui/TextField';
 
@@ -39,10 +41,6 @@ const gridContainerStyle = {
   gridColumn: 2,
   gridRow: 2,
 };
-const gridItemStyle = {
-  height: 30,
-  width: 30,
-};
 const headerContainerStyle = {
   backgroundColor: 'white',
   gridColumn: 2,
@@ -54,8 +52,6 @@ const headerStyle = {
   border: 'none',
   bottom: 0,
   display: 'inline-block',
-  height: 24,
-  lineHeight: '24px',
   margin: '3px 0px',
   overflow: 'hidden',
   padding: '0px 0px 0px 0px',
@@ -69,39 +65,78 @@ const headerStyle = {
     outline: 0,
   },
 };
+const legendGridStyle = {
+  display: 'flex',
+  padding: '0 5px',
+};
+const legendGridCellStyle = {
+  height: 30,
+  width: 2,
+};
+const optionFieldContainerStyle = {
+  marginTop: 10,
+};
+const optionFieldStyle = {
+  margin: '10px 0',
+};
+const optionFieldTextStyle = {
+  marginLeft: 10,
+};
+const optionsInputStyle = {
+  borderBottom: '1px solid rgba(0,0,0,0.15)',
+  borderLeft: 'none',
+  borderRight: 'none',
+  borderTop: 'none',
+  textAlign: 'center',
+  width: 50,
+  ':focus': {
+    outline: 0,
+  },
+};
 const panelOptionsStyle = {
   backgroundColor: 'white',
   borderBottomRightRadius: 2,
   borderStyle: 'solid',
   borderWidth: '1px',
-  padding: 5,
-  width: 170,
+  boxShadow: '2px 2px 2px 0px rgba(0,0,0,0.5)',
+  padding: 10,
+  width: 225,
 };
 const panelStyle = {
   alignItems: 'flex-start',
   display: 'flex',
-  left: -180,
+  left: -235,
   position: 'fixed',
   top: 70,
   transition: 'left 300ms linear',
-  width: 205,
+  width: 260,
 };
 const panelTabStyle = {
   backgroundColor: 'white',
   borderStyle: 'solid',
   borderRadius: '0px 2px 2px 0px',
   borderWidth: '1px',
+  boxShadow: '2px 2px 2px 0px rgba(0,0,0,0.5)',
   marginLeft: -1,
 };
-const rangeInputHintStyle = {
+const rangeInputContainerStyle = {
+  alignItems: 'flex-end',
+  display: 'flex',
+  justifyContent: 'space-between',
+};
+const rangeCenterHintStyle = {
   textAlign: 'center',
   width: 75,
 };
 const rangeInputStyle = {
   width: 75,
 };
-const rangeInputTextStyle = {
+const centerInputTextStyle = {
   textAlign: 'center',
+};
+const rangeZeroStyle = {
+  bottom: 13,
+  position: 'relative',
 };
 const rowContainerStyle = {
   display: 'grid',
@@ -111,8 +146,6 @@ const rowContainerStyle = {
 };
 const rowItemStyle = {
   margin: '3px 0px',
-  height: 24,
-  lineHeight: '24px',
   overflowX: 'hidden',
   textAlign: 'right',
   textOverflow: 'ellipsis',
@@ -127,14 +160,20 @@ const settingsFontStyle = {
 const settingsIconStyle = {
   height: 24,
   width: 24,
-  padding: 3,
+  padding: 5,
 };
 const tableContainerStyle = {
   display: 'grid',
-  gridColumnGap: 10,
+  gridColumnGap: 5,
 };
 
 class TaskTableView extends React.Component {
+  getFontSize = (height) => {
+    if (height >= 30) {
+      return 18;
+    }
+    return Math.floor(0.6 * height);
+  }
   checkOverflow = (e) => {
     const el = e.target;
     const isOverflowing = el.clientWidth < el.scrollWidth
@@ -143,185 +182,223 @@ class TaskTableView extends React.Component {
     return isOverflowing;
   }
   render() {
+    const currContainerStyle = this.props.centerView ?
+      Object.assign(
+        {},
+        containerStyle,
+        {
+          left: '50%',
+          transform: 'translate(-50%, 0)',
+        }
+      )
+      :
+      containerStyle
+    ;
+    const currHeaderStyle = Object.assign(
+      {},
+      headerStyle,
+      {
+        fontSize: this.getFontSize(this.props.gridHeight),
+        height: this.props.gridHeight - 6,
+        lineHeight: `${this.props.gridHeight - 6}px`,
+      }
+    );
+    const gridItemStyle = {
+      height: this.props.gridHeight,
+      width: this.props.gridHeight,
+    };
+    const currRowItemStyle = Object.assign(
+      {},
+      rowItemStyle,
+      {
+        fontSize: this.getFontSize(this.props.gridHeight),
+        height: this.props.gridHeight - 6,
+        lineHeight: `${this.props.gridHeight - 6}px`,
+      }
+    );
     return (
       <div
-        style={ containerStyle }
+        style={ { width: '100% ' } }
       >
         <div
-          style={ Object.assign(
-            {},
-            tableContainerStyle,
-            this.props.style,
-            {
-              gridTemplateColumns: `${this.props.dimensions.rowNameWidth}px ${this.props.dimensions.headerWidth}px`,
-              gridTemplateRows: `${this.props.dimensions.headerHeight}px ${this.props.dimensions.tableHeight}px`,
-            }
-          ) }
+          style={ currContainerStyle }
         >
           <div
-            style={
-              Object.assign(
+            style={ Object.assign(
+              {},
+              tableContainerStyle,
+              this.props.style,
+              {
+                gridTemplateColumns: `${this.props.dimensions.rowNameWidth}px ${this.props.dimensions.headerWidth}px`,
+                gridTemplateRows: `${this.props.dimensions.headerHeight}px ${this.props.dimensions.tableHeight}px`,
+              }
+            ) }
+          >
+            <div
+              style={
+                Object.assign(
+                  {},
+                  headerContainerStyle,
+                  {
+                    height: this.props.dimensions.headerHeight,
+                    width: this.props.dimensions.headerWidth,
+                  }
+                )
+              }
+            >
+              {
+                this.props.task.header &&
+                this.props.task.header.map((columnName, columnIndex) => {
+                  const keyName = `${columnName}-${columnIndex}`;
+                  return (
+                    <button
+                      key={ keyName }
+                      onClick={ () => { this.props.sortRows(columnIndex); } }
+                      onMouseEnter={ (e) => {
+                        const doesOverflow = this.checkOverflow(e);
+                        this.props.tooltip.showFunc(e, columnName, 'top', !doesOverflow);
+                      } }
+                      onMouseLeave={ this.props.tooltip.hideFunc }
+                      style={ Object.assign(
+                        {},
+                        currHeaderStyle,
+                        {
+                          cursor: this.props.trackSortHeader[columnIndex].direction < 0 ?
+                            's-resize'
+                            :
+                            'n-resize',
+                          left: columnIndex * this.props.gridHeight,
+                          width: this.props.dimensions.headerHeight,
+                        }
+                      ) }
+                    >
+                      { columnName }
+                    </button>
+                  );
+                })
+              }
+            </div>
+            <div
+              style={ rowContainerStyle }
+            >
+              {
+                this.props.page &&
+                this.props.page.map((row, rowIndex) => {
+                  const rowKeyName = `${row.name}-${rowIndex}`;
+                  return (
+                    <div
+                      key={ rowKeyName }
+                      onMouseEnter={ (e) => {
+                        const doesOverflow = this.checkOverflow(e);
+                        this.props.tooltip.showFunc(e, row.name, 'top', !doesOverflow);
+                      } }
+                      onMouseLeave={ this.props.tooltip.hideFunc }
+                      style={ Object.assign(
+                        {},
+                        currRowItemStyle,
+                        {
+                          gridColumn: 1,
+                          gridRow: rowIndex + 1,
+                        }
+                      ) }
+                    >
+                      { row.name }
+                    </div>
+                  );
+                })
+              }
+            </div>
+            <div
+              style={ gridContainerStyle }
+            >
+              {
+                this.props.page &&
+                this.props.page.map((row, rowIndex) => {
+                  return (
+                    row.columns.map((column, columnIndex) => {
+                      const gridKeyName = `${column.name}-${rowIndex}-${columnIndex}`;
+                      return (
+                        <div
+                          onMouseEnter={ (e) => {
+                            this.props.tooltip.showFunc(e, column.tooltip, 'top');
+                          } }
+                          onMouseLeave={ this.props.tooltip.hideFunc }
+                          key={ gridKeyName }
+                          style={ Object.assign(
+                            {},
+                            gridItemStyle,
+                            {
+                              backgroundColor: this.props.gridColor(
+                                this.props.options.rangeMax,
+                                this.props.options.rangeMin,
+                                column.value
+                              ),
+                              gridColumn: columnIndex + 2,
+                              gridRow: rowIndex + 1,
+                            }
+                          ) }
+                        />
+                      );
+                    })
+                  );
+                })
+              }
+            </div>
+          </div>
+          <div
+            style={ arrowContainerStyle }
+          >
+            <IconButton
+              onClick={ this.props.changeView.firstRow }
+              style={ Object.assign(
                 {},
-                headerContainerStyle,
+                arrowIconStyle,
                 {
-                  height: this.props.dimensions.headerHeight,
-                  width: this.props.dimensions.headerWidth,
+                  transform: 'rotate(90deg)',
                 }
-              )
-            }
-          >
-            {
-              this.props.task.header &&
-              this.props.task.header.map((columnName, columnIndex) => {
-                const keyName = `${columnName}-${columnIndex}`;
-                return (
-                  <button
-                    key={ keyName }
-                    onClick={ () => { this.props.sortRows(columnIndex); } }
-                    onMouseEnter={ (e) => {
-                      const doesOverflow = this.checkOverflow(e);
-                      this.props.tooltip.showFunc(e, columnName, 'top', !doesOverflow);
-                    } }
-                    onMouseLeave={ this.props.tooltip.hideFunc }
-                    style={ Object.assign(
-                      {},
-                      headerStyle,
-                      {
-                        cursor: this.props.trackSortHeader[columnIndex].direction < 0 ?
-                          's-resize'
-                          :
-                          'n-resize',
-                        left: columnIndex * 30,
-                        width: this.props.dimensions.headerHeight,
-                      }
-                    ) }
-                  >
-                    { columnName }
-                  </button>
-                );
-              })
-            }
+              ) }
+            >
+              <ArrowFirstIcon />
+            </IconButton>
+            <IconButton
+              iconStyle={ arrowPageIconStyle }
+              onClick={ this.props.changeView.pageBack }
+              style={ arrowIconStyle }
+            >
+              <ArrowPageBackIcon />
+            </IconButton>
+            <IconButton
+              onClick={ this.props.changeView.previousRow }
+              style={ arrowIconStyle }
+            >
+              <ArrowUpIcon />
+            </IconButton>
+            <IconButton
+              onClick={ this.props.changeView.nextRow }
+              style={ arrowIconStyle }
+            >
+              <ArrowDownIcon />
+            </IconButton>
+            <IconButton
+              iconStyle={ arrowPageIconStyle }
+              onClick={ this.props.changeView.pageForward }
+              style={ arrowIconStyle }
+            >
+              <ArrowPageForwardIcon />
+            </IconButton>
+            <IconButton
+              onClick={ this.props.changeView.lastRow }
+              style={ Object.assign(
+                {},
+                arrowIconStyle,
+                {
+                  transform: 'rotate(90deg)',
+                }
+              ) }
+            >
+              <ArrowLastIcon />
+            </IconButton>
           </div>
-          <div
-            style={ rowContainerStyle }
-          >
-            {
-              this.props.page &&
-              this.props.page.map((row, rowIndex) => {
-                const rowKeyName = `${row.name}-${rowIndex}`;
-                return (
-                  <div
-                    key={ rowKeyName }
-                    onMouseEnter={ (e) => {
-                      const doesOverflow = this.checkOverflow(e);
-                      this.props.tooltip.showFunc(e, row.name, 'top', !doesOverflow);
-                    } }
-                    onMouseLeave={ this.props.tooltip.hideFunc }
-                    style={ Object.assign(
-                      {},
-                      rowItemStyle,
-                      {
-                        gridColumn: 1,
-                        gridRow: rowIndex + 1,
-                      }
-                    ) }
-                  >
-                    { row.name }
-                  </div>
-                );
-              })
-            }
-          </div>
-          <div
-            style={ gridContainerStyle }
-          >
-            {
-              this.props.page &&
-              this.props.page.map((row, rowIndex) => {
-                return (
-                  row.columns.map((column, columnIndex) => {
-                    const gridKeyName = `${column.name}-${rowIndex}-${columnIndex}`;
-                    return (
-                      <div
-                        onMouseEnter={ (e) => {
-                          this.props.tooltip.showFunc(e, column.tooltip, 'top');
-                        } }
-                        onMouseLeave={ this.props.tooltip.hideFunc }
-                        key={ gridKeyName }
-                        style={ Object.assign(
-                          {},
-                          gridItemStyle,
-                          {
-                            backgroundColor: this.props.gridColor(
-                              this.props.options.rangeMax,
-                              this.props.options.rangeMin,
-                              column.value
-                            ),
-                            gridColumn: columnIndex + 2,
-                            gridRow: rowIndex + 1,
-                          }
-                        ) }
-                      />
-                    );
-                  })
-                );
-              })
-            }
-          </div>
-        </div>
-        <div
-          style={ arrowContainerStyle }
-        >
-          <IconButton
-            onClick={ this.props.changeView.firstRow }
-            style={ Object.assign(
-              {},
-              arrowIconStyle,
-              {
-                transform: 'rotate(90deg)',
-              }
-            ) }
-          >
-            <ArrowFirstIcon />
-          </IconButton>
-          <IconButton
-            iconStyle={ arrowPageIconStyle }
-            onClick={ this.props.changeView.pageBack }
-            style={ arrowIconStyle }
-          >
-            <ArrowPageBackIcon />
-          </IconButton>
-          <IconButton
-            onClick={ this.props.changeView.previousRow }
-            style={ arrowIconStyle }
-          >
-            <ArrowUpIcon />
-          </IconButton>
-          <IconButton
-            onClick={ this.props.changeView.nextRow }
-            style={ arrowIconStyle }
-          >
-            <ArrowDownIcon />
-          </IconButton>
-          <IconButton
-            iconStyle={ arrowPageIconStyle }
-            onClick={ this.props.changeView.pageForward }
-            style={ arrowIconStyle }
-          >
-            <ArrowPageForwardIcon />
-          </IconButton>
-          <IconButton
-            onClick={ this.props.changeView.lastRow }
-            style={ Object.assign(
-              {},
-              arrowIconStyle,
-              {
-                transform: 'rotate(90deg)',
-              }
-            ) }
-          >
-            <ArrowLastIcon />
-          </IconButton>
         </div>
         <div
           style={ Object.assign(
@@ -341,30 +418,99 @@ class TaskTableView extends React.Component {
               }
             ) }
           >
-            <Checkbox
-              checked={ this.props.options.enableTooltips }
-              label="Enable tooltips"
-              onCheck={ () => {
-                this.props.optionChange(
-                  'enableTooltips',
-                  !this.props.options.enableTooltips
-                );
-              } }
-            />
-            <TextField
-              hintStyle={ rangeInputHintStyle }
-              hintText="Min."
-              inputStyle={ rangeInputTextStyle }
-              onChange={ (e) => {
-                this.props.rangeChange(
-                  'rangeMin',
-                  e.target.value
-                );
-              } }
-              style={ rangeInputStyle }
-              type="text"
-              value={ this.props.options.rangeMinStr }
-            />
+            <div
+              style={ legendGridStyle }
+            >
+              {
+                this.props.colorRange.map((color, colorIndex) => {
+                  const legendKey = `legendKey-${colorIndex}`;
+                  return (
+                    <div
+                      key={ legendKey }
+                      style={ Object.assign(
+                        {},
+                        legendGridCellStyle,
+                        {
+                          backgroundColor: color,
+                        }
+                      ) }
+                    />
+                  );
+                })
+              }
+            </div>
+            <div
+              style={ rangeInputContainerStyle }
+            >
+              <TextField
+                hintStyle={ rangeCenterHintStyle }
+                hintText="Min."
+                inputStyle={ centerInputTextStyle }
+                onChange={ (e) => {
+                  this.props.rangeChange(
+                    'rangeMin',
+                    e.target.value
+                  );
+                } }
+                style={ rangeInputStyle }
+                type="text"
+                value={ this.props.options.rangeMinStr }
+              />
+              <div
+                style={ rangeZeroStyle }
+              >
+                0
+              </div>
+              <TextField
+                hintStyle={ rangeCenterHintStyle }
+                hintText="Max."
+                inputStyle={ centerInputTextStyle }
+                onChange={ (e) => {
+                  this.props.rangeChange(
+                    'rangeMax',
+                    e.target.value
+                  );
+                } }
+                style={ rangeInputStyle }
+                type="text"
+                value={ this.props.options.rangeMaxStr }
+              />
+            </div>
+            <div
+              style={ optionFieldContainerStyle }
+            >
+              Options
+              <Checkbox
+                checked={ this.props.options.enableTooltips }
+                label="Enable tooltips"
+                labelStyle={ { marginLeft: 22 } }
+                onCheck={ () => {
+                  this.props.optionChange(
+                    'enableTooltips',
+                    !this.props.options.enableTooltips
+                  );
+                } }
+                style={ optionFieldStyle }
+              />
+              <div>
+                <input
+                  onChange={ (e) => { this.props.changeGridHeight(e.target.value); } }
+                  onKeyPress={ (e) => {
+                    if (e.key === 'Enter') {
+                      this.props.updateGridHeight();
+                    }
+                  } }
+                  style={ optionsInputStyle }
+                  type="number"
+                  value={ this.props.gridHeightInput }
+                />
+                <span
+                  style={ optionFieldTextStyle }
+                >
+                  Cell height/width (px)
+                </span>
+              </div>
+            </div>
           </div>
           <div
             style={ Object.assign(
@@ -376,11 +522,22 @@ class TaskTableView extends React.Component {
             ) }
           >
             <IconButton
+              data-tip={ true }
+              data-for={ 'toggle-viz-panel' }
               iconStyle={ settingsFontStyle }
               onClick={ this.props.panel.toggle }
               style={ settingsIconStyle }
             >
               <SettingsIcon />
+            </IconButton>
+            <IconButton
+              data-tip={ true }
+              data-for={ 'reset-viz-view' }
+              iconStyle={ settingsFontStyle }
+              onClick={ this.props.resetView }
+              style={ settingsIconStyle }
+            >
+              <RestoreIcon />
             </IconButton>
           </div>
         </div>
@@ -393,6 +550,22 @@ class TaskTableView extends React.Component {
             textAlign: 'left',
           } }
         />
+        <ReactTooltip
+          effect="solid"
+          id="toggle-viz-panel"
+          type="dark"
+          place="top"
+        >
+          { this.props.panel.left < -1 ? 'Show' : 'Hide' } settings panel
+        </ReactTooltip>
+        <ReactTooltip
+          effect="solid"
+          id="reset-viz-view"
+          type="dark"
+          place="top"
+        >
+          Reset view
+        </ReactTooltip>
       </div>
     );
   }
@@ -400,6 +573,8 @@ class TaskTableView extends React.Component {
 
 
 TaskTableView.propTypes = {
+  centerView: PropTypes.bool.isRequired,
+  changeGridHeight: PropTypes.func.isRequired,
   changeView: PropTypes.shape({
     firstRow: PropTypes.func,
     lastRow: PropTypes.func,
@@ -408,6 +583,9 @@ TaskTableView.propTypes = {
     pageForward: PropTypes.func,
     previousRow: PropTypes.func,
   }).isRequired,
+  colorRange: PropTypes.arrayOf(
+    PropTypes.string,
+  ).isRequired,
   dimensions: PropTypes.shape({
     headerHeight: PropTypes.number,
     headerWidth: PropTypes.number,
@@ -415,6 +593,8 @@ TaskTableView.propTypes = {
     tableHeight: PropTypes.number,
   }).isRequired,
   gridColor: PropTypes.func.isRequired,
+  gridHeight: PropTypes.number.isRequired,
+  gridHeightInput: PropTypes.number.isRequired,
   muiTheme: PropTypes.shape({
     palette: PropTypes.shape({
       primary1Color: PropTypes.string,
@@ -424,6 +604,7 @@ TaskTableView.propTypes = {
   options: PropTypes.shape({
     enableTooltips: PropTypes.bool,
     rangeMax: PropTypes.number,
+    rangeMaxStr: PropTypes.string,
     rangeMin: PropTypes.number,
     rangeMinStr: PropTypes.string,
   }).isRequired,
@@ -435,6 +616,7 @@ TaskTableView.propTypes = {
     toggle: PropTypes.func,
   }).isRequired,
   rangeChange: PropTypes.func.isRequired,
+  resetView: PropTypes.func.isRequired,
   sortRows: PropTypes.func.isRequired,
   style: PropTypes.shape({}).isRequired,
   task: viewTaskProp.isRequired,
@@ -466,6 +648,7 @@ TaskTableView.propTypes = {
       name: PropTypes.string,
     })
   ).isRequired,
+  updateGridHeight: PropTypes.func.isRequired,
 };
 
 export default muiThemeable()(Radium(TaskTableView));

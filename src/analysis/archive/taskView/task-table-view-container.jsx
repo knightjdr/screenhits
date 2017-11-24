@@ -7,6 +7,7 @@ import TaskTableView from './task-table-view';
 import { viewTaskProp } from '../../../types';
 
 let canvas;
+const defaultGridHeight = 20;
 const numberOfColors = 100;
 const emptyRect = {
   bottom: null,
@@ -33,22 +34,26 @@ class TaskTableViewContainer extends React.Component {
     super(props);
     canvas = document.createElement('canvas');
     const headerHeight = this.getHeaderHeight(this.props.task.header);
-    const headerWidth = this.getHeaderWidth(this.props.task.header);
-    const numRows = this.calculateRows(headerHeight);
-    const tableHeight = this.getTableHeight(numRows);
+    const headerWidth = this.getHeaderWidth(this.props.task.header, defaultGridHeight);
+    const numRows = this.calculateRows(headerHeight, defaultGridHeight);
+    const tableHeight = this.getTableHeight(numRows, defaultGridHeight);
     this.state = {
+      centerView: this.checkWidth(headerWidth),
       colorRange: this.initRainbow(),
       data: this.props.task.results ? JSON.parse(JSON.stringify(this.props.task.results)) : [],
+      gridHeight: defaultGridHeight,
+      gridHeightInput: defaultGridHeight,
       headerHeight,
       headerWidth,
       numRows,
       options: {
-        enableTooltips: true,
+        enableTooltips: false,
         rangeMax: this.props.task.range ? this.props.task.range.max : 0,
+        rangeMaxStr: this.props.task.range ? String(this.props.task.range.max) : String(0),
         rangeMin: this.props.task.range ? this.props.task.range.min : 0,
         rangeMinStr: this.props.task.range ? String(this.props.task.range.min) : String(0),
       },
-      page: this.subsetData(this.props.task.results, 0, numRows - 1),
+      page: this.subsetData(this.props.task.results, 0, numRows),
       panel: {
         left: -1,
       },
@@ -94,15 +99,15 @@ class TaskTableViewContainer extends React.Component {
     }
     return defaults.headerHeight;
   }
-  getHeaderWidth = (header) => {
+  getHeaderWidth = (header, gridHeight) => {
     if (header) {
       const numColumns = header.length;
-      return numColumns * 30; // 30 is for header width (24) + margin (3 x t+b)
+      return numColumns * gridHeight;
     }
     return 0;
   }
-  getTableHeight = (numRows) => {
-    return numRows * 30;
+  getTableHeight = (numRows, gridHeight) => {
+    return numRows * gridHeight;
   }
   setSortHeader = (header) => {
     if (
@@ -118,9 +123,28 @@ class TaskTableViewContainer extends React.Component {
     }
     return [];
   }
-  calculateRows = (headerHeight) => {
+  calculateRows = (headerHeight, gridHeight) => {
     const parentHeight = Math.floor(window.innerHeight) - 100;
-    return Math.floor((parentHeight - headerHeight) / 30);
+    return Math.floor((parentHeight - headerHeight) / gridHeight);
+  }
+  changeGridHeight = (height) => {
+    if (
+      !height ||
+      (!isNaN(height) &&
+      Number(height) >= 1)
+    ) {
+      this.setState({
+        gridHeightInput: Math.ceil(Number(height)),
+      });
+    }
+  }
+  checkWidth = (headerWidth) => {
+    // 100 for row labels, 5 for column gap, 30 for nav buttons
+    const imageWidth = headerWidth + 135;
+    if (imageWidth < window.innerWidth - 20) { // 20 padding
+      return true;
+    }
+    return false;
   }
   firstRow = () => {
     this.setState(({ data, numRows }) => {
@@ -129,7 +153,7 @@ class TaskTableViewContainer extends React.Component {
         end: numRows - 1,
       };
       return {
-        page: this.subsetData(data, newViewRows.start, newViewRows.end),
+        page: this.subsetData(data, newViewRows.start, newViewRows.end + 1),
         viewRows: newViewRows,
       };
     });
@@ -143,7 +167,7 @@ class TaskTableViewContainer extends React.Component {
       value
     );
     const gridNumber = Math.floor(((mappedNumber + 1) / 2) * 100);
-    return `#${this.state.colorRange.colorAt(gridNumber)}`;
+    return this.state.colorRange[gridNumber];
   }
   hideTooltip = () => {
     this.setState({
@@ -163,35 +187,39 @@ class TaskTableViewContainer extends React.Component {
       '#ffffff',
       '#f44336'
     );
-    return rainbow;
+    return [...Array(numberOfColors + 1).keys()].map((value) => {
+      return `#${rainbow.colorAt(value)}`;
+    });
   }
   lastRow = () => {
     this.setState(({ data, numRows }) => {
-      const end = data.length;
+      const end = data.length - 1;
       const newViewRows = {
         start: end - (numRows - 1),
         end,
       };
       return {
-        page: this.subsetData(data, newViewRows.start, newViewRows.end),
+        page: this.subsetData(data, newViewRows.start, newViewRows.end + 1),
         viewRows: newViewRows,
       };
     });
   }
   mapNumber = (range, value) => {
     if (value > 0) {
-      return value / range.max;
+      const fraction = value / range.max;
+      return fraction <= 1 ? fraction : 1;
     } else if (
       value === 0 ||
       isNaN(value)
     ) {
       return 0;
     }
-    return -value / range.min;
+    const fraction = -value / range.min;
+    return fraction >= -1 ? fraction : -1;
   }
   nextRow = () => {
     this.setState(({ data, numRows, viewRows }) => {
-      const end = viewRows.end + 1 > data.length ?
+      const end = viewRows.end + 1 > data.length - 1 ?
         viewRows.end
         :
         viewRows.end + 1
@@ -201,7 +229,7 @@ class TaskTableViewContainer extends React.Component {
         end,
       };
       return {
-        page: this.subsetData(data, newViewRows.start, newViewRows.end),
+        page: this.subsetData(data, newViewRows.start, newViewRows.end + 1),
         viewRows: newViewRows,
       };
     });
@@ -217,35 +245,35 @@ class TaskTableViewContainer extends React.Component {
   }
   pageBack = () => {
     this.setState(({ data, numRows, viewRows }) => {
-      const start = viewRows.start - (numRows - 1) < 0 ?
+      const start = viewRows.start - numRows < 0 ?
         0
         :
-        viewRows.start - (numRows - 1)
+        viewRows.start - numRows
       ;
       const newViewRows = {
         start,
         end: start + (numRows - 1),
       };
       return {
-        page: this.subsetData(data, newViewRows.start, newViewRows.end),
+        page: this.subsetData(data, newViewRows.start, newViewRows.end + 1),
         viewRows: newViewRows,
       };
     });
   }
   pageForward = () => {
     this.setState(({ data, numRows, viewRows }) => {
-      const totalRows = data.length;
+      const totalRows = data.length - 1;
       const end = viewRows.end + numRows > totalRows ?
         totalRows
         :
-        viewRows.end + (numRows - 1)
+        viewRows.end + numRows
       ;
       const newViewRows = {
         start: end - (numRows - 1),
         end,
       };
       return {
-        page: this.subsetData(data, newViewRows.start, newViewRows.end),
+        page: this.subsetData(data, newViewRows.start, newViewRows.end + 1),
         viewRows: newViewRows,
       };
     });
@@ -262,7 +290,7 @@ class TaskTableViewContainer extends React.Component {
         end: start + (numRows - 1),
       };
       return {
-        page: this.subsetData(data, newViewRows.start, newViewRows.end),
+        page: this.subsetData(data, newViewRows.start, newViewRows.end + 1),
         viewRows: newViewRows,
       };
     });
@@ -278,6 +306,34 @@ class TaskTableViewContainer extends React.Component {
       }
       return {
         options: newOptions,
+      };
+    });
+  }
+  resetView = () => {
+    this.setState(({ headerHeight }) => {
+      const headerWidth = this.getHeaderWidth(this.props.task.header, defaultGridHeight);
+      const numRows = this.calculateRows(headerHeight, defaultGridHeight);
+      const tableHeight = this.getTableHeight(numRows, defaultGridHeight);
+      return {
+        data: this.props.task.results ? JSON.parse(JSON.stringify(this.props.task.results)) : [],
+        gridHeight: defaultGridHeight,
+        gridHeightInput: defaultGridHeight,
+        headerWidth,
+        numRows,
+        options: {
+          enableTooltips: false,
+          rangeMax: this.props.task.range ? this.props.task.range.max : 0,
+          rangeMaxStr: this.props.task.range ? String(this.props.task.range.max) : String(0),
+          rangeMin: this.props.task.range ? this.props.task.range.min : 0,
+          rangeMinStr: this.props.task.range ? String(this.props.task.range.min) : String(0),
+        },
+        page: this.subsetData(this.props.task.results, 0, numRows),
+        tableHeight,
+        trackSortHeader: this.setSortHeader(this.props.task.header),
+        viewRows: {
+          start: 0,
+          end: numRows - 1,
+        },
       };
     });
   }
@@ -317,11 +373,21 @@ class TaskTableViewContainer extends React.Component {
     }
   }
   sortRows = (columnIndex) => {
+    // compare strings
+    const compareStrings = (a, b) => {
+      if (a < b) {
+        return -1;
+      } else if (a > b) {
+        return 1;
+      }
+      return 0;
+    };
     this.setState(({ data, numRows, trackSortHeader }) => {
       const direction = trackSortHeader[columnIndex].direction;
       const sortedData = JSON.parse(JSON.stringify(data));
       const newTrackSortHeader = JSON.parse(JSON.stringify(trackSortHeader));
       newTrackSortHeader[columnIndex].direction *= -1;
+      // sort by value, or by name if value is the same
       sortedData.sort((a, b) => {
         const valueA = a.columns[columnIndex].value;
         const valueB = b.columns[columnIndex].value;
@@ -329,22 +395,26 @@ class TaskTableViewContainer extends React.Component {
           !isNaN(valueA) &&
           !isNaN(valueB)
         ) {
+          const diff = direction * (valueA - valueB);
+          if (diff === 0) {
+            return direction * compareStrings(a.name, b.name);
+          }
           return direction * (valueA - valueB);
         } else if (
           isNaN(valueA) &&
           isNaN(valueB)
         ) {
-          return 0;
+          return direction * compareStrings(a.name, b.name);
         } else if (isNaN(valueA)) {
           return direction * (-1);
         } else if (isNaN(valueB)) {
           return direction * (1);
         }
-        return 0;
+        return direction * compareStrings(a.name, b.name);
       });
       return {
         data: sortedData,
-        page: this.subsetData(sortedData, 0, numRows - 1),
+        page: this.subsetData(sortedData, 0, numRows),
         trackSortHeader: newTrackSortHeader,
         viewRows: {
           start: 0,
@@ -361,7 +431,7 @@ class TaskTableViewContainer extends React.Component {
   }
   togglePanel = () => {
     this.setState(({ panel }) => {
-      const left = panel.left === -1 ? -180 : -1;
+      const left = panel.left === -1 ? -237 : -1;
       return {
         panel: Object.assign(
           {},
@@ -373,9 +443,38 @@ class TaskTableViewContainer extends React.Component {
       };
     });
   }
+  updateGridHeight = () => {
+    this.setState(({ data, gridHeight, headerHeight, gridHeightInput }) => {
+      if (
+        !isNaN(gridHeightInput) &&
+        gridHeightInput >= 1
+      ) {
+        const newGridHeight = Number(gridHeightInput);
+        const headerWidth = this.getHeaderWidth(this.props.task.header, newGridHeight);
+        const numRows = this.calculateRows(headerHeight, newGridHeight);
+        const tableHeight = this.getTableHeight(numRows, newGridHeight);
+        return {
+          gridHeight: newGridHeight,
+          headerWidth,
+          numRows,
+          page: this.subsetData(data, 0, numRows),
+          tableHeight,
+          viewRows: {
+            start: 0,
+            end: numRows - 1,
+          },
+        };
+      }
+      return {
+        gridHeightInput: gridHeight,
+      };
+    });
+  }
   render() {
     return (
       <TaskTableView
+        centerView={ this.state.centerView }
+        changeGridHeight={ this.changeGridHeight }
         changeView={ {
           firstRow: this.firstRow,
           lastRow: this.lastRow,
@@ -384,6 +483,7 @@ class TaskTableViewContainer extends React.Component {
           pageForward: this.pageForward,
           previousRow: this.previousRow,
         } }
+        colorRange={ this.state.colorRange }
         dimensions={ {
           headerHeight: this.state.headerHeight,
           headerWidth: this.state.headerWidth,
@@ -391,6 +491,8 @@ class TaskTableViewContainer extends React.Component {
           tableHeight: this.state.tableHeight,
         } }
         gridColor={ this.gridColor }
+        gridHeight={ this.state.gridHeight }
+        gridHeightInput={ this.state.gridHeightInput }
         optionChange={ this.optionChange }
         options={ this.state.options }
         page={ this.state.page }
@@ -402,6 +504,7 @@ class TaskTableViewContainer extends React.Component {
           }
         ) }
         rangeChange={ this.rangeChange }
+        resetView={ this.resetView }
         sortRows={ this.sortRows }
         style={ this.props.style }
         task={ this.props.task }
@@ -414,6 +517,7 @@ class TaskTableViewContainer extends React.Component {
           }
         ) }
         trackSortHeader={ this.state.trackSortHeader }
+        updateGridHeight={ this.updateGridHeight }
       />
     );
   }
