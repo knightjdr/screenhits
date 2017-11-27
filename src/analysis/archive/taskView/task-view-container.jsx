@@ -13,7 +13,7 @@ class TaskViewContainer extends React.Component {
     this.state = {
       viewStatus: {
         didInvalidate: this.props.viewTask.didInvalidate,
-        isFetching: this.props.viewTask.isFetching,
+        isFetching: true,
         message: this.props.viewTask.message,
       },
       viewTask: this.props.viewTask.task,

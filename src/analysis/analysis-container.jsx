@@ -40,13 +40,13 @@ class AnalysisContainer extends React.Component {
     window.addEventListener('resize', this.resize);
   }
   componentWillReceiveProps = (nextProps) => {
-    this.setState(({ id, view }) => {
+    this.setState(({ view, viewID }) => {
       if (nextProps.params.view !== view) {
         return {
           view: this.checkView(nextProps.params.view),
           viewID: this.checkID(nextProps.params.view, nextProps.params.id),
         };
-      } else if (nextProps.params.id !== id) {
+      } else if (nextProps.params.id !== viewID) {
         return {
           viewID: this.checkID(view, nextProps.params.id),
         };

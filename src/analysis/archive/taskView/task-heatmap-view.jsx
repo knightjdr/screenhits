@@ -1,10 +1,15 @@
+import ArrowBackIcon from 'material-ui/svg-icons/navigation/arrow-back';
 import ArrowDownIcon from 'material-ui/svg-icons/navigation/expand-more';
 import ArrowFirstIcon from 'material-ui/svg-icons/navigation/first-page';
+import ArrowForwardIcon from 'material-ui/svg-icons/navigation/arrow-forward';
 import ArrowLastIcon from 'material-ui/svg-icons/navigation/last-page';
 import ArrowPageBackIcon from 'material-ui/svg-icons/navigation/arrow-upward';
 import ArrowPageForwardIcon from 'material-ui/svg-icons/navigation/arrow-downward';
+import ArrowLeftIcon from 'material-ui/svg-icons/navigation/chevron-left';
+import ArrowRightIcon from 'material-ui/svg-icons/navigation/chevron-right';
 import ArrowUpIcon from 'material-ui/svg-icons/navigation/expand-less';
 import Checkbox from 'material-ui/Checkbox';
+import ClearIcon from 'material-ui/svg-icons/content/clear';
 import IconButton from 'material-ui/IconButton';
 import muiThemeable from 'material-ui/styles/muiThemeable';
 import PropTypes from 'prop-types';
@@ -16,12 +21,7 @@ import SettingsIcon from 'material-ui/svg-icons/action/settings';
 import TextField from 'material-ui/TextField';
 
 import Tooltip from '../../../tooltip/tooltip-container';
-import { viewTaskProp } from '../../../types';
 
-const arrowContainerStyle = {
-  display: 'flex',
-  flexDirection: 'column',
-};
 const arrowIconStyle = {
   height: 30,
   width: 30,
@@ -65,6 +65,12 @@ const headerStyle = {
     outline: 0,
   },
 };
+const horizArrowContainerStyle = {
+  display: 'flex',
+  gridColumn: '1 / 3',
+  gridRow: 3,
+  justifySelf: 'end',
+};
 const legendGridStyle = {
   display: 'flex',
   padding: '0 5px',
@@ -77,10 +83,27 @@ const optionFieldContainerStyle = {
   marginTop: 10,
 };
 const optionFieldStyle = {
-  margin: '10px 0',
+  margin: '15px 0',
+  width: 213,
+};
+const optionFieldIconStyle = {
+  height: 30,
+  marginLeft: 5,
+  padding: 0,
+  position: 'relative',
+  top: 15,
+  width: 30,
+};
+const optionFieldIconFontStyle = {
+  height: 20,
+  width: 20,
 };
 const optionFieldTextStyle = {
   marginLeft: 10,
+};
+const optionFieldWithIconStyle = {
+  display: 'flex',
+  width: 213,
 };
 const optionsInputStyle = {
   borderBottom: '1px solid rgba(0,0,0,0.15)',
@@ -99,7 +122,7 @@ const panelOptionsStyle = {
   borderStyle: 'solid',
   borderWidth: '1px',
   boxShadow: '2px 2px 2px 0px rgba(0,0,0,0.5)',
-  padding: 10,
+  padding: '10px 10px 15px 10px',
   width: 225,
 };
 const panelStyle = {
@@ -159,21 +182,22 @@ const settingsFontStyle = {
 };
 const settingsIconStyle = {
   height: 24,
-  width: 24,
-  padding: 5,
+  width: 26,
+  padding: '5px 7px 5px 5px',
 };
 const tableContainerStyle = {
   display: 'grid',
   gridColumnGap: 5,
 };
+const vertArrowContainerStyle = {
+  alignSelf: 'end',
+  display: 'flex',
+  gridColumn: 3,
+  gridRow: 2,
+  flexDirection: 'column',
+};
 
-class TaskTableView extends React.Component {
-  getFontSize = (height) => {
-    if (height >= 30) {
-      return 18;
-    }
-    return Math.floor(0.6 * height);
-  }
+class TaskHeatmapView extends React.Component {
   checkOverflow = (e) => {
     const el = e.target;
     const isOverflowing = el.clientWidth < el.scrollWidth
@@ -198,7 +222,7 @@ class TaskTableView extends React.Component {
       {},
       headerStyle,
       {
-        fontSize: this.getFontSize(this.props.gridHeight),
+        fontSize: this.props.fontSize,
         height: this.props.gridHeight - 6,
         lineHeight: `${this.props.gridHeight - 6}px`,
       }
@@ -211,7 +235,7 @@ class TaskTableView extends React.Component {
       {},
       rowItemStyle,
       {
-        fontSize: this.getFontSize(this.props.gridHeight),
+        fontSize: this.props.fontSize,
         height: this.props.gridHeight - 6,
         lineHeight: `${this.props.gridHeight - 6}px`,
       }
@@ -229,8 +253,8 @@ class TaskTableView extends React.Component {
               tableContainerStyle,
               this.props.style,
               {
-                gridTemplateColumns: `${this.props.dimensions.rowNameWidth}px ${this.props.dimensions.headerWidth}px`,
-                gridTemplateRows: `${this.props.dimensions.headerHeight}px ${this.props.dimensions.tableHeight}px`,
+                gridTemplateColumns: `${this.props.dimensions.rowNameWidth}px ${this.props.dimensions.tableWidth}px 30px`,
+                gridTemplateRows: `${this.props.dimensions.headerHeight}px ${this.props.dimensions.tableHeight}px 30px`,
               }
             ) }
           >
@@ -241,14 +265,14 @@ class TaskTableView extends React.Component {
                   headerContainerStyle,
                   {
                     height: this.props.dimensions.headerHeight,
-                    width: this.props.dimensions.headerWidth,
+                    width: this.props.dimensions.tableWidth,
                   }
                 )
               }
             >
               {
-                this.props.task.header &&
-                this.props.task.header.map((columnName, columnIndex) => {
+                this.props.pageHeader &&
+                this.props.pageHeader.map((columnName, columnIndex) => {
                   const keyName = `${columnName}-${columnIndex}`;
                   return (
                     <button
@@ -302,7 +326,16 @@ class TaskTableView extends React.Component {
                         }
                       ) }
                     >
-                      { row.name }
+                      <span
+                        style={ {
+                          backgroundColor: row.name.toLowerCase() === this.props.highlightRow ?
+                            '#ffee58'
+                            :
+                            null,
+                        } }
+                      >
+                        { row.name }
+                      </span>
                     </div>
                   );
                 })
@@ -344,60 +377,105 @@ class TaskTableView extends React.Component {
                 })
               }
             </div>
-          </div>
-          <div
-            style={ arrowContainerStyle }
-          >
-            <IconButton
-              onClick={ this.props.changeView.firstRow }
-              style={ Object.assign(
-                {},
-                arrowIconStyle,
-                {
-                  transform: 'rotate(90deg)',
-                }
-              ) }
+            <div
+              style={ vertArrowContainerStyle }
             >
-              <ArrowFirstIcon />
-            </IconButton>
-            <IconButton
-              iconStyle={ arrowPageIconStyle }
-              onClick={ this.props.changeView.pageBack }
-              style={ arrowIconStyle }
-            >
-              <ArrowPageBackIcon />
-            </IconButton>
-            <IconButton
-              onClick={ this.props.changeView.previousRow }
-              style={ arrowIconStyle }
-            >
-              <ArrowUpIcon />
-            </IconButton>
-            <IconButton
-              onClick={ this.props.changeView.nextRow }
-              style={ arrowIconStyle }
-            >
-              <ArrowDownIcon />
-            </IconButton>
-            <IconButton
-              iconStyle={ arrowPageIconStyle }
-              onClick={ this.props.changeView.pageForward }
-              style={ arrowIconStyle }
-            >
-              <ArrowPageForwardIcon />
-            </IconButton>
-            <IconButton
-              onClick={ this.props.changeView.lastRow }
-              style={ Object.assign(
-                {},
-                arrowIconStyle,
-                {
-                  transform: 'rotate(90deg)',
-                }
-              ) }
-            >
-              <ArrowLastIcon />
-            </IconButton>
+              <IconButton
+                onClick={ this.props.changeView.firstRow }
+                style={ Object.assign(
+                  {},
+                  arrowIconStyle,
+                  {
+                    transform: 'rotate(90deg)',
+                  }
+                ) }
+              >
+                <ArrowFirstIcon />
+              </IconButton>
+              <IconButton
+                iconStyle={ arrowPageIconStyle }
+                onClick={ this.props.changeView.pageBack }
+                style={ arrowIconStyle }
+              >
+                <ArrowPageBackIcon />
+              </IconButton>
+              <IconButton
+                onClick={ this.props.changeView.previousRow }
+                style={ arrowIconStyle }
+              >
+                <ArrowUpIcon />
+              </IconButton>
+              <IconButton
+                onClick={ this.props.changeView.nextRow }
+                style={ arrowIconStyle }
+              >
+                <ArrowDownIcon />
+              </IconButton>
+              <IconButton
+                iconStyle={ arrowPageIconStyle }
+                onClick={ this.props.changeView.pageForward }
+                style={ arrowIconStyle }
+              >
+                <ArrowPageForwardIcon />
+              </IconButton>
+              <IconButton
+                onClick={ this.props.changeView.lastRow }
+                style={ Object.assign(
+                  {},
+                  arrowIconStyle,
+                  {
+                    transform: 'rotate(90deg)',
+                  }
+                ) }
+              >
+                <ArrowLastIcon />
+              </IconButton>
+            </div>
+            {
+              !this.props.centerView &&
+              <div
+                style={ horizArrowContainerStyle }
+              >
+                <IconButton
+                  onClick={ this.props.changeView.firstCol }
+                  style={ arrowIconStyle }
+                >
+                  <ArrowFirstIcon />
+                </IconButton>
+                <IconButton
+                  onClick={ this.props.changeView.colBack }
+                  iconStyle={ arrowPageIconStyle }
+                  style={ arrowIconStyle }
+                >
+                  <ArrowBackIcon />
+                </IconButton>
+                <IconButton
+                  onClick={ this.props.changeView.previousCol }
+                  style={ arrowIconStyle }
+                >
+                  <ArrowLeftIcon />
+                </IconButton>
+                <IconButton
+                  onClick={ this.props.changeView.nextCol }
+                  style={ arrowIconStyle }
+                >
+                  <ArrowRightIcon />
+                </IconButton>
+                <IconButton
+                  onClick={ this.props.changeView.colForward }
+                  iconStyle={ arrowPageIconStyle }
+                  style={ arrowIconStyle }
+                >
+                  <ArrowForwardIcon />
+                </IconButton>
+                <IconButton
+                  onClick={ this.props.changeView.lastCol }
+                  style={ arrowIconStyle }
+                >
+                  <ArrowLastIcon />
+                </IconButton>
+              </div>
+            }
           </div>
         </div>
         <div
@@ -477,6 +555,31 @@ class TaskTableView extends React.Component {
               />
             </div>
             <div
+              style={ optionFieldWithIconStyle }
+            >
+              <TextField
+                onChange={ this.props.updateGene }
+                errorText={ this.props.searchError }
+                hintText="Search"
+                onKeyPress={ (e) => {
+                  if (e.key === 'Enter') {
+                    this.props.geneSearch(this.props.options.gene);
+                  }
+                } }
+                type="text"
+                value={ this.props.options.gene }
+              />
+              <IconButton
+                data-tip={ true }
+                data-for={ 'clear-search' }
+                iconStyle={ optionFieldIconFontStyle }
+                onClick={ this.props.clearSearch }
+                style={ optionFieldIconStyle }
+              >
+                <ClearIcon />
+              </IconButton>
+            </div>
+            <div
               style={ optionFieldContainerStyle }
             >
               Options
@@ -492,7 +595,11 @@ class TaskTableView extends React.Component {
                 } }
                 style={ optionFieldStyle }
               />
-              <div>
+              <div
+                style={ {
+                  margin: '10px 0 5px 0',
+                } }
+              >
                 <input
                   onChange={ (e) => { this.props.changeGridHeight(e.target.value); } }
                   onKeyPress={ (e) => {
@@ -566,35 +673,53 @@ class TaskTableView extends React.Component {
         >
           Reset view
         </ReactTooltip>
+        <ReactTooltip
+          effect="solid"
+          id="clear-search"
+          type="dark"
+          place="top"
+        >
+          Clear search
+        </ReactTooltip>
       </div>
     );
   }
 }
 
 
-TaskTableView.propTypes = {
+TaskHeatmapView.propTypes = {
   centerView: PropTypes.bool.isRequired,
   changeGridHeight: PropTypes.func.isRequired,
   changeView: PropTypes.shape({
+    colBack: PropTypes.func,
+    colForward: PropTypes.func,
+    firstCol: PropTypes.func,
     firstRow: PropTypes.func,
+    lastCol: PropTypes.func,
     lastRow: PropTypes.func,
+    nextCol: PropTypes.func,
     nextRow: PropTypes.func,
     pageBack: PropTypes.func,
     pageForward: PropTypes.func,
+    previousCol: PropTypes.func,
     previousRow: PropTypes.func,
   }).isRequired,
+  clearSearch: PropTypes.func.isRequired,
   colorRange: PropTypes.arrayOf(
     PropTypes.string,
   ).isRequired,
   dimensions: PropTypes.shape({
     headerHeight: PropTypes.number,
-    headerWidth: PropTypes.number,
     rowNameWidth: PropTypes.number,
     tableHeight: PropTypes.number,
+    tableWidth: PropTypes.number,
   }).isRequired,
+  fontSize: PropTypes.string.isRequired,
+  geneSearch: PropTypes.func.isRequired,
   gridColor: PropTypes.func.isRequired,
   gridHeight: PropTypes.number.isRequired,
   gridHeightInput: PropTypes.number.isRequired,
+  highlightRow: PropTypes.string.isRequired,
   muiTheme: PropTypes.shape({
     palette: PropTypes.shape({
       primary1Color: PropTypes.string,
@@ -603,6 +728,7 @@ TaskTableView.propTypes = {
   optionChange: PropTypes.func.isRequired,
   options: PropTypes.shape({
     enableTooltips: PropTypes.bool,
+    gene: PropTypes.string,
     rangeMax: PropTypes.number,
     rangeMaxStr: PropTypes.string,
     rangeMin: PropTypes.number,
@@ -611,15 +737,18 @@ TaskTableView.propTypes = {
   page: PropTypes.arrayOf(
     PropTypes.shape({})
   ).isRequired,
+  pageHeader: PropTypes.arrayOf(
+    PropTypes.string,
+  ).isRequired,
   panel: PropTypes.shape({
     left: PropTypes.number,
     toggle: PropTypes.func,
   }).isRequired,
   rangeChange: PropTypes.func.isRequired,
   resetView: PropTypes.func.isRequired,
+  searchError: PropTypes.string.isRequired,
   sortRows: PropTypes.func.isRequired,
   style: PropTypes.shape({}).isRequired,
-  task: viewTaskProp.isRequired,
   tooltip: PropTypes.shape({
     hideFunc: PropTypes.func,
     position: PropTypes.string,
@@ -648,7 +777,8 @@ TaskTableView.propTypes = {
       name: PropTypes.string,
     })
   ).isRequired,
+  updateGene: PropTypes.func.isRequired,
   updateGridHeight: PropTypes.func.isRequired,
 };
 
-export default muiThemeable()(Radium(TaskTableView));
+export default muiThemeable()(Radium(TaskHeatmapView));

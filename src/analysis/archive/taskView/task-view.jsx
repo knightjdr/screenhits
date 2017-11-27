@@ -2,7 +2,7 @@ import FontAwesome from 'react-fontawesome';
 import React from 'react';
 import { CSSTransitionGroup } from 'react-transition-group';
 
-import TaskTableView from './task-table-view-container';
+import TaskHeatmapView from './task-heatmap-view-container';
 import { viewTaskProp, viewTaskStatus } from '../../../types';
 
 import './task-view.scss';
@@ -48,7 +48,7 @@ class TaskView extends React.Component {
           {
             !this.props.viewStatus.isFetching &&
             !this.props.viewStatus.didInvalidate &&
-            <TaskTableView
+            <TaskHeatmapView
               task={ this.props.task }
             />
           }
