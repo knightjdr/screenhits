@@ -5,15 +5,25 @@ import DescriptionIcon from 'material-ui/svg-icons/action/description';
 import Dialog from 'material-ui/Dialog';
 import DownloadIcon from 'material-ui/svg-icons/file/file-download';
 import FlatButton from 'material-ui/FlatButton';
+import FloatingActionButton from 'material-ui/FloatingActionButton';
 import FontAwesome from 'react-fontawesome';
 import IconButton from 'material-ui/IconButton';
+import MenuItem from 'material-ui/MenuItem';
 import muiThemeable from 'material-ui/styles/muiThemeable';
 import PropTypes from 'prop-types';
 import React from 'react';
+import ReactTooltip from 'react-tooltip';
+import RefreshIcon from 'material-ui/svg-icons/navigation/refresh';
+import SelectField from 'material-ui/SelectField';
+import Snackbar from 'material-ui/Snackbar';
+import TextField from 'material-ui/TextField';
 import ViewIcon from 'material-ui/svg-icons/action/visibility';
 import { Scrollbars } from 'react-custom-scrollbars';
 
+import AnalysisOptions from '../../../modules/analysis-new';
+import ArchiveStyle from '../archive-style';
 import CustomTable from '../../../table/table-container';
+import Fields from '../../../modules/fields';
 import Tooltip from '../../../tooltip/tooltip-container';
 
 const designDialogContainerStyle = {
@@ -30,11 +40,10 @@ const designDialogValueStyle = {
   display: 'inline-block',
   marginLeft: 10,
 };
-const iconStyle = {
-  height: 24,
-  margin: '0px 2px 0px 2px',
-  padding: 0,
-  width: 24,
+const filtersContainerStyle = {
+  borderBottom: '1px solid #e0e0e0',
+  marginTop: 10,
+  paddingBottom: 10,
 };
 const taskStatusStyle = {
   marginTop: 20,
@@ -42,6 +51,52 @@ const taskStatusStyle = {
 };
 
 class TaskList extends React.Component {
+  analysisTypeOptions = (fields, analysisType) => {
+    let options = fields.map((type) => {
+      return (
+        <MenuItem
+          key={ type }
+          value={ type }
+          primaryText={ type }
+        />
+      );
+    });
+    if (analysisType) {
+      options = options.concat([
+        <MenuItem
+          key="none"
+          value="none"
+          primaryText="none"
+        />,
+      ]);
+    }
+    return options;
+  }
+  applyFilters = () => {
+    return (
+    [
+      <FlatButton
+        backgroundColor={ this.props.muiTheme.palette.success }
+        hoverColor={ this.props.muiTheme.palette.successHover }
+        label="Update"
+        onTouchTap={ this.props.applyFilters }
+      />,
+    ]);
+  }
+  clearFilters = () => {
+    return (
+    [
+      <FlatButton
+        backgroundColor={ this.props.muiTheme.palette.alert }
+        hoverColor={ this.props.muiTheme.palette.alertHover }
+        label="Clear"
+        onTouchTap={ this.props.clearFilters }
+        style={ {
+          marginLeft: 10,
+        } }
+      />,
+    ]);
+  }
   confirmDeletion = (_id) => {
     return (
     [
@@ -231,9 +286,56 @@ class TaskList extends React.Component {
       />,
     ]);
   }
-  list = () => {
-    const tableList = this.props.tasks.map((task, index) => {
-      const columns = this.props.header.map((header) => {
+  filterDialogContent = (filters, funcs) => {
+    return (
+      <div
+        style={ {
+          display: 'flex',
+          flexWrap: 'wrap',
+          padding: '10px 0',
+        } }
+      >
+        <TextField
+          hintText="User name"
+          floatingLabelText="User name"
+          onChange={ funcs.user }
+          style={ ArchiveStyle.filterField }
+          type="text"
+          value={ filters.user }
+        />
+        <SelectField
+          floatingLabelText="Screen type"
+          listStyle={ ArchiveStyle.selectList }
+          onChange={ funcs.screenType }
+          style={ ArchiveStyle.filterField }
+          value={ filters.screenType }
+        >
+          {
+            this.screenTypeOptions(Fields.screen.type.values, filters.screenType)
+          }
+        </SelectField>
+        <SelectField
+          disabled={ !filters.screenType }
+          floatingLabelText="Analysis type"
+          listStyle={ ArchiveStyle.selectList }
+          onChange={ funcs.analysisType }
+          style={ ArchiveStyle.filterField }
+          value={ filters.analysisType }
+        >
+          {
+            filters.screenType &&
+            this.screenTypeOptions(
+              AnalysisOptions[filters.screenType].options,
+              filters.analysisType
+            )
+          }
+        </SelectField>
+      </div>
+    );
+  }
+  list = (headers, tasks) => {
+    const tableList = tasks.map((task, index) => {
+      const columns = headers.map((header) => {
         return {
           type: header.type,
           value: task[header.type],
@@ -270,7 +372,7 @@ class TaskList extends React.Component {
             this.props.iconTooltip.showFunc(e, 'Task parameters');
           } }
           onMouseLeave={ this.props.iconTooltip.hideFunc }
-          style={ iconStyle }
+          style={ ArchiveStyle.smallIcon }
         >
           <DescriptionIcon />
         </IconButton>
@@ -283,7 +385,7 @@ class TaskList extends React.Component {
               this.props.iconTooltip.showFunc(e, 'View log');
             } }
             onMouseLeave={ this.props.iconTooltip.hideFunc }
-            style={ iconStyle }
+            style={ ArchiveStyle.smallIcon }
           >
             <AssessmentIcon />
           </IconButton>
@@ -302,7 +404,7 @@ class TaskList extends React.Component {
               this.props.iconTooltip.showFunc(e, officialText);
             } }
             onMouseLeave={ this.props.iconTooltip.hideFunc }
-            style={ iconStyle }
+            style={ ArchiveStyle.smallIcon }
           >
             <AssignmentIcon />
           </IconButton>
@@ -313,7 +415,7 @@ class TaskList extends React.Component {
             this.props.iconTooltip.showFunc(e, 'Download results');
           } }
           onMouseLeave={ this.props.iconTooltip.hideFunc }
-          style={ iconStyle }
+          style={ ArchiveStyle.smallIcon }
         >
           <DownloadIcon />
         </IconButton>
@@ -323,25 +425,46 @@ class TaskList extends React.Component {
             this.props.iconTooltip.showFunc(e, 'View Results');
           } }
           onMouseLeave={ this.props.iconTooltip.hideFunc }
-          style={ iconStyle }
+          style={ ArchiveStyle.smallIcon }
         >
           <ViewIcon />
         </IconButton>
         <IconButton
+          iconStyle={ {
+            color: this.props.muiTheme.palette.warning,
+          } }
           onClick={ () => { this.props.deleteDialog.showFunc(task._id); } }
           onMouseEnter={ (e) => {
             this.props.iconTooltip.showFunc(e, cancelText);
           } }
           onMouseLeave={ this.props.iconTooltip.hideFunc }
-          iconStyle={ {
-            color: this.props.muiTheme.palette.warning,
-          } }
-          style={ iconStyle }
+          style={ ArchiveStyle.smallIcon }
         >
           <ClearIcon />
         </IconButton>
       </span>
     );
+  }
+  screenTypeOptions = (fields, screenType) => {
+    let options = fields.map((type) => {
+      return (
+        <MenuItem
+          key={ type }
+          value={ type }
+          primaryText={ type }
+        />
+      );
+    });
+    if (screenType) {
+      options = options.concat([
+        <MenuItem
+          key="none"
+          value="none"
+          primaryText="none"
+        />,
+      ]);
+    }
+    return options;
   }
   render() {
     return (
@@ -365,14 +488,69 @@ class TaskList extends React.Component {
         {
           !this.props.taskStatus.fetching &&
           !this.props.taskStatus.didInvalidate &&
-          <CustomTable
-            data={ {
-              header: this.props.header,
-              list: this.list(),
-            } }
-            footer={ false }
-            height={ this.props.tableHeight }
-          />
+          <div>
+            <div
+              style={ filtersContainerStyle }
+            >
+              <FloatingActionButton
+                data-tip={ true }
+                data-for={ 'fab-refresh-tasks' }
+                mini={ true }
+                onTouchTap={ this.props.updateTasks }
+              >
+                <RefreshIcon />
+              </FloatingActionButton>
+              <FloatingActionButton
+                data-tip={ true }
+                data-for={ 'fab-filter-tasks' }
+                mini={ true }
+                onTouchTap={ this.props.filterDialog.showFunc }
+                style={ {
+                  marginLeft: 10,
+                } }
+              >
+                <FontAwesome name="filter" />
+              </FloatingActionButton>
+            </div>
+            {
+              this.props.tasks.length <= 0 &&
+              <div
+                style={ {
+                  marginTop: 20,
+                  textAlign: 'center',
+                } }
+              >
+                There are no tasks matching the specified filters
+              </div>
+            }
+            {
+              this.props.tasks.length > 0 &&
+              <CustomTable
+                data={ {
+                  header: this.props.header,
+                  list: this.list(this.props.header, this.props.tasks),
+                } }
+                footer={ false }
+                height={ this.props.tableHeight }
+              />
+            }
+            <ReactTooltip
+              effect="solid"
+              id="fab-refresh-tasks"
+              place="right"
+              type="dark"
+            >
+              Refresh task status
+            </ReactTooltip>
+            <ReactTooltip
+              effect="solid"
+              id="fab-filter-tasks"
+              place="right"
+              type="dark"
+            >
+              View filters
+            </ReactTooltip>
+          </div>
         }
         <Dialog
           actions={ [
@@ -398,6 +576,27 @@ class TaskList extends React.Component {
               this.props.designDialog.params
             ) }
           </Scrollbars>
+        </Dialog>
+        <Dialog
+          actions={ [
+            this.applyFilters(),
+            this.clearFilters(),
+            this.dialogClose(this.props.filterDialog.hideFunc),
+          ] }
+          autoScrollBodyContent={ true }
+          open={ this.props.filterDialog.show }
+          onRequestClose={ this.props.filterDialog.hideFunc }
+          title="Filters"
+          titleStyle={ {
+            borderBottom: 'none',
+          } }
+        >
+          {
+            this.filterDialogContent(
+              this.props.filters,
+              this.props.filterFuncs,
+            )
+          }
         </Dialog>
         <Dialog
           actions={ [
@@ -451,12 +650,20 @@ class TaskList extends React.Component {
           show={ this.props.iconTooltip.show }
           text={ this.props.iconTooltip.text }
         />
+        <Snackbar
+          autoHideDuration={ this.props.snackbar.duration }
+          message={ this.props.snackbar.message }
+          open={ this.props.snackbar.open }
+          onRequestClose={ this.props.snackbar.close }
+        />
       </div>
     );
   }
 }
 
 TaskList.propTypes = {
+  applyFilters: PropTypes.func.isRequired,
+  clearFilters: PropTypes.func.isRequired,
   deleteDialog: PropTypes.shape({
     _id: PropTypes.number,
     hideFunc: PropTypes.func,
@@ -482,6 +689,21 @@ TaskList.propTypes = {
     show: PropTypes.bool,
     text: PropTypes.string,
     title: PropTypes.string,
+  }).isRequired,
+  filterDialog: PropTypes.shape({
+    hideFunc: PropTypes.func,
+    show: PropTypes.bool,
+    showFunc: PropTypes.func,
+  }).isRequired,
+  filterFuncs: PropTypes.shape({
+    analysisType: PropTypes.func,
+    screenType: PropTypes.func,
+    user: PropTypes.func,
+  }).isRequired,
+  filters: PropTypes.shape({
+    analysisType: PropTypes.string,
+    screenType: PropTypes.string,
+    user: PropTypes.string,
   }).isRequired,
   header: PropTypes.arrayOf(
     PropTypes.shape({
@@ -516,6 +738,8 @@ TaskList.propTypes = {
   }).isRequired,
   muiTheme: PropTypes.shape({
     palette: PropTypes.shape({
+      alert: PropTypes.string,
+      alertHover: PropTypes.string,
       offWhite: PropTypes.string,
       primary1Color: PropTypes.string,
       success: PropTypes.string,
@@ -524,6 +748,12 @@ TaskList.propTypes = {
       warning: PropTypes.string,
       warningHover: PropTypes.string,
     }),
+  }).isRequired,
+  snackbar: PropTypes.shape({
+    close: PropTypes.func,
+    duration: PropTypes.number,
+    message: PropTypes.string,
+    open: PropTypes.bool,
   }).isRequired,
   tableHeight: PropTypes.number.isRequired,
   tasks: PropTypes.arrayOf(
@@ -536,6 +766,7 @@ TaskList.propTypes = {
     fetching: PropTypes.bool,
     message: PropTypes.string,
   }).isRequired,
+  updateTasks: PropTypes.func.isRequired,
   viewTask: PropTypes.func.isRequired,
 };
 

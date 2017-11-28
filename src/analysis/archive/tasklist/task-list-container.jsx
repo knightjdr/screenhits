@@ -6,6 +6,7 @@ import { browserHistory } from 'react-router';
 import { connect } from 'react-redux';
 
 import AnalysisModule from '../../../modules/analysis-new';
+import DeleteTask from './delete-task';
 import Download from '../../../helpers/download';
 import TaskList from './task-list';
 
@@ -78,11 +79,20 @@ class TaskListContainer extends React.Component {
         text: '',
         title: '',
       },
+      filterDialog: {
+        show: false,
+      },
       header: tableHeader,
       logDialog: {
         show: false,
         text: '',
         title: '',
+      },
+      snackbar: {
+        duration: 4000,
+        last: null,
+        message: '',
+        open: false,
       },
       tableHeight: this.getHeight(this.props.tasks),
       tasks: this.sortTasks(this.props.tasks, 'date', 'desc'),
@@ -105,7 +115,8 @@ class TaskListContainer extends React.Component {
     window.removeEventListener('resize', this.resize);
   }
   getHeight = (table) => {
-    const maxHeightRows = (window.innerHeight * 0.90) - 0;
+    // 245 = 185 to top of table, 20 for bottom padding, 50 for footer
+    const maxHeightRows = window.innerHeight - 255;
     const neededHeightRows = (table.length * 50);
     let rowHeight = neededHeightRows < maxHeightRows ? neededHeightRows : maxHeightRows;
     // must give space for at least one row
@@ -114,9 +125,42 @@ class TaskListContainer extends React.Component {
     }
     return rowHeight + 111;
   }
+  closeSnackbar = () => {
+    this.setState(({ snackbar }) => {
+      return {
+        snackbar: Object.assign(
+          {},
+          snackbar,
+          {
+            message: '',
+            open: false,
+          }
+        ),
+      };
+    });
+  }
   deleteTask = (_id) => {
-    console.log(_id);
     this.hideDeleteDialog();
+    this.updateSnackbar({
+      isDeleting: true,
+    });
+    DeleteTask(_id, this.props.user)
+      .then((message) => {
+        this.updateSnackbar({
+          didDeleteFail: false,
+          isDeleting: false,
+          message,
+        });
+        this.props.updateTasks();
+      })
+      .catch((error) => {
+        this.updateSnackbar({
+          didDeleteFail: true,
+          isDeleting: false,
+          message: error,
+        });
+      })
+    ;
   }
   downloadTask = (_id) => {
     const queryString = 'format=tsv';
@@ -158,6 +202,13 @@ class TaskListContainer extends React.Component {
         params: [],
         show: false,
         title: '',
+      },
+    });
+  }
+  hideFilterDialog = () => {
+    this.setState({
+      filterDialog: {
+        show: false,
       },
     });
   }
@@ -217,13 +268,23 @@ class TaskListContainer extends React.Component {
   }
   showDesignDialog = (task) => {
     const fields = AnalysisModule[task.details.screenType][task.details.analysisType].parameters;
-    const params = fields.map((field) => {
+    let params = [
+      {
+        name: 'Screen type',
+        value: task.details.screenType,
+      },
+      {
+        name: 'Analysis type',
+        value: task.details.analysisType,
+      },
+    ];
+    params = params.concat(fields.map((field) => {
       const taskValue = task.details[field.name] ? String(task.details[field.name]) : null;
       return {
         name: field.layName,
         value: taskValue || task.defaultValue,
       };
-    });
+    }));
     params._id = task._id;
     this.setState({
       designDialog: {
@@ -231,6 +292,13 @@ class TaskListContainer extends React.Component {
         params,
         show: true,
         title: `Design for task "${task.name}", ID: ${task._id}`,
+      },
+    });
+  }
+  showFilterDialog = () => {
+    this.setState({
+      filterDialog: {
+        show: true,
       },
     });
   }
@@ -276,12 +344,63 @@ class TaskListContainer extends React.Component {
     });
     return sortedTasks;
   }
+  updateSnackbar = (status) => {
+    const currentTime = new Date();
+    const lastOpen = this.state.snackbar.last;
+    const delay = !lastOpen || currentTime - lastOpen > 2000 ?
+      0
+      :
+      2000 - (currentTime - lastOpen)
+    ;
+    const newSnackBarState = (orignalState, newValues) => {
+      return {
+        snackbar: Object.assign(
+          {},
+          orignalState,
+          newValues,
+          {
+            last: currentTime,
+          }
+        ),
+      };
+    };
+    setTimeout(() => {
+      this.setState(({ snackbar }) => {
+        if (status.isDeleting) {
+          return newSnackBarState(
+            snackbar,
+            {
+              message: 'Cancelling/deleting task',
+              open: true,
+            }
+          );
+        } else if (status.didDeleteFail) {
+          return newSnackBarState(
+            snackbar,
+            {
+              message: status.message,
+              open: true,
+            }
+          );
+        }
+        return newSnackBarState(
+          snackbar,
+          {
+            message: status.message,
+            open: true,
+          }
+        );
+      });
+    }, delay);
+  }
   viewTask = (_id) => {
     browserHistory.push(`/analysis/archive/${_id}`);
   }
   render() {
     return (
       <TaskList
+        applyFilters={ this.props.applyFilters }
+        clearFilters={ this.props.clearFilters }
         deleteDialog={ Object.assign(
           {},
           this.state.deleteDialog,
@@ -307,6 +426,16 @@ class TaskListContainer extends React.Component {
             hideFunc: this.hideErrorDialog,
           }
         ) }
+        filterDialog={ Object.assign(
+          {},
+          this.state.filterDialog,
+          {
+            hideFunc: this.hideFilterDialog,
+            showFunc: this.showFilterDialog,
+          }
+        ) }
+        filterFuncs={ this.props.filterFuncs }
+        filters={ this.props.filters }
         header={ this.state.header }
         iconTooltip={ Object.assign(
           {},
@@ -324,9 +453,17 @@ class TaskListContainer extends React.Component {
             showFunc: this.showLogDialog,
           }
         ) }
+        snackbar={ Object.assign(
+          {},
+          this.state.snackbar,
+          {
+            close: this.closeSnackbar,
+          }
+        ) }
         tasks={ this.state.tasks }
         taskStatus={ this.props.taskStatus }
         tableHeight={ this.state.tableHeight }
+        updateTasks={ this.props.updateTasks }
         viewTask={ this.viewTask }
       />
     );
@@ -342,6 +479,18 @@ TaskListContainer.defaultProps = {
 };
 
 TaskListContainer.propTypes = {
+  applyFilters: PropTypes.func.isRequired,
+  clearFilters: PropTypes.func.isRequired,
+  filterFuncs: PropTypes.shape({
+    analysisType: PropTypes.func,
+    screenType: PropTypes.func,
+    user: PropTypes.func,
+  }).isRequired,
+  filters: PropTypes.shape({
+    analysisType: PropTypes.string,
+    screenType: PropTypes.string,
+    user: PropTypes.string,
+  }).isRequired,
   tasks: PropTypes.arrayOf(
     PropTypes.shape({}),
   ).isRequired,
@@ -350,6 +499,7 @@ TaskListContainer.propTypes = {
     fetching: PropTypes.bool,
     message: PropTypes.string,
   }).isRequired,
+  updateTasks: PropTypes.func.isRequired,
   user: PropTypes.shape({
     email: PropTypes.string,
     lab: PropTypes.string,

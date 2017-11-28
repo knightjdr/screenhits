@@ -10,37 +10,56 @@ const UpdateTask = require('./update-task');
 const Analysis = {
   create: (form) => {
     return new Promise((resolve) => {
-      const date = moment().format('MMMM Do YYYY, h:mm a');
-      Analysis.queue.running.push(
-        Object.assign(
-          {},
-          form,
-          {
-            date,
+      // get task ID, set time and queue
+      counter.get('analysis')
+        .then((taskID) => {
+          Analysis.queue.running.push(
+            Object.assign(
+              {},
+              form,
+              {
+                _id: taskID,
+                date: moment().format('MMMM Do YYYY, h:mm a'),
+              }
+            )
+          );
+          // if queue isn't running, start it
+          if (!Analysis.queue.inProgress) {
+            Analysis.runQueue();
           }
-        )
-      );
-      resolve({
-        status: 200,
-        clientResponse: {
-          status: 200,
-          message: 'Analysis queued',
-        },
-      });
-      // if queue isn't running, start it
-      if (!Analysis.queue.inProgress) {
-        Analysis.runQueue();
-      }
+          resolve({
+            status: 200,
+            clientResponse: {
+              status: 200,
+              message: 'Analysis queued',
+            },
+          });
+        })
+        .catch(() => {
+          resolve({
+            status: 500,
+            clientResponse: {
+              status: 500,
+              message: 'Analysis could not be queued',
+            },
+          });
+        })
+      ;
     });
   },
-  createTask: (taskID, item) => {
+  createTask: (item) => {
     return new Promise((resolve, reject) => {
+      const storeItem = JSON.parse(JSON.stringify(item));
+      delete storeItem._id;
+      delete storeItem.creatorEmail;
+      delete storeItem.creatorName;
+      delete storeItem.date;
       const insertObj = {
-        _id: taskID,
+        _id: item._id,
         isComplete: false,
         isOfficial: false,
         date: item.date,
-        details: item,
+        details: storeItem,
         error: '',
         folder: null,
         isRunning: true,
@@ -53,8 +72,11 @@ const Analysis = {
         userName: item.creatorName,
       };
       crudCreate.insert('analysisTasks', insertObj)
-        .then(() => { resolve(); })
+        .then(() => {
+          resolve();
+        })
         .catch((error) => {
+          console.log(error);
           reject(error);
         })
       ;
@@ -64,7 +86,7 @@ const Analysis = {
     return new Promise((resolve, reject) => {
       const task = {
         folder: null,
-        id: null,
+        id: item._id,
       };
       // delete task folder
       const deleteFolder = (folderID) => {
@@ -82,16 +104,11 @@ const Analysis = {
       };
 
       // get analysis taskID
-      counter.get('analysis')
-        .then((taskID) => {
-          task.id = taskID;
-          // create task in database
-          return Analysis.createTask(task.id, item);
-        })
+      Analysis.createTask(item)
         .then(() => {
           // create task folder
           const taskStatus = {
-            status: `Creating folder: ${task.folder}`,
+            status: 'Creating folder',
             step: 'Task folder',
           };
           return Promise.all([
@@ -147,6 +164,9 @@ const Analysis = {
     finished: [],
     inProgess: false,
     running: [],
+  },
+  removeFromQueue: (index) => {
+    Analysis.queue.running = Analysis.queue.running.splice(index, 1);
   },
   runQueue: () => {
     Analysis.queue.inProgress = true;

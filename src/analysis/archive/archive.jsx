@@ -18,8 +18,13 @@ class Archive extends React.Component {
         {
           !this.props.viewID ?
             <TaskList
+              applyFilters={ this.props.applyFilters }
+              clearFilters={ this.props.clearFilters }
+              filterFuncs={ this.props.filterFuncs }
+              filters={ this.props.filters }
               tasks={ this.props.tasks }
               taskStatus={ this.props.taskStatus }
+              updateTasks={ this.props.updateTasks }
             />
             :
             <TaskView
@@ -41,6 +46,18 @@ Archive.defaultProps = {
 };
 
 Archive.propTypes = {
+  applyFilters: PropTypes.func.isRequired,
+  clearFilters: PropTypes.func.isRequired,
+  filterFuncs: PropTypes.shape({
+    analysisType: PropTypes.func,
+    screenType: PropTypes.func,
+    user: PropTypes.func,
+  }).isRequired,
+  filters: PropTypes.shape({
+    analysisType: PropTypes.string,
+    screenType: PropTypes.string,
+    user: PropTypes.string,
+  }).isRequired,
   muiTheme: PropTypes.shape({
     palette: PropTypes.shape({
       textColor: PropTypes.string,
@@ -54,6 +71,7 @@ Archive.propTypes = {
     fetching: PropTypes.bool,
     message: PropTypes.string,
   }).isRequired,
+  updateTasks: PropTypes.func.isRequired,
   viewID: PropTypes.number,
 };
 

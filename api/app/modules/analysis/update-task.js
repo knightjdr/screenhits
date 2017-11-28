@@ -64,24 +64,15 @@ const UpdateTask = {
           }
         });
       };
-      const response = (message) => {
-        resolve({
-          status: 200,
-          clientResponse: {
-            status: 200,
-            message,
-          },
-        });
-      };
       query.get('analysisTasks', { _id: taskID, userEmail }, { pid: 1 }, 'findOne')
         .then((task) => {
           return killTask(task);
         })
         .then((message) => {
-          response(message);
+          resolve(message);
         })
         .catch((error) => {
-          response(`The task could not be cancelled: ${String(error)}`);
+          resolve(`The task could not be cancelled: ${String(error)}`);
         })
       ;
     });

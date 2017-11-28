@@ -20,13 +20,9 @@ import RestoreIcon from 'material-ui/svg-icons/action/restore';
 import SettingsIcon from 'material-ui/svg-icons/action/settings';
 import TextField from 'material-ui/TextField';
 
+import ArchiveStyle from '../archive-style';
 import Tooltip from '../../../tooltip/tooltip-container';
 
-const arrowIconStyle = {
-  height: 30,
-  width: 30,
-  padding: 3,
-};
 const arrowPageIconStyle = {
   height: 20,
   width: 20,
@@ -384,7 +380,7 @@ class TaskHeatmapView extends React.Component {
                 onClick={ this.props.changeView.firstRow }
                 style={ Object.assign(
                   {},
-                  arrowIconStyle,
+                  ArchiveStyle.mediumIcon,
                   {
                     transform: 'rotate(90deg)',
                   }
@@ -395,26 +391,26 @@ class TaskHeatmapView extends React.Component {
               <IconButton
                 iconStyle={ arrowPageIconStyle }
                 onClick={ this.props.changeView.pageBack }
-                style={ arrowIconStyle }
+                style={ ArchiveStyle.mediumIcon }
               >
                 <ArrowPageBackIcon />
               </IconButton>
               <IconButton
                 onClick={ this.props.changeView.previousRow }
-                style={ arrowIconStyle }
+                style={ ArchiveStyle.mediumIcon }
               >
                 <ArrowUpIcon />
               </IconButton>
               <IconButton
                 onClick={ this.props.changeView.nextRow }
-                style={ arrowIconStyle }
+                style={ ArchiveStyle.mediumIcon }
               >
                 <ArrowDownIcon />
               </IconButton>
               <IconButton
                 iconStyle={ arrowPageIconStyle }
                 onClick={ this.props.changeView.pageForward }
-                style={ arrowIconStyle }
+                style={ ArchiveStyle.mediumIcon }
               >
                 <ArrowPageForwardIcon />
               </IconButton>
@@ -422,7 +418,7 @@ class TaskHeatmapView extends React.Component {
                 onClick={ this.props.changeView.lastRow }
                 style={ Object.assign(
                   {},
-                  arrowIconStyle,
+                  ArchiveStyle.mediumIcon,
                   {
                     transform: 'rotate(90deg)',
                   }
@@ -438,39 +434,39 @@ class TaskHeatmapView extends React.Component {
               >
                 <IconButton
                   onClick={ this.props.changeView.firstCol }
-                  style={ arrowIconStyle }
+                  style={ ArchiveStyle.mediumIcon }
                 >
                   <ArrowFirstIcon />
                 </IconButton>
                 <IconButton
                   onClick={ this.props.changeView.colBack }
                   iconStyle={ arrowPageIconStyle }
-                  style={ arrowIconStyle }
+                  style={ ArchiveStyle.mediumIcon }
                 >
                   <ArrowBackIcon />
                 </IconButton>
                 <IconButton
                   onClick={ this.props.changeView.previousCol }
-                  style={ arrowIconStyle }
+                  style={ ArchiveStyle.mediumIcon }
                 >
                   <ArrowLeftIcon />
                 </IconButton>
                 <IconButton
                   onClick={ this.props.changeView.nextCol }
-                  style={ arrowIconStyle }
+                  style={ ArchiveStyle.mediumIcon }
                 >
                   <ArrowRightIcon />
                 </IconButton>
                 <IconButton
                   onClick={ this.props.changeView.colForward }
                   iconStyle={ arrowPageIconStyle }
-                  style={ arrowIconStyle }
+                  style={ ArchiveStyle.mediumIcon }
                 >
                   <ArrowForwardIcon />
                 </IconButton>
                 <IconButton
                   onClick={ this.props.changeView.lastCol }
-                  style={ arrowIconStyle }
+                  style={ ArchiveStyle.mediumIcon }
                 >
                   <ArrowLastIcon />
                 </IconButton>
@@ -663,7 +659,7 @@ class TaskHeatmapView extends React.Component {
           type="dark"
           place="top"
         >
-          { this.props.panel.left < -1 ? 'Show' : 'Hide' } settings panel
+          { this.props.panel.left < -1 ? 'Show' : 'Hide' } options panel
         </ReactTooltip>
         <ReactTooltip
           effect="solid"

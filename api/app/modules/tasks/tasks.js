@@ -1,19 +1,73 @@
-const AnalysisQueue = require('../analysis/analysis').queue.running;
+const Analysis = require('../analysis/analysis');
 const arrayUnique = require('../helpers/array-unique');
+const crudDelete = require('../crud/delete');
 const query = require('../query/query');
+const UpdateTask = require('../analysis/update-task');
 
 const Tasks = {
-  get: (queryParams) => {
+  delete: (_id, userEmail) => {
     return new Promise((resolve) => {
-      console.log(queryParams);
+      const resolveFunc = (message, status) => {
+        resolve({
+          status,
+          clientResponse: {
+            status,
+            message,
+          },
+        });
+      };
+
+      // if task is in queue
+      const queueIndex = Analysis.queue.running.findIndex((queued) => {
+        return queued._id === _id;
+      });
+      if (queueIndex > 0) {
+        Analysis.removeFromQueue(queueIndex);
+        resolveFunc('Task cancelled', 200);
+      } else if (queueIndex === 0) { // if task is running, kill it
+        UpdateTask.kill(_id, userEmail)
+          .then(() => {
+            return crudDelete.item('analysisTasks', { _id });
+          })
+          .then(() => {
+            resolveFunc('Task cancelled', 200);
+          })
+          .catch(() => {
+            resolveFunc('Task could not be cancelled', 500);
+          })
+        ;
+      } else { // if task has completed, delete from database
+        query.get('analysisTasks', { _id, userEmail }, { _id: 1 }, 'findOne')
+          .then((task) => {
+            if (task._id) {
+              return Promise.all([
+                crudDelete.item('analysisTasks', { _id }),
+                crudDelete.item('analysisResults', { _id }),
+              ]);
+            }
+            throw new Error('No task matching query');
+          })
+          .then(() => {
+            resolveFunc('Task deleted', 200);
+          })
+          .catch((error) => {
+            console.log(error);
+            resolveFunc('Task could not be deleted', 500);
+          })
+        ;
+      }
+    });
+  },
+  get: () => {
+    return new Promise((resolve) => {
       // format tasks for client
       const formatTasks = (tasks) => {
         const formattedTasks = [];
         // format queued tasks
-        AnalysisQueue.forEach((task, queueIndex) => {
+        Analysis.queue.running.forEach((task, queueIndex) => {
           if (queueIndex > 0) {
             formattedTasks.push({
-              _id: null,
+              _id: task._id,
               isComplete: false,
               isOfficial: false,
               date: task.date,

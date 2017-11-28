@@ -24,6 +24,14 @@ const routes = {
         })
       ;
     });
+    // delete analysis tasks
+    app.delete('/analysis/tasks/:id', auth.validate, (req, res) => {
+      tasks.delete(Number(req.params.id), req.email)
+        .then((response) => {
+          routes.response(res, response);
+        })
+      ;
+    });
     // invalid delete method
     app.delete('/*', (req, res) => {
       res.status(404).send({
@@ -41,7 +49,7 @@ const routes = {
     });
     // get analysis tasks
     app.get('/analysis/tasks', auth.validate, (req, res) => {
-      tasks.get(req.query)
+      tasks.get()
         .then((response) => {
           routes.response(res, response);
         })

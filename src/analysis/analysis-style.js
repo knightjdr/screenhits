@@ -71,8 +71,7 @@ const analysisStyle = {
     },
   ),
   input: {
-    marginLeft: 4,
-    marginRight: 4,
+    margin: '0 4px',
     maxWidth: 500,
   },
   inputWithHelp: {

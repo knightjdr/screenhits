@@ -6,11 +6,24 @@ import { connect } from 'react-redux';
 import Archive from './archive';
 import getAnalysisTasks from '../../state/get/analysis-task-actions';
 
+const defaultFilters = {
+  analysisType: null,
+  screenType: null,
+};
+
 class ArchiveContainer extends React.Component {
   constructor(props) {
     super(props);
+    const filters = Object.assign(
+      {},
+      defaultFilters,
+      {
+        user: this.props.user.name,
+      }
+    );
     this.state = {
-      tasks: JSON.parse(JSON.stringify(this.props.tasks.items)),
+      filters,
+      tasks: this.filterTasks(this.props.tasks.items, filters),
       taskStatus: {
         didInvalidate: false,
         fetching: true,
@@ -24,21 +37,121 @@ class ArchiveContainer extends React.Component {
   componentWillReceiveProps = (nextProps) => {
     const { tasks } = nextProps;
     if (!deepEqual(tasks, this.props.tasks)) {
-      this.setState({
-        tasks: JSON.parse(JSON.stringify(tasks.items)),
-        taskStatus: {
-          didInvalidate: tasks.didInvalidate,
-          fetching: tasks.fetching,
-          message: tasks.message,
-        },
+      this.setState(({ filters }) => {
+        return {
+          tasks: this.filterTasks(tasks.items, filters),
+          taskStatus: {
+            didInvalidate: tasks.didInvalidate,
+            fetching: tasks.fetching,
+            message: tasks.message,
+          },
+        };
       });
     }
+  }
+  applyFilters = () => {
+    this.setState(({ filters }) => {
+      return {
+        tasks: this.filterTasks(this.props.tasks.items, filters),
+      };
+    });
+  }
+  clearFilters = () => {
+    const filters = Object.assign(
+      {},
+      defaultFilters,
+      {
+        user: '',
+      }
+    );
+    this.setState({
+      filters,
+      tasks: this.filterTasks(this.props.tasks.items, filters),
+    });
+  }
+  filterAnalysisType = (e, index, value) => {
+    const analysisType = value !== 'none' ? value : null;
+    this.setState(({ filters }) => {
+      return {
+        filters: Object.assign(
+          {},
+          filters,
+          {
+            analysisType,
+          },
+        ),
+      };
+    });
+  }
+  filterScreenType = (e, index, value) => {
+    const screenType = value !== 'none' ? value : null;
+    this.setState(({ filters }) => {
+      return {
+        filters: Object.assign(
+          {},
+          filters,
+          {
+            analysisType: null,
+            screenType,
+          },
+        ),
+      };
+    });
+  }
+  filterTasks = (tasks, filters) => {
+    const filteredTasks = tasks.filter((task) => {
+      const userRE = new RegExp(filters.user);
+      if (
+        filters.user &&
+        !userRE.test(task.user)
+      ) {
+        return false;
+      } else if (
+        filters.screenType &&
+        task.details.screenType !== filters.screenType
+      ) {
+        return false;
+      } else if (
+        filters.analysisType &&
+        task.details.analysisType !== filters.analysisType
+      ) {
+        return false;
+      }
+      return true;
+    });
+    return filteredTasks;
+  }
+  filterUser = (e) => {
+    const user = e.target.value;
+    this.setState(({ filters }) => {
+      return {
+        filters: Object.assign(
+          {},
+          filters,
+          {
+            user,
+          },
+        ),
+      };
+    });
+  }
+  updateTasks = () => {
+    this.props.getAnalysisTasks(this.props.user);
   }
   render() {
     return (
       <Archive
+        applyFilters={ this.applyFilters }
+        clearFilters={ this.clearFilters }
+        filterFuncs={ {
+          analysisType: this.filterAnalysisType,
+          screenType: this.filterScreenType,
+          user: this.filterUser,
+        } }
+        filters={ this.state.filters }
         tasks={ this.state.tasks }
         taskStatus={ this.state.taskStatus }
+        updateTasks={ this.updateTasks }
         viewID={ this.props.viewID }
       />
     );
@@ -47,9 +160,9 @@ class ArchiveContainer extends React.Component {
 
 ArchiveContainer.defaultProps = {
   user: {
-    email: null,
-    lab: null,
-    name: null,
+    email: '',
+    lab: '',
+    name: '',
   },
   viewID: null,
 };
