@@ -1,5 +1,6 @@
 const crudUpdate = require('../crud/update');
 const query = require('../query/query');
+const spawn = require('child_process').spawn;
 
 const UpdateTask = {
   async: (taskID, updateObj) => {
@@ -36,7 +37,7 @@ const UpdateTask = {
             };
             UpdateTask.async(task._id, taskStatus)
               .then(() => {
-                process.kill(taskID.pid, 'SIGINT');
+                spawn('kill', [task.pid]);
                 resolveKill('Task cancelled');
               })
               .catch((error) => {

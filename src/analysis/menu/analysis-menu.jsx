@@ -80,12 +80,12 @@ class AnalysisMenu extends React.Component {
               <MenuItem
                 key="archive"
                 onClick={ () => { this.props.changeView('archive'); } }
-                primaryText={ [<FontAwesome key="archive" name="list-ol" />, ' Completed analysis'] }
+                primaryText={ [<FontAwesome key="archive" name="list-ol" />, ' Completed/queued analysis'] }
               />
               <MenuItem
-                key="new"
-                onClick={ () => { this.props.changeView('new'); } }
-                primaryText={ [<FontAwesome key="new" name="plus" />, ' New analysis'] }
+                key="design"
+                onClick={ () => { this.props.changeView('design'); } }
+                primaryText={ [<FontAwesome key="design" name="plus" />, ' New analysis'] }
               />
 
             </Menu>

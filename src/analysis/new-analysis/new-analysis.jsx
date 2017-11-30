@@ -39,15 +39,17 @@ class NewAnalysis extends React.Component {
             handleLevelChange={ this.props.handleLevelChange }
             highlightSampleToAdd={ this.props.highlightSampleToAdd }
             highlightSampleToRemove={ this.props.highlightSampleToRemove }
-            screenSize={ this.props.screenSize }
             removeSamples={ this.props.removeSamples }
             resetFilters={ this.props.resetFilters }
             samples={ this.props.samples }
             samplesToAdd={ this.props.samplesToAdd }
             sampleTooltip={ this.props.sampleTooltip }
             samplesToRemove={ this.props.samplesToRemove }
+            screenSize={ this.props.screenSize }
             selected={ this.props.selected }
             selection={ selection }
+            showTooltips={ this.props.showTooltips }
+            toggleTooltip={ this.props.toggleTooltip }
           />
         );
       case 2:
@@ -59,6 +61,8 @@ class NewAnalysis extends React.Component {
             formData={ formData }
             inputChange={ this.props.inputChange }
             inputWidth={ this.props.inputWidth }
+            metric={ this.props.metric }
+            readout={ this.props.readout }
             resetParameters={ this.props.resetParameters }
             screenSize={ this.props.screenSize }
             selected={ this.props.selected.items }
@@ -173,6 +177,11 @@ class NewAnalysis extends React.Component {
   }
 }
 
+NewAnalysis.defaultProps = {
+  metric: [],
+  readout: [],
+};
+
 NewAnalysis.propTypes = {
   addSamples: PropTypes.func.isRequired,
   applyFilters: PropTypes.func.isRequired,
@@ -233,6 +242,12 @@ NewAnalysis.propTypes = {
   highlightSampleToRemove: PropTypes.func.isRequired,
   inputChange: PropTypes.func.isRequired,
   inputWidth: PropTypes.number.isRequired,
+  metric: PropTypes.arrayOf(
+    PropTypes.shape({
+      layName: PropTypes.string,
+      name: PropTypes.string,
+    }),
+  ),
   muiTheme: PropTypes.shape({
     palette: PropTypes.shape({
       alternativeButtonColor: PropTypes.string,
@@ -244,6 +259,12 @@ NewAnalysis.propTypes = {
       textColor: PropTypes.string,
     }),
   }).isRequired,
+  readout: PropTypes.arrayOf(
+    PropTypes.shape({
+      layName: PropTypes.string,
+      name: PropTypes.string,
+    }),
+  ),
   removeSamples: PropTypes.func.isRequired,
   resetFilters: PropTypes.func.isRequired,
   resetParameters: PropTypes.func.isRequired,
@@ -305,6 +326,10 @@ NewAnalysis.propTypes = {
     last: PropTypes.number,
     level: PropTypes.string,
   }).isRequired,
+  showTooltips: PropTypes.shape({
+    selectionAdd: PropTypes.bool,
+    selectionRemove: PropTypes.bool,
+  }).isRequired,
   snackbar: PropTypes.shape({
     close: PropTypes.func,
     duration: PropTypes.number,
@@ -313,6 +338,7 @@ NewAnalysis.propTypes = {
   }).isRequired,
   stepIndex: PropTypes.number.isRequired,
   submit: PropTypes.func.isRequired,
+  toggleTooltip: PropTypes.func.isRequired,
   updateDesign: PropTypes.func.isRequired,
 };
 

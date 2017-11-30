@@ -69,6 +69,8 @@ class NewAnalysisContainer extends React.Component {
       },
       inputWidth: window.innerWidth >= 555 ? 500 : window.innerWidth - 55,
       isFiltered: false,
+      metric: [],
+      readout: [],
       samplesToAdd: [],
       samplesToRemove: [],
       screenSize: {
@@ -98,6 +100,12 @@ class NewAnalysisContainer extends React.Component {
         rect: emptyRect,
         show: false,
         text: '',
+      },
+      showTooltips: {
+        gridSelected: false,
+        gridUnselected: false,
+        selectionAdd: false,
+        selectionRemove: false,
       },
     };
   }
@@ -369,6 +377,63 @@ class NewAnalysisContainer extends React.Component {
       };
     });
   }
+  formatDesign = (design = []) => {
+    const formattedDesign = [];
+    design.forEach((sampleSet, index) => {
+      if (index > 0) {
+        const controls = [];
+        const replicates = [];
+        sampleSet.items.forEach((sample) => {
+          const row = sample.row;
+          const controlIndex = design[0].items.findIndex((controlSample) => {
+            return controlSample.row === row;
+          });
+          if (controlIndex > -1) {
+            controls.push(design[0].items[controlIndex]._id);
+            replicates.push(sample._id);
+          }
+        });
+        if (replicates.length > 0) {
+          formattedDesign.push({
+            controls,
+            name: sampleSet.name,
+            replicates,
+          });
+        }
+      }
+    });
+    const formatError = formattedDesign.length <= 0;
+    return { formatError, formattedDesign };
+  }
+  genericList = (availableSamples, selected, type) => {
+    const list = [];
+    selected.forEach((sampleID, index) => {
+      const sampleIndex = availableSamples.findIndex((sample) => {
+        return sample._id === sampleID;
+      });
+      // get all properties matching desired type for the first sample
+      if (index === 0) {
+        availableSamples[sampleIndex].properties.forEach((property) => {
+          if (property.type === type) {
+            list.push({
+              name: property.layName,
+              value: property.name,
+            });
+          }
+        });
+      } else { // check that properties from first sample are in other samples, if not, remove them
+        list.forEach((item, itemIndex) => {
+          const propertyIndex = availableSamples[sampleIndex].properties.findIndex((property) => {
+            return property.name === item.name;
+          });
+          if (propertyIndex < 0) {
+            list.splice(itemIndex, 1);
+          }
+        });
+      }
+    });
+    return list;
+  }
   handleLevelChange = (e, level) => {
     const items = this.props.analysisSamples.items[level];
     this.setState({
@@ -427,6 +492,17 @@ class NewAnalysisContainer extends React.Component {
       });
     }
   };
+  hideSampleTooltip = () => {
+    this.setState({
+      tooltip: {
+        _id: null,
+        position: 'right',
+        rect: emptyRect,
+        show: false,
+        text: '',
+      },
+    });
+  }
   highlightSampleToAdd = (e, _id) => {
     let lastSelected = _id;
     // shift key allows for multiple selections
@@ -560,7 +636,7 @@ class NewAnalysisContainer extends React.Component {
     });
   }
   inputChange = (type, value) => {
-    this.setState(({ errors, formData }) => {
+    this.setState(({ errors, formData, selected }) => {
       const newErrors = Object.assign({}, errors);
       const newFormData = Object.assign({}, formData);
       // if the analysis type changes, remove non-default fields and add new
@@ -573,6 +649,30 @@ class NewAnalysisContainer extends React.Component {
         AnalysisOptions[formData.screenType][value].parameters.forEach((parameters) => {
           newFormData[parameters.name] = parameters.defaultValue;
         });
+        // if performing 'generic analysis', i.e. a simple comparison
+        let metric = [];
+        let readout = [];
+        if (value === 'generic') {
+          metric = this.genericList(
+            this.props.analysisSamples.items.sample,
+            selected.items,
+            'metric'
+          );
+          readout = this.genericList(
+            this.props.analysisSamples.items.sample,
+            selected.items,
+            'readout'
+          );
+        }
+        newFormData[type] = value;
+        // reset error for this field
+        newErrors[type] = null;
+        return {
+          errors: newErrors,
+          formData: newFormData,
+          metric,
+          readout,
+        };
       }
       newFormData[type] = value;
       // reset error for this field
@@ -636,108 +736,115 @@ class NewAnalysisContainer extends React.Component {
       },
     });
   }
-  hideSampleTooltip = () => {
-    this.setState({
-      tooltip: {
-        _id: null,
-        position: 'right',
-        rect: emptyRect,
-        show: false,
-        text: '',
-      },
-    });
-  }
-  showSampleTooltip = (e, item, position) => {
-    const domRect = e.target.getBoundingClientRect();
-    const rect = {
-      bottom: domRect.bottom,
-      height: domRect.height,
-      left: domRect.left,
-      right: domRect.right,
-      top: domRect.top,
-      width: domRect.width,
-      x: domRect.x,
-      y: domRect.y,
-    };
-    const otherFields = [];
-    Object.keys(item).sort().forEach((field) => {
+  showSampleTooltip = (e, item, position, show) => {
+    if (show) {
+      const domRect = e.target.getBoundingClientRect();
+      const rect = {
+        bottom: domRect.bottom,
+        height: domRect.height,
+        left: domRect.left,
+        right: domRect.right,
+        top: domRect.top,
+        width: domRect.width,
+        x: domRect.x,
+        y: domRect.y,
+      };
+      const otherFields = [];
+      Object.keys(item).sort().forEach((field) => {
+        if (
+          omitFromTooltip.indexOf(field) < 0 &&
+          typeof item[field] !== 'object'
+        ) {
+          const str = `${uppercaseFirst(convertCamel.toLower(field))}: ${item[field]}`;
+          otherFields.push(str);
+        }
+      });
       if (
-        omitFromTooltip.indexOf(field) < 0 &&
-        typeof item[field] !== 'object'
+        item.other &&
+        Object.keys(item.other).length > 0
       ) {
-        const str = `${uppercaseFirst(convertCamel.toLower(field))}: ${item[field]}`;
-        otherFields.push(str);
+        otherFields.push('Screen specific fields...');
+        Object.keys(item.other).sort().forEach((field) => {
+          const str = `${uppercaseFirst(convertCamel.toLower(field))}: ${item.other[field]}`;
+          otherFields.push(str);
+        });
       }
-    });
-    if (
-      item.other &&
-      Object.keys(item.other).length > 0
-    ) {
-      otherFields.push('Screen specific fields...');
-      Object.keys(item.other).sort().forEach((field) => {
-        const str = `${uppercaseFirst(convertCamel.toLower(field))}: ${item.other[field]}`;
-        otherFields.push(str);
+      const tooltipText = [
+        `ID: ${item._id}`,
+        `Name: ${item.name}`,
+      ].concat(otherFields);
+      this.setState({
+        tooltip: {
+          _id: item._id,
+          position,
+          rect,
+          show: true,
+          text: tooltipText,
+        },
       });
     }
-    const tooltipText = [
-      `ID: ${item._id}`,
-      `Name: ${item.name}`,
-    ].concat(otherFields);
-    this.setState({
-      tooltip: {
-        _id: item._id,
-        position,
-        rect,
-        show: true,
-        text: tooltipText,
-      },
-    });
-  }
-  formatDesign = (design = []) => {
-    const formattedDesign = [];
-    design.forEach((sampleSet, index) => {
-      if (index > 0) {
-        const controls = [];
-        const replicates = [];
-        sampleSet.items.forEach((sample) => {
-          const row = sample.row;
-          const controlIndex = design[0].items.findIndex((controlSample) => {
-            return controlSample.row === row;
-          });
-          if (controlIndex > -1) {
-            controls.push(design[0].items[controlIndex]._id);
-            replicates.push(sample._id);
-          }
-        });
-        if (replicates.length > 0) {
-          formattedDesign.push({
-            controls,
-            name: sampleSet.name,
-            replicates,
-          });
-        }
-      }
-    });
-    return formattedDesign;
   }
   submit = () => {
-    const design = this.formatDesign(this.state.design);
-    const formData = this.validateFormData(this.state.formData);
-    // submit design and this.state.formData to server
-    if (design.length > 0) {
+    const { error, errors } = this.validateForm(this.state.formData);
+    const { formatError, formattedDesign } = this.formatDesign(this.state.design);
+    const formData = this.typeFormatFormData(this.state.formData);
+    if (
+      error ||
+      formatError
+    ) {
+      this.setState(({ prevErrors }) => {
+        return {
+          errors: Object.assign(
+            {},
+            prevErrors,
+            errors,
+          ),
+        };
+      });
+    } else {
       this.props.submitAnalysis(
         this.props.user,
         Object.assign(
           {},
           formData,
           {
-            design,
+            design: formattedDesign,
             creatorEmail: this.props.user.email,
             creatorName: this.props.user.name,
           }
         )
       );
     }
+  }
+  toggleTooltip = (tooltip) => {
+    this.setState(({ showTooltips }) => {
+      const newShowTooltips = Object.assign({}, showTooltips);
+      newShowTooltips[tooltip] = !newShowTooltips[tooltip];
+      return {
+        showTooltips: newShowTooltips,
+      };
+    });
+  }
+  typeFormatFormData = (formData) => {
+    // convert fields that should be numbers to numbers
+    const convertedFormData = Object.assign({}, formData);
+    if (
+      convertedFormData.screenType &&
+      convertedFormData.analysisType
+    ) {
+      const params =
+        AnalysisOptions[convertedFormData.screenType][convertedFormData.analysisType].parameters;
+      Object.keys(convertedFormData).forEach((field) => {
+        const paramsIndex = params.findIndex((param) => { return param.name === field; });
+        if (
+          paramsIndex > -1 &&
+          params[paramsIndex].inputType === 'number'
+        ) {
+          convertedFormData[field] = Number(convertedFormData[field]);
+        }
+      });
+    }
+    return convertedFormData;
   }
   updateDesign = (newDesign) => {
     this.setState({
@@ -828,26 +935,20 @@ class NewAnalysisContainer extends React.Component {
       });
     }, delay);
   }
-  validateFormData = (formData) => {
-    // convert fields that should be numbers to numbers
-    const convertedFormData = Object.assign({}, formData);
-    if (
-      convertedFormData.screenType &&
-      convertedFormData.analysisType
-    ) {
-      const params =
-        AnalysisOptions[convertedFormData.screenType][convertedFormData.analysisType].parameters;
-      Object.keys(convertedFormData).forEach((field) => {
-        const paramsIndex = params.findIndex((param) => { return param.name === field; });
-        if (
-          paramsIndex > -1 &&
-          params[paramsIndex].inputType === 'number'
-        ) {
-          convertedFormData[field] = Number(convertedFormData[field]);
-        }
-      });
+  validateForm = (formData) => {
+    let error = false;
+    const errors = {};
+    if (formData.analysisType === 'generic') {
+      if (!formData.readout) {
+        error = true;
+        errors.readout = 'Please specify the readout to use';
+      }
+      if (!formData.metric) {
+        error = true;
+        errors.metric = 'Please specify the metric to use';
+      }
     }
-    return convertedFormData;
+    return { error, errors };
   }
   render() {
     return (
@@ -880,6 +981,8 @@ class NewAnalysisContainer extends React.Component {
         highlightSampleToRemove={ this.highlightSampleToRemove }
         inputChange={ this.inputChange }
         inputWidth={ this.state.inputWidth }
+        metric={ this.state.metric }
+        readout={ this.state.readout }
         removeSamples={ this.removeSamples }
         resetFilters={ this.resetFilters }
         resetParameters={ this.resetParameters }
@@ -897,6 +1000,7 @@ class NewAnalysisContainer extends React.Component {
         screenSize={ this.state.screenSize }
         selected={ this.state.selected }
         selection={ this.state.selection }
+        showTooltips={ this.state.showTooltips }
         snackbar={ Object.assign(
           {},
           this.state.snackbar,
@@ -906,6 +1010,7 @@ class NewAnalysisContainer extends React.Component {
         ) }
         stepIndex={ this.state.stepIndex }
         submit={ this.submit }
+        toggleTooltip={ this.toggleTooltip }
         updateDesign={ this.updateDesign }
       />
     );

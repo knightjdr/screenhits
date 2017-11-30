@@ -392,43 +392,45 @@ class TaskList extends React.Component {
         }
         {
           task.isComplete &&
-          <IconButton
-            iconStyle={ {
-              color: task.isOfficial ?
-                this.props.muiTheme.palette.success
-                :
-                this.props.muiTheme.palette.primary1Color
-              ,
-            } }
-            onMouseEnter={ (e) => {
-              this.props.iconTooltip.showFunc(e, officialText);
-            } }
-            onMouseLeave={ this.props.iconTooltip.hideFunc }
-            style={ ArchiveStyle.smallIcon }
-          >
-            <AssignmentIcon />
-          </IconButton>
+          <span>
+            <IconButton
+              iconStyle={ {
+                color: task.isOfficial ?
+                  this.props.muiTheme.palette.success
+                  :
+                  this.props.muiTheme.palette.primary1Color
+                ,
+              } }
+              onMouseEnter={ (e) => {
+                this.props.iconTooltip.showFunc(e, officialText);
+              } }
+              onMouseLeave={ this.props.iconTooltip.hideFunc }
+              style={ ArchiveStyle.smallIcon }
+            >
+              <AssignmentIcon />
+            </IconButton>
+            <IconButton
+              onClick={ () => { this.props.downloadTask(task._id); } }
+              onMouseEnter={ (e) => {
+                this.props.iconTooltip.showFunc(e, 'Download results');
+              } }
+              onMouseLeave={ this.props.iconTooltip.hideFunc }
+              style={ ArchiveStyle.smallIcon }
+            >
+              <DownloadIcon />
+            </IconButton>
+            <IconButton
+              onClick={ () => { this.props.viewTask(task._id); } }
+              onMouseEnter={ (e) => {
+                this.props.iconTooltip.showFunc(e, 'View Results');
+              } }
+              onMouseLeave={ this.props.iconTooltip.hideFunc }
+              style={ ArchiveStyle.smallIcon }
+            >
+              <ViewIcon />
+            </IconButton>
+          </span>
         }
-        <IconButton
-          onClick={ () => { this.props.downloadTask(task._id); } }
-          onMouseEnter={ (e) => {
-            this.props.iconTooltip.showFunc(e, 'Download results');
-          } }
-          onMouseLeave={ this.props.iconTooltip.hideFunc }
-          style={ ArchiveStyle.smallIcon }
-        >
-          <DownloadIcon />
-        </IconButton>
-        <IconButton
-          onClick={ () => { this.props.viewTask(task._id); } }
-          onMouseEnter={ (e) => {
-            this.props.iconTooltip.showFunc(e, 'View Results');
-          } }
-          onMouseLeave={ this.props.iconTooltip.hideFunc }
-          style={ ArchiveStyle.smallIcon }
-        >
-          <ViewIcon />
-        </IconButton>
         <IconButton
           iconStyle={ {
             color: this.props.muiTheme.palette.warning,

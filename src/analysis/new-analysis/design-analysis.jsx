@@ -16,13 +16,35 @@ import TextField from 'material-ui/TextField';
 import analysisStyle from '../analysis-style';
 import AnalysisOptions from '../../modules/analysis-new';
 import SampleGrid from './sample-grid-container';
+import SampleRow from './sample-row-container';
 
 class DesignAnalysis extends React.Component {
   getInputType = (parameter) => {
+    let options = [];
+    // for getting generic "readout" and "metric" options
+    const getOptions = () => {
+      let currOptions = [];
+      if (
+        this.props.formData.analysisType === 'generic' &&
+        parameter.name === 'readout'
+      ) {
+        currOptions = this.props.readout;
+      } else if (
+        this.props.formData.analysisType === 'generic' &&
+        parameter.name === 'metric'
+      ) {
+        currOptions = this.props.metric;
+      } else {
+        currOptions = parameter.options;
+      }
+      return currOptions;
+    };
     switch (parameter.element) {
       case 'SelectField':
+        options = getOptions();
         return (
           <SelectField
+            errorText={ this.props.errors[parameter.name] }
             floatingLabelText={ parameter.layName }
             fullWidth={ true }
             listStyle={ {
@@ -34,7 +56,7 @@ class DesignAnalysis extends React.Component {
             value={ this.props.formData[parameter.name] }
           >
             {
-              parameter.options.map((option) => {
+              options.map((option) => {
                 return (
                   <MenuItem
                     key={ option.value }
@@ -228,11 +250,20 @@ class DesignAnalysis extends React.Component {
             >
               Sample design
             </div>
-            <SampleGrid
-              availableSamples={ this.props.availableSamples }
-              selected={ this.props.selected }
-              updateDesign={ this.props.updateDesign }
-            />
+            {
+              this.props.formData.analysisType === 'generic' ?
+                <SampleRow
+                  availableSamples={ this.props.availableSamples }
+                  selected={ this.props.selected }
+                  updateDesign={ this.props.updateDesign }
+                />
+                :
+                <SampleGrid
+                  availableSamples={ this.props.availableSamples }
+                  selected={ this.props.selected }
+                  updateDesign={ this.props.updateDesign }
+                />
+            }
           </div>
         }
         <Dialog
@@ -258,6 +289,11 @@ class DesignAnalysis extends React.Component {
     );
   }
 }
+
+DesignAnalysis.defaultProps = {
+  metric: [],
+  readout: [],
+};
 
 DesignAnalysis.propTypes = {
   availableSamples: PropTypes.arrayOf(
@@ -293,12 +329,24 @@ DesignAnalysis.propTypes = {
   }).isRequired,
   inputChange: PropTypes.func.isRequired,
   inputWidth: PropTypes.number.isRequired,
+  metric: PropTypes.arrayOf(
+    PropTypes.shape({
+      layName: PropTypes.string,
+      name: PropTypes.string,
+    }),
+  ),
   muiTheme: PropTypes.shape({
     palette: PropTypes.shape({
       warning: PropTypes.string,
       warningHover: PropTypes.string,
     }),
   }).isRequired,
+  readout: PropTypes.arrayOf(
+    PropTypes.shape({
+      layName: PropTypes.string,
+      name: PropTypes.string,
+    }),
+  ),
   resetParameters: PropTypes.func.isRequired,
   screenSize: PropTypes.shape({
     isLarge: PropTypes.bool,

@@ -45,7 +45,7 @@ const textBoxStyle = {
 };
 const viewHelp = {
   archive: 'Manage and view existing analyses',
-  new: 'Perform new analysis',
+  design: 'Perform new analysis or comparisons',
   visualization: 'View analysis graphically',
 };
 
@@ -58,7 +58,7 @@ class Analysis extends React.Component {
             viewID={ this.props.viewID }
           />
         );
-      case 'new':
+      case 'design':
         return <NewAnalysis />;
       case 'visualization':
         return <Visualization />;
@@ -90,9 +90,9 @@ class Analysis extends React.Component {
               >
                 <RadioButton
                   label="New analysis"
-                  onClick={ () => { this.props.highlightView('new'); } }
+                  onClick={ () => { this.props.highlightView('design'); } }
                   style={ radioButtonStyle }
-                  value="new"
+                  value="design"
                 />
                 <RadioButton
                   label="Archive"

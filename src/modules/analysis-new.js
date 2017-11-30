@@ -3,6 +3,7 @@ const AnalysisModule = {
     options: [
       'BAGEL',
       'drugZ',
+      'generic',
       'MAGeCK',
       'RANKs',
     ],
@@ -127,6 +128,42 @@ const AnalysisModule = {
               value: 'v1',
             },
           ],
+        },
+      ],
+    },
+    generic: {
+      parameters: [
+        {
+          defaultValue: false,
+          element: 'CheckBox',
+          helpText: 'Specify whether samples should be normalized',
+          name: 'norm',
+          layName: 'Normalization',
+        },
+        {
+          defaultValue: '',
+          element: 'TextField',
+          helpText: `Normalize chosen readout to this value. If this is not specified
+          and normalization has been selected, the median of the summed readout (across
+          samples) will be used.`,
+          inputType: 'number',
+          name: 'normCount',
+          layName: 'Normalization value',
+        },
+        {
+          element: 'SelectField',
+          helpText: `The readout to use. Each readout name will appear as a row on
+          the heat map.`,
+          name: 'readout',
+          layName: 'Readout',
+          options: [],
+        },
+        {
+          element: 'SelectField',
+          helpText: 'The value to visualize on the heat map.',
+          name: 'metric',
+          layName: 'Metric',
+          options: [],
         },
       ],
     },

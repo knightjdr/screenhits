@@ -6,7 +6,7 @@ import Analysis from './analysis';
 
 const possibleRoutes = [
   'archive',
-  'new',
+  'design',
   'visualization',
 ];
 
@@ -14,7 +14,7 @@ class AnalysisContainer extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      highlightedView: 'new',
+      highlightedView: 'design',
       textWidth: this.getTextWidth(),
       view: this.checkView(this.props.params.view),
       viewID: this.checkID(this.props.params.view, this.props.params.id),

@@ -55,7 +55,12 @@ class SelectSamples extends React.Component {
           <MenuItem
             key={ item._id }
             onMouseEnter={ (e) => {
-              this.props.sampleTooltip.showFunc(e, item, 'right');
+              this.props.sampleTooltip.showFunc(
+                e,
+                item,
+                'right',
+                this.props.showTooltips.selectionAdd
+              );
             } }
             onMouseLeave={ this.props.sampleTooltip.hideFunc }
             onTouchTap={ (e) => {
@@ -149,6 +154,16 @@ class SelectSamples extends React.Component {
               } }
             >
               { `Available ${this.props.selection.level}s`}
+              <input
+                checked={ this.props.showTooltips.selectionAdd }
+                data-tip={ true }
+                data-for={ 'checkbox-add-sample-tooltips' }
+                onChange={ () => { this.props.toggleTooltip('selectionAdd'); } }
+                style={ {
+                  marginLeft: 5,
+                } }
+                type="checkbox"
+              />
             </div>
             <Drawer
               containerStyle={ {
@@ -171,6 +186,14 @@ class SelectSamples extends React.Component {
                 )
               }
             </Drawer>
+            <ReactTooltip
+              effect="solid"
+              id="checkbox-add-sample-tooltips"
+              type="dark"
+              place="top"
+            >
+              Toggle sample tooltips
+            </ReactTooltip>
           </div>
           <div
             style={ {
@@ -211,6 +234,16 @@ class SelectSamples extends React.Component {
                   } }
                 >
                   Selected samples
+                  <input
+                    checked={ this.props.showTooltips.selectionRemove }
+                    data-tip={ true }
+                    data-for={ 'checkbox-remove-sample-tooltips' }
+                    onChange={ () => { this.props.toggleTooltip('selectionRemove'); } }
+                    style={ {
+                      marginLeft: 5,
+                    } }
+                    type="checkbox"
+                  />
                 </div>
                 <div
                   style={ analysisStyle.selectedItemsContainer }
@@ -225,7 +258,12 @@ class SelectSamples extends React.Component {
                         <MenuItem
                           key={ sample._id }
                           onMouseEnter={ (e) => {
-                            this.props.sampleTooltip.showFunc(e, sample, 'left');
+                            this.props.sampleTooltip.showFunc(
+                              e,
+                              sample,
+                              'left',
+                              this.props.showTooltips.selectionRemove
+                            );
                           } }
                           onMouseLeave={ this.props.sampleTooltip.hideFunc }
                           onTouchTap={ (e) => {
@@ -247,6 +285,14 @@ class SelectSamples extends React.Component {
                     })
                   }
                 </div>
+                <ReactTooltip
+                  effect="solid"
+                  id="checkbox-remove-sample-tooltips"
+                  type="dark"
+                  place="top"
+                >
+                  Toggle sample tooltips
+                </ReactTooltip>
               </div>
           }
         </div>
@@ -495,6 +541,11 @@ SelectSamples.propTypes = {
     last: PropTypes.number,
     level: PropTypes.string,
   }).isRequired,
+  showTooltips: PropTypes.shape({
+    selectionAdd: PropTypes.bool,
+    selectionRemove: PropTypes.bool,
+  }).isRequired,
+  toggleTooltip: PropTypes.func.isRequired,
 };
 
 export default SelectSamples;

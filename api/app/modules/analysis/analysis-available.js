@@ -20,7 +20,6 @@ const returnFields = {
     creatorEmail: 0,
     description: 0,
     records: 0,
-    properties: 0,
     type: 0,
   },
   screen: {
