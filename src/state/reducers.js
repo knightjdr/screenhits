@@ -7,6 +7,7 @@ import analysisPost from './post/analysis-submit-reducer';
 import analysisSamples from './get/analysis-samples-reducer';
 import available from './get/data-reducer';
 import bulkPermission from './put/bulk-permission-reducer';
+import comparison from './post/comparison-submit-reducer';
 import deleteReducer from './delete/reducer';
 import manage from './post/project-manage-reducer';
 import post from './post/reducer';
@@ -26,6 +27,7 @@ const App = combineReducers({
   analysisSamples,
   available,
   bulkPermission,
+  comparison,
   delete: deleteReducer,
   manage,
   post,

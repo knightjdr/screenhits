@@ -9,6 +9,7 @@ import convertCamel from '../../helpers/convertCamel';
 import NewAnalysis from './new-analysis';
 import getAnalysisSamples from '../../state/get/analysis-samples-actions';
 import submitAnalysis from '../../state/post/analysis-submit-actions';
+import submitComparison from '../../state/post/comparison-submit-actions';
 import { uppercaseFirst } from '../../helpers/helpers';
 
 // import available from './test-data';
@@ -377,32 +378,43 @@ class NewAnalysisContainer extends React.Component {
       };
     });
   }
-  formatDesign = (design = []) => {
-    const formattedDesign = [];
-    design.forEach((sampleSet, index) => {
-      if (index > 0) {
-        const controls = [];
-        const replicates = [];
-        sampleSet.items.forEach((sample) => {
-          const row = sample.row;
-          const controlIndex = design[0].items.findIndex((controlSample) => {
-            return controlSample.row === row;
+  formatDesign = (design = [], analysisType, selectedUnordered) => {
+    let formattedDesign = [];
+    let formatError = false;
+    if (analysisType !== 'generic') {
+      design.forEach((sampleSet, index) => {
+        if (index > 0) {
+          const controls = [];
+          const replicates = [];
+          sampleSet.items.forEach((sample) => {
+            const row = sample.row;
+            const controlIndex = design[0].items.findIndex((controlSample) => {
+              return controlSample.row === row;
+            });
+            if (controlIndex > -1) {
+              controls.push(design[0].items[controlIndex]._id);
+              replicates.push(sample._id);
+            }
           });
-          if (controlIndex > -1) {
-            controls.push(design[0].items[controlIndex]._id);
-            replicates.push(sample._id);
+          if (replicates.length > 0) {
+            formattedDesign.push({
+              controls,
+              name: sampleSet.name,
+              replicates,
+            });
           }
-        });
-        if (replicates.length > 0) {
-          formattedDesign.push({
-            controls,
-            name: sampleSet.name,
-            replicates,
-          });
         }
-      }
-    });
-    const formatError = formattedDesign.length <= 0;
+      });
+      formatError = formattedDesign.length <= 0;
+    } else if (
+      design &&
+      design.length > 0
+    ) {
+      formattedDesign = design[0].items.map((item) => { return item._id; });
+    } else {
+      formatError = selectedUnordered.length <= 0;
+      formattedDesign = Object.assign([], selectedUnordered);
+    }
     return { formatError, formattedDesign };
   }
   genericList = (availableSamples, selected, type) => {
@@ -424,7 +436,7 @@ class NewAnalysisContainer extends React.Component {
       } else { // check that properties from first sample are in other samples, if not, remove them
         list.forEach((item, itemIndex) => {
           const propertyIndex = availableSamples[sampleIndex].properties.findIndex((property) => {
-            return property.name === item.name;
+            return property.name === item.value;
           });
           if (propertyIndex < 0) {
             list.splice(itemIndex, 1);
@@ -786,7 +798,11 @@ class NewAnalysisContainer extends React.Component {
   }
   submit = () => {
     const { error, errors } = this.validateForm(this.state.formData);
-    const { formatError, formattedDesign } = this.formatDesign(this.state.design);
+    const { formatError, formattedDesign } = this.formatDesign(
+      this.state.design,
+      this.state.formData.analysisType,
+      this.state.selected.items
+    );
     const formData = this.typeFormatFormData(this.state.formData);
     if (
       error ||
@@ -801,8 +817,21 @@ class NewAnalysisContainer extends React.Component {
           ),
         };
       });
-    } else {
+    } else if (this.state.formData.analysisType !== 'generic') {
       this.props.submitAnalysis(
+        this.props.user,
+        Object.assign(
+          {},
+          formData,
+          {
+            design: formattedDesign,
+            creatorEmail: this.props.user.email,
+            creatorName: this.props.user.name,
+          }
+        )
+      );
+    } else {
+      this.props.submitComparison(
         this.props.user,
         Object.assign(
           {},
@@ -1050,6 +1079,7 @@ NewAnalysisContainer.propTypes = {
   }).isRequired,
   getAnalysisSamples: PropTypes.func.isRequired,
   submitAnalysis: PropTypes.func.isRequired,
+  submitComparison: PropTypes.func.isRequired,
   user: PropTypes.shape({
     email: PropTypes.string,
     name: PropTypes.string,
@@ -1063,6 +1093,9 @@ const mapDispatchToProps = (dispatch) => {
     },
     submitAnalysis: (user, formData) => {
       dispatch(submitAnalysis(user, formData));
+    },
+    submitComparison: (user, formData) => {
+      dispatch(submitComparison(user, formData));
     },
   };
 };

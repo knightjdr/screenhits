@@ -133,7 +133,7 @@ class SampleGridContainer extends React.Component {
     e.preventDefault();
   }
   dragStartOrigin = (e, _id, name, origin, replicate, selectedColumn) => {
-    e.dataTransfer.setData('text/plain', JSON.stringify({ _id, name, origin, selectedColumn }));
+    e.dataTransfer.setData('text/plain', JSON.stringify({ _id, name, origin, replicate, selectedColumn }));
     this.setState({
       tooltip: {
         _id: null,

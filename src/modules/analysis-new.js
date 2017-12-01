@@ -134,6 +134,21 @@ const AnalysisModule = {
     generic: {
       parameters: [
         {
+          element: 'SelectField',
+          helpText: `The readout to use. Each readout name will appear as a row on
+          the heat map.`,
+          name: 'readout',
+          layName: 'Readout',
+          options: [],
+        },
+        {
+          element: 'SelectField',
+          helpText: 'The value to visualize on the heat map.',
+          name: 'metric',
+          layName: 'Metric',
+          options: [],
+        },
+        {
           defaultValue: false,
           element: 'CheckBox',
           helpText: 'Specify whether samples should be normalized',
@@ -149,21 +164,6 @@ const AnalysisModule = {
           inputType: 'number',
           name: 'normCount',
           layName: 'Normalization value',
-        },
-        {
-          element: 'SelectField',
-          helpText: `The readout to use. Each readout name will appear as a row on
-          the heat map.`,
-          name: 'readout',
-          layName: 'Readout',
-          options: [],
-        },
-        {
-          element: 'SelectField',
-          helpText: 'The value to visualize on the heat map.',
-          name: 'metric',
-          layName: 'Metric',
-          options: [],
         },
       ],
     },

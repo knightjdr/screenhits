@@ -24,10 +24,11 @@ const emptyRect = {
 class SampleRowContainer extends React.Component {
   constructor(props) {
     super(props);
+    const unselectedSamples = this.getAllSamples(this.props.selected, this.props.availableSamples);
     this.state = {
       design: emptyDesign,
       dragID: null,
-      gridRows: this.props.availableSamples.length,
+      gridRows: unselectedSamples.length,
       showTooltips: false,
       tooltip: {
         _id: null,
@@ -36,7 +37,7 @@ class SampleRowContainer extends React.Component {
         show: false,
         text: '',
       },
-      unselectedSamples: this.getAllSamples(this.props.selected, this.props.availableSamples),
+      unselectedSamples,
     };
   }
   getAllSamples = (selected, available) => {
@@ -66,7 +67,7 @@ class SampleRowContainer extends React.Component {
     e.preventDefault();
   }
   dragStartOrigin = (e, _id, name, origin, replicate, selectedColumn) => {
-    e.dataTransfer.setData('text/plain', JSON.stringify({ _id, name, origin, selectedColumn }));
+    e.dataTransfer.setData('text/plain', JSON.stringify({ _id, name, origin, replicate, selectedColumn }));
     this.setState({
       tooltip: {
         _id: null,

@@ -2,6 +2,7 @@ const auth = require('./modules/auth/validate');
 const analysis = require('./modules/analysis/analysis');
 const analysisAvailable = require('./modules/analysis/analysis-available');
 const available = require('./modules/available/available');
+const comparison = require('./modules/comparison/comparison');
 const create = require('./modules/create/create');
 const deleteQuery = require('./modules/delete/delete');
 const loadRoute = require('./modules/available/load-route');
@@ -124,7 +125,15 @@ const routes = {
         error: routes.messages.invalidRoute,
       });
     });
-    // returns all available project, screens, experiments and samples for a user
+    // submit comparison
+    app.post('/analysis/comparison', auth.validate, (req, res) => {
+      comparison.get(req.body)
+        .then((response) => {
+          routes.response(res, response);
+        })
+      ;
+    });
+    // submit analysis
     app.post('/analysis/new', auth.validate, (req, res) => {
       analysis.create(req.body)
         .then((response) => {
