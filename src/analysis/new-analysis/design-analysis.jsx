@@ -254,12 +254,14 @@ class DesignAnalysis extends React.Component {
               this.props.formData.analysisType === 'generic' ?
                 <SampleRow
                   availableSamples={ this.props.availableSamples }
+                  design={ this.props.design }
                   selected={ this.props.selected }
                   updateDesign={ this.props.updateDesign }
                 />
                 :
                 <SampleGrid
                   availableSamples={ this.props.availableSamples }
+                  design={ this.props.design }
                   selected={ this.props.selected }
                   updateDesign={ this.props.updateDesign }
                 />
@@ -291,6 +293,7 @@ class DesignAnalysis extends React.Component {
 }
 
 DesignAnalysis.defaultProps = {
+  design: [],
   metric: [],
   readout: [],
 };
@@ -307,6 +310,9 @@ DesignAnalysis.propTypes = {
       }),
     })
   ).isRequired,
+  design: PropTypes.arrayOf(
+    PropTypes.shape({}),
+  ),
   dialog: PropTypes.shape({
     close: PropTypes.func,
     defaultValue: PropTypes.oneOfType([

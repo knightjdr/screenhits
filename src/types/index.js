@@ -1,5 +1,11 @@
 import { arrayOf, bool, number, shape, string } from 'prop-types';
 
+export const sumbitStatus = shape({
+  didSubmitFail: bool,
+  isSubmitted: bool,
+  message: string,
+});
+
 export const userProp = shape({
   email: string,
   lab: string,
@@ -8,6 +14,9 @@ export const userProp = shape({
 
 export const viewTaskProp = shape({
   header: arrayOf(string),
+  legend: shape({
+    valueName: string,
+  }),
   range: shape({
     max: number,
     min: number,

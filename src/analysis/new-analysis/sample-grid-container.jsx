@@ -1,3 +1,4 @@
+// import deepEqual from 'deep-equal';
 import PropTypes from 'prop-types';
 import React from 'react';
 
@@ -29,7 +30,7 @@ class SampleGridContainer extends React.Component {
     super(props);
     this.state = {
       cellWidth,
-      design: emptyDesign,
+      design: JSON.parse(JSON.stringify(this.props.design)),
       dragID: null,
       gridDimensions: {
         cols: 1,
@@ -45,7 +46,11 @@ class SampleGridContainer extends React.Component {
         show: false,
         text: '',
       },
-      unselectedSamples: this.getAllSamples(this.props.selected, this.props.availableSamples),
+      unselectedSamples: this.getAllToDesignSamples(
+        this.props.selected,
+        this.props.design,
+        this.props.availableSamples
+      ),
     };
   }
   componentDidMount = () => {
@@ -54,13 +59,25 @@ class SampleGridContainer extends React.Component {
   componentWillUnmount = () => {
     window.removeEventListener('wheel', this.handleScroll);
   }
-  getAllSamples = (selected, available) => {
-    return selected.map((_id) => {
-      const index = available.findIndex((availableSample) => {
-        return availableSample._id === _id;
+  getAllToDesignSamples = (selected, design, available) => {
+    // get all samples already in design grid
+    const inDesign = [];
+    design.forEach((sampleSet) => {
+      sampleSet.items.forEach((sample) => {
+        inDesign.push(sample._id);
       });
-      return available[index];
     });
+    // return samples not yet in design grid
+    const toDesign = [];
+    selected.forEach((_id) => {
+      if (!inDesign.includes(_id)) {
+        const index = available.findIndex((availableSample) => {
+          return availableSample._id === _id;
+        });
+        toDesign.push(available[index]);
+      }
+    });
+    return toDesign;
   }
   getAvailableIndex = (_id) => {
     return this.props.availableSamples.findIndex((availableSample) => {
@@ -293,8 +310,8 @@ class SampleGridContainer extends React.Component {
         });
       });
       newUnselectedSamples.sort((a, b) => { return a._id - b._id; });
+      this.props.updateDesign(emptyDesign);
       return {
-        design: emptyDesign,
         gridDimensions: {
           cols: 1,
           rows: 3,
@@ -423,6 +440,15 @@ class SampleGridContainer extends React.Component {
   }
 }
 
+SampleGridContainer.defaultProps = {
+  design: [
+    {
+      name: 'Control',
+      items: [],
+    },
+  ],
+};
+
 SampleGridContainer.propTypes = {
   availableSamples: PropTypes.arrayOf(
     PropTypes.shape({
@@ -436,6 +462,14 @@ SampleGridContainer.propTypes = {
       replicate: PropTypes.string,
     })
   ).isRequired,
+  design: PropTypes.arrayOf(
+    PropTypes.shape({
+      items: PropTypes.arrayOf(
+        PropTypes.shape({}),
+      ),
+      name: PropTypes.string,
+    }),
+  ),
   selected: PropTypes.arrayOf(
     PropTypes.number
   ).isRequired,

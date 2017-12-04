@@ -39,9 +39,11 @@ class TaskHeatmapViewContainer extends React.Component {
     const headerHeight = this.getHeaderHeight(this.props.task.header);
     const numRows = this.calculateRows(headerHeight, defaultGridHeight);
     const tableHeight = this.getTableHeight(numRows, defaultGridHeight);
+    // set range
+    const range = this.setRange(this.props.task.range);
     this.state = {
       centerView: this.checkWidth(tableWidth),
-      colorRange: this.initRainbow(),
+      colorRange: this.initRainbow(range),
       data: this.props.task.results ? JSON.parse(JSON.stringify(this.props.task.results)) : [],
       fontSize: defaults.fontSize,
       gridHeight: defaultGridHeight,
@@ -54,10 +56,10 @@ class TaskHeatmapViewContainer extends React.Component {
       options: {
         enableTooltips: false,
         gene: '',
-        rangeMax: this.props.task.range ? this.props.task.range.max : 0,
-        rangeMaxStr: this.props.task.range ? String(this.props.task.range.max) : String(0),
-        rangeMin: this.props.task.range ? this.props.task.range.min : 0,
-        rangeMinStr: this.props.task.range ? String(this.props.task.range.min) : String(0),
+        rangeMax: range.max,
+        rangeMaxStr: String(range.max),
+        rangeMin: range.min,
+        rangeMinStr: String(range.min),
       },
       page: this.subsetData(
         this.props.task.results,
@@ -74,6 +76,7 @@ class TaskHeatmapViewContainer extends React.Component {
       panel: {
         left: -237,
       },
+      rangeType: range.type,
       rowNameWidth: 100,
       searchError: '',
       tableHeight,
@@ -136,6 +139,21 @@ class TaskHeatmapViewContainer extends React.Component {
       return header.slice(start, end);
     }
     return [];
+  }
+  setRange = (range) => {
+    const max = range.max > 0 ? range.max : 0;
+    const min = range.min < 0 ? range.min : 0;
+    let type = 'two-color';
+    if (min === 0) {
+      type = 'pos-single-color';
+    } else if (max === 0) {
+      type = 'neg-single-color';
+    }
+    return {
+      max,
+      min,
+      type,
+    };
   }
   setSortHeader = (header) => {
     if (
@@ -351,14 +369,13 @@ class TaskHeatmapViewContainer extends React.Component {
       };
     });
   }
-  gridColor = (max, min, value) => {
-    const mappedNumber = this.mapNumber(
-      {
-        max,
-        min,
-      },
-      value
-    );
+  gridMonoColor = (value) => {
+    const mappedNumber = this.mapMonoNumber(value);
+    const gridNumber = Math.floor(mappedNumber * 100);
+    return this.state.colorRange[gridNumber];
+  }
+  gridTwoColor = (value) => {
+    const mappedNumber = this.mapTwoNumber(value);
     const gridNumber = Math.floor(((mappedNumber + 1) / 2) * 100);
     return this.state.colorRange[gridNumber];
   }
@@ -372,14 +389,26 @@ class TaskHeatmapViewContainer extends React.Component {
       },
     });
   }
-  initRainbow = () => {
+  initRainbow = (range) => {
     const rainbow = new Rainbow();
     rainbow.setNumberRange(0, numberOfColors);
-    rainbow.setSpectrum(
-      '#2196f3',
-      '#ffffff',
-      '#f44336'
-    );
+    if (range.type === 'pos-single-color') {
+      rainbow.setSpectrum(
+        '#ffffff',
+        '#f44336'
+      );
+    } else if (range.type === 'neg-single-color') {
+      rainbow.setSpectrum(
+        '#2196f3',
+        '#ffffff',
+      );
+    } else {
+      rainbow.setSpectrum(
+        '#2196f3',
+        '#ffffff',
+        '#f44336'
+      );
+    }
     return [...Array(numberOfColors + 1).keys()].map((value) => {
       return `#${rainbow.colorAt(value)}`;
     });
@@ -431,7 +460,23 @@ class TaskHeatmapViewContainer extends React.Component {
       };
     });
   }
-  mapNumber = (range, value) => {
+  mapMonoNumber = (value) => {
+    const range = {
+      max: this.state.options.rangeMax,
+      min: this.state.options.rangeMin,
+    };
+    if (value <= range.min) {
+      return 0;
+    } else if (value >= range.max) {
+      return 1;
+    }
+    return (value - range.min) / (range.max - range.min);
+  }
+  mapTwoNumber = (value) => {
+    const range = {
+      max: this.state.options.rangeMax,
+      min: this.state.options.rangeMin,
+    };
     if (value > 0) {
       const fraction = value / range.max;
       return fraction <= 1 ? fraction : 1;
@@ -619,17 +664,46 @@ class TaskHeatmapViewContainer extends React.Component {
     });
   }
   rangeChange = (key, value) => {
-    this.setState(({ options }) => {
-      const newOptions = Object.assign({}, options);
-      if (isNaN(value)) {
-        newOptions[`${key}Str`] = value;
-      } else {
+    this.setState(({ options, rangeType }) => {
+      if ( // if 'value' is a number
+        !isNaN(value) &&
+        (
+          rangeType !== 'two-color' ||
+          (
+            rangeType === 'two-color' && // min and max have restricted values for two-color plots
+            (
+              (key === 'rangeMin' && Number(value) < 0) ||
+              (key === 'rangeMax' && Number(value) > 0)
+            )
+          )
+        )
+      ) {
+        const newOptions = Object.assign({}, options);
         newOptions[key] = Number(value);
         newOptions[`${key}Str`] = value;
+        return {
+          options: newOptions,
+        };
+      } else if (!value) {
+        const newOptions = Object.assign({}, options);
+        newOptions[`${key}Str`] = value;
+        return {
+          options: newOptions,
+        };
+      } else if (
+        value === '-' &&
+        (
+          rangeType !== 'two-color' ||
+          key === 'rangeMin'
+        )
+      ) {
+        const newOptions = Object.assign({}, options);
+        newOptions[`${key}Str`] = value;
+        return {
+          options: newOptions,
+        };
       }
-      return {
-        options: newOptions,
-      };
+      return {};
     });
   }
   resetView = () => {
@@ -916,7 +990,10 @@ class TaskHeatmapViewContainer extends React.Component {
         } }
         fontSize={ this.state.fontSize }
         geneSearch={ this.geneSearch }
-        gridColor={ this.gridColor }
+        gridColor={ {
+          mono: this.gridMonoColor,
+          two: this.gridTwoColor,
+        } }
         gridHeight={ this.state.gridHeight }
         gridHeightInput={ this.state.gridHeightInput }
         highlightRow={ this.state.highlightRow }
@@ -932,6 +1009,7 @@ class TaskHeatmapViewContainer extends React.Component {
           }
         ) }
         rangeChange={ this.rangeChange }
+        rangeType={ this.state.rangeType }
         resetView={ this.resetView }
         searchError={ this.state.searchError }
         sortRows={ this.sortRows }

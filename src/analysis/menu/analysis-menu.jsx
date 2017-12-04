@@ -73,9 +73,9 @@ class AnalysisMenu extends React.Component {
               } }
             >
               <MenuItem
-                key="visualization"
-                onClick={ () => { this.props.changeView('visualization'); } }
-                primaryText={ [<FontAwesome key="visualization" name="braille" />, ' Visualize data'] }
+                key="search"
+                onClick={ () => { this.props.changeView('search'); } }
+                primaryText={ [<FontAwesome key="search" name="search-plus" />, ' Gene search'] }
               />
               <MenuItem
                 key="archive"

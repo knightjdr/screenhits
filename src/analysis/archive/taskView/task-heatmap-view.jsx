@@ -202,6 +202,7 @@ class TaskHeatmapView extends React.Component {
     return isOverflowing;
   }
   render() {
+    // prop dependent styles
     const currContainerStyle = this.props.centerView ?
       Object.assign(
         {},
@@ -223,10 +224,6 @@ class TaskHeatmapView extends React.Component {
         lineHeight: `${this.props.gridHeight - 6}px`,
       }
     );
-    const gridItemStyle = {
-      height: this.props.gridHeight,
-      width: this.props.gridHeight,
-    };
     const currRowItemStyle = Object.assign(
       {},
       rowItemStyle,
@@ -236,6 +233,16 @@ class TaskHeatmapView extends React.Component {
         lineHeight: `${this.props.gridHeight - 6}px`,
       }
     );
+    const gridItemStyle = {
+      height: this.props.gridHeight,
+      width: this.props.gridHeight,
+    };
+    // grid color function
+    const gridColor = this.props.rangeType === 'two-color' ?
+      this.props.gridColor.two
+      :
+      this.props.gridColor.mono
+    ;
     return (
       <div
         style={ { width: '100% ' } }
@@ -323,11 +330,13 @@ class TaskHeatmapView extends React.Component {
                       ) }
                     >
                       <span
+                        key={ `${rowKeyName}-childSpan` }
                         style={ {
                           backgroundColor: row.name.toLowerCase() === this.props.highlightRow ?
                             '#ffee58'
                             :
                             null,
+                          pointerEvents: 'none',
                         } }
                       >
                         { row.name }
@@ -357,11 +366,7 @@ class TaskHeatmapView extends React.Component {
                             {},
                             gridItemStyle,
                             {
-                              backgroundColor: this.props.gridColor(
-                                this.props.options.rangeMax,
-                                this.props.options.rangeMin,
-                                column.value
-                              ),
+                              backgroundColor: gridColor(column.value),
                               gridColumn: columnIndex + 2,
                               gridRow: rowIndex + 1,
                             }
@@ -533,7 +538,12 @@ class TaskHeatmapView extends React.Component {
               <div
                 style={ rangeZeroStyle }
               >
-                0
+                {
+                  this.props.rangeType === 'two-color' ?
+                    0
+                    :
+                    null
+                }
               </div>
               <TextField
                 hintStyle={ rangeCenterHintStyle }
@@ -712,7 +722,10 @@ TaskHeatmapView.propTypes = {
   }).isRequired,
   fontSize: PropTypes.string.isRequired,
   geneSearch: PropTypes.func.isRequired,
-  gridColor: PropTypes.func.isRequired,
+  gridColor: PropTypes.shape({
+    mono: PropTypes.func.isRequired,
+    two: PropTypes.func.isRequired,
+  }).isRequired,
   gridHeight: PropTypes.number.isRequired,
   gridHeightInput: PropTypes.number.isRequired,
   highlightRow: PropTypes.string.isRequired,
@@ -741,6 +754,7 @@ TaskHeatmapView.propTypes = {
     toggle: PropTypes.func,
   }).isRequired,
   rangeChange: PropTypes.func.isRequired,
+  rangeType: PropTypes.string.isRequired,
   resetView: PropTypes.func.isRequired,
   searchError: PropTypes.string.isRequired,
   sortRows: PropTypes.func.isRequired,

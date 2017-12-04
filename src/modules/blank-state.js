@@ -3,13 +3,11 @@ const BlankState = {
     formData: {
       comment: '',
       concentration: '',
-      description: '',
       name: '',
       protocols: [],
       timepoint: '',
     },
     errors: {
-      description: null,
       name: null,
     },
     warning: false,
@@ -47,7 +45,6 @@ const BlankState = {
       cell: '',
       comment: '',
       condition: '',
-      description: '',
       name: '',
       other: {},
       species: '',
@@ -55,7 +52,6 @@ const BlankState = {
     },
     errors: {
       cell: null,
-      description: null,
       name: null,
       other: {},
       species: null,

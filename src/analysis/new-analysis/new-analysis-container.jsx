@@ -2,6 +2,7 @@ import deepEqual from 'deep-equal';
 import Moment from 'moment';
 import PropTypes from 'prop-types';
 import React from 'react';
+import { browserHistory, withRouter } from 'react-router';
 import { connect } from 'react-redux';
 
 import AnalysisOptions from '../../modules/analysis-new';
@@ -18,6 +19,12 @@ const defaultFormFields = [
   'analysisName',
   'analysisType',
   'screenType',
+];
+const emptyDesign = [
+  {
+    name: 'Control',
+    items: [],
+  },
 ];
 const emptyRect = {
   bottom: null,
@@ -44,7 +51,12 @@ class NewAnalysisContainer extends React.Component {
     const defaultFilters = this.defaultFilters(dateRange);
     this.state = {
       dateRange,
-      design: [],
+      design: [
+        {
+          name: 'Control',
+          items: [],
+        },
+      ],
       dialog: {
         defaultValue: null,
         help: false,
@@ -108,19 +120,37 @@ class NewAnalysisContainer extends React.Component {
         selectionAdd: false,
         selectionRemove: false,
       },
+      viewComparison: false,
     };
   }
   componentDidMount = () => {
     window.addEventListener('resize', this.resize);
   }
   componentWillReceiveProps = (nextProps) => {
+    const { analysisPost, analysisSamples, location } = nextProps;
     // is the available samples have changed, updated view
-    if (!deepEqual(nextProps.analysisSamples, this.props.analysisSamples)) {
+    if (!deepEqual(analysisSamples, this.props.analysisSamples)) {
       this.updateSamples(nextProps.analysisSamples);
     }
     // is an analysis task has been submitted, update snackbar
-    if (!deepEqual(nextProps.analysisPost, this.props.analysisPost)) {
+    if (!deepEqual(analysisPost, this.props.analysisPost)) {
       this.updateSnackbar(nextProps.analysisPost, this.props.analysisPost);
+    }
+    // if moving to/from from a comparison
+    if (
+      location.pathname === '/analysis/design' &&
+      this.state.viewComparison
+    ) {
+      this.setState({
+        viewComparison: false,
+      });
+    } else if (
+      location.pathname === '/analysis/design/comparison' &&
+      !this.state.viewComparison
+    ) {
+      this.setState({
+        viewComparison: true,
+      });
     }
   }
   componentDidUpdate = (prevProps, prevState) => {
@@ -648,7 +678,7 @@ class NewAnalysisContainer extends React.Component {
     });
   }
   inputChange = (type, value) => {
-    this.setState(({ errors, formData, selected }) => {
+    this.setState(({ design, errors, formData, selected }) => {
       const newErrors = Object.assign({}, errors);
       const newFormData = Object.assign({}, formData);
       // if the analysis type changes, remove non-default fields and add new
@@ -658,6 +688,15 @@ class NewAnalysisContainer extends React.Component {
             delete newFormData[key];
           }
         });
+        // compare previous type to selected and reset design if selected is 'generic'
+        let newDesign = JSON.parse(JSON.stringify(design));
+        if (
+          value === 'generic' &&
+          formData.analysisType !== 'generic'
+        ) {
+          newDesign = JSON.parse(JSON.stringify(emptyDesign));
+        }
+        // set form fields to defaults
         AnalysisOptions[formData.screenType][value].parameters.forEach((parameters) => {
           newFormData[parameters.name] = parameters.defaultValue;
         });
@@ -680,6 +719,7 @@ class NewAnalysisContainer extends React.Component {
         // reset error for this field
         newErrors[type] = null;
         return {
+          design: newDesign,
           errors: newErrors,
           formData: newFormData,
           metric,
@@ -746,6 +786,12 @@ class NewAnalysisContainer extends React.Component {
         isLarge: window.innerWidth > 1500,
         isSmall: window.innerWidth <= 680,
       },
+    });
+  }
+  showComparison = (show = false) => {
+    browserHistory.push('/analysis/design/comparison');
+    this.setState({
+      viewComparison: show,
     });
   }
   showSampleTooltip = (e, item, position, show) => {
@@ -843,6 +889,7 @@ class NewAnalysisContainer extends React.Component {
           }
         )
       );
+      this.showComparison(true);
     }
   }
   toggleTooltip = (tooltip) => {
@@ -984,7 +1031,9 @@ class NewAnalysisContainer extends React.Component {
       <NewAnalysis
         addSamples={ this.addSamples }
         applyFilters={ this.applyFilters }
+        comparisonState={ this.props.comparisonState }
         dateRange={ this.state.dateRange }
+        design={ this.state.design }
         dialog={ {
           close: this.dialogClose,
           defaultValue: this.state.dialog.defaultValue,
@@ -1041,6 +1090,7 @@ class NewAnalysisContainer extends React.Component {
         submit={ this.submit }
         toggleTooltip={ this.toggleTooltip }
         updateDesign={ this.updateDesign }
+        viewComparison={ this.state.viewComparison }
       />
     );
   }
@@ -1077,7 +1127,16 @@ NewAnalysisContainer.propTypes = {
     }),
     message: PropTypes.string,
   }).isRequired,
+  comparisonState: PropTypes.shape({
+    didSubmitFail: PropTypes.bool,
+    isSubmitted: PropTypes.bool,
+    item: PropTypes.shape({}),
+    message: PropTypes.string,
+  }).isRequired,
   getAnalysisSamples: PropTypes.func.isRequired,
+  location: PropTypes.shape({
+    pathname: PropTypes.string,
+  }).isRequired,
   submitAnalysis: PropTypes.func.isRequired,
   submitComparison: PropTypes.func.isRequired,
   user: PropTypes.shape({
@@ -1104,6 +1163,7 @@ const mapStateToProps = (state) => {
   return {
     analysisPost: state.analysisPost,
     analysisSamples: state.analysisSamples,
+    comparisonState: state.comparison,
     user: state.user,
   };
 };
@@ -1113,4 +1173,4 @@ const Container = connect(
   mapDispatchToProps,
 )(NewAnalysisContainer);
 
-export default Container;
+export default withRouter(Container);

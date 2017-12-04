@@ -24,11 +24,15 @@ const emptyRect = {
 class SampleRowContainer extends React.Component {
   constructor(props) {
     super(props);
-    const unselectedSamples = this.getAllSamples(this.props.selected, this.props.availableSamples);
+    const { toDesign, totalSamples } = this.getAllToDesignSamples(
+      this.props.selected,
+      this.props.design,
+      this.props.availableSamples
+    );
     this.state = {
-      design: emptyDesign,
+      design: JSON.parse(JSON.stringify(this.props.design)),
       dragID: null,
-      gridRows: unselectedSamples.length,
+      gridRows: totalSamples,
       showTooltips: false,
       tooltip: {
         _id: null,
@@ -37,16 +41,31 @@ class SampleRowContainer extends React.Component {
         show: false,
         text: '',
       },
-      unselectedSamples,
+      unselectedSamples: toDesign,
     };
   }
-  getAllSamples = (selected, available) => {
-    return selected.map((_id) => {
-      const index = available.findIndex((availableSample) => {
-        return availableSample._id === _id;
+  getAllToDesignSamples = (selected, design, available) => {
+    // get all samples already in design grid
+    const inDesign = [];
+    design.forEach((sampleSet) => {
+      sampleSet.items.forEach((sample) => {
+        inDesign.push(sample._id);
       });
-      return available[index];
     });
+    // return samples not yet in design grid
+    const toDesign = [];
+    selected.forEach((_id) => {
+      if (!inDesign.includes(_id)) {
+        const index = available.findIndex((availableSample) => {
+          return availableSample._id === _id;
+        });
+        toDesign.push(available[index]);
+      }
+    });
+    return {
+      toDesign,
+      totalSamples: inDesign.length + toDesign.length,
+    };
   }
   getAvailableIndex = (_id) => {
     return this.props.availableSamples.findIndex((availableSample) => {
@@ -161,6 +180,7 @@ class SampleRowContainer extends React.Component {
         });
       });
       newUnselectedSamples.sort((a, b) => { return a._id - b._id; });
+      this.props.updateDesign(emptyDesign);
       return {
         design: emptyDesign,
         unselectedSamples: newUnselectedSamples,
@@ -246,6 +266,15 @@ class SampleRowContainer extends React.Component {
   }
 }
 
+SampleRowContainer.defaultProps = {
+  design: [
+    {
+      name: 'Control',
+      items: [],
+    },
+  ],
+};
+
 SampleRowContainer.propTypes = {
   availableSamples: PropTypes.arrayOf(
     PropTypes.shape({
@@ -259,6 +288,14 @@ SampleRowContainer.propTypes = {
       replicate: PropTypes.string,
     })
   ).isRequired,
+  design: PropTypes.arrayOf(
+    PropTypes.shape({
+      items: PropTypes.arrayOf(
+        PropTypes.shape({}),
+      ),
+      name: PropTypes.string,
+    }),
+  ),
   selected: PropTypes.arrayOf(
     PropTypes.number
   ).isRequired,

@@ -71,29 +71,6 @@ class DisplayExperiment extends React.Component {
                 { this.props.experiment.name }
               </div>
             </div>
-            <div
-              style={ displayStyle.elementContainer }
-            >
-              <div
-                style={ Object.assign(
-                  {},
-                  displayStyle.elementKey,
-                  {
-                    backgroundColor: this.props.muiTheme.palette.keyColor,
-                    border: `1px solid ${this.props.muiTheme.palette.keyColorBorder}`,
-                  },
-                ) }
-              >
-                <span>
-                  Description:
-                </span>
-              </div>
-              <div
-                style={ displayStyle.elementValue }
-              >
-                { this.props.experiment.description }
-              </div>
-            </div>
             {
               this.props.experiment.concentration &&
               <div
@@ -313,17 +290,6 @@ class DisplayExperiment extends React.Component {
               style={ displayStyle.input }
               value={ this.props.experiment.name }
             />
-            <TextField
-              errorText={ this.props.errors.description }
-              floatingLabelText="Experiment description"
-              fullWidth={ true }
-              multiLine={ true }
-              onChange={ (e) => { this.props.inputChange('description', e.target.value); } }
-              rows={ 1 }
-              rowsMax={ 2 }
-              style={ displayStyle.input }
-              value={ this.props.experiment.description }
-            />
             <div
               style={ Object.assign(
                 {},
@@ -504,7 +470,6 @@ DisplayExperiment.propTypes = {
   }).isRequired,
   edit: PropTypes.bool.isRequired,
   errors: PropTypes.shape({
-    description: PropTypes.string,
     name: PropTypes.string,
   }).isRequired,
   inputChange: PropTypes.func.isRequired,
@@ -515,7 +480,6 @@ DisplayExperiment.propTypes = {
     concentration: PropTypes.string,
     creatorEmail: PropTypes.string,
     creatorName: PropTypes.string,
-    description: PropTypes.string,
     fullProtocols: PropTypes.arrayOf(
       PropTypes.shape({}),
     ),

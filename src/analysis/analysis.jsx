@@ -7,7 +7,7 @@ import { RadioButton, RadioButtonGroup } from 'material-ui/RadioButton';
 import AnalysisMenu from './menu/analysis-menu-container';
 import Archive from './archive/archive-container';
 import NewAnalysis from './new-analysis/new-analysis-container';
-import Visualization from './visualization/visualization-container';
+import GeneSearch from './gene-search/gene-search-container';
 
 const chooseContainerStyle = {
   alignItems: 'center',
@@ -46,7 +46,7 @@ const textBoxStyle = {
 const viewHelp = {
   archive: 'Manage and view existing analyses',
   design: 'Perform new analysis or comparisons',
-  visualization: 'View analysis graphically',
+  search: 'Search for a gene and view associated results',
 };
 
 class Analysis extends React.Component {
@@ -60,8 +60,8 @@ class Analysis extends React.Component {
         );
       case 'design':
         return <NewAnalysis />;
-      case 'visualization':
-        return <Visualization />;
+      case 'search':
+        return <GeneSearch />;
       default:
         return (
           <div
@@ -101,10 +101,10 @@ class Analysis extends React.Component {
                   value="archive"
                 />
                 <RadioButton
-                  label="Visualizaiton"
-                  onClick={ () => { this.props.highlightView('visualization'); } }
+                  label="Gene search"
+                  onClick={ () => { this.props.highlightView('search'); } }
                   style={ radioButtonStyle }
-                  value="visualization"
+                  value="search"
                 />
               </RadioButtonGroup>
               <div

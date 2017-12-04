@@ -17,9 +17,6 @@ const validate = {
       if (!validateObj.creatorName) {
         reject('missing user name');
       }
-      if (!validateObj.description) {
-        reject('missing experiment description');
-      }
       if (!validateObj.name) {
         reject('missing experiment name');
       }
@@ -208,9 +205,6 @@ const validate = {
       }
       if (!validateObj.cell) {
         reject('missing cell type');
-      }
-      if (!validateObj.description) {
-        reject('missing screen description');
       }
       if (!validateObj.name) {
         reject('missing screen name');

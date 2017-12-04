@@ -1,20 +1,8 @@
 const Validate = {
   experiment: {
     checkFields: [
-      'description',
       'name',
     ],
-    description: (value) => {
-      const errorObj = {
-        error: false,
-        message: null,
-      };
-      if (!value) {
-        errorObj.error = true;
-        errorObj.message = 'This field is required';
-      }
-      return errorObj;
-    },
     name: (value) => {
       const errorObj = {
         error: false,
@@ -99,7 +87,6 @@ const Validate = {
   screen: {
     checkFields: [
       'cell',
-      'description',
       'name',
       'species',
       'type',
@@ -116,17 +103,6 @@ const Validate = {
       if (!value) {
         errorObj.error = true;
         errorObj.message = 'Select a cell type from the dropdown, or specify one via free text';
-      }
-      return errorObj;
-    },
-    description: (value) => {
-      const errorObj = {
-        error: false,
-        message: null,
-      };
-      if (!value) {
-        errorObj.error = true;
-        errorObj.message = 'This field is required';
       }
       return errorObj;
     },

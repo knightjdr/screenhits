@@ -29,12 +29,6 @@ const Fields = {
     },
   },
   screen: {
-    cell: {
-      values: [
-        'HEK 293',
-        'Hela',
-      ],
-    },
     condition: {
       help: 'Specificy the condition, drug or treatment used in the screen, if any.',
     },
@@ -66,12 +60,6 @@ const Fields = {
       ],
       Generic: [],
       Microscopy: [],
-    },
-    species: {
-      values: [
-        'Homo sapiens',
-        'Mus musculus',
-      ],
     },
     type: {
       values: [

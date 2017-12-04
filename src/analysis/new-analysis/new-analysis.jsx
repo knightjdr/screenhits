@@ -10,6 +10,7 @@ import {
   StepLabel,
 } from 'material-ui/Stepper';
 
+import Comparison from '../comparison/comparison-container';
 import DesignAnalysis from './design-analysis';
 import SelectSamples from './select-samples';
 import SelectScreenType from './select-screen-type';
@@ -56,6 +57,7 @@ class NewAnalysis extends React.Component {
         return (
           <DesignAnalysis
             availableSamples={ this.props.samples }
+            design={ this.props.design }
             dialog={ this.props.dialog }
             errors={ errors }
             formData={ formData }
@@ -88,84 +90,93 @@ class NewAnalysis extends React.Component {
           overflowY: 'hidden',
         } }
       >
-        <Scrollbars
-          autoHide={ true }
-          autoHideTimeout={ 1000 }
-          autoHideDuration={ 200 }
-          autoHeight={ true }
-          autoHeightMax={ 'calc(100vh - 80px)' }
-          renderThumbVertical={ ({ style, props }) => {
-            return (
-              <div
-                { ...props }
-                style={ Object.assign(
-                  {},
-                  style,
-                  {
-                    backgroundColor: this.props.muiTheme.palette.alternativeButtonColor,
-                    borderRadius: 4,
-                    opacity: 0.5,
-                    width: 8,
-                  }
-                ) }
-              />
-            );
-          } }
-        >
-          <Stepper activeStep={ this.props.stepIndex }>
-            <Step>
-              <StepLabel>Choose screen type</StepLabel>
-            </Step>
-            <Step>
-              <StepLabel>Select samples</StepLabel>
-            </Step>
-            <Step>
-              <StepLabel>Analysis type</StepLabel>
-            </Step>
-          </Stepper>
-          <div>
-            {
-              this.getStepContent(
-                this.props.errors,
-                this.props.formData,
-                this.props.selection,
-                this.props.stepIndex,
-              )
-            }
-            <div
-              style={ {
-                marginTop: 20,
-              } }
-            >
-              <FlatButton
-                backgroundColor={ this.props.muiTheme.palette.alternativeButtonColor }
-                hoverColor={ this.props.muiTheme.palette.alternativeButtonColorHover }
-                label="Back"
-                onTouchTap={ this.props.handlePrev }
-                style={ {
-                  color: this.props.muiTheme.palette.offWhite,
-                  display: this.props.stepIndex === 0 ? 'none' : 'inline',
-                  marginRight: 10,
-                } }
-              />
+        {
+          !this.props.viewComparison &&
+          <Scrollbars
+            autoHide={ true }
+            autoHideTimeout={ 1000 }
+            autoHideDuration={ 200 }
+            autoHeight={ true }
+            autoHeightMax={ 'calc(100vh - 80px)' }
+            renderThumbVertical={ ({ style, props }) => {
+              return (
+                <div
+                  { ...props }
+                  style={ Object.assign(
+                    {},
+                    style,
+                    {
+                      backgroundColor: this.props.muiTheme.palette.alternativeButtonColor,
+                      borderRadius: 4,
+                      opacity: 0.5,
+                      width: 8,
+                    }
+                  ) }
+                />
+              );
+            } }
+          >
+            <Stepper activeStep={ this.props.stepIndex }>
+              <Step>
+                <StepLabel>Choose screen type</StepLabel>
+              </Step>
+              <Step>
+                <StepLabel>Select samples</StepLabel>
+              </Step>
+              <Step>
+                <StepLabel>Design analysis</StepLabel>
+              </Step>
+            </Stepper>
+            <div>
               {
+                this.getStepContent(
+                  this.props.errors,
+                  this.props.formData,
+                  this.props.selection,
+                  this.props.stepIndex,
+                )
+              }
+              <div
+                style={ {
+                  marginTop: 20,
+                } }
+              >
                 <FlatButton
-                  backgroundColor={ this.props.muiTheme.palette.darkButtonColor }
-                  hoverColor={ this.props.muiTheme.palette.darkButtonColorHover }
-                  label={ this.props.stepIndex === 2 ? 'Submit' : 'Next' }
-                  onTouchTap={ this.props.stepIndex === 2 ?
-                    this.props.submit
-                    :
-                    this.props.handleNext
-                  }
+                  backgroundColor={ this.props.muiTheme.palette.alternativeButtonColor }
+                  hoverColor={ this.props.muiTheme.palette.alternativeButtonColorHover }
+                  label="Back"
+                  onTouchTap={ this.props.handlePrev }
                   style={ {
                     color: this.props.muiTheme.palette.offWhite,
+                    display: this.props.stepIndex === 0 ? 'none' : 'inline',
+                    marginRight: 10,
                   } }
                 />
-              }
+                {
+                  <FlatButton
+                    backgroundColor={ this.props.muiTheme.palette.darkButtonColor }
+                    hoverColor={ this.props.muiTheme.palette.darkButtonColorHover }
+                    label={ this.props.stepIndex === 2 ? 'Submit' : 'Next' }
+                    onTouchTap={ this.props.stepIndex === 2 ?
+                      this.props.submit
+                      :
+                      this.props.handleNext
+                    }
+                    style={ {
+                      color: this.props.muiTheme.palette.offWhite,
+                    } }
+                  />
+                }
+              </div>
             </div>
-          </div>
-        </Scrollbars>
+          </Scrollbars>
+        }
+        {
+          this.props.viewComparison &&
+          <Comparison
+            comparisonState={ this.props.comparisonState }
+          />
+        }
         <Snackbar
           autoHideDuration={ this.props.snackbar.duration }
           message={ this.props.snackbar.message }
@@ -178,6 +189,7 @@ class NewAnalysis extends React.Component {
 }
 
 NewAnalysis.defaultProps = {
+  design: [],
   metric: [],
   readout: [],
 };
@@ -185,6 +197,12 @@ NewAnalysis.defaultProps = {
 NewAnalysis.propTypes = {
   addSamples: PropTypes.func.isRequired,
   applyFilters: PropTypes.func.isRequired,
+  comparisonState: PropTypes.shape({
+    didSubmitFail: PropTypes.bool,
+    isSubmitted: PropTypes.bool,
+    item: PropTypes.shape({}),
+    message: PropTypes.string,
+  }).isRequired,
   dateRange: PropTypes.shape({
     end: PropTypes.instanceOf(Date),
     fromEnd: PropTypes.instanceOf(Date),
@@ -193,6 +211,9 @@ NewAnalysis.propTypes = {
     toStart: PropTypes.instanceOf(Date),
     start: PropTypes.instanceOf(Date),
   }).isRequired,
+  design: PropTypes.arrayOf(
+    PropTypes.shape({}),
+  ),
   dialog: PropTypes.shape({
     close: PropTypes.func,
     defaultValue: PropTypes.oneOfType([
@@ -340,6 +361,7 @@ NewAnalysis.propTypes = {
   submit: PropTypes.func.isRequired,
   toggleTooltip: PropTypes.func.isRequired,
   updateDesign: PropTypes.func.isRequired,
+  viewComparison: PropTypes.bool.isRequired,
 };
 
 export default muiThemeable()(NewAnalysis);

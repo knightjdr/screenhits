@@ -35,9 +35,6 @@ class CreateExperiment extends React.Component {
   inputChangeConcentration = (e) => {
     this.props.inputChange('concentration', e.target.value);
   }
-  inputChangeDescription = (e) => {
-    this.props.inputChange('description', e.target.value);
-  }
   inputChangeName = (e) => {
     this.props.inputChange('name', e.target.value);
   }
@@ -69,17 +66,6 @@ class CreateExperiment extends React.Component {
             rowsMax={ 2 }
             style={ createStyle.input }
             value={ this.props.formData.name }
-          />
-          <TextField
-            errorText={ this.props.errors.description }
-            floatingLabelText="Experiment description"
-            fullWidth={ true }
-            multiLine={ true }
-            onChange={ this.inputChangeDescription }
-            rows={ 1 }
-            rowsMax={ 4 }
-            style={ createStyle.input }
-            value={ this.props.formData.description }
           />
           <div
             style={ Object.assign(
@@ -225,13 +211,11 @@ CreateExperiment.propTypes = {
     title: PropTypes.string,
   }).isRequired,
   errors: PropTypes.shape({
-    description: PropTypes.string,
     name: PropTypes.string,
   }).isRequired,
   formData: PropTypes.shape({
     comment: PropTypes.string,
     concentration: PropTypes.string,
-    description: PropTypes.string,
     name: PropTypes.string,
     protocols: PropTypes.arr,
     timepoint: PropTypes.string,

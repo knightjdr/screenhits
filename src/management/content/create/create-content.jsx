@@ -67,7 +67,7 @@ class CreateContent extends React.Component {
           { this.props.warning &&
             <div
               style={ {
-                margin: '10px 0px 10px 0px',
+                margin: '20px 0px 10px 0px',
               } }
             >
               <FontAwesome name="exclamation-triangle " /> There are errors in the form. Please correct before proceeding.

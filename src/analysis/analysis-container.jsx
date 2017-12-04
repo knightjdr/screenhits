@@ -7,7 +7,7 @@ import Analysis from './analysis';
 const possibleRoutes = [
   'archive',
   'design',
-  'visualization',
+  'search',
 ];
 
 class AnalysisContainer extends React.Component {

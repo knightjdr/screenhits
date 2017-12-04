@@ -85,29 +85,6 @@ class DisplayScreen extends React.Component {
                 ) }
               >
                 <span>
-                  Description:
-                </span>
-              </div>
-              <div
-                style={ displayStyle.elementValue }
-              >
-                { this.props.screen.description }
-              </div>
-            </div>
-            <div
-              style={ displayStyle.elementContainer }
-            >
-              <div
-                style={ Object.assign(
-                  {},
-                  displayStyle.elementKey,
-                  {
-                    backgroundColor: this.props.muiTheme.palette.keyColor,
-                    border: `1px solid ${this.props.muiTheme.palette.keyColorBorder}`,
-                  },
-                ) }
-              >
-                <span>
                   Screen type:
                 </span>
               </div>
@@ -329,17 +306,6 @@ class DisplayScreen extends React.Component {
               style={ displayStyle.input }
               value={ this.props.screen.name }
             />
-            <TextField
-              errorText={ this.props.errors.description }
-              floatingLabelText="Screen description"
-              fullWidth={ true }
-              multiLine={ true }
-              onChange={ (e) => { this.props.inputChange('description', e.target.value); } }
-              rows={ 1 }
-              rowsMax={ 2 }
-              style={ displayStyle.input }
-              value={ this.props.screen.description }
-            />
             <SelectField
               errorText={ this.props.errors.type }
               floatingLabelText="Screen type"
@@ -523,7 +489,6 @@ DisplayScreen.propTypes = {
   edit: PropTypes.bool.isRequired,
   errors: PropTypes.shape({
     cell: PropTypes.string,
-    description: PropTypes.string,
     name: PropTypes.string,
     other: PropTypes.shape({}),
     species: PropTypes.string,
@@ -538,7 +503,6 @@ DisplayScreen.propTypes = {
     condition: PropTypes.string,
     creatorEmail: PropTypes.string,
     creatorName: PropTypes.string,
-    description: PropTypes.string,
     name: PropTypes.string,
     other: PropTypes.shape({}),
     species: PropTypes.string,

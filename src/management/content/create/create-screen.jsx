@@ -1,3 +1,4 @@
+import AutoComplete from 'material-ui/AutoComplete';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import FontAwesome from 'react-fontawesome';
@@ -12,12 +13,14 @@ import TextField from 'material-ui/TextField';
 
 import createStyle from './create-style';
 import Fields from '../../../modules/fields';
-import SelectInput from './select-input/select-input-container';
 import SpeciesDataSource from '../../../assets/data/species';
 import CellsDataSource from '../../../assets/data/cells';
 import { uppercaseFirst } from '../../../helpers/helpers';
 
 class CreateScreen extends React.Component {
+  autoCompleteFilter = (searchText, key) => {
+    return key.toLowerCase().includes(searchText.toLowerCase());
+  }
   dialogClose = () => {
     return (
     [
@@ -29,17 +32,20 @@ class CreateScreen extends React.Component {
       />,
     ]);
   }
+  inputChangeCell = (value) => {
+    this.props.inputChange('cell', value);
+  }
   inputChangeComment = (e) => {
     this.props.inputChange('comment', e.target.value);
   }
   inputChangeCondition = (e) => {
     this.props.inputChange('condition', e.target.value);
   }
-  inputChangeDescription = (e) => {
-    this.props.inputChange('description', e.target.value);
-  }
   inputChangeName = (e) => {
     this.props.inputChange('name', e.target.value);
+  }
+  inputChangeSpecies = (value) => {
+    this.props.inputChange('species', value);
   }
   inputChangeType = (e, index, value) => {
     this.props.inputChange('type', value);
@@ -67,17 +73,6 @@ class CreateScreen extends React.Component {
             style={ createStyle.input }
             value={ this.props.formData.name }
           />
-          <TextField
-            errorText={ this.props.errors.description }
-            floatingLabelText="Screen description"
-            fullWidth={ true }
-            multiLine={ true }
-            onChange={ this.inputChangeDescription }
-            rows={ 1 }
-            rowsMax={ 5 }
-            style={ createStyle.input }
-            value={ this.props.formData.description }
-          />
           <SelectField
             errorText={ this.props.errors.type }
             floatingLabelText="Screen type"
@@ -100,26 +95,48 @@ class CreateScreen extends React.Component {
               );
             }) }
           </SelectField>
-          <SelectInput
-            dataSource={ SpeciesDataSource }
-            errorText={ this.props.errors.species }
-            inputChange={ this.props.inputChange }
-            inputWidth={ this.props.inputWidth }
-            labelText="Species"
-            options={ Fields.screen.species.values }
-            type="species"
-            value={ this.props.formData.species }
-          />
-          <SelectInput
-            dataSource={ CellsDataSource }
-            errorText={ this.props.errors.cell }
-            inputChange={ this.props.inputChange }
-            inputWidth={ this.props.inputWidth }
-            labelText="Cell type"
-            options={ Fields.screen.cell.values }
-            type="cell"
-            value={ this.props.formData.cell }
-          />
+          <div
+            style={ Object.assign(
+              {},
+              createStyle.input,
+              {
+                width: this.props.inputWidth,
+              },
+            ) }
+          >
+            <AutoComplete
+              dataSource={ SpeciesDataSource }
+              errorText={ this.props.errors.species }
+              filter={ this.autoCompleteFilter }
+              floatingLabelText="Species"
+              fullWidth={ true }
+              maxSearchResults={ 15 }
+              multiLine={ false }
+              onUpdateInput={ this.inputChangeSpecies }
+              searchText={ this.props.formData.species }
+            />
+          </div>
+          <div
+            style={ Object.assign(
+              {},
+              createStyle.input,
+              {
+                width: this.props.inputWidth,
+              },
+            ) }
+          >
+            <AutoComplete
+              dataSource={ CellsDataSource }
+              errorText={ this.props.errors.cell }
+              filter={ this.autoCompleteFilter }
+              floatingLabelText="Cell type"
+              fullWidth={ true }
+              maxSearchResults={ 15 }
+              multiLine={ false }
+              onUpdateInput={ this.inputChangeCell }
+              searchText={ this.props.formData.cell }
+            />
+          </div>
           <div
             style={ Object.assign(
               {},
@@ -228,7 +245,6 @@ CreateScreen.propTypes = {
   errors: PropTypes.shape({
     cell: PropTypes.string,
     condition: PropTypes.string,
-    description: PropTypes.string,
     name: PropTypes.string,
     other: PropTypes.shape({}),
     species: PropTypes.string,
@@ -238,7 +254,6 @@ CreateScreen.propTypes = {
     cell: PropTypes.string,
     comment: PropTypes.string,
     condition: PropTypes.string,
-    description: PropTypes.string,
     name: PropTypes.string,
     other: PropTypes.shape({}),
     species: PropTypes.string,
