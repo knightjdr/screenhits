@@ -3,10 +3,12 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
 
+import DefaultProps from '../../../../types/default-props';
 import DisplayExperiment from './display-experiment';
+import ValidateField from '../../../../modules/validate-field';
 import { getData } from '../../../../state/get/data-actions';
 import { objectEmpty } from '../../../../helpers/helpers';
-import ValidateField from '../../../../modules/validate-field';
+import { userProp } from '../../../../types/index';
 
 class DisplayExperimentContainer extends React.Component {
   constructor(props) {
@@ -25,7 +27,7 @@ class DisplayExperimentContainer extends React.Component {
     };
   }
   componentWillMount = () => {
-    this.props.protocolGet();
+    this.props.protocolGet(this.props.user);
   }
   componentWillReceiveProps = (nextProps) => {
     const { item } = nextProps;
@@ -122,6 +124,10 @@ class DisplayExperimentContainer extends React.Component {
   }
 }
 
+DisplayExperimentContainer.defaultProps = {
+  user: DefaultProps.user,
+};
+
 DisplayExperimentContainer.propTypes = {
   delete: PropTypes.func.isRequired,
   edit: PropTypes.bool.isRequired,
@@ -166,12 +172,13 @@ DisplayExperimentContainer.propTypes = {
   }).isRequired,
   updateErrors: PropTypes.func.isRequired,
   updateItem: PropTypes.func.isRequired,
+  user: userProp,
 };
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    protocolGet: () => {
-      dispatch(getData('protocol', {}));
+    protocolGet: (user) => {
+      dispatch(getData('protocol', {}, null, user));
     },
   };
 };
@@ -180,6 +187,7 @@ const mapStateToProps = (state) => {
   return {
     protocols: state.available.protocol,
     selectedIndices: state.selected,
+    user: state.user,
   };
 };
 

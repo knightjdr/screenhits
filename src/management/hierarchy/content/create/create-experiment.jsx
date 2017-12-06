@@ -9,14 +9,17 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import SelectField from 'material-ui/SelectField';
 import TextField from 'material-ui/TextField';
+import { connect } from 'react-redux';
 
 import createStyle from './create-style';
+import DefaultProps from '../../../../types/default-props';
 import Fields from '../../../../modules/fields';
 import { customSort } from '../../../../helpers/helpers';
+import { userProp } from '../../../../types/index';
 
 class CreateExperiment extends React.Component {
   componentWillMount = () => {
-    this.props.protocolGet();
+    this.props.protocolGet(this.props.user);
   }
   dialogClose = () => {
     return (
@@ -202,6 +205,10 @@ class CreateExperiment extends React.Component {
   }
 }
 
+CreateExperiment.defaultProps = {
+  user: DefaultProps.user,
+};
+
 CreateExperiment.propTypes = {
   dialog: PropTypes.shape({
     close: PropTypes.func,
@@ -238,6 +245,17 @@ CreateExperiment.propTypes = {
     ),
     message: PropTypes.string,
   }).isRequired,
+  user: userProp,
 };
 
-export default muiThemeable()(CreateExperiment);
+const mapStateToProps = (state) => {
+  return {
+    user: state.user,
+  };
+};
+
+const Container = connect(
+  mapStateToProps,
+)(CreateExperiment);
+
+export default muiThemeable()(Container);

@@ -42,12 +42,13 @@ export function pushData(obj, target) {
 }
 
 // thunks
-const getData = (target, filters, selected) => {
+const getData = (target, filters, selected, user) => {
   return (dispatch) => {
     dispatch(isFilling(target));
     const headers = new Headers();
     headers.append('Accept', 'application/json');
-    headers.append('Auth', 'James Knight:knightjdr@gmail.com:Gingras:auth_token');
+    headers.append('Auth', `${user.name}:${user.email}:${user.lab}:${user.token}`);
+    headers.append('Content-Type', 'application/json');
     let url = `http://localhost:8003/management?target=${target}`;
     if (!objectEmpty(filters)) {
       url = `${url}&filters=${JSON.stringify(filters)}`;
@@ -84,7 +85,7 @@ const getData = (target, filters, selected) => {
   };
 };
 
-const getRouteData = (selected) => {
+const getRouteData = (selected, user) => {
   return (dispatch) => {
     Object.keys(selected).forEach((target) => {
       if (target) {
@@ -93,7 +94,8 @@ const getRouteData = (selected) => {
     });
     const headers = new Headers();
     headers.append('Accept', 'application/json');
-    headers.append('Auth', 'James Knight:knightjdr@gmail.com:Gingras:auth_token');
+    headers.append('Auth', `${user.name}:${user.email}:${user.lab}:${user.token}`);
+    headers.append('Content-Type', 'application/json');
     let url = 'http://localhost:8003/loadRoute?target=management';
     if (!objectEmpty(selected)) {
       url = `${url}&selected=${JSON.stringify(selected)}`;

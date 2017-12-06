@@ -2,6 +2,7 @@ const auth = require('./modules/auth/validate');
 const analysis = require('./modules/analysis/analysis');
 const analysisAvailable = require('./modules/analysis/analysis-available');
 const available = require('./modules/available/available');
+const availableList = require('./modules/available/available-list');
 const comparison = require('./modules/comparison/comparison');
 const create = require('./modules/create/create');
 const deleteQuery = require('./modules/delete/delete');
@@ -66,6 +67,14 @@ const routes = {
     // returns available projects, screens, etc, based on user
     app.get('/loadRoute', auth.validate, (req, res) => {
       loadRoute.get(req.query.target, req.email, req.lab, req.query.selected)
+        .then((response) => {
+          routes.response(res, response);
+        })
+      ;
+    });
+    // returns available projects, screens, etc, based on user
+    app.get('/management/list', auth.validate, (req, res) => {
+      availableList.get(req.query.target, req.email)
         .then((response) => {
           routes.response(res, response);
         })

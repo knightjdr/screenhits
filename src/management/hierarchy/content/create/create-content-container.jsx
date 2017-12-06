@@ -4,13 +4,15 @@ import React from 'react';
 
 import BlankState from '../../../../modules/blank-state';
 import CreateContent from './create-content';
+import DefaultProps from '../../../../types/default-props';
 import Fields from '../../../../modules/fields';
 import FormSubmission from '../../../../modules/form-submission';
+import ValidateField from '../../../../modules/validate-field';
 import { getData } from '../../../../state/get/data-actions';
 import { objectEmpty } from '../../../../helpers/helpers';
 import { resetPost, submitPost } from '../../../../state/post/actions';
 import { setIndex } from '../../../../state/set/index-actions';
-import ValidateField from '../../../../modules/validate-field';
+import { userProp } from '../../../../types/index';
 
 class CreateContentContainer extends React.Component {
   constructor(props) {
@@ -157,7 +159,7 @@ class CreateContentContainer extends React.Component {
         this.props.user,
         this.props.selected,
       );
-      this.props.create(this.props.activeLevel, submitObj);
+      this.props.create(this.props.activeLevel, submitObj, this.props.user);
     }
   }
   render() {
@@ -194,11 +196,7 @@ CreateContentContainer.defaultProps = {
     isSubmitted: false,
     message: null,
   },
-  user: {
-    email: null,
-    lab: null,
-    name: null,
-  },
+  user: DefaultProps.user,
 };
 
 CreateContentContainer.propTypes = {
@@ -229,20 +227,16 @@ CreateContentContainer.propTypes = {
     screen: PropTypes.number,
   }).isRequired,
   setIndex: PropTypes.func.isRequired,
-  user: PropTypes.shape({
-    email: PropTypes.string,
-    lab: PropTypes.string,
-    name: PropTypes.string,
-  }),
+  user: userProp,
 };
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    create: (activeLevel, obj) => {
-      dispatch(submitPost(activeLevel, obj));
+    create: (activeLevel, obj, user) => {
+      dispatch(submitPost(activeLevel, obj, false, user));
     },
-    protocolGet: () => {
-      dispatch(getData('protocol', {}));
+    protocolGet: (user) => {
+      dispatch(getData('protocol', {}, null, user));
     },
     reset: (activeLevel) => {
       dispatch(resetPost(activeLevel));

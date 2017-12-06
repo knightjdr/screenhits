@@ -2,11 +2,13 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import React from 'react';
 
+import DefaultProps from '../../../../types/default-props';
 import ProtocolContent from './protocol-content';
 import { getData } from '../../../../state/get/data-actions';
 import { resetPost, submitPost } from '../../../../state/post/actions';
 import { resetPut, submitPut } from '../../../../state/put/actions';
 import { resetDelete, submitDelete } from '../../../../state/delete/actions';
+import { userProp } from '../../../../types/index';
 
 const defaultErrors = {
   protocolName: '',
@@ -42,7 +44,7 @@ class ProtocolContentContainer extends React.Component {
     this.state = JSON.parse(JSON.stringify(defaultState));
   }
   componentWillMount = () => {
-    this.props.protocolGet();
+    this.props.protocolGet(this.props.user);
   }
   componentWillReceiveProps = (nextProps) => {
     const { deleteState, postState, protocols, putState } = nextProps;
@@ -211,13 +213,13 @@ class ProtocolContentContainer extends React.Component {
         target: 'protocol',
       };
       this.resetMessages();
-      this.props.createProtocol(protocolObj);
+      this.props.createProtocol(protocolObj, this.props.user);
     }
   }
   deleteProtocol = (_id) => {
     this.dialogClose();
     this.resetMessages();
-    this.props.delete(_id, {});
+    this.props.delete(_id, this.props.user);
   }
   dialogClose = () => {
     this.setState({
@@ -325,6 +327,7 @@ class ProtocolContentContainer extends React.Component {
     this.props.update(
       this.state.editProtocol._id,
       this.state.editProtocol,
+      this.props.user
     );
   }
   render() {
@@ -376,12 +379,7 @@ class ProtocolContentContainer extends React.Component {
 }
 
 ProtocolContentContainer.defaultProps = {
-  user: {
-    email: null,
-    lab: null,
-    name: null,
-    token: null,
-  },
+  user: DefaultProps.user,
 };
 
 ProtocolContentContainer.propTypes = {
@@ -420,24 +418,19 @@ ProtocolContentContainer.propTypes = {
   resetPost: PropTypes.func.isRequired,
   resetPut: PropTypes.func.isRequired,
   update: PropTypes.func.isRequired,
-  user: PropTypes.shape({
-    email: PropTypes.string,
-    lab: PropTypes.string,
-    name: PropTypes.string,
-    token: PropTypes.string,
-  }),
+  user: userProp,
 };
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    createProtocol: (obj) => {
-      dispatch(submitPost('protocol', obj));
+    createProtocol: (obj, user) => {
+      dispatch(submitPost('protocol', obj, false, user));
     },
-    delete: (_id) => {
-      dispatch(submitDelete(_id, 'protocol', {}));
+    delete: (_id, user) => {
+      dispatch(submitDelete(_id, 'protocol', {}, user));
     },
-    protocolGet: () => {
-      dispatch(getData('protocol', {}));
+    protocolGet: (user) => {
+      dispatch(getData('protocol', {}, null, user));
     },
     resetPut: () => {
       dispatch(resetPut('protocol'));
@@ -448,8 +441,8 @@ const mapDispatchToProps = (dispatch) => {
     resetPost: () => {
       dispatch(resetPost('protocol'));
     },
-    update: (_id, obj) => {
-      dispatch(submitPut(_id, obj, 'protocol'));
+    update: (_id, obj, user) => {
+      dispatch(submitPut(_id, obj, 'protocol', user));
     },
   };
 };

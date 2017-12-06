@@ -99,7 +99,7 @@ class ArchiveContainer extends React.Component {
     });
   }
   filterTasks = (tasks, filters) => {
-    const filteredTasks = tasks.filter((task) => {
+    return tasks.filter((task) => {
       const userRE = new RegExp(filters.user);
       if (
         filters.user &&
@@ -119,7 +119,6 @@ class ArchiveContainer extends React.Component {
       }
       return true;
     });
-    return filteredTasks;
   }
   filterUser = (e) => {
     const user = e.target.value;

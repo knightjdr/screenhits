@@ -24,6 +24,7 @@ import AnalysisOptions from '../../../modules/analysis-new';
 import ArchiveStyle from '../archive-style';
 import CustomTable from '../../../table/table-container';
 import Fields from '../../../modules/fields';
+import Filter from '../../../filter/filter';
 import Tooltip from '../../../tooltip/tooltip-container';
 
 const designDialogContainerStyle = {
@@ -286,53 +287,6 @@ class TaskList extends React.Component {
       />,
     ]);
   }
-  filterDialogContent = (filters, funcs) => {
-    return (
-      <div
-        style={ {
-          display: 'flex',
-          flexWrap: 'wrap',
-          padding: '10px 0',
-        } }
-      >
-        <TextField
-          hintText="User name"
-          floatingLabelText="User name"
-          onChange={ funcs.user }
-          style={ ArchiveStyle.filterField }
-          type="text"
-          value={ filters.user }
-        />
-        <SelectField
-          floatingLabelText="Screen type"
-          listStyle={ ArchiveStyle.selectList }
-          onChange={ funcs.screenType }
-          style={ ArchiveStyle.filterField }
-          value={ filters.screenType }
-        >
-          {
-            this.screenTypeOptions(Fields.screen.type.values, filters.screenType)
-          }
-        </SelectField>
-        <SelectField
-          disabled={ !filters.screenType }
-          floatingLabelText="Analysis type"
-          listStyle={ ArchiveStyle.selectList }
-          onChange={ funcs.analysisType }
-          style={ ArchiveStyle.filterField }
-          value={ filters.analysisType }
-        >
-          {
-            filters.screenType &&
-            this.screenTypeOptions(
-              AnalysisOptions[filters.screenType].options,
-              filters.analysisType
-            )
-          }
-        </SelectField>
-      </div>
-    );
-  }
   list = (headers, tasks) => {
     const tableList = tasks.map((task, index) => {
       const columns = headers.map((header) => {
@@ -469,6 +423,51 @@ class TaskList extends React.Component {
     return options;
   }
   render() {
+    const filterDialogContent = (
+      <div
+        style={ {
+          display: 'flex',
+          flexWrap: 'wrap',
+          padding: '10px 0',
+        } }
+      >
+        <TextField
+          hintText="User name"
+          floatingLabelText="User name"
+          onChange={ this.props.filterFuncs.user }
+          style={ ArchiveStyle.filterField }
+          type="text"
+          value={ this.props.filters.user }
+        />
+        <SelectField
+          floatingLabelText="Screen type"
+          listStyle={ ArchiveStyle.selectList }
+          onChange={ this.props.filterFuncs.screenType }
+          style={ ArchiveStyle.filterField }
+          value={ this.props.filters.screenType }
+        >
+          {
+            this.screenTypeOptions(Fields.screen.type.values, this.props.filters.screenType)
+          }
+        </SelectField>
+        <SelectField
+          disabled={ !this.props.filters.screenType }
+          floatingLabelText="Analysis type"
+          listStyle={ ArchiveStyle.selectList }
+          onChange={ this.props.filterFuncs.analysisType }
+          style={ ArchiveStyle.filterField }
+          value={ this.props.filters.analysisType }
+        >
+          {
+            this.props.filters.screenType &&
+            this.screenTypeOptions(
+              AnalysisOptions[this.props.filters.screenType].options,
+              this.props.filters.analysisType
+            )
+          }
+        </SelectField>
+      </div>
+    );
     return (
       <div>
         {
@@ -502,17 +501,13 @@ class TaskList extends React.Component {
               >
                 <RefreshIcon />
               </FloatingActionButton>
-              <FloatingActionButton
-                data-tip={ true }
-                data-for={ 'fab-filter-tasks' }
-                mini={ true }
-                onTouchTap={ this.props.filterDialog.showFunc }
-                style={ {
-                  marginLeft: 10,
-                } }
-              >
-                <FontAwesome name="filter" />
-              </FloatingActionButton>
+              <Filter
+                applyFilters={ this.props.applyFilters }
+                clearFilters={ this.props.clearFilters }
+                dialogState={ this.props.filterDialog }
+                filterBody={ filterDialogContent }
+                style={ { marginLeft: 10 } }
+              />
             </div>
             {
               this.props.tasks.length <= 0 &&
@@ -544,14 +539,6 @@ class TaskList extends React.Component {
             >
               Refresh task status
             </ReactTooltip>
-            <ReactTooltip
-              effect="solid"
-              id="fab-filter-tasks"
-              place="right"
-              type="dark"
-            >
-              View filters
-            </ReactTooltip>
           </div>
         }
         <Dialog
@@ -578,27 +565,6 @@ class TaskList extends React.Component {
               this.props.designDialog.params
             ) }
           </Scrollbars>
-        </Dialog>
-        <Dialog
-          actions={ [
-            this.applyFilters(),
-            this.clearFilters(),
-            this.dialogClose(this.props.filterDialog.hideFunc),
-          ] }
-          autoScrollBodyContent={ true }
-          open={ this.props.filterDialog.show }
-          onRequestClose={ this.props.filterDialog.hideFunc }
-          title="Filters"
-          titleStyle={ {
-            borderBottom: 'none',
-          } }
-        >
-          {
-            this.filterDialogContent(
-              this.props.filters,
-              this.props.filterFuncs,
-            )
-          }
         </Dialog>
         <Dialog
           actions={ [

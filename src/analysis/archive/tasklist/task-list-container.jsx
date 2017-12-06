@@ -115,7 +115,7 @@ class TaskListContainer extends React.Component {
     window.removeEventListener('resize', this.resize);
   }
   getHeight = (table) => {
-    // 245 = 185 to top of table, 20 for bottom padding, 50 for footer
+    // 255 = 185 to top of table, 20 for bottom padding, 50 for footer
     const maxHeightRows = window.innerHeight - 255;
     const neededHeightRows = (table.length * 50);
     let rowHeight = neededHeightRows < maxHeightRows ? neededHeightRows : maxHeightRows;

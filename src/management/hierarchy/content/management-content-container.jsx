@@ -3,10 +3,12 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
 
+import DefaultProps from '../../../types/default-props';
 import ManagementContent from './management-content';
 import { getData } from '../../../state/get/data-actions';
 import { resetPost } from '../../../state/post/actions';
 import { resetPut } from '../../../state/put/actions';
+import { userProp } from '../../../types/index';
 
 const resetBooleans = {
   create: false,
@@ -130,7 +132,7 @@ class ManagementContentContainer extends React.Component {
         filters = {};
         break;
     }
-    this.props.getData(filters);
+    this.props.getData(filters, this.props.user);
   }
   render() {
     return (
@@ -163,6 +165,7 @@ class ManagementContentContainer extends React.Component {
 
 ManagementContentContainer.defaultProps = {
   selected: null,
+  user: DefaultProps.user,
 };
 
 ManagementContentContainer.propTypes = {
@@ -206,12 +209,13 @@ ManagementContentContainer.propTypes = {
     sample: PropTypes.number,
     screen: PropTypes.number,
   }),
+  user: userProp,
 };
 
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
-    getData: (filters) => {
-      dispatch(getData(ownProps.activeLevel, filters));
+    getData: (filters, user) => {
+      dispatch(getData(ownProps.activeLevel, filters, null, user));
     },
     resetPost: () => {
       dispatch(resetPost(ownProps.activeLevel));
@@ -225,6 +229,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
 const mapStateToProps = (state) => {
   return {
     available: state.available,
+    user: state.user,
   };
 };
 

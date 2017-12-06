@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 
 import BlankState from '../../../../modules/blank-state';
 import CreateSample from './create-sample';
+import DefaultProps from '../../../../types/default-props';
 import fileReader from '../../../../helpers/file-reader';
 import FileTypes from '../../../../modules/file-parser';
 import FormSubmission from '../../../../modules/form-submission';
@@ -12,6 +13,7 @@ import stringParser from '../../../../helpers/string-parser';
 import ValidateField from '../../../../modules/validate-field';
 import { objectEmpty } from '../../../../helpers/helpers';
 import { resetPost, submitPost } from '../../../../state/post/actions';
+import { userProp } from '../../../../types/index';
 
 const reset = {
   cancelButton: {
@@ -393,7 +395,7 @@ class CreateSampleContainer extends React.Component {
         this.state.screenType,
         this.state.fileParser.firstLine,
       );
-      this.props.create('sample', submitObj, true);
+      this.props.create('sample', submitObj, true, this.props.user);
       this.setState({
         cancelButton: {
           label: 'Close',
@@ -550,11 +552,7 @@ CreateSampleContainer.defaultProps = {
     isSubmitted: false,
     message: null,
   },
-  user: {
-    email: null,
-    lab: null,
-    name: null,
-  },
+  user: DefaultProps.user,
 };
 
 CreateSampleContainer.propTypes = {
@@ -584,17 +582,13 @@ CreateSampleContainer.propTypes = {
     sample: PropTypes.number,
     screen: PropTypes.number,
   }).isRequired,
-  user: PropTypes.shape({
-    email: PropTypes.string,
-    lab: PropTypes.string,
-    name: PropTypes.string,
-  }),
+  user: userProp,
 };
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    create: (activeLevel, obj, isFormData) => {
-      dispatch(submitPost(activeLevel, obj, isFormData));
+    create: (activeLevel, obj, isFormData, user) => {
+      dispatch(submitPost(activeLevel, obj, isFormData, user));
     },
     resetPost: () => {
       dispatch(resetPost('sample'));

@@ -3,11 +3,13 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { browserHistory } from 'react-router';
 
+import DefaultProps from '../../types/default-props';
 import Management from './management';
 import { getData, getRouteData } from '../../state/get/data-actions';
 import { isObjectLooseEqual, objectEmpty } from '../../helpers/helpers';
 import { routeLoaded } from '../../state/routing/routeload-actions';
 import { resetIndices, setIndex } from '../../state/set/index-actions';
+import { userProp } from '../../types/index';
 
 class ManagementContainer extends React.Component {
   constructor(props) {
@@ -22,7 +24,7 @@ class ManagementContainer extends React.Component {
     if (!objectEmpty(this.props.queryParams)) {
       this.fillProjectState(this.props.queryParams);
     } else {
-      this.props.getData('project', {});
+      this.props.getData('project', {}, null, this.props.user);
       this.props.routeLoaded();
     }
   }
@@ -63,60 +65,8 @@ class ManagementContainer extends React.Component {
   changeView = () => {
     browserHistory.replace('/management/list/project');
   }
-  /* checkRoute = (params, path) => {
-    const routeParams = {};
-    let newPath;
-    if (
-      params.view === 'list' &&
-      availableLevels.includes(params.level) &&
-      !isNaN(params.id)
-    ) {
-      routeParams.id = Number(params.id);
-      routeParams.level = params.level;
-      routeParams.view = 'list';
-      newPath = `management/list/${params.level}/${params.id}`;
-    } else if (
-      params.view === 'list' &&
-      availableLevels.includes(params.level)
-    ) {
-      routeParams.id = null;
-      routeParams.level = params.level;
-      routeParams.view = 'list';
-      newPath = `management/list/${params.level}`;
-    } else if (
-      params.view === 'list' &&
-      (
-        !params.level ||
-        !availableLevels.includes(params.level)
-      )
-    ) {
-      routeParams.id = null;
-      routeParams.level = 'project';
-      routeParams.view = 'list';
-      newPath = 'management/list/project';
-    } if (
-      params.view === 'list' &&
-      availableLevels.includes(params.level) &&
-      !isNaN(params.id)
-    ) {
-      routeParams.id = Number(params.id);
-      routeParams.level = params.level;
-      routeParams.view = 'list';
-      newPath = path;
-    } else {
-      routeParams.id = null;
-      routeParams.level = 'project';
-      routeParams.view = 'hierachy';
-      newPath = 'management/hierarchy';
-    }
-    if (newPath !== path) {
-      browserHistory.replace(newPath);
-    }
-    console.log(params, routeParams, path, newPath);
-    return routeParams;
-  } */
   fillProjectState = (selected) => {
-    this.props.getRouteData(selected);
+    this.props.getRouteData(selected, this.props.user);
     this.setState({
       activeLevel: this.findActiveLevel(selected),
     });
@@ -164,7 +114,7 @@ class ManagementContainer extends React.Component {
         const filters = {
           project: selected.project,
         };
-        this.props.getData('screen', filters);
+        this.props.getData('screen', filters, null, this.props.user);
         this.props.setIndex('project', selected.project);
       }
     }
@@ -187,7 +137,7 @@ class ManagementContainer extends React.Component {
           project: selected.project,
           screen: selected.screen,
         };
-        this.props.getData('experiment', filters);
+        this.props.getData('experiment', filters, null, this.props.user);
         this.props.setIndex('screen', selected.screen);
       }
     }
@@ -212,7 +162,7 @@ class ManagementContainer extends React.Component {
           project: selected.project,
           screen: selected.screen,
         };
-        this.props.getData('sample', filters);
+        this.props.getData('sample', filters, null, this.props.user);
         this.props.setIndex('experiment', selected.experiment);
       }
     }
@@ -269,6 +219,10 @@ class ManagementContainer extends React.Component {
   }
 }
 
+ManagementContainer.defaultProps = {
+  user: DefaultProps.user,
+};
+
 ManagementContainer.propTypes = {
   available: PropTypes.shape({
     experiment: PropTypes.shape({
@@ -323,15 +277,16 @@ ManagementContainer.propTypes = {
     screen: PropTypes.number,
   }).isRequired,
   setIndex: PropTypes.func.isRequired,
+  user: userProp,
 };
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    getData: (type, filters, selected) => {
-      dispatch(getData(type, filters, selected));
+    getData: (type, filters, selected, user) => {
+      dispatch(getData(type, filters, selected, user));
     },
-    getRouteData: (selected) => {
-      dispatch(getRouteData(selected));
+    getRouteData: (selected, user) => {
+      dispatch(getRouteData(selected, user));
     },
     resetIndices: () => {
       dispatch(resetIndices());
@@ -357,6 +312,7 @@ const mapStateToProps = (state, ownProps) => {
     path,
     queryParams,
     selected: state.selected,
+    user: state.user,
   };
 };
 

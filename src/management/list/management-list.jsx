@@ -8,6 +8,14 @@ import PropTypes from 'prop-types';
 import RaisedButton from 'material-ui/RaisedButton';
 import React from 'react';
 import ReactTooltip from 'react-tooltip';
+import TextField from 'material-ui/TextField';
+import { CSSTransitionGroup } from 'react-transition-group';
+
+import CustomTable from '../../table/table-container';
+import Filter from '../../filter/filter';
+
+import ListStyle from './management-list-style';
+import './list-view.scss';
 
 class ManagementList extends React.Component {
   changeExperimentLevel = () => {
@@ -22,14 +30,49 @@ class ManagementList extends React.Component {
   changeScreenLevel = () => {
     this.props.changeLevel('screen');
   }
+  list = (headers, items) => {
+    const tableList = items.map((item, index) => {
+      const columns = headers.map((header) => {
+        return {
+          type: header.type,
+          value: item[header.type] || '-',
+        };
+      });
+      return {
+        key: `itemList-${index}`,
+        columns,
+      };
+    });
+    return tableList;
+  }
   render() {
+    const filters = this.props.filters;
+    const funcs = this.props.filterFuncs;
+    const filterDialogContent = (
+      <div
+        style={ {
+          display: 'flex',
+          flexWrap: 'wrap',
+          padding: '10px 0',
+        } }
+      >
+        <TextField
+          hintText="User name"
+          floatingLabelText="User name"
+          onChange={ funcs.user }
+          style={ ListStyle.filterField }
+          type="text"
+          value={ filters.user }
+        />
+      </div>
+    );
     return (
       <div
         style={ {
           display: 'flex',
           flexFlow: 'column',
           height: 'calc(100vh - 70px)',
-          padding: '5px 2px 5px 2px',
+          padding: '5px 2px',
           position: 'relative',
         } }
       >
@@ -55,10 +98,15 @@ class ManagementList extends React.Component {
               width: 50,
             } }
           />
-          <ReactTooltip id="viewType" effect="solid" type="dark" place="right">
-            <span>Toggle view</span>
+          <ReactTooltip
+            id="viewType"
+            effect="solid"
+            type="dark"
+            place="right"
+          >
+            Toggle view
           </ReactTooltip>
-          <span
+          <div
             style={ {
               marginLeft: 2,
             } }
@@ -110,16 +158,60 @@ class ManagementList extends React.Component {
                 />
               </Menu>
             </Popover>
-          </span>
+          </div>
+          <Filter
+            applyFilters={ this.props.applyFilters }
+            clearFilters={ this.props.clearFilters }
+            dialogState={ this.props.filterDialogState }
+            filterBody={ filterDialogContent }
+            style={ { marginLeft: 'auto' } }
+          />
         </div>
         <div
           style={ {
-            display: 'flex',
-            flex: '1 1 auto',
-            paddingTop: 5,
+            margin: '5px 10px',
+            position: 'relative',
           } }
         >
-          Content
+          <CSSTransitionGroup
+            transitionName="list-view"
+            transitionEnterTimeout={ 400 }
+            transitionLeave={ false }
+          >
+            {
+              this.props.listStatus.isFetching &&
+              <div
+                style={ ListStyle.listStatusStyle }
+              >
+                <FontAwesome key="fetching" name="spinner" pulse={ true } /> Fetching
+                { ` ${this.props.activeLevel}s` }...
+              </div>
+            }
+            {
+              this.props.listStatus.didInvalidate &&
+              <div
+                style={ ListStyle.listStatusStyle }
+              >
+                There was an error retrieving tasks: { this.props.listStatus.message }
+              </div>
+            }
+            {
+              !this.props.listStatus.isFetching &&
+              !this.props.listStatus.didInvalidate &&
+              <div
+                style={ ListStyle.listTableStyle }
+              >
+                <CustomTable
+                  data={ {
+                    header: this.props.header,
+                    list: this.list(this.props.header, this.props.items),
+                  } }
+                  footer={ false }
+                  height={ this.props.tableHeight }
+                />
+              </div>
+            }
+          </CSSTransitionGroup>
         </div>
       </div>
     );
@@ -134,9 +226,37 @@ ManagementList.propTypes = {
   activeLevel: PropTypes.string.isRequired,
   anchorEl: PropTypes.shape({
   }),
+  applyFilters: PropTypes.func.isRequired,
   changeLevel: PropTypes.func.isRequired,
   changeView: PropTypes.func.isRequired,
+  clearFilters: PropTypes.func.isRequired,
+  filterDialogState: PropTypes.shape({
+    hideFunc: PropTypes.func,
+    show: PropTypes.bool,
+    showFunc: PropTypes.func,
+  }).isRequired,
+  filterFuncs: PropTypes.shape({
+    user: PropTypes.func,
+  }).isRequired,
+  filters: PropTypes.shape({
+    user: PropTypes.string,
+  }).isRequired,
+  header: PropTypes.arrayOf(
+    PropTypes.shape({
+      name: PropTypes.string,
+      sortable: PropTypes.bool,
+      type: PropTypes.string,
+    }),
+  ).isRequired,
   hideList: PropTypes.func.isRequired,
+  items: PropTypes.arrayOf(
+    PropTypes.shape({}),
+  ).isRequired,
+  listStatus: PropTypes.shape({
+    didInvalidate: PropTypes.bool,
+    isFetching: PropTypes.bool,
+    message: PropTypes.string,
+  }).isRequired,
   muiTheme: PropTypes.shape({
     palette: PropTypes.shape({
       alternativeButtonColor: PropTypes.string,
@@ -147,6 +267,7 @@ ManagementList.propTypes = {
   }).isRequired,
   showList: PropTypes.func.isRequired,
   showListBoolean: PropTypes.bool.isRequired,
+  tableHeight: PropTypes.number.isRequired,
 };
 
 export default muiThemeable()(ManagementList);

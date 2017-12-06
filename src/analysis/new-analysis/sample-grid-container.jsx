@@ -312,6 +312,7 @@ class SampleGridContainer extends React.Component {
       newUnselectedSamples.sort((a, b) => { return a._id - b._id; });
       this.props.updateDesign(emptyDesign);
       return {
+        design: emptyDesign,
         gridDimensions: {
           cols: 1,
           rows: 3,

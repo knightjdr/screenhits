@@ -85,7 +85,7 @@ class ManagementMenu extends React.Component {
                 <MenuItem
                   key="manage"
                   onClick={ this.props.manageMenuAction }
-                  primaryText={ [<FontAwesome key="manage" name="user-plus" />, ' Manage ', this.props.activeLevel] }
+                  primaryText={ [<FontAwesome key="manage" name="user-plus" />, ' Manage users'] }
                 />
               }
               { this.props.activeLevel === 'experiment' &&

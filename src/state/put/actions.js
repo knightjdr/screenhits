@@ -40,12 +40,12 @@ export function successPut(_id, message, target) {
 }
 
 // thunks
-const submitPut = (_id, obj, target) => {
+const submitPut = (_id, obj, target, user) => {
   return (dispatch) => {
     dispatch(requestPut(_id, target));
     const headers = new Headers();
     headers.append('Accept', 'application/json');
-    headers.append('Auth', 'James Knight:knightjdr@gmail.com:Gingras:auth_token');
+    headers.append('Auth', `${user.name}:${user.email}:${user.lab}:${user.token}`);
     headers.append('Content-Type', 'application/json');
     const submitObj = Object.assign({}, obj);
     submitObj.target = target;
@@ -62,7 +62,7 @@ const submitPut = (_id, obj, target) => {
     .then((json) => {
       if (json.status === 200) {
         dispatch(successPut(_id, json.message, target));
-        dispatch(getData(target, obj.group ? obj.group : {}));
+        dispatch(getData(target, obj.group ? obj.group : {}, null, user));
       } else {
         const error = `Status code: ${json.status}; ${json.message}`;
         dispatch(failPut(_id, error, target));

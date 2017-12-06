@@ -10,6 +10,7 @@ export const userProp = shape({
   email: string,
   lab: string,
   name: string,
+  token: string,
 });
 
 export const viewTaskProp = shape({

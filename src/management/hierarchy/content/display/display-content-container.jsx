@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
 
+import DefaultProps from '../../../../types/default-props';
 import DisplayContent from './display-content';
 import Format from './format-edit';
 import ValidateField from '../../../../modules/validate-field';
@@ -10,6 +11,7 @@ import { setIndex } from '../../../../state/set/index-actions';
 import { resetDelete, submitDelete } from '../../../../state/delete/actions';
 import { resetPost } from '../../../../state/post/actions';
 import { resetPut, submitPut } from '../../../../state/put/actions';
+import { userProp } from '../../../../types/index';
 
 class DisplayContentContainer extends React.Component {
   constructor(props) {
@@ -86,7 +88,7 @@ class DisplayContentContainer extends React.Component {
   }
   delete = (_id, type, group) => {
     this.resetMessages();
-    this.props.delete(_id, type, group);
+    this.props.delete(_id, type, group, this.props.user);
   }
   reset = () => {
     this.resetMessages();
@@ -148,7 +150,12 @@ class DisplayContentContainer extends React.Component {
     if (error) {
       this.setState({ errors, warning: true });
     } else {
-      this.props.update(this.props.item._id, this.state.updateItem, this.props.activeLevel);
+      this.props.update(
+        this.props.item._id,
+        this.state.updateItem,
+        this.props.activeLevel,
+        this.props.user
+      );
     }
   }
   updateErrors = (errorObject, warning) => {
@@ -180,6 +187,10 @@ class DisplayContentContainer extends React.Component {
     );
   }
 }
+
+DisplayContentContainer.defaultProps = {
+  user: DefaultProps.user,
+};
 
 DisplayContentContainer.propTypes = {
   activeLevel: PropTypes.string.isRequired,
@@ -301,6 +312,7 @@ DisplayContentContainer.propTypes = {
   resetPut: PropTypes.func.isRequired,
   selected: PropTypes.number.isRequired,
   update: PropTypes.func.isRequired,
+  user: userProp,
 };
 
 const mapDispatchToProps = (dispatch) => {
@@ -308,8 +320,8 @@ const mapDispatchToProps = (dispatch) => {
     changeSelected: (activeLevel, selected) => {
       dispatch(setIndex(activeLevel, selected));
     },
-    delete: (_id, activeLevel, obj) => {
-      dispatch(submitDelete(_id, activeLevel, obj));
+    delete: (_id, activeLevel, obj, user) => {
+      dispatch(submitDelete(_id, activeLevel, obj, user));
     },
     resetPost: (activeLevel) => {
       dispatch(resetPost(activeLevel));
@@ -320,8 +332,8 @@ const mapDispatchToProps = (dispatch) => {
     resetDelete: (activeLevel) => {
       dispatch(resetDelete(activeLevel));
     },
-    update: (_id, obj, activeLevel) => {
-      dispatch(submitPut(_id, obj, activeLevel));
+    update: (_id, obj, activeLevel, user) => {
+      dispatch(submitPut(_id, obj, activeLevel, user));
     },
   };
 };
@@ -331,6 +343,7 @@ const mapStateToProps = (state) => {
     deleteState: state.delete,
     postState: state.post,
     putState: state.put,
+    user: state.user,
   };
 };
 

@@ -1,0 +1,14 @@
+.list-view-enter {
+  opacity: 0.01;
+}
+.list-view-enter.list-view-enter-active {
+  opacity: 1;
+  transition: opacity 400ms ease-in;
+}
+.list-view-leave {
+  opacity: 1;
+}
+.list-view-leave.list-view-leave-active {
+  opacity: 0.01;
+  transition: opacity 200ms ease-in;
+}
