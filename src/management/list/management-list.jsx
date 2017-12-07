@@ -1,5 +1,6 @@
 import DatePicker from 'material-ui/DatePicker';
 import FlatButton from 'material-ui/FlatButton';
+import FloatingActionButton from 'material-ui/FloatingActionButton';
 import FontAwesome from 'react-fontawesome';
 import Menu from 'material-ui/Menu';
 import MenuItem from 'material-ui/MenuItem';
@@ -9,10 +10,12 @@ import PropTypes from 'prop-types';
 import RaisedButton from 'material-ui/RaisedButton';
 import React from 'react';
 import ReactTooltip from 'react-tooltip';
+import RefreshIcon from 'material-ui/svg-icons/navigation/refresh';
 import SelectField from 'material-ui/SelectField';
 import TextField from 'material-ui/TextField';
 import { CSSTransitionGroup } from 'react-transition-group';
 
+import ActionMenu from '../menu/action-menu-container';
 import CustomTable from '../../table/table-container';
 import Filter from '../../filter/filter';
 import FilterFields from './filter-content';
@@ -128,8 +131,9 @@ class ManagementList extends React.Component {
         style={ {
           display: 'flex',
           flexFlow: 'column',
-          height: 'calc(100vh - 70px)',
-          padding: '5px 2px',
+          height: 'calc(100vh - 75px)',
+          margin: '0 2px',
+          padding: '5px 0',
           position: 'relative',
         } }
       >
@@ -216,16 +220,36 @@ class ManagementList extends React.Component {
               </Menu>
             </Popover>
           </div>
-          <Filter
-            applyFilters={ this.props.applyFilters }
-            clearFilters={ this.props.clearFilters }
-            dialogState={ this.props.filterDialogState }
-            filterBody={ this.filterDialogContent(
-              this.props.filters,
-              this.props.activeLevel
-            ) }
+          <div
             style={ { marginLeft: 'auto' } }
-          />
+          >
+            <FloatingActionButton
+              data-tip={ true }
+              data-for={ 'fab-refresh-level' }
+              mini={ true }
+              onTouchTap={ this.props.refreshLevel }
+            >
+              <RefreshIcon />
+            </FloatingActionButton>
+            <ReactTooltip
+              id="fab-refresh-level"
+              effect="solid"
+              type="dark"
+              place="left"
+            >
+              Refresh list
+            </ReactTooltip>
+            <Filter
+              applyFilters={ this.props.applyFilters }
+              clearFilters={ this.props.clearFilters }
+              dialogState={ this.props.filterDialogState }
+              filterBody={ this.filterDialogContent(
+                this.props.filters,
+                this.props.activeLevel
+              ) }
+              style={ { marginLeft: 5 } }
+            />
+          </div>
         </div>
         <div
           style={ {
@@ -239,6 +263,13 @@ class ManagementList extends React.Component {
             transitionLeave={ false }
           >
             {
+              this.props.itemID &&
+              <div>
+                view item
+              </div>
+            }
+            {
+              !this.props.itemID &&
               this.props.listStatus.isFetching &&
               <div
                 style={ ListStyle.listStatusStyle }
@@ -248,6 +279,7 @@ class ManagementList extends React.Component {
               </div>
             }
             {
+              !this.props.itemID &&
               this.props.listStatus.didInvalidate &&
               <div
                 style={ ListStyle.listStatusStyle }
@@ -256,6 +288,7 @@ class ManagementList extends React.Component {
               </div>
             }
             {
+              !this.props.itemID &&
               !this.props.listStatus.isFetching &&
               !this.props.listStatus.didInvalidate &&
               <div
@@ -284,6 +317,7 @@ class ManagementList extends React.Component {
             }
           </CSSTransitionGroup>
         </div>
+        <ActionMenu />
       </div>
     );
   }
@@ -291,6 +325,7 @@ class ManagementList extends React.Component {
 
 ManagementList.defaultProps = {
   anchorEl: {},
+  itemID: null,
 };
 
 ManagementList.propTypes = {
@@ -330,6 +365,7 @@ ManagementList.propTypes = {
     }),
   ).isRequired,
   hideList: PropTypes.func.isRequired,
+  itemID: PropTypes.number,
   items: PropTypes.arrayOf(
     PropTypes.shape({}),
   ).isRequired,
@@ -346,6 +382,7 @@ ManagementList.propTypes = {
       offWhite: PropTypes.string,
     }),
   }).isRequired,
+  refreshLevel: PropTypes.func.isRequired,
   showList: PropTypes.func.isRequired,
   showListBoolean: PropTypes.bool.isRequired,
   tableHeight: PropTypes.number.isRequired,

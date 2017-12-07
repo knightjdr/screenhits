@@ -39,7 +39,7 @@ class ManagementListContainer extends React.Component {
         user: this.props.user.name,
       },
       header: TableHeader[routeState.level],
-      id: routeState.id,
+      itemID: routeState.id,
       items,
       listStatus: {
         didInvalidate: false,
@@ -234,6 +234,9 @@ class ManagementListContainer extends React.Component {
       showList: false,
     });
   }
+  refreshLevel = () => {
+    this.props.getLevelData(this.state.activeLevel, this.props.user);
+  }
   resize = () => {
     this.setState(({ items }) => {
       return {
@@ -357,7 +360,9 @@ class ManagementListContainer extends React.Component {
         header={ this.state.header }
         hideList={ this.hideList }
         items={ this.state.items }
+        itemID={ this.state.itemID }
         listStatus={ this.state.listStatus }
+        refreshLevel={ this.refreshLevel }
         showList={ this.showList }
         showListBoolean={ this.state.showList }
         tableHeight={ this.state.tableHeight }

@@ -1,12 +1,12 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 
-import ActionMenu from './menu/action-menu-container';
+import ActionMenu from '../../menu/action-menu-container';
 import CreateContent from './create/create-content-container';
 import DisplayContent from './display/display-content-container';
 import ManageContent from './manage/manage-content-container';
 import ProtocolContent from './protocol/protocol-content-container';
-import ManagementMenu from './menu/management-menu-container';
+import ManagementMenu from '../../menu/management-menu-container';
 
 const introStyle = {
   fontFamily: 'Roboto',

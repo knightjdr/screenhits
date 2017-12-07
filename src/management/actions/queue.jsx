@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 
-import CustomTable from '../../../../table/table-container';
+import CustomTable from '../../table/table-container';
 
 class Queue extends React.Component {
   list = () => {
