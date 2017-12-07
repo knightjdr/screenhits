@@ -1,9 +1,11 @@
 import deepEqual from 'deep-equal';
+import Moment from 'moment';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { browserHistory } from 'react-router';
 import { connect } from 'react-redux';
 
+import FilterFields from './filter-content';
 import ManagementList from './management-list';
 import getLevelData from '../../state/get/level-actions';
 import TableHeader from './list-headers';
@@ -14,8 +16,6 @@ const availableLevels = [
   'sample',
   'screen',
 ];
-const defaultFilters = {
-};
 
 class ManagementListContainer extends React.Component {
   constructor(props) {
@@ -25,10 +25,13 @@ class ManagementListContainer extends React.Component {
       this.props.availableList[routeState.level].items,
       {
         user: this.props.user.name,
-      }
+      },
+      routeState.level
     );
+    const dateRange = this.getDateRange(items);
     this.state = {
       activeLevel: routeState.level,
+      dateRange,
       filterDialogState: {
         show: false,
       },
@@ -56,27 +59,12 @@ class ManagementListContainer extends React.Component {
   }
   componentWillReceiveProps = (nextProps) => {
     const { availableList } = nextProps;
+    // if select level items have changed, update state
     if (!deepEqual(
       availableList[this.state.activeLevel],
       this.props.availableList[this.state.activeLevel]
     )) {
-      this.setState(({ activeLevel, filters }) => {
-        const fullList = availableList[activeLevel].items;
-        const items = fullList.length > 0 ?
-          this.filterItems(fullList, filters)
-          :
-          []
-        ;
-        return {
-          items,
-          listStatus: {
-            didInvalidate: availableList[activeLevel].didInvalidate,
-            isFetching: availableList[activeLevel].isFetching,
-            message: availableList[activeLevel].message,
-          },
-          tableHeight: this.getHeight(items),
-        };
-      });
+      this.updateLevelFromProps(availableList[this.state.activeLevel]);
     }
   }
   componentWillUpdate = (nextProps, nextState) => {
@@ -87,6 +75,26 @@ class ManagementListContainer extends React.Component {
   };
   componentWillUnmount = () => {
     window.removeEventListener('resize', this.resize);
+  }
+  getDateRange = (items) => {
+    const maxDate = Moment(new Date()).format('x');
+    let minDate = maxDate;
+    items.forEach((item) => {
+      const itemDate = Moment(item.creationDate, 'MMMM Do YYYY, h:mm a').format('x');
+      if (itemDate < minDate) {
+        minDate = itemDate;
+      }
+    });
+    return {
+      end: {
+        max: Moment(maxDate, 'x').toDate(),
+        min: Moment(minDate, 'x').toDate(),
+      },
+      start: {
+        max: Moment(maxDate, 'x').toDate(),
+        min: Moment(minDate, 'x').toDate(),
+      },
+    };
   }
   getHeight = (table) => {
     // 240 = 170 to top of table, 20 for bottom padding, 50 for footer
@@ -123,7 +131,8 @@ class ManagementListContainer extends React.Component {
       return {
         items: this.filterItems(
           this.props.availableList[activeLevel].items,
-          filters
+          filters,
+          activeLevel
         ),
       };
     });
@@ -149,47 +158,68 @@ class ManagementListContainer extends React.Component {
     browserHistory.replace('/management/hierarchy');
   }
   clearFilters = () => {
-    const filters = Object.assign(
-      {},
-      defaultFilters,
-      {
-        user: '',
-      }
-    );
-    this.setState(({ activeLevel }) => {
+    this.setState(({ activeLevel, filters }) => {
+      const newFilters = Object.assign({}, filters);
+      Object.keys(newFilters).forEach((filterField) => {
+        const fieldIndex = FilterFields[activeLevel].findIndex((field) => {
+          return field.value === filterField;
+        });
+        newFilters[filterField] = FilterFields[activeLevel][fieldIndex].type === 'text' ?
+          ''
+          :
+          null
+        ;
+      });
+      const items = this.filterItems(
+        this.props.availableList[activeLevel].items,
+        newFilters,
+        activeLevel
+      );
       return {
-        filters,
-        items: this.filterItems(
-          this.props.availableList[activeLevel].items,
-          filters
-        ),
+        filters: newFilters,
+        items,
+        tableHeight: this.getHeight(items),
       };
     });
   }
-  filterItems = (items, filters) => {
-    return items.filter((item) => {
-      const userRE = new RegExp(filters.user);
-      if (
-        filters.user &&
-        !userRE.test(item.creatorName)
-      ) {
-        return false;
-      }
-      return true;
-    });
-  }
-  filterUser = (e) => {
-    const user = e.target.value;
+  filterChange = (field, value) => {
     this.setState(({ filters }) => {
+      const newFilters = JSON.parse(JSON.stringify(filters));
+      newFilters[field] = value;
       return {
-        filters: Object.assign(
-          {},
-          filters,
-          {
-            user,
-          },
-        ),
+        filters: newFilters,
       };
+    });
+  }
+  filterItems = (items, filters, level) => {
+    const newItems = JSON.parse(JSON.stringify(items));
+    return newItems.filter((item) => {
+      const keep = Object.keys(filters).every((filterField) => {
+        if (filters[filterField]) {
+          const fieldIndex = FilterFields[level].findIndex((field) => {
+            return field.value === filterField;
+          });
+          const expectedName = FilterFields[level][fieldIndex].expectedName;
+          const type = FilterFields[level][fieldIndex].type;
+          if (type === 'text') {
+            const re = new RegExp(filters[filterField], 'i');
+            return re.test(item[expectedName]);
+          } else if (type === 'select') {
+            return item[expectedName] === filters[filterField];
+          } else if (type === 'date') {
+            const place = FilterFields[level][fieldIndex].place;
+            if (place === 'start') {
+              return Moment(item[expectedName], 'MMMM Do YYYY, h:mm a').format('x') >=
+              Moment(filters[filterField]).format('x');
+            }
+            return Moment(item[expectedName], 'MMMM Do YYYY, h:mm a').format('x') <=
+            Moment(filters[filterField]).format('x');
+          }
+          return true;
+        }
+        return true;
+      });
+      return keep;
     });
   }
   hideFilterDialog = () => {
@@ -242,6 +272,68 @@ class ManagementListContainer extends React.Component {
       browserHistory.replace(newPath);
     }
   }
+  updateFilters = (dateRange, filters, level) => {
+    // get array of valid field values for the selected level
+    const validFields = FilterFields[level].map((field) => { return field.value; });
+    // remove unwanted fields
+    const newFilters = Object.assign({}, filters);
+    Object.keys(newFilters).forEach((field) => {
+      if (!validFields.includes(field)) {
+        delete newFilters[field];
+      }
+    });
+    // add missing fields
+    validFields.forEach((wantedField) => {
+      if (!Object.keys(newFilters).includes(wantedField)) {
+        const fieldIndex = FilterFields[level].findIndex((field) => {
+          return field.value === wantedField;
+        });
+        newFilters[wantedField] = FilterFields[level][fieldIndex].type === 'text' ?
+          ''
+          :
+          null
+        ;
+      }
+    });
+    // if selected filter dates are outside dateRange, change
+    if (
+      newFilters.startDate &&
+      Moment(newFilters.startDate).format('x') < Moment(dateRange.start.min).format('x')
+    ) {
+      newFilters.startDate = dateRange.start.min;
+    }
+    if (
+      newFilters.endDate &&
+      Moment(newFilters.endDate).format('x') < Moment(dateRange.end.max).format('x')
+    ) {
+      newFilters.endDate = dateRange.end.max;
+    }
+    return newFilters;
+  }
+  updateLevelFromProps = (newLevelList) => {
+    this.setState(({ activeLevel, filters }) => {
+      const fullList = newLevelList.items;
+      let dateRange = { start: { max: null, min: null }, end: { max: null, min: null } };
+      let newFilters = filters;
+      let items = [];
+      if (fullList.length > 0) {
+        dateRange = this.getDateRange(fullList);
+        newFilters = this.updateFilters(dateRange, filters, activeLevel);
+        items = this.filterItems(fullList, newFilters, activeLevel);
+      }
+      return {
+        dateRange,
+        filters: newFilters,
+        items,
+        listStatus: {
+          didInvalidate: newLevelList.didInvalidate,
+          isFetching: newLevelList.isFetching,
+          message: newLevelList.message,
+        },
+        tableHeight: this.getHeight(items),
+      };
+    });
+  }
   render() {
     return (
       <ManagementList
@@ -251,6 +343,7 @@ class ManagementListContainer extends React.Component {
         changeLevel={ this.changeLevel }
         changeView={ this.changeView }
         clearFilters={ this.clearFilters }
+        dateRange={ this.state.dateRange }
         filterDialogState={ Object.assign(
           {},
           this.state.filterDialogState,
@@ -259,9 +352,7 @@ class ManagementListContainer extends React.Component {
             showFunc: this.showFilterDialog,
           }
         ) }
-        filterFuncs={ {
-          user: this.filterUser,
-        } }
+        filterChange={ this.filterChange }
         filters={ this.state.filters }
         header={ this.state.header }
         hideList={ this.hideList }

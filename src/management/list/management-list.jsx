@@ -1,3 +1,4 @@
+import DatePicker from 'material-ui/DatePicker';
 import FlatButton from 'material-ui/FlatButton';
 import FontAwesome from 'react-fontawesome';
 import Menu from 'material-ui/Menu';
@@ -8,11 +9,13 @@ import PropTypes from 'prop-types';
 import RaisedButton from 'material-ui/RaisedButton';
 import React from 'react';
 import ReactTooltip from 'react-tooltip';
+import SelectField from 'material-ui/SelectField';
 import TextField from 'material-ui/TextField';
 import { CSSTransitionGroup } from 'react-transition-group';
 
 import CustomTable from '../../table/table-container';
 import Filter from '../../filter/filter';
+import FilterFields from './filter-content';
 
 import ListStyle from './management-list-style';
 import './list-view.scss';
@@ -30,6 +33,80 @@ class ManagementList extends React.Component {
   changeScreenLevel = () => {
     this.props.changeLevel('screen');
   }
+  filterDialogContent = (filters, level) => {
+    return (
+      <div
+        style={ {
+          display: 'flex',
+          flexWrap: 'wrap',
+          padding: '10px 0',
+        } }
+      >
+        {
+          FilterFields[level].map((field) => {
+            return this.filterFieldElement(field, filters);
+          })
+        }
+      </div>
+    );
+  }
+  filterFieldElement = (field, filters) => {
+    switch (field.type) {
+      case 'text':
+        return (
+          <TextField
+            floatingLabelText={ field.hint }
+            hintText={ field.hint }
+            key={ field.value }
+            onChange={ (e) => { this.props.filterChange(field.value, e.target.value); } }
+            style={ ListStyle.filterField }
+            type="text"
+            value={ filters[field.value] }
+          />
+        );
+      case 'select':
+        return (
+          <SelectField
+            floatingLabelText={ field.hint }
+            listStyle={ ListStyle.selectList }
+            key={ field.value }
+            onChange={ (e, index, value) => {
+              this.props.filterChange(field.value, value);
+            } }
+            style={ ListStyle.filterField }
+            value={ filters[field.value] }
+          >
+            {
+              field.options.map((option) => {
+                return (
+                  <MenuItem
+                    key={ option.value }
+                    value={ option.value }
+                    primaryText={ option.text }
+                  />
+                );
+              })
+            }
+          </SelectField>
+        );
+      case 'date':
+        return (
+          <DatePicker
+            floatingLabelText={ field.hint }
+            key={ `${field.place}Date` }
+            maxDate={ this.props.dateRange[field.place].max }
+            minDate={ this.props.dateRange[field.place].min }
+            mode="landscape"
+            onChange={ (e, date) => { this.props.filterChange(`${field.place}Date`, date); } }
+            style={ ListStyle.filterField }
+            textFieldStyle={ ListStyle.dateTextField }
+            value={ filters[`${field.place}Date`] }
+          />
+        );
+      default:
+        return <div />;
+    }
+  }
   list = (headers, items) => {
     const tableList = items.map((item, index) => {
       const columns = headers.map((header) => {
@@ -46,26 +123,6 @@ class ManagementList extends React.Component {
     return tableList;
   }
   render() {
-    const filters = this.props.filters;
-    const funcs = this.props.filterFuncs;
-    const filterDialogContent = (
-      <div
-        style={ {
-          display: 'flex',
-          flexWrap: 'wrap',
-          padding: '10px 0',
-        } }
-      >
-        <TextField
-          hintText="User name"
-          floatingLabelText="User name"
-          onChange={ funcs.user }
-          style={ ListStyle.filterField }
-          type="text"
-          value={ filters.user }
-        />
-      </div>
-    );
     return (
       <div
         style={ {
@@ -163,7 +220,10 @@ class ManagementList extends React.Component {
             applyFilters={ this.props.applyFilters }
             clearFilters={ this.props.clearFilters }
             dialogState={ this.props.filterDialogState }
-            filterBody={ filterDialogContent }
+            filterBody={ this.filterDialogContent(
+              this.props.filters,
+              this.props.activeLevel
+            ) }
             style={ { marginLeft: 'auto' } }
           />
         </div>
@@ -201,14 +261,25 @@ class ManagementList extends React.Component {
               <div
                 style={ ListStyle.listTableStyle }
               >
-                <CustomTable
-                  data={ {
-                    header: this.props.header,
-                    list: this.list(this.props.header, this.props.items),
-                  } }
-                  footer={ false }
-                  height={ this.props.tableHeight }
-                />
+                {
+                  this.props.items.length <= 0 ?
+                    <div
+                      style={ ListStyle.emptyListWarning }
+                    >
+                      { `There are no ${this.props.activeLevel}s to view. Either
+                      there are no existing ${this.props.activeLevel}s or your filters
+                      are too strict.` }
+                    </div>
+                    :
+                    <CustomTable
+                      data={ {
+                        header: this.props.header,
+                        list: this.list(this.props.header, this.props.items),
+                      } }
+                      footer={ false }
+                      height={ this.props.tableHeight }
+                    />
+                  }
               </div>
             }
           </CSSTransitionGroup>
@@ -230,14 +301,24 @@ ManagementList.propTypes = {
   changeLevel: PropTypes.func.isRequired,
   changeView: PropTypes.func.isRequired,
   clearFilters: PropTypes.func.isRequired,
+  dateRange: PropTypes.shape({
+    end: PropTypes.shape({
+      defaultDate: PropTypes.instanceOf(Date),
+      max: PropTypes.instanceOf(Date),
+      min: PropTypes.instanceOf(Date),
+    }),
+    start: PropTypes.shape({
+      defaultDate: PropTypes.instanceOf(Date),
+      max: PropTypes.instanceOf(Date),
+      min: PropTypes.instanceOf(Date),
+    }),
+  }).isRequired,
   filterDialogState: PropTypes.shape({
     hideFunc: PropTypes.func,
     show: PropTypes.bool,
     showFunc: PropTypes.func,
   }).isRequired,
-  filterFuncs: PropTypes.shape({
-    user: PropTypes.func,
-  }).isRequired,
+  filterChange: PropTypes.func.isRequired,
   filters: PropTypes.shape({
     user: PropTypes.string,
   }).isRequired,
