@@ -1,7 +1,7 @@
 import Helmet from 'react-helmet';
 import React from 'react';
 
-export default class Bsic extends React.Component {
+export default class Basic extends React.Component {
   render() {
     return (
       <Helmet

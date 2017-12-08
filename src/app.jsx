@@ -1,12 +1,16 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 
+import GooglePlatformScript from './signin/google/script';
 import Navbar from './navbar/navbar-container';
 
 import './assets/font-awesome/font-awesome.css';
 import './style/normalize.css';
 
 class App extends React.Component {
+  componentDidMount() {
+    GooglePlatformScript();
+  }
   render() {
     return (
       <div>

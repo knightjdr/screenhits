@@ -28,5 +28,8 @@ server/config.js
 #old site versions
 versions/*
 
+#auth keys
+**/client-id.js
+
 #api
 api/config.js

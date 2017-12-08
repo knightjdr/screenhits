@@ -49,7 +49,7 @@ class Signin extends React.Component {
   render() {
     return (
       <button
-        onClick={ this.props.changeSignin }
+        onClick={ this.props.signin }
         style={
           Object.assign(
             {},
@@ -85,7 +85,7 @@ class Signin extends React.Component {
 }
 
 Signin.propTypes = {
-  changeSignin: PropTypes.func.isRequired,
+  signin: PropTypes.func.isRequired,
   muiTheme: PropTypes.shape({
     palette: PropTypes.shape({
       offWhite: PropTypes.string,

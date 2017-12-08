@@ -40,11 +40,11 @@ export function successPost(_id, message, target) {
 // thunks
 const submitPost = (target, obj, isFormData = false, user) => {
   return (dispatch) => {
+    console.log(target, obj, isFormData, user);
     dispatch(requestPost(target));
     const headers = new Headers();
     headers.append('Accept', 'application/json');
     headers.append('Auth', `${user.name}:${user.email}:${user.lab}:${user.token}`);
-    headers.append('Content-Type', 'application/json');
     if (!isFormData) {
       headers.append('Content-Type', 'application/json');
     }

@@ -20,6 +20,7 @@ import selected from './set/index-reducer';
 import tasks from './get/analysis-task-reducer';
 import user from './set/user-reducer';
 import users from './get/project-user-reducer';
+import userTest from './post/signin-reducer';
 import viewTask from './get/view-task-reducer';
 
 const App = combineReducers({
@@ -42,6 +43,7 @@ const App = combineReducers({
   tasks,
   user,
   users,
+  userTest,
   viewTask,
 });
 

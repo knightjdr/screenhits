@@ -1,4 +1,4 @@
-const auth = require('./modules/auth/validate');
+const auth = require('./modules/auth/auth');
 const analysis = require('./modules/analysis/analysis');
 const analysisAvailable = require('./modules/analysis/analysis-available');
 const available = require('./modules/available/available');
@@ -161,6 +161,22 @@ const routes = {
     // for adding and removing users from project list
     app.post('/project/users', auth.validate, (req, res) => {
       users.post[req.body.type](req.body._id, req.body.list)
+        .then((response) => {
+          routes.response(res, response);
+        })
+      ;
+    });
+    // for adding and removing users from project list
+    app.post('/login', (req, res) => {
+      auth.login(req.body.token)
+        .then((response) => {
+          routes.response(res, response);
+        })
+      ;
+    });
+    // for adding and removing users from project list
+    app.post('/logout', (req, res) => {
+      auth.logout(req.body.email, req.body.token)
         .then((response) => {
           routes.response(res, response);
         })
