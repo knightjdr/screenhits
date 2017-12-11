@@ -1,4 +1,5 @@
 import fetch from 'isomorphic-fetch';
+import { updateToken } from '../set/token-actions';
 
 import activeLevel from '../../helpers/find-active-level';
 import { objectEmpty } from '../../helpers/helpers';
@@ -63,6 +64,7 @@ const getData = (target, filters, selected, user) => {
     })
     .then((json) => {
       if (json.status === 200) {
+        dispatch(updateToken(json.token));
         dispatch(fillData(target, json.data));
         // this is so that data can be retrieved and a selected index set via a route.
         // See management-container.js for implementation
@@ -111,6 +113,7 @@ const getRouteData = (selected, user) => {
     .then((json) => {
       let setSelected;
       if (json.status === 200) {
+        dispatch(updateToken(json.token));
         dispatch(fillData('all', json.data));
         // this is so that data can be retrieved and a selected index set via a route.
         // See management-container.js for implementation

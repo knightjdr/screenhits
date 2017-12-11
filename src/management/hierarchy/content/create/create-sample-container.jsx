@@ -39,6 +39,12 @@ const reset = {
   },
   fileParser: {},
   lines: [],
+  snackbar: {
+    duration: 4000,
+    last: null,
+    message: '',
+    open: false,
+  },
 };
 
 class CreateSampleContainer extends React.Component {
@@ -48,6 +54,7 @@ class CreateSampleContainer extends React.Component {
     this.state = {
       cancelButton: Object.assign({}, reset.cancelButton),
       columnToUse: Object.assign({}, reset.columnToUse),
+      didSubmit: false,
       file: JSON.parse(JSON.stringify(reset.file)),
       fileParser: Object.assign({}, reset.fileParser),
       fileTypes: FileTypes[screenType] ?
@@ -58,25 +65,28 @@ class CreateSampleContainer extends React.Component {
       errors: Object.assign({}, BlankState.sample.errors),
       lines: Object.assign([], reset.lines),
       screenType,
-      snackbar: {
-        duration: 4000,
-        last: null,
-        message: '',
-        open: false,
-      },
+      snackbar: Object.assign({}, reset.snackbar),
       warning: BlankState.sample.warning,
     };
   }
   componentWillReceiveProps = (nextProps) => {
+    const { postState } = nextProps;
     // is an creation task has been submitted, update snackbar
-    if (!deepEqual(nextProps.postState, this.props.postState)) {
-      this.updateSnackbar(nextProps.postState, this.props.postState);
+    if (!deepEqual(postState, this.props.postState)) {
+      this.updateSnackbar(postState, this.props.postState);
     }
   }
   componentDidUpdate = (prevProps, prevState) => {
-    const { formData } = prevState;
-    if (!deepEqual(this.state.formData, formData)) {
+    const { didSubmit, formData } = prevState;
+    if (
+      didSubmit &&
+      !deepEqual(this.state.formData, formData)
+    ) {
       this.props.resetPost();
+      this.setState({
+        didSubmit: false,
+        snackbar: Object.assign({}, reset.snackbar),
+      });
     }
   }
   addMandatory = () => {
@@ -401,62 +411,65 @@ class CreateSampleContainer extends React.Component {
           label: 'Close',
           tooltip: 'Close creation form',
         },
+        didSubmit: true,
       });
     }
   }
   updateSnackbar = (next, current) => {
-    const currentTime = new Date();
-    const lastOpen = this.state.snackbar.last;
-    const delay = !lastOpen || currentTime - lastOpen > 2000 ?
-      0
-      :
-      2000 - (currentTime - lastOpen)
-    ;
-    const newSnackBarState = (orignalState, newValues) => {
-      return {
-        snackbar: Object.assign(
-          {},
-          orignalState,
-          newValues,
-          {
-            last: currentTime,
-          }
-        ),
+    if (next.message) {
+      const currentTime = new Date();
+      const lastOpen = this.state.snackbar.last;
+      const delay = !lastOpen || currentTime - lastOpen > 2000 ?
+        0
+        :
+        2000 - (currentTime - lastOpen)
+      ;
+      const newSnackBarState = (orignalState, newValues) => {
+        return {
+          snackbar: Object.assign(
+            {},
+            orignalState,
+            newValues,
+            {
+              last: currentTime,
+            }
+          ),
+        };
       };
-    };
-    setTimeout(() => {
-      this.setState(({ snackbar }) => {
-        if (next.isSubmitted) {
-          return newSnackBarState(
-            snackbar,
-            {
-              message: 'Task submitted',
-              open: true,
-            }
-          );
-        } else if (next.didSubmitFail) {
-          return newSnackBarState(
-            snackbar,
-            {
-              message: 'Submission failed',
-              open: true,
-            }
-          );
-        } else if (
-          current.isSubmitted &&
-          !next.isSubmitted
-        ) {
-          return newSnackBarState(
-            snackbar,
-            {
-              message: 'Task added to queue',
-              open: true,
-            }
-          );
-        }
-        return {};
-      });
-    }, delay);
+      setTimeout(() => {
+        this.setState(({ snackbar }) => {
+          if (next.isSubmitted) {
+            return newSnackBarState(
+              snackbar,
+              {
+                message: 'Task submitted',
+                open: true,
+              }
+            );
+          } else if (next.didSubmitFail) {
+            return newSnackBarState(
+              snackbar,
+              {
+                message: 'Submission failed',
+                open: true,
+              }
+            );
+          } else if (
+            current.isSubmitted &&
+            !next.isSubmitted
+          ) {
+            return newSnackBarState(
+              snackbar,
+              {
+                message: 'Task added to queue',
+                open: true,
+              }
+            );
+          }
+          return {};
+        });
+      }, delay);
+    }
   }
   updateUnused = () => {
     this.setState((prevState) => {

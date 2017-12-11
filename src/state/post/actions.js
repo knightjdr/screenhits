@@ -1,4 +1,5 @@
 import fetch from 'isomorphic-fetch';
+import { updateToken } from '../set/token-actions';
 import { pushData } from '../get/data-actions';
 
 export const FAIL_POST = 'FAIL_POST';
@@ -40,7 +41,6 @@ export function successPost(_id, message, target) {
 // thunks
 const submitPost = (target, obj, isFormData = false, user) => {
   return (dispatch) => {
-    console.log(target, obj, isFormData, user);
     dispatch(requestPost(target));
     const headers = new Headers();
     headers.append('Accept', 'application/json');
@@ -61,6 +61,7 @@ const submitPost = (target, obj, isFormData = false, user) => {
     })
     .then((json) => {
       if (json.status === 200) {
+        dispatch(updateToken(json.token));
         if (target !== 'sample') {
           dispatch(pushData(json.obj, target));
         }

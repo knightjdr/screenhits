@@ -1,4 +1,5 @@
 import fetch from 'isomorphic-fetch';
+import { updateToken } from '../set/token-actions';
 
 export const FAILED_GET_ANALYSIS_SAMPLES = 'FAILED_GET_ANALYSIS_SAMPLES';
 export const FILL_ANALYSIS_SAMPLES = 'FILL_ANALYSIS_SAMPLES';
@@ -43,6 +44,7 @@ const getAnalysisSamples = (user, screenType) => {
     })
     .then((json) => {
       if (json.status === 200) {
+        dispatch(updateToken(json.token));
         dispatch(fillAnalysisSamples(json.message, json.data));
       } else {
         const error = `Status code: ${json.status}; ${json.message}`;

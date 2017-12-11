@@ -1,4 +1,5 @@
 import fetch from 'isomorphic-fetch';
+import { updateToken } from '../set/token-actions';
 import { getData } from '../get/data-actions';
 
 export const FAIL_DELETE = 'FAIL_DELETE';
@@ -59,6 +60,7 @@ const submitDelete = (_id, target, group, user) => {
     })
     .then((json) => {
       if (json.status === 200) {
+        dispatch(updateToken(json.token));
         dispatch(successDelete(_id, json.message, target));
         dispatch(getData(target, group, -1, user));
       } else {

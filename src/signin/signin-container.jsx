@@ -3,8 +3,9 @@ import React from 'react';
 import { connect } from 'react-redux';
 
 import GoogleAPI from './google/google-api';
-import { login, logout } from '../state/post/signin-actions';
 import Signin from './signin';
+import { login, signout } from '../state/post/signin-actions';
+import { clearToken } from '../state/set/token-actions';
 
 class SigninContainer extends React.Component {
   constructor(props) {
@@ -18,11 +19,11 @@ class SigninContainer extends React.Component {
     };
   }
   componentWillReceiveProps = (nextProps) => {
-    const { user } = nextProps;
-    this.updateSignin(user.signedIn, this.props.user.signedIn);
+    const { signedIn } = nextProps;
+    this.updateSignin(signedIn, this.props.signedIn);
   }
   signin = () => {
-    if (!this.props.user.signedIn) {
+    if (!this.props.signedIn) {
       GoogleAPI.signin()
         .then((token) => {
           this.props.login(token);
@@ -42,7 +43,8 @@ class SigninContainer extends React.Component {
     } else {
       GoogleAPI.signout()
         .then(() => {
-          this.props.logout(this.props.user.email, this.props.user.token);
+          this.props.clearToken();
+          this.props.logout();
         })
         .catch((error) => {
           if (error) {
@@ -57,10 +59,10 @@ class SigninContainer extends React.Component {
       ;
     }
   }
-  updateSignin = (newStatus, lastStatus) => {
-    if (newStatus !== lastStatus) {
+  updateSignin = (currentStatus, lastStatus) => {
+    if (currentStatus !== lastStatus) {
       this.setState({
-        signinText: newStatus ? 'Sign out' : 'Sign in',
+        signinText: currentStatus ? 'Sign out' : 'Sign in',
       });
     }
   }
@@ -75,29 +77,29 @@ class SigninContainer extends React.Component {
 }
 
 SigninContainer.propTypes = {
+  clearToken: PropTypes.func.isRequired,
   login: PropTypes.func.isRequired,
   logout: PropTypes.func.isRequired,
-  user: PropTypes.shape({
-    email: PropTypes.string,
-    signedIn: PropTypes.bool,
-    token: PropTypes.string,
-  }).isRequired,
+  signedIn: PropTypes.bool.isRequired,
 };
 
 const mapDispatchToProps = (dispatch) => {
   return {
+    clearToken: () => {
+      dispatch(clearToken());
+    },
     login: (token) => {
       dispatch(login(token));
     },
-    logout: (email, token) => {
-      dispatch(logout(email, token));
+    logout: () => {
+      dispatch(signout());
     },
   };
 };
 
 const mapStateToProps = (state) => {
   return {
-    user: state.userTest,
+    signedIn: state.userTest.signedIn,
   };
 };
 

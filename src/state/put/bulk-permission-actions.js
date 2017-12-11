@@ -1,4 +1,5 @@
 import fetch from 'isomorphic-fetch';
+import { updateToken } from '../set/token-actions';
 import { userGet } from '../get/project-user-actions';
 
 export const FAIL_PUT = 'FAIL_BULK_PERMISSION_PUT';
@@ -58,6 +59,7 @@ const changeBulkPermissionAction = (user, _id, lab, permission) => {
     })
     .then((json) => {
       if (json.status === 200) {
+        dispatch(updateToken(json.token));
         dispatch(successBulkPermissionPut(_id, json.message));
         dispatch(userGet(user, _id, lab, permission));
       } else {

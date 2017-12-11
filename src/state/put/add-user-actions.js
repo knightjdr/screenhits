@@ -1,4 +1,5 @@
 import fetch from 'isomorphic-fetch';
+import { updateToken } from '../set/token-actions';
 import { userGet } from '../get/project-user-actions';
 
 export const FAIL_PUT = 'FAIL_ADD_USER_PUT';
@@ -55,6 +56,7 @@ const addUsersAction = (user, _id, lab, permission, putObj) => {
     })
     .then((json) => {
       if (json.status === 200) {
+        dispatch(updateToken(json.token));
         dispatch(successAddUserPut(_id, json.message));
         dispatch(userGet(user, _id, lab, permission));
       } else {

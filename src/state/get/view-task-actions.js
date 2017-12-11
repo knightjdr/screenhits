@@ -1,4 +1,5 @@
 import fetch from 'isomorphic-fetch';
+import { updateToken } from '../set/token-actions';
 
 export const FAILED_GET_VIEW_TASK = 'FAILED_GET_VIEW_TASK';
 export const FILL_VIEW_TASK = 'FILL_VIEW_TASK';
@@ -43,6 +44,7 @@ const getViewTask = (id, user) => {
     })
     .then((json) => {
       if (json.status === 200) {
+        dispatch(updateToken(json.token));
         dispatch(fillViewTask(json.message, json.data));
       } else {
         const error = `Status code: ${json.status}; ${json.message}`;

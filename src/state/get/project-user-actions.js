@@ -1,4 +1,5 @@
 import fetch from 'isomorphic-fetch';
+import { updateToken } from '../set/token-actions';
 
 export const FAIL_GET = 'FAIL_GET';
 export const REQUEST_GET = 'REQUEST_GET';
@@ -55,6 +56,7 @@ const userGet = (user, _id, lab, permission) => {
     })
     .then((json) => {
       if (json.status === 200) {
+        dispatch(updateToken(json.token));
         dispatch(successGet(_id, json.message, json.users));
       } else {
         const error = `Status code: ${json.status}; ${json.message}`;

@@ -1,17 +1,13 @@
 import {
   REQUEST_SIGNIN,
-  REQUEST_SIGNOUT,
   RESET_SIGNIN,
   SIGNIN_FAILED,
   SIGNIN_SUCCESS,
-  SIGNOUT_FAILED,
-  SIGNOUT_SUCCESS,
+  SIGNOUT,
 } from './signin-actions';
 
 const defaultState = {
-  email: null,
   isSigningIn: false,
-  lab: null,
   message: '',
   name: null,
   privilege: null,
@@ -32,14 +28,6 @@ const Signin = (
         state,
         {
           isSigningIn: true,
-        }
-      );
-    case REQUEST_SIGNOUT:
-      return Object.assign(
-        {},
-        state,
-        {
-          isSigningOut: true,
         }
       );
     case RESET_SIGNIN:
@@ -72,17 +60,7 @@ const Signin = (
           token: action.token,
         }
       );
-    case SIGNOUT_FAILED:
-      return Object.assign(
-        {},
-        state,
-        {
-          isSigningOut: false,
-          message: action.message,
-          signOutFailed: true,
-        }
-      );
-    case SIGNOUT_SUCCESS:
+    case SIGNOUT:
       return Object.assign(
         {},
         defaultState

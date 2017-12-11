@@ -18,6 +18,7 @@ import routerLocations from './routing/router-locations-reducer';
 import searchUser from './get/search-user-reducer';
 import selected from './set/index-reducer';
 import tasks from './get/analysis-task-reducer';
+import token from './set/token-reducer';
 import user from './set/user-reducer';
 import users from './get/project-user-reducer';
 import userTest from './post/signin-reducer';
@@ -41,6 +42,7 @@ const App = combineReducers({
   searchUser,
   selected,
   tasks,
+  token,
   user,
   users,
   userTest,

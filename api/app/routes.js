@@ -168,7 +168,7 @@ const routes = {
     });
     // for adding and removing users from project list
     app.post('/login', (req, res) => {
-      auth.login(req.body.token)
+      auth.login(req.body.token, res)
         .then((response) => {
           routes.response(res, response);
         })
@@ -231,7 +231,11 @@ const routes = {
     notSupported: 'The requested method is not supported',
   },
   response: (resObject, response) => {
-    resObject.status(response.status).send(response.clientResponse);
+    const data = response.clientResponse;
+    Object.entries(resObject.locals).forEach(([key, value]) => {
+      data[key] = value;
+    });
+    resObject.status(response.status).send(data);
   },
 };
 module.exports = routes;

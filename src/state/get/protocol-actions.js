@@ -1,4 +1,5 @@
 import fetch from 'isomorphic-fetch';
+import { updateToken } from '../set/token-actions';
 
 export const FAIL_PROTOCOL_GET = 'FAIL_PROTOCOL_GET';
 export const REQUEST_PROTOCOL_GET = 'REQUEST_PROTOCOL_GET';
@@ -51,6 +52,7 @@ const protocolGet = (user) => {
     })
     .then((json) => {
       if (json.status === 200) {
+        dispatch(updateToken(json.token));
         dispatch(successProtocolGet(json.message, json.protocols));
       } else {
         const error = `Status code: ${json.status}; ${json.message}`;

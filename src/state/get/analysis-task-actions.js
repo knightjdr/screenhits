@@ -1,4 +1,5 @@
 import fetch from 'isomorphic-fetch';
+import { updateToken } from '../set/token-actions';
 
 export const FAILED_GET_ANALYSIS_TASKS = 'FAILED_GET_ANALYSIS_TASKS';
 export const FILL_ANALYSIS_TASKS = 'FILL_ANALYSIS_TASKS';
@@ -43,6 +44,7 @@ const getAnalysisTasks = (user) => {
     })
     .then((json) => {
       if (json.status === 200) {
+        dispatch(updateToken(json.token));
         dispatch(fillAnalysisTasks(json.message, json.data));
       } else {
         const error = `Status code: ${json.status}; ${json.message}`;

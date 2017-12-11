@@ -34,7 +34,7 @@ const GoogleAPI = {
   signout: () => {
     return new Promise((resolve, reject) => {
       if (GoogleAPI.auth.isSignedIn.get()) {
-        GoogleAPI.auth.signOut()
+        GoogleAPI.auth.disconnect()
           .then(() => {
             resolve();
           })

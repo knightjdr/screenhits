@@ -1,4 +1,5 @@
 import fetch from 'isomorphic-fetch';
+import { updateToken } from '../set/token-actions';
 
 export const FAIL_COMPARISON_POST = 'FAIL_COMPARISON_POST';
 export const REQUEST_COMPARISON_POST = 'REQUEST_COMPARISON_POST';
@@ -52,6 +53,7 @@ const submitComparison = (user, form) => {
     })
     .then((json) => {
       if (json.status === 200) {
+        dispatch(updateToken(json.token));
         dispatch(successComparisonPost(json.data, json.message));
       } else {
         const error = `Status code: ${json.status}; ${json.message}`;

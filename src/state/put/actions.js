@@ -1,4 +1,5 @@
 import fetch from 'isomorphic-fetch';
+import { updateToken } from '../set/token-actions';
 import { getData } from '../get/data-actions';
 
 export const FAIL_PUT = 'FAIL_PUT';
@@ -61,6 +62,7 @@ const submitPut = (_id, obj, target, user) => {
     })
     .then((json) => {
       if (json.status === 200) {
+        dispatch(updateToken(json.token));
         dispatch(successPut(_id, json.message, target));
         dispatch(getData(target, obj.group ? obj.group : {}, null, user));
       } else {

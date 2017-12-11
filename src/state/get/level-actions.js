@@ -1,4 +1,5 @@
 import fetch from 'isomorphic-fetch';
+import { updateToken } from '../set/token-actions';
 
 export const FILL_LEVEL_DATA = 'FILL_LEVEL_DATA';
 export const FILL_LEVEL_FAILED = 'FILL_LEVEL_FAILED';
@@ -46,6 +47,7 @@ const getLevelData = (target, user) => {
     })
     .then((json) => {
       if (json.status === 200) {
+        dispatch(updateToken(json.token));
         dispatch(fillLevelData(json.data, target));
       } else {
         const error = `Status code: ${json.status}; ${json.message}`;

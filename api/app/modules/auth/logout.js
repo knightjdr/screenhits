@@ -1,24 +1,35 @@
-const Logout = (email, token) => {
+const query = require('../query/query');
+const token = require('./token');
+
+const Logout = (email, currToken) => {
   return new Promise((resolve) => {
-    console.log(email, token);
-    // will need to first validate email to token, if fail resolve with 403
-    // then logout, resolve with 500 is this fails
-    if (true) {
-      resolve({
-        status: 200,
-        clientResponse: {
+    const queryObj = {
+      email,
+      tokens: currToken,
+    };
+    query.get('users', queryObj, { tokens: 1 }, 'findOne')
+      .then((user) => {
+        return token.remove(email, user.tokens, currToken);
+      })
+      .then(() => {
+        resolve({
           status: 200,
-        },
-      });
-    } else {
-      resolve({
-        status: 403,
-        clientResponse: {
-          status: 403,
-          message: 'User could not be signed out',
-        },
-      });
-    }
+          clientResponse: {
+            status: 200,
+            message: 'User successfully signed out',
+          },
+        });
+      })
+      .catch(() => {
+        resolve({
+          status: 500,
+          clientResponse: {
+            status: 500,
+            message: 'User could not be signed out',
+          },
+        });
+      })
+    ;
   });
 };
 module.exports = Logout;

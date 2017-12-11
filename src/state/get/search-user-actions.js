@@ -1,4 +1,5 @@
 import fetch from 'isomorphic-fetch';
+import { updateToken } from '../set/token-actions';
 
 export const FAIL_GET = 'FAIL_SEARCH_USER_GET';
 export const REQUEST_GET = 'REQUEST_SEARCH_USER_GET';
@@ -54,6 +55,7 @@ const userSearch = (user, _id, queryString) => {
     })
     .then((json) => {
       if (json.status === 200) {
+        dispatch(updateToken(json.token));
         dispatch(successUserSearchGet(_id, json.message, json.users));
       } else {
         const error = `Status code: ${json.status}; ${json.message}`;

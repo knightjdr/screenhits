@@ -1,4 +1,5 @@
 import fetch from 'isomorphic-fetch';
+import { updateToken } from '../set/token-actions';
 
 export const FAIL_ANALYSIS_POST = 'FAIL_ANALYSIS_POST';
 export const REQUEST_ANALYSIS_POST = 'REQUEST_ANALYSIS_POST';
@@ -51,6 +52,7 @@ const submitAnalysis = (user, form) => {
     })
     .then((json) => {
       if (json.status === 200) {
+        dispatch(updateToken(json.token));
         dispatch(successAnalysisPost(json.message));
       } else {
         const error = `Status code: ${json.status}; ${json.message}`;
