@@ -1,5 +1,5 @@
 import fetch from 'isomorphic-fetch';
-import { updateToken } from '../set/token-actions';
+import { clearToken, updateToken } from '../set/token-actions';
 
 export const REQUEST_SIGNIN = 'REQUEST_SIGNIN';
 export const RESET_SIGNIN = 'RESET_SIGNIN';
@@ -60,21 +60,18 @@ export const signoutSuccess = () => {
 };
 
 // thunks
-const login = (token) => {
+const login = (signinToken) => {
   return (dispatch) => {
     dispatch(resetSignin());
     dispatch(requestSignin());
     const headers = new Headers();
     headers.append('Accept', 'application/json');
     headers.append('Content-Type', 'application/json');
-    const bodyObj = {
-      token,
-    };
+    headers.append('Signin-Token', signinToken);
     return fetch('http://localhost:8003/login', {
-      body: JSON.stringify(bodyObj),
       cache: 'default',
       headers,
-      method: 'POST',
+      method: 'GET',
       mode: 'cors',
     })
     .then((response) => {
@@ -82,7 +79,7 @@ const login = (token) => {
     })
     .then((json) => {
       if (json.status === 200) {
-        dispatch(updateToken(json.token));
+        dispatch(updateToken(json.authToken));
         dispatch(
           signinSuccess(
             json.user.name,
@@ -101,4 +98,45 @@ const login = (token) => {
   };
 };
 
-export { login };
+// validate token
+const validateToken = (authToken) => {
+  return (dispatch) => {
+    dispatch(resetSignin());
+    dispatch(requestSignin());
+    const headers = new Headers();
+    headers.append('Accept', 'application/json');
+    headers.append('Content-Type', 'application/json');
+    headers.append('Auth-Token', authToken);
+    return fetch('http://localhost:8003/validate', {
+      cache: 'default',
+      headers,
+      method: 'GET',
+      mode: 'cors',
+    })
+    .then((response) => {
+      return response.json();
+    })
+    .then((json) => {
+      if (json.status === 200) {
+        dispatch(updateToken(json.authToken));
+        dispatch(
+          signinSuccess(
+            json.user.name,
+            json.user.privilege
+          )
+        );
+      } else {
+        dispatch(clearToken());
+        const error = `Status code: ${json.status}; ${json.message}`;
+        dispatch(signinFailed(error));
+      }
+    })
+    .catch((error) => {
+      dispatch(clearToken());
+      const writeError = typeof error !== 'string' ? 'unknown error' : error;
+      dispatch(signinFailed(writeError));
+    });
+  };
+};
+
+export { login, validateToken };

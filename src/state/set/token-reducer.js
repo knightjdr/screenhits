@@ -11,7 +11,7 @@ const Token = (
     case CLEAR_TOKEN:
       return null;
     case UPDATE_TOKEN:
-      return action.token;
+      return action.authToken;
     default:
       return state;
   }

@@ -41,12 +41,12 @@ export function successDelete(_id, message, target) {
 }
 
 // thunks
-const submitDelete = (_id, target, group, user) => {
-  return (dispatch) => {
+const submitDelete = (_id, target, group) => {
+  return (dispatch, getState) => {
     dispatch(requestDelete(_id, target));
     const headers = new Headers();
     headers.append('Accept', 'application/json');
-    headers.append('Auth', `${user.name}:${user.email}:${user.lab}:${user.token}`);
+    headers.append('Auth', getState().token);
     headers.append('Content-Type', 'application/json');
     const queryString = `target=${target}&_id=${_id}`;
     return fetch(`http://localhost:8003/management?${queryString}`, {
@@ -60,9 +60,9 @@ const submitDelete = (_id, target, group, user) => {
     })
     .then((json) => {
       if (json.status === 200) {
-        dispatch(updateToken(json.token));
+        dispatch(updateToken(json.authToken));
         dispatch(successDelete(_id, json.message, target));
-        dispatch(getData(target, group, -1, user));
+        dispatch(getData(target, group, -1));
       } else {
         const error = `Status code: ${json.status}; ${json.message}`;
         dispatch(failDelete(_id, error, target));

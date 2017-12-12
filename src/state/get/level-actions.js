@@ -47,7 +47,7 @@ const getLevelData = (target, user) => {
     })
     .then((json) => {
       if (json.status === 200) {
-        dispatch(updateToken(json.token));
+        dispatch(updateToken(json.authToken));
         dispatch(fillLevelData(json.data, target));
       } else {
         const error = `Status code: ${json.status}; ${json.message}`;

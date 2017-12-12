@@ -7,25 +7,29 @@ export const clearToken = () => {
   if (
     storage.check()
   ) {
-    storage.clear('token');
+    storage.clear('authToken');
   }
   return {
     type: 'CLEAR_TOKEN',
   };
 };
 
-export const updateToken = (token) => {
+export const updateToken = (authToken) => {
   if (
-    token &&
+    authToken &&
     storage.check()
   ) {
-    storage.update('token', token);
+    storage.update('authToken', authToken);
+    return {
+      authToken,
+      type: 'UPDATE_TOKEN',
+    };
   } else if (
-    token &&
+    authToken &&
     !storage.check()
   ) {
     return {
-      token,
+      authToken,
       type: 'UPDATE_TOKEN',
     };
   }

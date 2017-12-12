@@ -1,5 +1,5 @@
 const query = require('../query/query');
-const token = require('./token');
+const Token = require('./token');
 
 const LoginUser = (email) => {
   return new Promise((resolve, reject) => {
@@ -7,9 +7,9 @@ const LoginUser = (email) => {
     query.get('users', { email }, {}, 'findOne')
       .then((user) => {
         if (user) {
-          const newToken = token.create(user);
+          const authToken = Token.create(user);
           resolve({
-            authToken: newToken,
+            authToken,
             user: {
               name: user.name,
               privilege: user.privilege,

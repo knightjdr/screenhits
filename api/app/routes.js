@@ -20,7 +20,7 @@ const routes = {
   configure: (app) => {
     // deleting
     app.delete('/management', auth.validate, (req, res) => {
-      deleteQuery.item(req.query.target, Number(req.query._id))
+      deleteQuery.item(req.query.target, res.locals.user, Number(req.query._id))
         .then((response) => {
           routes.response(res, response);
         })
@@ -66,7 +66,15 @@ const routes = {
     });
     // returns available projects, screens, etc, based on user
     app.get('/loadRoute', auth.validate, (req, res) => {
-      loadRoute.get(req.query.target, req.email, req.lab, req.query.selected)
+      loadRoute.get(req.query.target, res.locals.user, req.query.selected)
+        .then((response) => {
+          routes.response(res, response);
+        })
+      ;
+    });
+    // for adding and removing users from project list
+    app.get('/login', (req, res) => {
+      auth.login(req.get('Signin-Token'), res)
         .then((response) => {
           routes.response(res, response);
         })
@@ -82,7 +90,7 @@ const routes = {
     });
     // returns available projects, screens, etc, based on user
     app.get('/management', auth.validate, (req, res) => {
-      available.get(req.query.target, req.email, req.lab, req.query.filters)
+      available.get(req.query.target, res.locals.user, req.query.filters)
         .then((response) => {
           routes.response(res, response);
         })
@@ -115,6 +123,14 @@ const routes = {
     // for user searches
     app.get('/users', auth.validate, (req, res) => {
       search.user(req.query.type, req.query[req.query.type])
+        .then((response) => {
+          routes.response(res, response);
+        })
+      ;
+    });
+    // for adding and removing users from project list
+    app.get('/validate', auth.validate, (req, res) => {
+      auth.tokenLogin(res)
         .then((response) => {
           routes.response(res, response);
         })
@@ -161,22 +177,6 @@ const routes = {
     // for adding and removing users from project list
     app.post('/project/users', auth.validate, (req, res) => {
       users.post[req.body.type](req.body._id, req.body.list)
-        .then((response) => {
-          routes.response(res, response);
-        })
-      ;
-    });
-    // for adding and removing users from project list
-    app.post('/login', (req, res) => {
-      auth.login(req.body.token, res)
-        .then((response) => {
-          routes.response(res, response);
-        })
-      ;
-    });
-    // for adding and removing users from project list
-    app.post('/logout', (req, res) => {
-      auth.logout(req.body.email, req.body.token)
         .then((response) => {
           routes.response(res, response);
         })
@@ -233,7 +233,9 @@ const routes = {
   response: (resObject, response) => {
     const data = response.clientResponse;
     Object.entries(resObject.locals).forEach(([key, value]) => {
-      data[key] = value;
+      if (key !== 'user') {
+        data[key] = value;
+      }
     });
     resObject.status(response.status).send(data);
   },

@@ -21,7 +21,7 @@ import tasks from './get/analysis-task-reducer';
 import token from './set/token-reducer';
 import user from './set/user-reducer';
 import users from './get/project-user-reducer';
-import userTest from './post/signin-reducer';
+import userTest from './get/signin-reducer';
 import viewTask from './get/view-task-reducer';
 
 const App = combineReducers({

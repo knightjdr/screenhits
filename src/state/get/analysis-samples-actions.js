@@ -44,7 +44,7 @@ const getAnalysisSamples = (user, screenType) => {
     })
     .then((json) => {
       if (json.status === 200) {
-        dispatch(updateToken(json.token));
+        dispatch(updateToken(json.authToken));
         dispatch(fillAnalysisSamples(json.message, json.data));
       } else {
         const error = `Status code: ${json.status}; ${json.message}`;

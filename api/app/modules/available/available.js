@@ -47,7 +47,7 @@ const available = {
     return formattedExperiments;
   },
   // entry point for 'getting'
-  get: (target, email, lab, filters) => {
+  get: (target, user, filters) => {
     return new Promise((resolve) => {
       let queryFilters;
       if (!filters) {
@@ -59,7 +59,7 @@ const available = {
       } else {
         queryFilters = {};
       }
-      const queryObj = available.getFilters(target, email, lab, queryFilters);
+      const queryObj = available.getFilters(target, user.email, user.lab, queryFilters);
 
       const returnObj = target === 'sample' ? { records: 0 } : {};
 

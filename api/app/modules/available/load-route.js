@@ -1,7 +1,7 @@
 const available = require('./available');
 
 const loadRoute = {
-  get: (target, email, lab, selected) => {
+  get: (target, user, selected) => {
     return new Promise((resolve) => {
       const querySelected = selected ? JSON.parse(selected) : {};
       const filters = {
@@ -20,10 +20,10 @@ const loadRoute = {
         },
       };
       Promise.all([
-        querySelected.project ? available.getForRoute('project', email, lab, filters.project) : [],
-        querySelected.project ? available.getForRoute('screen', email, lab, filters.screen) : [],
-        querySelected.screen ? available.getForRoute('experiment', email, lab, filters.experiment) : [],
-        querySelected.experiment ? available.getForRoute('sample', email, lab, filters.sample) : [],
+        querySelected.project ? available.getForRoute('project', user.email, user.lab, filters.project) : [],
+        querySelected.project ? available.getForRoute('screen', user.email, user.lab, filters.screen) : [],
+        querySelected.screen ? available.getForRoute('experiment', user.email, user.lab, filters.experiment) : [],
+        querySelected.experiment ? available.getForRoute('sample', user.email, user.lab, filters.sample) : [],
       ])
         .then((availableArray) => {
           resolve({

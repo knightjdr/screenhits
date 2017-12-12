@@ -4,7 +4,7 @@ const njwt = require('njwt');
 
 const SECRET = config.settings().secretKey;
 
-const Tokens = {
+const Token = {
   create: (user) => {
     const claims = {
       iss: 'screenhits.org',
@@ -19,12 +19,19 @@ const Tokens = {
     tokenObj.setExpiration(expiryDate);
     return tokenObj.compact();
   },
-  verify: (token) => {
-    try {
-      return njwt.verify(token, SECRET);
-    } catch (e) {
-      return false;
-    }
+  verify: (authToken) => {
+    return new Promise((resolve, reject) => {
+      if (authToken) {
+        njwt.verify(authToken, SECRET, (err, verifiedJwt) => {
+          if (err) {
+            reject();
+          }
+          resolve(verifiedJwt.body);
+        });
+      } else {
+        reject();
+      }
+    });
   },
 };
-module.exports = Tokens;
+module.exports = Token;

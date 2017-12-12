@@ -14,8 +14,10 @@ const storage = {
   clear: (field) => {
     localStorage.removeItem(field);
   },
+  get: (field) => {
+    return localStorage.getItem(field);
+  },
   update: (field, value) => {
-    console.log(field, value);
     localStorage.setItem(field, value);
   },
 };

@@ -4,7 +4,7 @@ const sampleCollections = require('../sample/sample-collections');
 const update = require('../crud/update');
 
 const Delete = {
-  item: (target, _id) => {
+  item: (target, user, _id) => {
     return new Promise((resolve) => {
       Delete.getDeletionPromises(target, _id)
         .then(() => {

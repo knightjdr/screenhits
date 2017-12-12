@@ -55,7 +55,7 @@ const userSearch = (user, _id, queryString) => {
     })
     .then((json) => {
       if (json.status === 200) {
-        dispatch(updateToken(json.token));
+        dispatch(updateToken(json.authToken));
         dispatch(successUserSearchGet(_id, json.message, json.users));
       } else {
         const error = `Status code: ${json.status}; ${json.message}`;

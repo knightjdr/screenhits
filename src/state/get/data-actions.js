@@ -43,12 +43,12 @@ export function pushData(obj, target) {
 }
 
 // thunks
-const getData = (target, filters, selected, user) => {
-  return (dispatch) => {
+const getData = (target, filters, selected) => {
+  return (dispatch, getState) => {
     dispatch(isFilling(target));
     const headers = new Headers();
     headers.append('Accept', 'application/json');
-    headers.append('Auth', `${user.name}:${user.email}:${user.lab}:${user.token}`);
+    headers.append('Auth-Token', getState().token);
     headers.append('Content-Type', 'application/json');
     let url = `http://localhost:8003/management?target=${target}`;
     if (!objectEmpty(filters)) {
@@ -64,7 +64,7 @@ const getData = (target, filters, selected, user) => {
     })
     .then((json) => {
       if (json.status === 200) {
-        dispatch(updateToken(json.token));
+        dispatch(updateToken(json.authToken));
         dispatch(fillData(target, json.data));
         // this is so that data can be retrieved and a selected index set via a route.
         // See management-container.js for implementation
@@ -87,8 +87,8 @@ const getData = (target, filters, selected, user) => {
   };
 };
 
-const getRouteData = (selected, user) => {
-  return (dispatch) => {
+const getRouteData = (selected) => {
+  return (dispatch, getState) => {
     Object.keys(selected).forEach((target) => {
       if (target) {
         dispatch(isFilling(target));
@@ -96,7 +96,7 @@ const getRouteData = (selected, user) => {
     });
     const headers = new Headers();
     headers.append('Accept', 'application/json');
-    headers.append('Auth', `${user.name}:${user.email}:${user.lab}:${user.token}`);
+    headers.append('Auth', getState().token);
     headers.append('Content-Type', 'application/json');
     let url = 'http://localhost:8003/loadRoute?target=management';
     if (!objectEmpty(selected)) {
@@ -113,7 +113,7 @@ const getRouteData = (selected, user) => {
     .then((json) => {
       let setSelected;
       if (json.status === 200) {
-        dispatch(updateToken(json.token));
+        dispatch(updateToken(json.authToken));
         dispatch(fillData('all', json.data));
         // this is so that data can be retrieved and a selected index set via a route.
         // See management-container.js for implementation

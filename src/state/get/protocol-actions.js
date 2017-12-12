@@ -52,7 +52,7 @@ const protocolGet = (user) => {
     })
     .then((json) => {
       if (json.status === 200) {
-        dispatch(updateToken(json.token));
+        dispatch(updateToken(json.authToken));
         dispatch(successProtocolGet(json.message, json.protocols));
       } else {
         const error = `Status code: ${json.status}; ${json.message}`;

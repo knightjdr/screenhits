@@ -61,7 +61,7 @@ const submitPost = (target, obj, isFormData = false, user) => {
     })
     .then((json) => {
       if (json.status === 200) {
-        dispatch(updateToken(json.token));
+        dispatch(updateToken(json.authToken));
         if (target !== 'sample') {
           dispatch(pushData(json.obj, target));
         }

@@ -4,6 +4,8 @@ import React from 'react';
 import GooglePlatformScript from './signin/google/script';
 import Navbar from './navbar/navbar-container';
 
+import Login from './signin/login-container';
+
 import './assets/font-awesome/font-awesome.css';
 import './style/normalize.css';
 
@@ -22,8 +24,9 @@ class App extends React.Component {
             zIndex: 1,
           } }
         >
-          {this.props.children}
+          { this.props.children }
         </div>
+        <Login />
       </div>
     );
   }

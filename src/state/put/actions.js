@@ -62,7 +62,7 @@ const submitPut = (_id, obj, target, user) => {
     })
     .then((json) => {
       if (json.status === 200) {
-        dispatch(updateToken(json.token));
+        dispatch(updateToken(json.authToken));
         dispatch(successPut(_id, json.message, target));
         dispatch(getData(target, obj.group ? obj.group : {}, null, user));
       } else {

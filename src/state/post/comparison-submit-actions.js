@@ -53,7 +53,7 @@ const submitComparison = (user, form) => {
     })
     .then((json) => {
       if (json.status === 200) {
-        dispatch(updateToken(json.token));
+        dispatch(updateToken(json.authToken));
         dispatch(successComparisonPost(json.data, json.message));
       } else {
         const error = `Status code: ${json.status}; ${json.message}`;

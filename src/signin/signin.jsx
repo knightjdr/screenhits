@@ -85,13 +85,15 @@ class Signin extends React.Component {
 }
 
 Signin.propTypes = {
-  signin: PropTypes.func.isRequired,
   muiTheme: PropTypes.shape({
     palette: PropTypes.shape({
       offWhite: PropTypes.string,
       primary1Color: PropTypes.string,
+      warning: PropTypes.string,
+      warningHover: PropTypes.string,
     }),
   }).isRequired,
+  signin: PropTypes.func.isRequired,
   signinText: PropTypes.string.isRequired,
 };
 

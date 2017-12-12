@@ -56,7 +56,7 @@ const addUsersAction = (user, _id, lab, permission, putObj) => {
     })
     .then((json) => {
       if (json.status === 200) {
-        dispatch(updateToken(json.token));
+        dispatch(updateToken(json.authToken));
         dispatch(successAddUserPut(_id, json.message));
         dispatch(userGet(user, _id, lab, permission));
       } else {

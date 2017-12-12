@@ -1,14 +1,14 @@
 const googleValidate = require('./google/validate-token');
 const loginUser = require('./login-user');
 
-const Login = (token, res) => {
+const Login = (signinToken, res) => {
   return new Promise((resolve) => {
-    googleValidate(token)
+    googleValidate(signinToken)
       .then((email) => {
         return loginUser(email);
       })
       .then(({ authToken, user }) => {
-        res.locals.token = authToken;
+        res.locals.authToken = authToken;
         resolve({
           status: 200,
           clientResponse: {

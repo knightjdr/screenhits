@@ -71,7 +71,7 @@ class ManagementContainer extends React.Component {
       activeLevel: this.findActiveLevel(selected),
     });
   }
-  findActiveLevel = (selected, /* activeLevel */) => {
+  findActiveLevel = (selected) => {
     let newActiveLevel;
     if (selected.sample) {
       newActiveLevel = 'sample';
@@ -86,7 +86,7 @@ class ManagementContainer extends React.Component {
   }
   updateState = (selected, lastSelected) => {
     let continuteUpdate = true;
-    let path = 'management?';
+    let path = '/management/hierarchy?';
     const setSelected = {
       experiment: null,
       project: null,
@@ -94,7 +94,7 @@ class ManagementContainer extends React.Component {
       screen: null,
     };
     if (objectEmpty(selected)) {
-      path = 'management';
+      path = '/management/hierarchy';
       continuteUpdate = false;
     }
     if ( // project has been selected, and it exists

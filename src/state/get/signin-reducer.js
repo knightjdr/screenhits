@@ -14,7 +14,6 @@ const defaultState = {
   signedIn: false,
   isSigningOut: false,
   signInFailed: false,
-  token: null,
 };
 
 const Signin = (
@@ -57,7 +56,6 @@ const Signin = (
           name: action.name,
           privilege: action.privilege,
           signedIn: true,
-          token: action.token,
         }
       );
     case SIGNOUT:
