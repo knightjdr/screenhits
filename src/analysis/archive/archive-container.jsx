@@ -32,7 +32,7 @@ class ArchiveContainer extends React.Component {
     };
   }
   componentDidMount = () => {
-    this.props.getAnalysisTasks(this.props.user);
+    this.props.getAnalysisTasks();
   }
   componentWillReceiveProps = (nextProps) => {
     const { tasks } = nextProps;
@@ -135,7 +135,7 @@ class ArchiveContainer extends React.Component {
     });
   }
   updateTasks = () => {
-    this.props.getAnalysisTasks(this.props.user);
+    this.props.getAnalysisTasks();
   }
   render() {
     return (
@@ -177,8 +177,6 @@ ArchiveContainer.propTypes = {
     message: PropTypes.string,
   }).isRequired,
   user: PropTypes.shape({
-    email: PropTypes.string,
-    lab: PropTypes.string,
     name: PropTypes.string,
   }),
   viewID: PropTypes.number,
@@ -186,8 +184,8 @@ ArchiveContainer.propTypes = {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    getAnalysisTasks: (user) => {
-      dispatch(getAnalysisTasks(user));
+    getAnalysisTasks: () => {
+      dispatch(getAnalysisTasks());
     },
   };
 };

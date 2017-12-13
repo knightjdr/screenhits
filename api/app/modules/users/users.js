@@ -6,7 +6,7 @@ const update = require('../crud/update');
 const validate = require('./user-validate');
 
 const Users = {
-  get: (_id, lab, permission) => {
+  get: (_id, lab, permission, user) => {
     return new Promise((resolve) => {
       const queryObj = Users.getQueryObj(lab, permission);
       const responseObj = {
@@ -82,7 +82,7 @@ const Users = {
     return queryObj;
   },
   post: {
-    current: (_id, list) => {
+    current: (_id, list, user) => {
       return new Promise((resolve) => {
         validate.userArray(list)
           .then(() => {
@@ -119,7 +119,7 @@ const Users = {
       });
     },
   },
-  put: (_id, users) => {
+  put: (_id, users, user) => {
     return new Promise((resolve) => {
       validate.userArray(users)
         .then(() => {
@@ -128,12 +128,14 @@ const Users = {
         .then((document) => {
           const updateInfo = owner.check(users);
           const userPermission = document.userPermission;
-          updateInfo.arr.forEach((user) => {
-            const index = userPermission.findIndex((obj) => { return obj.email === user.email; });
+          updateInfo.arr.forEach((currUser) => {
+            const index = userPermission.findIndex((obj) => {
+              return obj.email === currUser.email;
+            });
             if (index > -1) {
               userPermission.splice(index, 1);
             }
-            userPermission.push(user);
+            userPermission.push(currUser);
           });
           const insertObj = {};
           if (updateInfo.owner) {

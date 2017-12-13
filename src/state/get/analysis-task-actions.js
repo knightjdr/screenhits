@@ -5,34 +5,34 @@ export const FAILED_GET_ANALYSIS_TASKS = 'FAILED_GET_ANALYSIS_TASKS';
 export const FILL_ANALYSIS_TASKS = 'FILL_ANALYSIS_TASKS';
 export const IS_GETTING_ANALYSIS_TASKS = 'IS_GETTING_ANALYSIS_TASKS';
 
-export function failedGetAnalysisTasks(error) {
+export const failedGetAnalysisTasks = (error) => {
   return {
     message: error,
     type: 'FAILED_GET_ANALYSIS_TASKS',
   };
-}
+};
 
-export function fillAnalysisTasks(message, tasks) {
+export const fillAnalysisTasks = (message, tasks) => {
   return {
     message,
     tasks,
     type: 'FILL_ANALYSIS_TASKS',
   };
-}
+};
 
-export function isGettingAnalysisTasks() {
+export const isGettingAnalysisTasks = () => {
   return {
     type: 'IS_GETTING_ANALYSIS_TASKS',
   };
-}
+};
 
 // thunks
-const getAnalysisTasks = (user) => {
-  return (dispatch) => {
+const getAnalysisTasks = () => {
+  return (dispatch, getState) => {
     dispatch(isGettingAnalysisTasks());
     const headers = new Headers();
     headers.append('Accept', 'application/json');
-    headers.append('Auth', `${user.name}:${user.email}:${user.lab}:${user.token}`);
+    headers.append('Auth-Token', getState().token);
     headers.append('Content-Type', 'application/json');
     return fetch('http://localhost:8003/analysis/tasks/', {
       cache: 'default',

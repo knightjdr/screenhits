@@ -4,7 +4,6 @@ import React from 'react';
 import { Link } from 'react-router';
 
 import CompactRefList from './compact-ref-list-container';
-import Details from './navbar-details.json';
 import HorizontalRefList from './horizontal-ref-list';
 
 import LogoImg from '../assets/logo/logo-white.png';
@@ -51,11 +50,11 @@ class Navbar extends React.Component {
         >
           { this.props.list === 'horizontal' ?
             <HorizontalRefList
-              items={ Details.links }
+              items={ this.props.links }
             /> :
             <CompactRefList
               anchor="topRight"
-              items={ Details.links }
+              items={ this.props.links }
             />
           }
         </span>
@@ -64,7 +63,17 @@ class Navbar extends React.Component {
   }
 }
 
+Navbar.defaultProps = {
+  links: [],
+};
+
 Navbar.propTypes = {
+  links: PropTypes.arrayOf(
+    PropTypes.shape({
+      link: PropTypes.string,
+      name: PropTypes.string,
+    })
+  ),
   list: PropTypes.string.isRequired,
   muiTheme: PropTypes.shape({
     palette: PropTypes.shape({

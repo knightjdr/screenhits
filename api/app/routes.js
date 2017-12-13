@@ -43,7 +43,7 @@ const routes = {
     });
     // returns all available project, screens, experiments and samples for a user
     app.get('/analysis/samples', auth.validate, (req, res) => {
-      analysisAvailable.get(req.query.screenType, req.email)
+      analysisAvailable.get(req.query.screenType, res.locals.user)
         .then((response) => {
           routes.response(res, response);
         })
@@ -51,7 +51,7 @@ const routes = {
     });
     // get analysis tasks
     app.get('/analysis/tasks', auth.validate, (req, res) => {
-      tasks.get()
+      tasks.get(res.locals.user)
         .then((response) => {
           routes.response(res, response);
         })
@@ -82,7 +82,7 @@ const routes = {
     });
     // returns available projects, screens, etc, based on user
     app.get('/management/list', auth.validate, (req, res) => {
-      availableList.get(req.query.target, req.email)
+      availableList.get(req.query.target, res.locals.user)
         .then((response) => {
           routes.response(res, response);
         })
@@ -98,7 +98,7 @@ const routes = {
     });
     // gets a list of available users for a project (for user management)
     app.get('/project/users', auth.validate, (req, res) => {
-      users.get(req.query._id, req.query.lab, req.query.permission)
+      users.get(req.query._id, req.query.lab, req.query.permission, res.locals.user)
         .then((response) => {
           routes.response(res, response);
         })
@@ -137,7 +137,7 @@ const routes = {
       ;
     });
     app.get('/view/task/:id', auth.validate, (req, res) => {
-      view.get(Number(req.params.id))
+      view.get(Number(req.params.id), res.locals.user)
         .then((response) => {
           routes.response(res, response);
         })
@@ -168,7 +168,7 @@ const routes = {
     });
     // create new projects, screens or experiments
     app.post('/management', auth.validate, (req, res) => {
-      create[req.body.target](req)
+      create[req.body.target](req, res.locals.user)
         .then((response) => {
           routes.response(res, response);
         })
@@ -176,7 +176,7 @@ const routes = {
     });
     // for adding and removing users from project list
     app.post('/project/users', auth.validate, (req, res) => {
-      users.post[req.body.type](req.body._id, req.body.list)
+      users.post[req.body.type](req.body._id, req.body.list, res.locals.user)
         .then((response) => {
           routes.response(res, response);
         })
@@ -186,7 +186,7 @@ const routes = {
     app.post('/*', (req, res) => { routes.invalidRoute(res); });
     // updating projects, screens, etc
     app.put('/management', auth.validate, (req, res) => {
-      update.put(req.body)
+      update.put(req.body, res.locals.user)
         .then((response) => {
           routes.response(res, response);
         })
@@ -194,7 +194,7 @@ const routes = {
     });
     // update user permissions
     app.put('/permission', auth.validate, (req, res) => {
-      permission.put(req.body._id, req.body.permission)
+      permission.put(req.body._id, req.body.permission, res.locals.user)
         .then((response) => {
           routes.response(res, response);
         })
@@ -202,7 +202,7 @@ const routes = {
     });
     // for updating user info for a project
     app.put('/users', auth.validate, (req, res) => {
-      users.put(req.body._id, req.body.users)
+      users.put(req.body._id, req.body.users, res.locals.user)
         .then((response) => {
           routes.response(res, response);
         })

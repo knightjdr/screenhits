@@ -158,7 +158,7 @@ class NewAnalysisContainer extends React.Component {
       prevState.stepIndex === 0 &&
       this.state.stepIndex === 1
     ) {
-      this.props.getAnalysisSamples(this.props.user, this.state.formData.screenType);
+      this.props.getAnalysisSamples(this.state.formData.screenType);
     }
   }
   componentWillUnmount = () => {
@@ -865,7 +865,6 @@ class NewAnalysisContainer extends React.Component {
       });
     } else if (this.state.formData.analysisType !== 'generic') {
       this.props.submitAnalysis(
-        this.props.user,
         Object.assign(
           {},
           formData,
@@ -878,7 +877,6 @@ class NewAnalysisContainer extends React.Component {
       );
     } else {
       this.props.submitComparison(
-        this.props.user,
         Object.assign(
           {},
           formData,
@@ -1147,14 +1145,14 @@ NewAnalysisContainer.propTypes = {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    getAnalysisSamples: (user, screenType) => {
-      dispatch(getAnalysisSamples(user, screenType));
+    getAnalysisSamples: (screenType) => {
+      dispatch(getAnalysisSamples(screenType));
     },
-    submitAnalysis: (user, formData) => {
-      dispatch(submitAnalysis(user, formData));
+    submitAnalysis: (formData) => {
+      dispatch(submitAnalysis(formData));
     },
-    submitComparison: (user, formData) => {
-      dispatch(submitComparison(user, formData));
+    submitComparison: (formData) => {
+      dispatch(submitComparison(formData));
     },
   };
 };

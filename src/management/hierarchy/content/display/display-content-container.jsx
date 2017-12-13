@@ -11,7 +11,6 @@ import { setIndex } from '../../../../state/set/index-actions';
 import { resetDelete, submitDelete } from '../../../../state/delete/actions';
 import { resetPost } from '../../../../state/post/actions';
 import { resetPut, submitPut } from '../../../../state/put/actions';
-import { userProp } from '../../../../types/index';
 
 class DisplayContentContainer extends React.Component {
   constructor(props) {
@@ -88,7 +87,7 @@ class DisplayContentContainer extends React.Component {
   }
   delete = (_id, type, group) => {
     this.resetMessages();
-    this.props.delete(_id, type, group, this.props.user);
+    this.props.delete(_id, type, group);
   }
   reset = () => {
     this.resetMessages();
@@ -154,7 +153,6 @@ class DisplayContentContainer extends React.Component {
         this.props.item._id,
         this.state.updateItem,
         this.props.activeLevel,
-        this.props.user
       );
     }
   }
@@ -312,7 +310,6 @@ DisplayContentContainer.propTypes = {
   resetPut: PropTypes.func.isRequired,
   selected: PropTypes.number.isRequired,
   update: PropTypes.func.isRequired,
-  user: userProp,
 };
 
 const mapDispatchToProps = (dispatch) => {
@@ -320,8 +317,8 @@ const mapDispatchToProps = (dispatch) => {
     changeSelected: (activeLevel, selected) => {
       dispatch(setIndex(activeLevel, selected));
     },
-    delete: (_id, activeLevel, obj, user) => {
-      dispatch(submitDelete(_id, activeLevel, obj, user));
+    delete: (_id, activeLevel, obj) => {
+      dispatch(submitDelete(_id, activeLevel, obj));
     },
     resetPost: (activeLevel) => {
       dispatch(resetPost(activeLevel));
@@ -332,8 +329,8 @@ const mapDispatchToProps = (dispatch) => {
     resetDelete: (activeLevel) => {
       dispatch(resetDelete(activeLevel));
     },
-    update: (_id, obj, activeLevel, user) => {
-      dispatch(submitPut(_id, obj, activeLevel, user));
+    update: (_id, obj, activeLevel) => {
+      dispatch(submitPut(_id, obj, activeLevel));
     },
   };
 };

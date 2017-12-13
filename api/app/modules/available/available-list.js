@@ -25,7 +25,7 @@ const returnFields = {
 
 const availableList = {
   // entry point for 'getting'
-  get: (target, email) => {
+  get: (target, user) => {
     return new Promise((resolve) => {
       // format items for return
       const formatItems = (items, level) => {
@@ -61,23 +61,19 @@ const availableList = {
         }
       };
 
-      query.get('users', { email }, { _id: 0, email: 1, lab: 1 }, 'findOne')
-        .then((user) => {
-          // find projects the user can access
-          const { queryObj, returnObj } = userProjects.query(user);
-          return query.get('project', queryObj, returnObj);
-        })
+      const { queryObj, returnObj } = userProjects.query(user);
+      query.get('project', queryObj, returnObj)
         .then((projects) => {
-          const filteredProjects = userProjects.filterProjects(email, projects, returnFields);
+          const filteredProjects = userProjects.filterProjects(user.email, projects, returnFields);
           // find screens matching desired type and available projects
           const projectIDs = filteredProjects.map((project) => { return project._id; });
-          const queryObj = {
+          const queryObjCurr = {
             $and: [
               { 'group.project': { $in: projectIDs } },
             ],
           };
           return target !== 'project' ?
-            query.get(target, queryObj, returnFields[target])
+            query.get(target, queryObjCurr, returnFields[target])
             :
             filteredProjects
           ;

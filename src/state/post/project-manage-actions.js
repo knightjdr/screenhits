@@ -8,43 +8,43 @@ export const REQUEST_MANAGE_POST = 'REQUEST_MANAGE_POST';
 export const RESET_MANAGE_POST = 'RESET_MANAGE_POST';
 export const SUCCESS_MANAGE_POST = 'SUCCESS_MANAGE_POST';
 
-export function failManagePost(_id, message) {
+export const failManagePost = (_id, message) => {
   return {
     _id,
     message,
     type: 'FAIL_MANAGE_POST',
   };
-}
+};
 
-export function requestManagePost(_id) {
+export const requestManagePost = (_id) => {
   return {
     _id,
     type: 'REQUEST_MANAGE_POST',
   };
-}
+};
 
-export function resetManagePost(_id) {
+export const resetManagePost = (_id) => {
   return {
     _id,
     type: 'RESET_MANAGE_POST',
   };
-}
+};
 
-export function successManagePost(_id, message) {
+export const successManagePost = (_id, message) => {
   return {
     _id,
     message,
     type: 'SUCCESS_MANAGE_POST',
   };
-}
+};
 
 // thunks
-const manageUsers = (user, _id, lab, obj, permission) => {
-  return (dispatch) => {
+const manageUsers = (_id, lab, obj, permission) => {
+  return (dispatch, getState) => {
     dispatch(requestManagePost(_id));
     const headers = new Headers();
     headers.append('Accept', 'application/json');
-    headers.append('Auth', `${user.name}:${user.email}:${user.lab}:${user.token}`);
+    headers.append('Auth-Token', getState().token);
     headers.append('Content-Type', 'application/json');
     return fetch('http://localhost:8003/project/users', {
       body: JSON.stringify(obj),
@@ -60,7 +60,7 @@ const manageUsers = (user, _id, lab, obj, permission) => {
       if (json.status === 200) {
         dispatch(updateToken(json.authToken));
         dispatch(successManagePost(_id, json.message));
-        dispatch(userGet(user, _id, lab, permission));
+        dispatch(userGet(_id, lab, permission));
       } else {
         const error = `Status code: ${json.status}; ${json.message}`;
         dispatch(failManagePost(_id, error));

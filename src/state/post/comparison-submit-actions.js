@@ -6,40 +6,40 @@ export const REQUEST_COMPARISON_POST = 'REQUEST_COMPARISON_POST';
 export const RESET_COMPARISON_POST = 'RESET_COMPARISON_POST';
 export const SUCCESS_COMPARISON_POST = 'SUCCESS_COMPARISON_POST';
 
-export function failComparisonPost(message) {
+export const failComparisonPost = (message) => {
   return {
     message,
     type: 'FAIL_COMPARISON_POST',
   };
-}
+};
 
-export function requestComparisonPost() {
+export const requestComparisonPost = () => {
   return {
     type: 'REQUEST_COMPARISON_POST',
   };
-}
+};
 
-export function resetComparisonPost() {
+export const resetComparisonPost = () => {
   return {
     type: 'RESET_COMPARISON_POST',
   };
-}
+};
 
-export function successComparisonPost(item, message) {
+export const successComparisonPost = (item, message) => {
   return {
     item,
     message,
     type: 'SUCCESS_COMPARISON_POST',
   };
-}
+};
 
 // thunks
-const submitComparison = (user, form) => {
-  return (dispatch) => {
+const submitComparison = (form) => {
+  return (dispatch, getState) => {
     dispatch(requestComparisonPost());
     const headers = new Headers();
     headers.append('Accept', 'application/json');
-    headers.append('Auth', `${user.name}:${user.email}:${user.lab}:${user.token}`);
+    headers.append('Auth-Token', getState().token);
     headers.append('Content-Type', 'application/json');
     return fetch('http://localhost:8003/analysis/comparison', {
       body: JSON.stringify(form),

@@ -7,44 +7,44 @@ export const REQUEST_POST = 'REQUEST_POST';
 export const RESET_POST = 'RESET_POST';
 export const SUCCESS_POST = 'SUCCESS_POST';
 
-export function failPost(target, message) {
+export const failPost = (target, message) => {
   return {
     message,
     target,
     type: 'FAIL_POST',
   };
-}
+};
 
-export function requestPost(target) {
+export const requestPost = (target) => {
   return {
     target,
     type: 'REQUEST_POST',
   };
-}
+};
 
-export function resetPost(target) {
+export const resetPost = (target) => {
   return {
     target,
     type: 'RESET_POST',
   };
-}
+};
 
-export function successPost(_id, message, target) {
+export const successPost = (_id, message, target) => {
   return {
     _id,
     message,
     target,
     type: 'SUCCESS_POST',
   };
-}
+};
 
 // thunks
-const submitPost = (target, obj, isFormData = false, user) => {
-  return (dispatch) => {
+const submitPost = (target, obj, isFormData = false) => {
+  return (dispatch, getState) => {
     dispatch(requestPost(target));
     const headers = new Headers();
     headers.append('Accept', 'application/json');
-    headers.append('Auth', `${user.name}:${user.email}:${user.lab}:${user.token}`);
+    headers.append('Auth-Token', getState().token);
     if (!isFormData) {
       headers.append('Content-Type', 'application/json');
     }

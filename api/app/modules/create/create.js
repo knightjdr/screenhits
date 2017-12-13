@@ -9,7 +9,7 @@ const update = require('../crud/update');
 const validate = require('../validation/validation');
 
 const Create = {
-  experiment: (req) => {
+  experiment: (req, user) => {
     return new Promise((resolve) => {
       let objCreate = {};
       validate.experiment(req.body, 'creationDate')
@@ -49,7 +49,7 @@ const Create = {
       ;
     });
   },
-  project: (req) => {
+  project: (req, user) => {
     return new Promise((resolve) => {
       let objCreate = {};
       validate.project(req.body, 'creationDate')
@@ -85,7 +85,7 @@ const Create = {
       ;
     });
   },
-  protocol: (req) => {
+  protocol: (req, user) => {
     return new Promise((resolve) => {
       let objCreate = {};
       validate.protocol(req.body, 'creationDate')
@@ -164,7 +164,7 @@ const Create = {
     inProgess: false,
     running: [],
   },
-  sample: (req) => {
+  sample: (req, user) => {
     return new Promise((resolve) => {
       // add to queue
       Create.queue.running.push(req);
@@ -206,7 +206,7 @@ const Create = {
     };
     next(Create.queue.running);
   },
-  screen: (req) => {
+  screen: (req, user) => {
     return new Promise((resolve) => {
       let objCreate = {};
       validate.screen(req.body, 'creationDate')

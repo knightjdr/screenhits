@@ -44,7 +44,7 @@ class ProtocolContentContainer extends React.Component {
     this.state = JSON.parse(JSON.stringify(defaultState));
   }
   componentWillMount = () => {
-    this.props.protocolGet(this.props.user);
+    this.props.protocolGet();
   }
   componentWillReceiveProps = (nextProps) => {
     const { deleteState, postState, protocols, putState } = nextProps;
@@ -213,13 +213,13 @@ class ProtocolContentContainer extends React.Component {
         target: 'protocol',
       };
       this.resetMessages();
-      this.props.createProtocol(protocolObj, this.props.user);
+      this.props.createProtocol(protocolObj);
     }
   }
   deleteProtocol = (_id) => {
     this.dialogClose();
     this.resetMessages();
-    this.props.delete(_id, this.props.user);
+    this.props.delete(_id);
   }
   dialogClose = () => {
     this.setState({
@@ -326,8 +326,7 @@ class ProtocolContentContainer extends React.Component {
     this.resetMessages();
     this.props.update(
       this.state.editProtocol._id,
-      this.state.editProtocol,
-      this.props.user
+      this.state.editProtocol
     );
   }
   render() {
@@ -423,14 +422,14 @@ ProtocolContentContainer.propTypes = {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    createProtocol: (obj, user) => {
-      dispatch(submitPost('protocol', obj, false, user));
+    createProtocol: (obj) => {
+      dispatch(submitPost('protocol', obj, false));
     },
-    delete: (_id, user) => {
-      dispatch(submitDelete(_id, 'protocol', {}, user));
+    delete: (_id) => {
+      dispatch(submitDelete(_id, 'protocol', {}));
     },
-    protocolGet: (user) => {
-      dispatch(getData('protocol', {}, null, user));
+    protocolGet: () => {
+      dispatch(getData('protocol', {}, null));
     },
     resetPut: () => {
       dispatch(resetPut('protocol'));
@@ -441,8 +440,8 @@ const mapDispatchToProps = (dispatch) => {
     resetPost: () => {
       dispatch(resetPost('protocol'));
     },
-    update: (_id, obj, user) => {
-      dispatch(submitPut(_id, obj, 'protocol', user));
+    update: (_id, obj) => {
+      dispatch(submitPut(_id, obj, 'protocol'));
     },
   };
 };

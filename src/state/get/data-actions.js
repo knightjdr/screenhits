@@ -11,36 +11,36 @@ export const FILL_FAILED = 'FILL_FAILED';
 export const IS_FILLING = 'IS_FILLING';
 export const PUSH_DATA = 'PUSH_DATA';
 
-export function fillData(target, arr) {
+export const fillData = (target, arr) => {
   return {
     arr,
     target,
     type: 'FILL_DATA',
   };
-}
+};
 
-export function fillFailed(target, error) {
+export const fillFailed = (target, error) => {
   return {
     message: error,
     target,
     type: 'FILL_FAILED',
   };
-}
+};
 
-export function isFilling(target) {
+export const isFilling = (target) => {
   return {
     target,
     type: 'IS_FILLING',
   };
-}
+};
 
-export function pushData(obj, target) {
+export const pushData = (obj, target) => {
   return {
     obj,
     target,
     type: 'PUSH_DATA',
   };
-}
+};
 
 // thunks
 const getData = (target, filters, selected) => {
@@ -96,7 +96,7 @@ const getRouteData = (selected) => {
     });
     const headers = new Headers();
     headers.append('Accept', 'application/json');
-    headers.append('Auth', getState().token);
+    headers.append('Auth-Token', getState().token);
     headers.append('Content-Type', 'application/json');
     let url = 'http://localhost:8003/loadRoute?target=management';
     if (!objectEmpty(selected)) {

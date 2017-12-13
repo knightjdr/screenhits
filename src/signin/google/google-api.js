@@ -33,7 +33,11 @@ const GoogleAPI = {
   },
   signout: () => {
     return new Promise((resolve, reject) => {
-      if (GoogleAPI.auth.isSignedIn.get()) {
+      if (
+        GoogleAPI.auth &&
+        GoogleAPI.auth.isSignedIn &&
+        GoogleAPI.auth.isSignedIn.get()
+      ) {
         GoogleAPI.auth.disconnect()
           .then(() => {
             resolve();

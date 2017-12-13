@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 
 import getViewTask from '../../../state/get/view-task-actions';
 import TaskView from './task-view';
-import { userProp, viewTaskStoreProp } from '../../../types';
+import { viewTaskStoreProp } from '../../../types';
 
 class TaskViewContainer extends React.Component {
   constructor(props) {
@@ -21,7 +21,7 @@ class TaskViewContainer extends React.Component {
   }
   componentDidMount = () => {
     if (this.props.viewID) {
-      this.props.getViewTask(this.props.viewID, this.props.user);
+      this.props.getViewTask(this.props.viewID);
     }
   }
   componentWillReceiveProps = (nextProps) => {
@@ -66,22 +66,20 @@ TaskViewContainer.defaultProps = {
 
 TaskViewContainer.propTypes = {
   getViewTask: PropTypes.func.isRequired,
-  user: userProp.isRequired,
   viewID: PropTypes.number,
   viewTask: viewTaskStoreProp,
 };
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    getViewTask: (id, user) => {
-      dispatch(getViewTask(id, user));
+    getViewTask: (id) => {
+      dispatch(getViewTask(id));
     },
   };
 };
 
 const mapStateToProps = (state) => {
   return {
-    user: state.user,
     viewTask: state.viewTask,
   };
 };

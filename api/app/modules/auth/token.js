@@ -23,10 +23,13 @@ const Token = {
     return new Promise((resolve, reject) => {
       if (authToken) {
         njwt.verify(authToken, SECRET, (err, verifiedJwt) => {
-          if (err) {
-            reject();
+          if (
+            !err &&
+            verifiedJwt.body
+          ) {
+            resolve(verifiedJwt.body);
           }
-          resolve(verifiedJwt.body);
+          reject();
         });
       } else {
         reject();

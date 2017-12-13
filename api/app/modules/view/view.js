@@ -2,7 +2,7 @@ const formatTask = require('./format-task');
 const query = require('../query/query');
 
 const View = {
-  get: (_id) => {
+  get: (_id, user) => {
     return new Promise((resolve) => {
       // make sure task exists, is complete and has no errors
       const checkTask = (task) => {

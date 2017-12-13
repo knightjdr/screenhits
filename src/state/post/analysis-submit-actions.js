@@ -6,39 +6,39 @@ export const REQUEST_ANALYSIS_POST = 'REQUEST_ANALYSIS_POST';
 export const RESET_ANALYSIS_POST = 'RESET_ANALYSIS_POST';
 export const SUCCESS_ANALYSIS_POST = 'SUCCESS_ANALYSIS_POST';
 
-export function failAnalysisPost(message) {
+export const failAnalysisPost = (message) => {
   return {
     message,
     type: 'FAIL_ANALYSIS_POST',
   };
-}
+};
 
-export function requestAnalysisPost() {
+export const requestAnalysisPost = () => {
   return {
     type: 'REQUEST_ANALYSIS_POST',
   };
-}
+};
 
-export function resetAnalysisPost() {
+export const resetAnalysisPost = () => {
   return {
     type: 'RESET_ANALYSIS_POST',
   };
-}
+};
 
-export function successAnalysisPost(message) {
+export const successAnalysisPost = (message) => {
   return {
     message,
     type: 'SUCCESS_ANALYSIS_POST',
   };
-}
+};
 
 // thunks
-const submitAnalysis = (user, form) => {
-  return (dispatch) => {
+const submitAnalysis = (form) => {
+  return (dispatch, getState) => {
     dispatch(requestAnalysisPost());
     const headers = new Headers();
     headers.append('Accept', 'application/json');
-    headers.append('Auth', `${user.name}:${user.email}:${user.lab}:${user.token}`);
+    headers.append('Auth-Token', getState().token);
     headers.append('Content-Type', 'application/json');
     return fetch('http://localhost:8003/analysis/new', {
       body: JSON.stringify(form),

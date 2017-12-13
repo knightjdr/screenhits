@@ -1,3 +1,4 @@
+import muiThemeable from 'material-ui/styles/muiThemeable';
 import PropTypes from 'prop-types';
 import React from 'react';
 
@@ -15,7 +16,11 @@ class App extends React.Component {
   }
   render() {
     return (
-      <div>
+      <div
+        style={ {
+          color: this.props.muiTheme.palette.textColor,
+        } }
+      >
         <Navbar />
         <div
           style={ {
@@ -34,6 +39,11 @@ class App extends React.Component {
 
 App.propTypes = {
   children: PropTypes.node.isRequired,
+  muiTheme: PropTypes.shape({
+    palette: PropTypes.shape({
+      textColor: PropTypes.string,
+    }),
+  }).isRequired,
 };
 
-export default App;
+export default muiThemeable()(App);

@@ -6,43 +6,43 @@ export const REQUEST_GET = 'REQUEST_SEARCH_USER_GET';
 export const RESET_GET = 'RESET_SEARCH_USER_GET';
 export const SUCCESS_GET = 'SUCCESS_SEARCH_USER_GET';
 
-export function failUserSearchGet(_id, message) {
+export const failUserSearchGet = (_id, message) => {
   return {
     _id,
     message,
     type: 'FAIL_SEARCH_USER_GET',
   };
-}
+};
 
-export function requestUserSearchGet(_id) {
+export const requestUserSearchGet = (_id) => {
   return {
     _id,
     type: 'REQUEST_SEARCH_USER_GET',
   };
-}
+};
 
-export function resetUserSearchGet() {
+export const resetUserSearchGet = () => {
   return {
     type: 'RESET_SEARCH_USER_GET',
   };
-}
+};
 
-export function successUserSearchGet(_id, message, list) {
+export const successUserSearchGet = (_id, message, list) => {
   return {
     _id,
     list,
     message,
     type: 'SUCCESS_SEARCH_USER_GET',
   };
-}
+};
 
 // thunks
-const userSearch = (user, _id, queryString) => {
-  return (dispatch) => {
+const userSearch = (_id, queryString) => {
+  return (dispatch, getState) => {
     dispatch(requestUserSearchGet(_id));
     const headers = new Headers();
     headers.append('Accept', 'application/json');
-    headers.append('Auth', `${user.name}:${user.email}:${user.lab}:${user.token}`);
+    headers.append('Auth-Token', getState().token);
     headers.append('Content-Type', 'application/json');
     return fetch(`http://localhost:8003/users?${queryString}`, {
       cache: 'default',

@@ -5,34 +5,34 @@ export const FAILED_GET_ANALYSIS_SAMPLES = 'FAILED_GET_ANALYSIS_SAMPLES';
 export const FILL_ANALYSIS_SAMPLES = 'FILL_ANALYSIS_SAMPLES';
 export const IS_GETTING_ANALYSIS_SAMPLES = 'IS_GETTING_ANALYSIS_SAMPLES';
 
-export function failedGetAnalysisSamples(error) {
+export const failedGetAnalysisSamples = (error) => {
   return {
     message: error,
     type: 'FAILED_GET_ANALYSIS_SAMPLES',
   };
-}
+};
 
-export function fillAnalysisSamples(message, sampleObj) {
+export const fillAnalysisSamples = (message, sampleObj) => {
   return {
     message,
     sampleObj,
     type: 'FILL_ANALYSIS_SAMPLES',
   };
-}
+};
 
-export function isGettingAnalysisSamples() {
+export const isGettingAnalysisSamples = () => {
   return {
     type: 'IS_GETTING_ANALYSIS_SAMPLES',
   };
-}
+};
 
 // thunks
-const getAnalysisSamples = (user, screenType) => {
-  return (dispatch) => {
+const getAnalysisSamples = (screenType) => {
+  return (dispatch, getState) => {
     dispatch(isGettingAnalysisSamples());
     const headers = new Headers();
     headers.append('Accept', 'application/json');
-    headers.append('Auth', `${user.name}:${user.email}:${user.lab}:${user.token}`);
+    headers.append('Auth-Token', getState().token);
     headers.append('Content-Type', 'application/json');
     return fetch(`http://localhost:8003/analysis/samples?screenType=${screenType}`, {
       cache: 'default',

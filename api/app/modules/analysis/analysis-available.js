@@ -28,7 +28,7 @@ const returnFields = {
 };
 
 const analysisAvailable = {
-  get: (screenType, email) => {
+  get: (screenType, user) => {
     return new Promise((resolve) => {
       // return object
       const available = {};
@@ -50,23 +50,19 @@ const analysisAvailable = {
       };
 
       // get user info
-      query.get('users', { email }, { _id: 0, email: 1, lab: 1 }, 'findOne')
-        .then((user) => {
-          // find projects the user can access
-          const { queryObj, returnObj } = userProjects.query(user);
-          return query.get('project', queryObj, returnObj);
-        })
+      const { queryObj, returnObj } = userProjects.query(user);
+      query.get('project', queryObj, returnObj)
         .then((projects) => {
-          available.project = userProjects.filterProjects(email, projects, returnFields);
+          available.project = userProjects.filterProjects(user.email, projects, returnFields);
           // find screens matching desired type and available projects
           const projectIDs = available.project.map((project) => { return project._id; });
-          const queryObj = {
+          const queryObjCurr = {
             $and: [
               { type: screenType },
               { 'group.project': { $in: projectIDs } },
             ],
           };
-          return query.get('screen', queryObj, returnFields.screen);
+          return query.get('screen', queryObjCurr, returnFields.screen);
         })
         .then((screens) => {
           available.screen = screens;
@@ -74,10 +70,10 @@ const analysisAvailable = {
           available.project = removeProjects(available.project, screens);
           // find all experiments and projects in these screens
           const screenIDs = screens.map((screen) => { return screen._id; });
-          const queryObj = { 'group.screen': { $in: screenIDs } };
+          const queryObjCurr = { 'group.screen': { $in: screenIDs } };
           return Promise.all([
-            query.get('experiment', queryObj, returnFields.experiment),
-            query.get('sample', queryObj, returnFields.sample),
+            query.get('experiment', queryObjCurr, returnFields.experiment),
+            query.get('sample', queryObjCurr, returnFields.sample),
           ]);
         })
         .then((values) => {

@@ -32,8 +32,9 @@ export const signinFailed = (message) => {
   };
 };
 
-export const signinSuccess = (name, privilege) => {
+export const signinSuccess = (email, name, privilege) => {
   return {
+    email,
     name,
     privilege,
     type: 'SIGNIN_SUCCESS',
@@ -82,6 +83,7 @@ const login = (signinToken) => {
         dispatch(updateToken(json.authToken));
         dispatch(
           signinSuccess(
+            json.user.email,
             json.user.name,
             json.user.privilege
           )

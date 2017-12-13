@@ -3,7 +3,7 @@ const update = require('../crud/update');
 const validate = require('../validation/validation');
 
 const Update = {
-  put: (obj) => {
+  put: (obj, user) => {
     return new Promise((resolve) => {
       const id = obj._id;
       const target = obj.target;

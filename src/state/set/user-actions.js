@@ -1,6 +1,6 @@
 export const SET_USER = 'SET_USER';
 
-export function setUser(email, lab, name, token) {
+export const setUser = (email, lab, name, token) => {
   return {
     email,
     lab,
@@ -8,4 +8,4 @@ export function setUser(email, lab, name, token) {
     token,
     type: 'SET_USER',
   };
-}
+};

@@ -4,14 +4,14 @@ import { connect } from 'react-redux';
 
 import GoogleAPI from './google/google-api';
 import Signin from './signin';
-import { login, signout } from '../state/post/signin-actions';
+import { login, signout } from '../state/get/signin-actions';
 import { clearToken } from '../state/set/token-actions';
 
 class SigninContainer extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      signinText: 'Sign in',
+      signinText: this.props.signedIn ? 'Sign out' : 'Sign in',
     };
   }
   componentWillReceiveProps = (nextProps) => {
@@ -37,22 +37,9 @@ class SigninContainer extends React.Component {
         })
       ;
     } else {
-      GoogleAPI.signout()
-        .then(() => {
-          this.props.clearToken();
-          this.props.logout();
-        })
-        .catch((error) => {
-          if (error) {
-            this.setState({
-              dialog: {
-                isOpen: true,
-                message: error,
-              },
-            });
-          }
-        })
-      ;
+      GoogleAPI.signout();
+      this.props.clearToken();
+      this.props.logout();
     }
   }
   updateSignin = (currentStatus, lastStatus, failed) => {

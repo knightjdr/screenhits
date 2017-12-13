@@ -6,44 +6,44 @@ export const REQUEST_GET = 'REQUEST_GET';
 export const RESET_GET = 'RESET_GET';
 export const SUCCESS_GET = 'SUCCESS_GET';
 
-export function failGet(_id, message) {
+export const failGet = (_id, message) => {
   return {
     _id,
     message,
     type: 'FAIL_GET',
   };
-}
+};
 
-export function requestGet(_id) {
+export const requestGet = (_id) => {
   return {
     _id,
     type: 'REQUEST_GET',
   };
-}
+};
 
-export function resetGet(_id) {
+export const resetGet = (_id) => {
   return {
     _id,
     type: 'RESET_GET',
   };
-}
+};
 
-export function successGet(_id, message, list) {
+export const successGet = (_id, message, list) => {
   return {
     _id,
     list,
     message,
     type: 'SUCCESS_GET',
   };
-}
+};
 
 // thunks
-const userGet = (user, _id, lab, permission) => {
-  return (dispatch) => {
+const userGet = (_id, lab, permission) => {
+  return (dispatch, getState) => {
     dispatch(requestGet(_id));
     const headers = new Headers();
     headers.append('Accept', 'application/json');
-    headers.append('Auth', `${user.name}:${user.email}:${user.lab}:${user.token}`);
+    headers.append('Auth-Token', getState().token);
     headers.append('Content-Type', 'application/json');
     return fetch(`http://localhost:8003/project/users?_id=${_id}&lab=${lab}&permission=${permission}`, {
       cache: 'default',

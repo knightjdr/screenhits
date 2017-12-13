@@ -5,36 +5,36 @@ export const FILL_LEVEL_DATA = 'FILL_LEVEL_DATA';
 export const FILL_LEVEL_FAILED = 'FILL_LEVEL_FAILED';
 export const IS_LEVEL_FILLING = 'IS_LEVEL_FILLING';
 
-export function fillLevelData(items, target) {
+export const fillLevelData = (items, target) => {
   return {
     items,
     target,
     type: 'FILL_LEVEL_DATA',
   };
-}
+};
 
-export function fillLevelFailed(target, error) {
+export const fillLevelFailed = (target, error) => {
   return {
     message: error,
     target,
     type: 'FILL_LEVEL_FAILED',
   };
-}
+};
 
-export function isLevelFilling(target) {
+export const isLevelFilling = (target) => {
   return {
     target,
     type: 'IS_LEVEL_FILLING',
   };
-}
+};
 
 // thunks
-const getLevelData = (target, user) => {
-  return (dispatch) => {
+const getLevelData = (target) => {
+  return (dispatch, getState) => {
     dispatch(isLevelFilling(target));
     const headers = new Headers();
     headers.append('Accept', 'application/json');
-    headers.append('Auth', `${user.name}:${user.email}:${user.lab}:${user.token}`);
+    headers.append('Auth-Token', getState().token);
     headers.append('Content-Type', 'application/json');
     const url = `http://localhost:8003/management/list?target=${target}`;
     return fetch(url, {

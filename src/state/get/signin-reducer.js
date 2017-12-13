@@ -7,6 +7,7 @@ import {
 } from './signin-actions';
 
 const defaultState = {
+  email: null,
   isSigningIn: false,
   message: '',
   name: null,

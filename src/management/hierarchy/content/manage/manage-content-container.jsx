@@ -65,7 +65,7 @@ class ManageContentContainer extends React.Component {
         search: {},
       },
     };
-    this.props.userGet(this.props.user, this.props.selected, this.props.lab, this.props.permission);
+    this.props.userGet(this.props.selected, this.props.lab, this.props.permission);
   }
   componentDidMount() {
     window.addEventListener('resize', this.resize);
@@ -73,7 +73,7 @@ class ManageContentContainer extends React.Component {
   componentWillReceiveProps(nextProps) {
     if (nextProps.selected !== this.props.selected) {
       this.props.resetUserSearchGet();
-      this.props.userGet(nextProps.user, nextProps.selected, nextProps.lab, nextProps.permission);
+      this.props.userGet(nextProps.selected, nextProps.lab, nextProps.permission);
     }
     if (nextProps.users._id &&
       nextProps.users.list.length > 0
@@ -141,7 +141,6 @@ class ManageContentContainer extends React.Component {
       users: this.state.addUsers,
     };
     this.props.addUsersAction(
-      this.props.user,
       this.props.selected,
       this.props.lab,
       this.props.permission,
@@ -217,7 +216,7 @@ class ManageContentContainer extends React.Component {
         searchUserPermission: {},
       });
       const queryString = `type=${this.state.inputType}&${this.state.inputType}=${searchValue}`;
-      this.props.userSearch(this.props.user, this.props.selected, queryString);
+      this.props.userSearch(this.props.selected, queryString);
     }
   }
   searchStyle = () => {
@@ -261,7 +260,6 @@ class ManageContentContainer extends React.Component {
   }
   updateBulkPermissions = () => {
     this.props.changeBulkPermissionAction(
-      this.props.user,
       this.props.selected,
       this.props.lab,
       this.state.selectPermission,
@@ -279,7 +277,6 @@ class ManageContentContainer extends React.Component {
       submitObj.type = type;
     }
     this.props.manageUsers(
-      this.props.user,
       this.props.selected,
       this.props.lab,
       submitObj,
@@ -398,12 +395,6 @@ ManageContentContainer.propTypes = {
   }).isRequired,
   selected: PropTypes.number.isRequired,
   top: PropTypes.func.isRequired,
-  user: PropTypes.shape({
-    email: PropTypes.string,
-    lab: PropTypes.string,
-    name: PropTypes.string,
-    token: PropTypes.string,
-  }).isRequired,
   userGet: PropTypes.func.isRequired,
   userSearch: PropTypes.func.isRequired,
   users: PropTypes.shape({
@@ -420,14 +411,14 @@ ManageContentContainer.propTypes = {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    addUsersAction: (user, _id, lab, permission, obj) => {
-      dispatch(addUsersAction(user, _id, lab, permission, obj));
+    addUsersAction: (_id, lab, permission, obj) => {
+      dispatch(addUsersAction(_id, lab, permission, obj));
     },
-    changeBulkPermissionAction: (user, _id, lab, permission) => {
-      dispatch(changeBulkPermissionAction(user, _id, lab, permission));
+    changeBulkPermissionAction: (_id, lab, permission) => {
+      dispatch(changeBulkPermissionAction(_id, lab, permission));
     },
-    manageUsers: (user, _id, lab, obj, permission) => {
-      dispatch(manageUsers(user, _id, lab, obj, permission));
+    manageUsers: (_id, lab, obj, permission) => {
+      dispatch(manageUsers(_id, lab, obj, permission));
     },
     resetAddUserPut: () => {
       dispatch(resetAddUserPut());
@@ -441,11 +432,11 @@ const mapDispatchToProps = (dispatch) => {
     resetManagePost: () => {
       dispatch(resetManagePost(null));
     },
-    userGet: (user, _id, lab, permission) => {
-      dispatch(userGet(user, _id, lab, permission));
+    userGet: (_id, lab, permission) => {
+      dispatch(userGet(_id, lab, permission));
     },
-    userSearch: (user, _id, queryString) => {
-      dispatch(userSearch(user, _id, queryString));
+    userSearch: (_id, queryString) => {
+      dispatch(userSearch(_id, queryString));
     },
   };
 };

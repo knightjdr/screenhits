@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
+import { browserHistory, withRouter } from 'react-router';
 
 import Login from './login';
 import Token from './token';
@@ -24,8 +25,8 @@ class LoginContainer extends React.Component {
     }
   }
   componentWillReceiveProps = (nextProps) => {
-    const { isSigningIn, signInFailed, signInStatus } = nextProps;
-    this.updateSignin(isSigningIn, signInFailed, signInStatus);
+    const { isSigningIn, location, signInFailed, signInStatus } = nextProps;
+    this.updateSignin(isSigningIn, signInFailed, signInStatus, location.pathname);
   }
   dialogClose = () => {
     this.setState({
@@ -35,9 +36,14 @@ class LoginContainer extends React.Component {
       },
     });
   }
-  updateSignin = (isSigningIn, failed, signInStatus) => {
+  updateSignin = (isSigningIn, failed, signInStatus, path) => {
     // currently not displaying a dialog when signing in
-    if (failed) {
+    if (
+      failed &&
+      path !== '/' &&
+      path !== '/help'
+    ) {
+      browserHistory.push('/');
       this.setState({
         dialog: {
           isOpen: true,
@@ -70,6 +76,9 @@ LoginContainer.propTypes = {
   isSigningIn: PropTypes.bool.isRequired,
   signInFailed: PropTypes.bool.isRequired,
   signInStatus: PropTypes.string,
+  location: PropTypes.shape({
+    pathname: PropTypes.string,
+  }).isRequired,
   validateToken: PropTypes.func.isRequired,
 };
 
@@ -94,4 +103,4 @@ const Container = connect(
   mapDispatchToProps,
 )(LoginContainer);
 
-export default Container;
+export default withRouter(Container);

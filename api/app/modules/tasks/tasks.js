@@ -58,7 +58,7 @@ const Tasks = {
       }
     });
   },
-  get: () => {
+  get: (user) => {
     return new Promise((resolve) => {
       // format tasks for client
       const formatTasks = (tasks) => {

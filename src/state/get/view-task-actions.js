@@ -5,34 +5,34 @@ export const FAILED_GET_VIEW_TASK = 'FAILED_GET_VIEW_TASK';
 export const FILL_VIEW_TASK = 'FILL_VIEW_TASK';
 export const IS_GETTING_VIEW_TASK = 'IS_GETTING_VIEW_TASK';
 
-export function failedGetViewTask(error) {
+export const failedGetViewTask = (error) => {
   return {
     message: error,
     type: 'FAILED_GET_VIEW_TASK',
   };
-}
+};
 
-export function fillViewTask(message, task) {
+export const fillViewTask = (message, task) => {
   return {
     message,
     task,
     type: 'FILL_VIEW_TASK',
   };
-}
+};
 
-export function isGettingViewTask() {
+export const isGettingViewTask = () => {
   return {
     type: 'IS_GETTING_VIEW_TASK',
   };
-}
+};
 
 // thunks
-const getViewTask = (id, user) => {
-  return (dispatch) => {
+const getViewTask = (id) => {
+  return (dispatch, getState) => {
     dispatch(isGettingViewTask());
     const headers = new Headers();
     headers.append('Accept', 'application/json');
-    headers.append('Auth', `${user.name}:${user.email}:${user.lab}:${user.token}`);
+    headers.append('Auth-Token', getState().token);
     headers.append('Content-Type', 'application/json');
     return fetch(`http://localhost:8003/view/task/${id}`, {
       cache: 'default',

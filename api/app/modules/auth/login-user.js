@@ -11,6 +11,7 @@ const LoginUser = (email) => {
           resolve({
             authToken,
             user: {
+              email: user.email,
               name: user.name,
               privilege: user.privilege,
             },

@@ -159,7 +159,7 @@ class CreateContentContainer extends React.Component {
         this.props.user,
         this.props.selected,
       );
-      this.props.create(this.props.activeLevel, submitObj, this.props.user);
+      this.props.create(this.props.activeLevel, submitObj);
     }
   }
   render() {
@@ -232,8 +232,8 @@ CreateContentContainer.propTypes = {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    create: (activeLevel, obj, user) => {
-      dispatch(submitPost(activeLevel, obj, false, user));
+    create: (activeLevel, obj) => {
+      dispatch(submitPost(activeLevel, obj, false));
     },
     protocolGet: (user) => {
       dispatch(getData('protocol', {}, null, user));

@@ -2,12 +2,14 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
 
+import EnsureLogin from './ensure-login';
+
 class EnsureLoggedInContainer extends React.Component {
   render() {
     if (this.props.signedIn) {
       return this.props.children;
     }
-    return null;
+    return <EnsureLogin />;
   }
 }
 

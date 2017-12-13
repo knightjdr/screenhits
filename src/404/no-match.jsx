@@ -16,6 +16,7 @@ export default class NoMatch extends React.Component {
           style={ {
             alignItems: 'flex-start',
             display: 'flex',
+            maxWidth: 600,
           } }
         >
           <div
@@ -27,8 +28,8 @@ export default class NoMatch extends React.Component {
           </div>
           <div>
             Either this page does not exist, or you do not have permission to access it.
-            Return to the home page and ensure you are signed in, then try loading this page
-            again.
+            If you believe it should exist, return to the home page and ensure you are
+            signed in, then try loading the page again.
           </div>
         </div>
       </div>

@@ -54,7 +54,7 @@ class ManagementListContainer extends React.Component {
     this.verifyRoute(this.props.params, this.props.path);
   }
   componentDidMount = () => {
-    this.props.getLevelData(this.state.activeLevel, this.props.user);
+    this.props.getLevelData(this.state.activeLevel);
     window.addEventListener('resize', this.resize);
   }
   componentWillReceiveProps = (nextProps) => {
@@ -70,7 +70,7 @@ class ManagementListContainer extends React.Component {
   componentWillUpdate = (nextProps, nextState) => {
     if (nextState.activeLevel !== this.state.activeLevel) {
       browserHistory.replace(`/management/list/${nextState.activeLevel}`);
-      this.props.getLevelData(nextState.activeLevel, nextProps.user);
+      this.props.getLevelData(nextState.activeLevel);
     }
   };
   componentWillUnmount = () => {
@@ -235,7 +235,7 @@ class ManagementListContainer extends React.Component {
     });
   }
   refreshLevel = () => {
-    this.props.getLevelData(this.state.activeLevel, this.props.user);
+    this.props.getLevelData(this.state.activeLevel);
   }
   resize = () => {
     this.setState(({ items }) => {
@@ -418,16 +418,14 @@ ManagementListContainer.propTypes = {
   }).isRequired,
   path: PropTypes.string.isRequired,
   user: PropTypes.shape({
-    email: PropTypes.string,
-    lab: PropTypes.string,
     name: PropTypes.string,
   }).isRequired,
 };
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    getLevelData: (level, user) => {
-      dispatch(getLevelData(level, user));
+    getLevelData: (level) => {
+      dispatch(getLevelData(level));
     },
   };
 };

@@ -7,38 +7,38 @@ export const REQUEST_DELETE = 'REQUEST_DELETE';
 export const RESET_DELETE = 'RESET_DELETE';
 export const SUCCESS_DELETE = 'SUCCESS_DELETE';
 
-export function failDelete(_id, message, target) {
+export const failDelete = (_id, message, target) => {
   return {
     _id,
     message,
     target,
     type: 'FAIL_DELETE',
   };
-}
+};
 
-export function requestDelete(_id, target) {
+export const requestDelete = (_id, target) => {
   return {
     _id,
     target,
     type: 'REQUEST_DELETE',
   };
-}
+};
 
-export function resetDelete(target) {
+export const resetDelete = (target) => {
   return {
     target,
     type: 'RESET_DELETE',
   };
-}
+};
 
-export function successDelete(_id, message, target) {
+export const successDelete = (_id, message, target) => {
   return {
     _id,
     message,
     target,
     type: 'SUCCESS_DELETE',
   };
-}
+};
 
 // thunks
 const submitDelete = (_id, target, group) => {
@@ -46,7 +46,7 @@ const submitDelete = (_id, target, group) => {
     dispatch(requestDelete(_id, target));
     const headers = new Headers();
     headers.append('Accept', 'application/json');
-    headers.append('Auth', getState().token);
+    headers.append('Auth-Token', getState().token);
     headers.append('Content-Type', 'application/json');
     const queryString = `target=${target}&_id=${_id}`;
     return fetch(`http://localhost:8003/management?${queryString}`, {

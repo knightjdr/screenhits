@@ -405,7 +405,7 @@ class CreateSampleContainer extends React.Component {
         this.state.screenType,
         this.state.fileParser.firstLine,
       );
-      this.props.create('sample', submitObj, true, this.props.user);
+      this.props.create('sample', submitObj, true);
       this.setState({
         cancelButton: {
           label: 'Close',
@@ -600,8 +600,8 @@ CreateSampleContainer.propTypes = {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    create: (activeLevel, obj, isFormData, user) => {
-      dispatch(submitPost(activeLevel, obj, isFormData, user));
+    create: (activeLevel, obj, isFormData) => {
+      dispatch(submitPost(activeLevel, obj, isFormData));
     },
     resetPost: () => {
       dispatch(resetPost('sample'));
