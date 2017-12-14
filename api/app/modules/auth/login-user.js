@@ -12,6 +12,7 @@ const LoginUser = (email) => {
             authToken,
             user: {
               email: user.email,
+              lab: user.lab,
               name: user.name,
               privilege: user.privilege,
             },

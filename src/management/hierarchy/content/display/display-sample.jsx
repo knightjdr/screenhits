@@ -231,16 +231,19 @@ class DisplaySample extends React.Component {
               >
                 <FileDownload />
               </IconButton>
-              <IconButton
-                iconStyle={ {
-                  color: this.props.muiTheme.palette.warning,
-                } }
-                onTouchTap={ () => { this.props.dialog.open('delete'); } }
-                tooltip="Delete sample"
-                tooltipPosition="bottom-left"
-              >
-                <DeleteForever />
-              </IconButton>
+              {
+                this.props.canEdit &&
+                <IconButton
+                  iconStyle={ {
+                    color: this.props.muiTheme.palette.warning,
+                  } }
+                  onTouchTap={ () => { this.props.dialog.open('delete'); } }
+                  tooltip="Delete sample"
+                  tooltipPosition="bottom-left"
+                >
+                  <DeleteForever />
+                </IconButton>
+              }
             </div>
           </div>
         }
@@ -386,6 +389,7 @@ class DisplaySample extends React.Component {
 }
 
 DisplaySample.propTypes = {
+  canEdit: PropTypes.bool.isRequired,
   deleteSample: PropTypes.func.isRequired,
   dialog: PropTypes.shape({
     close: PropTypes.func,

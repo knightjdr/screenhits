@@ -54,6 +54,7 @@ class DisplayProjectContainer extends React.Component {
   render() {
     return (
       <DisplayProject
+        canEdit={ this.props.canEdit }
         deleteProject={ this.deleteProject }
         dialog={ {
           delete: this.state.dialog.delete,
@@ -70,6 +71,7 @@ class DisplayProjectContainer extends React.Component {
 }
 
 DisplayProjectContainer.propTypes = {
+  canEdit: PropTypes.bool.isRequired,
   delete: PropTypes.func.isRequired,
   edit: PropTypes.bool.isRequired,
   errors: PropTypes.shape({

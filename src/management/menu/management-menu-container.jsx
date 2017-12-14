@@ -1,16 +1,35 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import { connect } from 'react-redux';
 
 import ManagementMenu from './management-menu';
+import Permissions from '../../helpers/permissions';
+import { projectItemProp, selectedProp, userProp } from '../../types/index';
 
-class ManagementMenuContent extends React.Component {
+class ManagementMenuContainer extends React.Component {
   constructor(props) {
     super(props);
+    const project = this.getProject(this.props.projects, this.props.selected.project);
     this.state = {
       anchorEl: null,
+      canEdit: Permissions.canEdit(this.props.user, project),
+      canManage: Permissions.canManage(this.props.user, project),
       radius: 30,
       showList: false,
     };
+  }
+  componentWillReceiveProps = (nextProps) => {
+    const { projects, user, selected } = nextProps;
+    this.updateProject(selected.project, this.props.selected.project, projects, user);
+  }
+  getProject = (projects, selectedProject) => {
+    if (selectedProject) {
+      const projectIndex = projects.findIndex((project) => {
+        return project._id === selectedProject;
+      });
+      return projects[projectIndex];
+    }
+    return {};
   }
   createMenuAction = () => {
     this.hideManagementList();
@@ -53,11 +72,32 @@ class ManagementMenuContent extends React.Component {
     this.hideManagementList();
     this.props.menuActions.update();
   }
+  updateProject = (newID, currentID, projects, user) => {
+    if (
+      newID &&
+      newID !== currentID
+    ) {
+      const project = this.getProject(projects, newID);
+      this.setState({
+        canEdit: Permissions.canEdit(user, project),
+        canManage: Permissions.canManage(user, project),
+      });
+    } else if (
+      newID !== currentID
+    ) {
+      this.setState({
+        canEdit: false,
+        canManage: false,
+      });
+    }
+  }
   render() {
     return (
       <ManagementMenu
         activeLevel={ this.props.activeLevel }
         anchorEl={ this.state.anchorEl }
+        canEdit={ this.state.canEdit }
+        canManage={ this.state.canManage }
         createMenuAction={ this.createMenuAction }
         editMenuAction={ this.editMenuAction }
         enlargeMenu={ this.enlargeMenu }
@@ -65,7 +105,7 @@ class ManagementMenuContent extends React.Component {
         manageMenuAction={ this.manageMenuAction }
         protocolMenuAction={ this.protocolMenuAction }
         radius={ this.state.radius }
-        selected={ this.props.selected }
+        viewID={ this.props.viewID }
         showList={ this.state.showList }
         showManagementList={ this.showManagementList }
         shrinkMenu={ this.shrinkMenu }
@@ -75,11 +115,11 @@ class ManagementMenuContent extends React.Component {
   }
 }
 
-ManagementMenuContent.defaultProps = {
-  selected: null,
+ManagementMenuContainer.defaultProps = {
+  viewID: null,
 };
 
-ManagementMenuContent.propTypes = {
+ManagementMenuContainer.propTypes = {
   activeLevel: PropTypes.string.isRequired,
   menuActions: PropTypes.shape({
     create: PropTypes.func,
@@ -88,7 +128,22 @@ ManagementMenuContent.propTypes = {
     protocol: PropTypes.func,
     update: PropTypes.func,
   }).isRequired,
-  selected: PropTypes.number,
+  projects: projectItemProp.isRequired,
+  selected: selectedProp.isRequired,
+  user: userProp.isRequired,
+  viewID: PropTypes.number,
 };
 
-export default ManagementMenuContent;
+const mapStateToProps = (state) => {
+  return {
+    projects: state.available.project.items,
+    selected: state.selected,
+    user: state.user,
+  };
+};
+
+const Container = connect(
+  mapStateToProps,
+)(ManagementMenuContainer);
+
+export default Container;

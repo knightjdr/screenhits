@@ -32,9 +32,10 @@ export const signinFailed = (message) => {
   };
 };
 
-export const signinSuccess = (email, name, privilege) => {
+export const signinSuccess = (email, lab, name, privilege) => {
   return {
     email,
+    lab,
     name,
     privilege,
     type: 'SIGNIN_SUCCESS',
@@ -84,6 +85,7 @@ const login = (signinToken) => {
         dispatch(
           signinSuccess(
             json.user.email,
+            json.user.lab,
             json.user.name,
             json.user.privilege
           )
@@ -123,6 +125,8 @@ const validateToken = (authToken) => {
         dispatch(updateToken(json.authToken));
         dispatch(
           signinSuccess(
+            json.user.email,
+            json.user.lab,
             json.user.name,
             json.user.privilege
           )

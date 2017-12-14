@@ -7,7 +7,6 @@ const comparison = require('./modules/comparison/comparison');
 const create = require('./modules/create/create');
 const deleteQuery = require('./modules/delete/delete');
 const loadRoute = require('./modules/available/load-route');
-const permission = require('./modules/permission/permission');
 const queue = require('./modules/queue/queue');
 const sample = require('./modules/sample/sample');
 const search = require('./modules/search/search');
@@ -15,12 +14,13 @@ const tasks = require('./modules/tasks/tasks');
 const update = require('./modules/update/update');
 const users = require('./modules/users/users');
 const view = require('./modules/view/view');
+const userPermission = require('./modules/user-permission/permission');
 
 const routes = {
   configure: (app) => {
     // deleting
     app.delete('/management', auth.validate, (req, res) => {
-      deleteQuery.item(req.query.target, res.locals.user, Number(req.query._id))
+      deleteQuery.item(req.query.target, Number(req.query._id), res.locals.user)
         .then((response) => {
           routes.response(res, response);
         })
@@ -194,7 +194,7 @@ const routes = {
     });
     // update user permissions
     app.put('/permission', auth.validate, (req, res) => {
-      permission.put(req.body._id, req.body.permission, res.locals.user)
+      userPermission.put(req.body._id, req.body.permission, res.locals.user)
         .then((response) => {
           routes.response(res, response);
         })

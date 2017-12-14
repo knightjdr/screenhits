@@ -9,6 +9,7 @@ import {
 const defaultState = {
   email: null,
   isSigningIn: false,
+  lab: null,
   message: '',
   name: null,
   privilege: null,

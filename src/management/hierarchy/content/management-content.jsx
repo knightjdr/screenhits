@@ -49,7 +49,7 @@ class ManagementContent extends React.Component {
         edit={ this.props.menuBoolean.edit }
         item={ this.props.item }
         key={ this.props.selected }
-        selected={ this.props.selected }
+        viewID={ this.props.selected }
       />);
     } else if (this.props.availableLength === 0) {
       content = (<div style={ introStyle }>
@@ -74,7 +74,7 @@ class ManagementContent extends React.Component {
         <ManagementMenu
           activeLevel={ this.props.activeLevel }
           menuActions={ this.props.menuActions }
-          selected={ this.props.selected }
+          viewID={ this.props.selected }
         />
         <ActionMenu />
         { content }

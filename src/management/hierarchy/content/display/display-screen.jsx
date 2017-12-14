@@ -277,20 +277,23 @@ class DisplayScreen extends React.Component {
                 { this.props.screen.creationDate}
               </div>
             </div>
-            <div
-              style={ displayStyle.deleteContainer }
-            >
-              <IconButton
-                iconStyle={ {
-                  color: this.props.muiTheme.palette.warning,
-                } }
-                onTouchTap={ () => { this.props.dialog.open('delete'); } }
-                tooltip="Delete screen"
-                tooltipPosition="bottom-left"
+            {
+              this.props.canEdit &&
+              <div
+                style={ displayStyle.deleteContainer }
               >
-                <DeleteForever />
-              </IconButton>
-            </div>
+                <IconButton
+                  iconStyle={ {
+                    color: this.props.muiTheme.palette.warning,
+                  } }
+                  onTouchTap={ () => { this.props.dialog.open('delete'); } }
+                  tooltip="Delete screen"
+                  tooltipPosition="bottom-left"
+                >
+                  <DeleteForever />
+                </IconButton>
+              </div>
+            }
           </div>
         }
         { this.props.edit &&
@@ -477,6 +480,7 @@ class DisplayScreen extends React.Component {
 }
 
 DisplayScreen.propTypes = {
+  canEdit: PropTypes.bool.isRequired,
   deleteScreen: PropTypes.func.isRequired,
   dialog: PropTypes.shape({
     close: PropTypes.func,

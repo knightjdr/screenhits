@@ -34,6 +34,7 @@ class DisplayContent extends React.Component {
           { this.props.activeLevel === 'project' ?
             <DisplayProject
               cancel={ this.props.cancel }
+              canEdit={ this.props.canEdit }
               delete={ this.props.delete }
               edit={ this.props.edit }
               errors={ this.props.errors }
@@ -47,6 +48,7 @@ class DisplayContent extends React.Component {
           { this.props.activeLevel === 'screen' ?
             <DisplayScreen
               cancel={ this.props.cancel }
+              canEdit={ this.props.canEdit }
               delete={ this.props.delete }
               edit={ this.props.edit }
               errors={ this.props.errors }
@@ -61,6 +63,7 @@ class DisplayContent extends React.Component {
           { this.props.activeLevel === 'experiment' ?
             <DisplayExperiment
               cancel={ this.props.cancel }
+              canEdit={ this.props.canEdit }
               delete={ this.props.delete }
               edit={ this.props.edit }
               errors={ this.props.errors }
@@ -75,6 +78,7 @@ class DisplayContent extends React.Component {
           { this.props.activeLevel === 'sample' ?
             <DisplaySample
               cancel={ this.props.cancel }
+              canEdit={ this.props.canEdit }
               delete={ this.props.delete }
               edit={ this.props.edit }
               errors={ this.props.errors }
@@ -177,6 +181,7 @@ DisplayContent.defaultProps = {
 DisplayContent.propTypes = {
   activeLevel: PropTypes.string.isRequired,
   cancel: PropTypes.func.isRequired,
+  canEdit: PropTypes.bool.isRequired,
   delete: PropTypes.func.isRequired,
   deleteMessages: PropTypes.shape({
     didDeleteFail: PropTypes.bool,

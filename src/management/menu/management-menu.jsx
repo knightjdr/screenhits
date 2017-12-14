@@ -80,8 +80,10 @@ class ManagementMenu extends React.Component {
                   primaryText={ [<FontAwesome key="update" name="refresh" />, ' Update ', this.props.activeLevel, ' store'] }
                 />
               }
-              { this.props.activeLevel === 'project' &&
-                this.props.selected &&
+              {
+                this.props.activeLevel === 'project' &&
+                this.props.canManage &&
+                this.props.viewID &&
                 <MenuItem
                   key="manage"
                   onClick={ this.props.manageMenuAction }
@@ -95,7 +97,9 @@ class ManagementMenu extends React.Component {
                   primaryText={ [<FontAwesome key="protocol" name="file-text-o" />, ' Manage protocols '] }
                 />
               }
-              { this.props.selected &&
+              {
+                this.props.viewID &&
+                this.props.canEdit &&
                 <MenuItem
                   key="edit"
                   onClick={ this.props.editMenuAction }
@@ -117,12 +121,14 @@ class ManagementMenu extends React.Component {
 
 ManagementMenu.defaultProps = {
   anchorEl: PropTypes.shape({}),
-  selected: null,
+  viewID: null,
 };
 
 ManagementMenu.propTypes = {
   activeLevel: PropTypes.string.isRequired,
   anchorEl: PropTypes.shape({}),
+  canEdit: PropTypes.bool.isRequired,
+  canManage: PropTypes.bool.isRequired,
   createMenuAction: PropTypes.func.isRequired,
   editMenuAction: PropTypes.func.isRequired,
   enlargeMenu: PropTypes.func.isRequired,
@@ -135,11 +141,11 @@ ManagementMenu.propTypes = {
   }).isRequired,
   protocolMenuAction: PropTypes.func.isRequired,
   radius: PropTypes.number.isRequired,
-  selected: PropTypes.number,
   showList: PropTypes.bool.isRequired,
   showManagementList: PropTypes.func.isRequired,
   shrinkMenu: PropTypes.func.isRequired,
   updateMenuAction: PropTypes.func.isRequired,
+  viewID: PropTypes.number,
 };
 
 export default muiThemeable()(ManagementMenu);

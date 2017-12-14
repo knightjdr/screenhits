@@ -96,8 +96,8 @@ const mapDispatchToProps = (dispatch) => {
 
 const mapStateToProps = (state) => {
   return {
-    signedIn: state.userTest.signedIn,
-    signInFailed: state.userTest.signInFailed,
+    signedIn: state.user.signedIn,
+    signInFailed: state.user.signInFailed,
   };
 };
 

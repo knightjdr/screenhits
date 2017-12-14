@@ -68,7 +68,7 @@ NavbarContainer.propTypes = {
 
 const mapStateToProps = (state) => {
   return {
-    signedIn: state.userTest.signedIn,
+    signedIn: state.user.signedIn,
   };
 };
 

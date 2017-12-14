@@ -4,8 +4,8 @@ import { connect } from 'react-redux';
 
 import DisplayScreen from './display-screen';
 import Fields from '../../../../modules/fields';
-import { objectEmpty } from '../../../../helpers/helpers';
 import ValidateField from '../../../../modules/validate-field';
+import { objectEmpty } from '../../../../helpers/helpers';
 
 class DisplayScreenContainer extends React.Component {
   constructor(props) {
@@ -89,6 +89,7 @@ class DisplayScreenContainer extends React.Component {
   render() {
     return (
       <DisplayScreen
+        canEdit={ this.props.canEdit }
         deleteScreen={ this.deleteScreen }
         dialog={ {
           close: this.dialogClose,
@@ -109,6 +110,7 @@ class DisplayScreenContainer extends React.Component {
 }
 
 DisplayScreenContainer.propTypes = {
+  canEdit: PropTypes.bool.isRequired,
   delete: PropTypes.func.isRequired,
   edit: PropTypes.bool.isRequired,
   errors: PropTypes.shape({

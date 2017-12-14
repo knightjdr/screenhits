@@ -19,9 +19,8 @@ import searchUser from './get/search-user-reducer';
 import selected from './set/index-reducer';
 import tasks from './get/analysis-task-reducer';
 import token from './set/token-reducer';
-import user from './set/user-reducer';
+import user from './get/signin-reducer';
 import users from './get/project-user-reducer';
-import userTest from './get/signin-reducer';
 import viewTask from './get/view-task-reducer';
 
 const App = combineReducers({
@@ -45,7 +44,6 @@ const App = combineReducers({
   token,
   user,
   users,
-  userTest,
   viewTask,
 });
 

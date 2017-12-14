@@ -58,7 +58,7 @@ Routing.propTypes = {
 
 const mapStateToProps = (state) => {
   return {
-    loggedIn: state.userTest.signedIn,
+    loggedIn: state.user.signedIn,
   };
 };
 

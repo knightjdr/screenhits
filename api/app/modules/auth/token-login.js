@@ -6,6 +6,7 @@ const TokenLogin = (res) => {
         status: 200,
         user: {
           email: res.locals.user.email,
+          lab: res.locals.user.lab,
           name: res.locals.user.name,
           privilege: res.locals.user.privilege,
         },

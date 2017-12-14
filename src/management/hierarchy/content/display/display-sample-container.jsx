@@ -115,6 +115,7 @@ class DisplaySampleContainer extends React.Component {
     return (
       <div>
         <DisplaySample
+          canEdit={ this.props.canEdit }
           deleteSample={ this.deleteSample }
           dialog={ {
             close: this.dialogClose,
@@ -148,6 +149,7 @@ DisplaySampleContainer.defaultProps = {
 };
 
 DisplaySampleContainer.propTypes = {
+  canEdit: PropTypes.bool.isRequired,
   delete: PropTypes.func.isRequired,
   edit: PropTypes.bool.isRequired,
   errors: PropTypes.shape({

@@ -1,12 +1,16 @@
 const deleteQuery = require('../crud/delete');
+const Permission = require('../permission/permission');
 const query = require('../query/query');
 const sampleCollections = require('../sample/sample-collections');
 const update = require('../crud/update');
 
 const Delete = {
-  item: (target, user, _id) => {
+  item: (target, _id, user) => {
     return new Promise((resolve) => {
-      Delete.getDeletionPromises(target, _id)
+      Permission.canEdit[target](_id, user)
+        .then(() => {
+          return Delete.getDeletionPromises(target, _id);
+        })
         .then(() => {
           resolve({
             status: 200,

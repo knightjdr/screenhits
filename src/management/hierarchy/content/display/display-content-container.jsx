@@ -6,40 +6,63 @@ import { connect } from 'react-redux';
 import DefaultProps from '../../../../types/default-props';
 import DisplayContent from './display-content';
 import Format from './format-edit';
+import Permissions from '../../../../helpers/permissions';
 import ValidateField from '../../../../modules/validate-field';
 import { setIndex } from '../../../../state/set/index-actions';
 import { resetDelete, submitDelete } from '../../../../state/delete/actions';
 import { resetPost } from '../../../../state/post/actions';
 import { resetPut, submitPut } from '../../../../state/put/actions';
+import { projectItemProp, selectedProp, userProp } from '../../../../types/index';
 
 class DisplayContentContainer extends React.Component {
   constructor(props) {
     super(props);
+    const project = this.getProject(this.props.projects, this.props.selected.project);
     this.state = {
+      canEdit: Permissions.canEdit(this.props.user, project),
       errors: Format.blankError[this.props.activeLevel],
       inputWidth: window.innerWidth >= 555 ? 500 : window.innerWidth - 55,
       originalItem: JSON.parse(JSON.stringify(this.props.item)),
       postMessage: this.setPostMessage(
         this.props.postState,
         this.props.activeLevel,
-        this.props.selected,
+        this.props.viewID,
       ),
       reset: 0,
       updateItem: JSON.parse(JSON.stringify(this.props.item)),
       warning: false,
     };
   }
-  componentDidMount() {
+  componentDidMount = () => {
     window.addEventListener('resize', this.resize);
   }
-  componentWillReceiveProps(nextProps) {
-    const { activeLevel, deleteState, edit, item, putState, postState, selected } = nextProps;
+  componentWillReceiveProps = (nextProps) => {
+    const {
+      activeLevel,
+      deleteState,
+      edit,
+      item,
+      projects,
+      putState,
+      postState,
+      selected,
+      user,
+      viewID,
+    } = nextProps;
     const newState = {};
     // update item when store item updates
     if (!deepEqual(item, this.props.item)) {
       newState.originalItem = JSON.parse(JSON.stringify(item));
       newState.updateItem = JSON.parse(JSON.stringify(item));
     }
+    // on project change, check permission
+    newState.canEdit = this.updateProject(
+      selected.project,
+      this.props.selected.project,
+      this.state.canEdit,
+      projects,
+      user
+    );
     // on successful delete
     if (
       this.props.deleteState[activeLevel].isDelete &&
@@ -57,7 +80,7 @@ class DisplayContentContainer extends React.Component {
       this.props.cancelMenuAction();
     }
     // check for post messages
-    newState.postMessage = this.setPostMessage(postState, activeLevel, selected);
+    newState.postMessage = this.setPostMessage(postState, activeLevel, viewID);
     // when switching to edit mode
     if (edit) {
       this.resetMessages();
@@ -69,10 +92,10 @@ class DisplayContentContainer extends React.Component {
     window.removeEventListener('resize', this.resize);
     this.resetMessages();
   }
-  setPostMessage = (postState, activeLevel, selected) => {
-    return postState[activeLevel]._id === selected ?
+  setPostMessage = (postState, activeLevel, viewID) => {
+    return postState[activeLevel]._id === viewID ?
     {
-      _id: selected,
+      _id: viewID,
       message: postState[activeLevel].message,
     }
     :
@@ -81,6 +104,15 @@ class DisplayContentContainer extends React.Component {
       message: null,
     }
     ;
+  }
+  getProject = (projects, selectedProject) => {
+    if (selectedProject) {
+      const projectIndex = projects.findIndex((project) => {
+        return project._id === selectedProject;
+      });
+      return projects[projectIndex];
+    }
+    return {};
   }
   cancel = () => {
     this.props.cancelMenuAction();
@@ -162,11 +194,26 @@ class DisplayContentContainer extends React.Component {
   updateItem = (updateObject) => {
     this.setState({ updateItem: updateObject });
   };
+  updateProject = (newID, currentID, canEdit, projects, user) => {
+    if (
+      newID &&
+      newID !== currentID
+    ) {
+      const project = this.getProject(projects, newID);
+      return Permissions.canManage(user, project);
+    } else if (
+      newID !== currentID
+    ) {
+      return false;
+    }
+    return canEdit;
+  }
   render() {
     return (
       <DisplayContent
         activeLevel={ this.props.activeLevel }
         cancel={ this.cancel }
+        canEdit={ this.state.canEdit }
         delete={ this.delete }
         deleteMessages={ this.props.deleteState[this.props.activeLevel] }
         edit={ this.props.edit }
@@ -273,6 +320,7 @@ DisplayContentContainer.propTypes = {
       isSubmitted: PropTypes.bool,
     }),
   }).isRequired,
+  projects: projectItemProp.isRequired,
   putState: PropTypes.shape({
     experiment: PropTypes.shape({
       _id: PropTypes.number,
@@ -308,8 +356,10 @@ DisplayContentContainer.propTypes = {
   resetDelete: PropTypes.func.isRequired,
   resetPost: PropTypes.func.isRequired,
   resetPut: PropTypes.func.isRequired,
-  selected: PropTypes.number.isRequired,
+  selected: selectedProp.isRequired,
   update: PropTypes.func.isRequired,
+  user: userProp.isRequired,
+  viewID: PropTypes.number.isRequired,
 };
 
 const mapDispatchToProps = (dispatch) => {
@@ -339,7 +389,9 @@ const mapStateToProps = (state) => {
   return {
     deleteState: state.delete,
     postState: state.post,
+    projects: state.available.project.items,
     putState: state.put,
+    selected: state.selected,
     user: state.user,
   };
 };

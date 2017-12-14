@@ -5,12 +5,11 @@ import React from 'react';
 import thunkMiddleware from 'redux-thunk';
 
 import stateApp from './reducers';
-import initialState from './test-state.json';
 
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 export const store = createStore(
   stateApp,
-  initialState,
+  {},
   composeEnhancers(
     applyMiddleware(
       thunkMiddleware,
