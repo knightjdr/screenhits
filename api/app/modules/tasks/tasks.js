@@ -1,11 +1,74 @@
 const Analysis = require('../analysis/analysis');
 const arrayUnique = require('../helpers/array-unique');
 const crudDelete = require('../crud/delete');
+const Permission = require('../permission/permission');
 const query = require('../query/query');
 const UpdateTask = require('../analysis/update-task');
 
 const Tasks = {
-  delete: (_id, userEmail) => {
+  canAccess: (user) => {
+    return new Promise((resolve, reject) => {
+      // create query object
+      const createQuery = (customPermissions) => {
+        if (user.privilege === 'siteAdmin') {
+          return {};
+        }
+
+        // lab admins cannot be blocked from their own labs project
+        const canBlock = (currUser, item) => {
+          if (
+            currUser.privilege === 'labAdmin' &&
+            currUser.lab === item.lab
+          ) {
+            return false;
+          }
+          return true;
+        };
+
+        const ninUsers = []; // users that have blocked current user
+        let inUsers = [user.email]; // users that allow access
+        customPermissions.forEach((permission) => {
+          if (permission._id === 'global') {
+            inUsers = inUsers.concat(permission.list);
+          } else {
+            permission.list.forEach((item) => {
+              if (item.access) {
+                user.push(item.user);
+              } else if (canBlock(user, item)) {
+                ninUsers.push(item.user);
+              }
+            });
+          }
+        });
+        inUsers = arrayUnique(inUsers);
+        return {
+          $and: [
+            { userEmail: { $nin: ninUsers } },
+            {
+              $or: [
+                { userEmail: { $in: inUsers } }, // created the task
+                { lab: user.lab },
+              ],
+            },
+          ],
+        };
+      };
+
+      query.get('taskPermissions', { _id: { $in: ['global', user.email] } })
+        .then((customPermissions) => {
+          const queryObj = createQuery(customPermissions);
+          return query.get('analysisTasks', queryObj);
+        })
+        .then((tasks) => {
+          resolve(tasks);
+        })
+        .catch((error) => {
+          reject(error);
+        })
+      ;
+    });
+  },
+  delete: (_id, user) => {
     return new Promise((resolve) => {
       const resolveFunc = (message, status) => {
         resolve({
@@ -21,23 +84,37 @@ const Tasks = {
       const queueIndex = Analysis.queue.running.findIndex((queued) => {
         return queued._id === _id;
       });
+
       if (queueIndex > 0) {
-        Analysis.removeFromQueue(queueIndex);
-        resolveFunc('Task cancelled', 200);
+        Permission.canEdit.analysis(_id, user, Analysis.queue.running[queueIndex])
+          .then(() => {
+            Analysis.removeFromQueue(queueIndex);
+            resolveFunc('Task cancelled', 200);
+          })
+          .catch((error) => {
+            resolveFunc(`Task could not be cancelled: ${error}`, 500);
+          })
+        ;
       } else if (queueIndex === 0) { // if task is running, kill it
-        UpdateTask.kill(_id, userEmail)
+        Permission.canEdit.analysis(_id, user)
+          .then(() => {
+            return UpdateTask.kill(_id, user.email);
+          })
           .then(() => {
             return crudDelete.item('analysisTasks', { _id });
           })
           .then(() => {
             resolveFunc('Task cancelled', 200);
           })
-          .catch(() => {
-            resolveFunc('Task could not be cancelled', 500);
+          .catch((error) => {
+            resolveFunc(`Task could not be cancelled: ${error}`, 500);
           })
         ;
       } else { // if task has completed, delete from database
-        query.get('analysisTasks', { _id, userEmail }, { _id: 1 }, 'findOne')
+        Permission.canEdit.analysis(_id, user)
+          .then(() => {
+            return query.get('analysisTasks', { _id, userEmail: user.email }, { _id: 1 }, 'findOne');
+          })
           .then((task) => {
             if (task._id) {
               return Promise.all([
@@ -51,8 +128,7 @@ const Tasks = {
             resolveFunc('Task deleted', 200);
           })
           .catch((error) => {
-            console.log(error);
-            resolveFunc('Task could not be deleted', 500);
+            resolveFunc(`Task could not be deleted: ${error}`, 500);
           })
         ;
       }
@@ -145,7 +221,7 @@ const Tasks = {
         return arrayUnique(designSamples);
       };
 
-      query.get('analysisTasks', {})
+      Tasks.canAccess(user)
         .then((tasks) => {
           const formattedTasks = formatTasks(tasks);
           // get sample IDs
@@ -178,7 +254,7 @@ const Tasks = {
       ;
     });
   },
-  getOne: (target, qeury) => {
+  getOne: (_id, queryObj, user) => {
     return new Promise((resolve) => {
       const contentType = {
         html: 'text/html',
@@ -186,7 +262,7 @@ const Tasks = {
       };
       const formatTask = (task) => {
         let returnElement = '';
-        switch (qeury.format) {
+        switch (queryObj.format) {
           case 'html': {
             break;
           }
@@ -221,14 +297,18 @@ const Tasks = {
         }
         return returnElement;
       };
-      query.get('analysisResults', { _id: Number(target) }, {}, 'findOne')
+
+      Permission.canView.analysis(_id, user)
+        .then(() => {
+          return query.get('analysisResults', { _id }, {}, 'findOne');
+        })
         .then((task) => {
           if (task) {
             resolve({
               status: 200,
               clientResponse: {
                 status: 200,
-                contentType: contentType[qeury.format],
+                contentType: contentType[queryObj.format],
                 data: formatTask(task),
               },
             });

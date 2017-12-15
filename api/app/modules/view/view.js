@@ -1,4 +1,5 @@
 const formatTask = require('./format-task');
+const Permission = require('../permission/permission');
 const query = require('../query/query');
 
 const View = {
@@ -20,10 +21,13 @@ const View = {
       };
 
       const viewTask = {};
-      Promise.all([
-        query.get('analysisTasks', { _id }, {}, 'findOne'),
-        query.get('analysisResults', { _id }, {}, 'findOne'),
-      ])
+      Permission.canView.analysis(_id, user)
+        .then(() => {
+          return Promise.all([
+            query.get('analysisTasks', { _id }, {}, 'findOne'),
+            query.get('analysisResults', { _id }, {}, 'findOne'),
+          ]);
+        })
         .then((values) => {
           viewTask.status = values[0];
           viewTask.results = values[1].results;

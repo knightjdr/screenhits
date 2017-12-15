@@ -8,7 +8,9 @@ import { connect } from 'react-redux';
 import AnalysisModule from '../../../modules/analysis-new';
 import DeleteTask from './delete-task';
 import Download from '../../../helpers/download';
+import Permissions from '../../../helpers/permissions';
 import TaskList from './task-list';
+import { userProp } from '../../../types/index';
 
 const emptyRect = {
   bottom: null,
@@ -64,6 +66,7 @@ class TaskListContainer extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      canEdit: Permissions.canEditTask(this.props.user, this.props.tasks),
       deleteDialog: {
         _id: null,
         show: false,
@@ -144,7 +147,7 @@ class TaskListContainer extends React.Component {
     this.updateSnackbar({
       isDeleting: true,
     });
-    DeleteTask(_id, this.props.user)
+    DeleteTask(_id, this.props.token)
       .then((message) => {
         this.updateSnackbar({
           didDeleteFail: false,
@@ -169,7 +172,7 @@ class TaskListContainer extends React.Component {
       'tsv',
       queryString,
       `analysis/tasks/${_id}`,
-      this.props.user
+      this.props.token
     )
       .catch((error) => {
         this.setState({
@@ -470,14 +473,6 @@ class TaskListContainer extends React.Component {
   }
 }
 
-TaskListContainer.defaultProps = {
-  user: {
-    email: null,
-    lab: null,
-    name: null,
-  },
-};
-
 TaskListContainer.propTypes = {
   applyFilters: PropTypes.func.isRequired,
   clearFilters: PropTypes.func.isRequired,
@@ -499,16 +494,14 @@ TaskListContainer.propTypes = {
     fetching: PropTypes.bool,
     message: PropTypes.string,
   }).isRequired,
+  token: PropTypes.string.isRequired,
   updateTasks: PropTypes.func.isRequired,
-  user: PropTypes.shape({
-    email: PropTypes.string,
-    lab: PropTypes.string,
-    name: PropTypes.string,
-  }),
+  user: userProp.isRequired,
 };
 
 const mapStateToProps = (state) => {
   return {
+    token: state.token,
     user: state.user,
   };
 };

@@ -28,7 +28,7 @@ const routes = {
     });
     // delete analysis tasks
     app.delete('/analysis/tasks/:id', auth.validate, (req, res) => {
-      tasks.delete(Number(req.params.id), req.email)
+      tasks.delete(Number(req.params.id), res.locals.user)
         .then((response) => {
           routes.response(res, response);
         })
@@ -58,7 +58,7 @@ const routes = {
       ;
     });
     app.get('/analysis/tasks/:id', auth.validate, (req, res) => {
-      tasks.getOne(req.params.id, req.query)
+      tasks.getOne(Number(req.params.id), req.query, res.locals.user)
         .then((response) => {
           routes.response(res, response);
         })
@@ -66,7 +66,7 @@ const routes = {
     });
     // returns available projects, screens, etc, based on user
     app.get('/loadRoute', auth.validate, (req, res) => {
-      loadRoute.get(req.query.target, res.locals.user, req.query.selected)
+      loadRoute.get(req.query.target, req.query.selected, res.locals.user)
         .then((response) => {
           routes.response(res, response);
         })
@@ -90,7 +90,7 @@ const routes = {
     });
     // returns available projects, screens, etc, based on user
     app.get('/management', auth.validate, (req, res) => {
-      available.get(req.query.target, res.locals.user, req.query.filters)
+      available.get(req.query.target, req.query.filters, res.locals.user)
         .then((response) => {
           routes.response(res, response);
         })
@@ -98,7 +98,7 @@ const routes = {
     });
     // gets a list of available users for a project (for user management)
     app.get('/project/users', auth.validate, (req, res) => {
-      users.get(req.query._id, req.query.lab, req.query.permission, res.locals.user)
+      users.get(Number(req.query._id), req.query.lab, req.query.permission, res.locals.user)
         .then((response) => {
           routes.response(res, response);
         })
@@ -114,7 +114,7 @@ const routes = {
     });
     // returns sample details according to format
     app.get('/sample', auth.validate, (req, res) => {
-      sample.get(req.query.target, req.query.format)
+      sample.get(Number(req.query.target), req.query.format, res.locals.user)
         .then((response) => {
           routes.response(res, response);
         })
@@ -128,7 +128,7 @@ const routes = {
         })
       ;
     });
-    // for adding and removing users from project list
+    // validating tokens on login
     app.get('/validate', auth.validate, (req, res) => {
       auth.tokenLogin(res)
         .then((response) => {
@@ -160,7 +160,7 @@ const routes = {
     });
     // submit analysis
     app.post('/analysis/new', auth.validate, (req, res) => {
-      analysis.create(req.body)
+      analysis.create(req.body, res.locals.user)
         .then((response) => {
           routes.response(res, response);
         })

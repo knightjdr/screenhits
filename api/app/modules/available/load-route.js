@@ -1,7 +1,9 @@
 const available = require('./available');
+const query = require('../query/query');
+const userProjects = require('../projects/user-projects');
 
 const loadRoute = {
-  get: (target, user, selected) => {
+  get: (target, selected, user) => {
     return new Promise((resolve) => {
       const querySelected = selected ? JSON.parse(selected) : {};
       const filters = {
@@ -19,12 +21,22 @@ const loadRoute = {
           project: querySelected.project,
         },
       };
-      Promise.all([
-        querySelected.project ? available.getForRoute('project', user.email, user.lab, filters.project) : [],
-        querySelected.project ? available.getForRoute('screen', user.email, user.lab, filters.screen) : [],
-        querySelected.screen ? available.getForRoute('experiment', user.email, user.lab, filters.experiment) : [],
-        querySelected.experiment ? available.getForRoute('sample', user.email, user.lab, filters.sample) : [],
-      ])
+
+      // get list of projects the user can query
+      const { queryObj, returnObj } = userProjects.query(user);
+      query.get('project', queryObj, returnObj)
+        .then((projects) => {
+          // get array of project IDs the user has not been excluded from
+          const filteredProjects = userProjects.filterProjects(user, projects, { project: ['_id'] })
+            .map((project) => { return project._id; })
+          ;
+          return Promise.all([
+            querySelected.project ? available.getForRoute('project', user, filters.project, filteredProjects) : [],
+            querySelected.project ? available.getForRoute('screen', user, filters.screen, filteredProjects) : [],
+            querySelected.screen ? available.getForRoute('experiment', user, filters.experiment, filteredProjects) : [],
+            querySelected.experiment ? available.getForRoute('sample', user, filters.sample, filteredProjects) : [],
+          ]);
+        })
         .then((availableArray) => {
           resolve({
             status: 200,

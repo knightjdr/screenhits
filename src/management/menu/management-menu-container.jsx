@@ -12,8 +12,8 @@ class ManagementMenuContainer extends React.Component {
     const project = this.getProject(this.props.projects, this.props.selected.project);
     this.state = {
       anchorEl: null,
-      canEdit: Permissions.canEdit(this.props.user, project),
-      canManage: Permissions.canManage(this.props.user, project),
+      canEdit: Permissions.canEditProject(this.props.user, project),
+      canManage: Permissions.canManageProject(this.props.user, project),
       radius: 30,
       showList: false,
     };
@@ -79,8 +79,8 @@ class ManagementMenuContainer extends React.Component {
     ) {
       const project = this.getProject(projects, newID);
       this.setState({
-        canEdit: Permissions.canEdit(user, project),
-        canManage: Permissions.canManage(user, project),
+        canEdit: Permissions.canEditProject(user, project),
+        canManage: Permissions.canManageProject(user, project),
       });
     } else if (
       newID !== currentID

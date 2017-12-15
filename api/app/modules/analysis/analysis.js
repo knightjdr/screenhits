@@ -8,7 +8,7 @@ const rimraf = require('rimraf');
 const UpdateTask = require('./update-task');
 
 const Analysis = {
-  create: (form) => {
+  create: (form, user) => {
     return new Promise((resolve) => {
       // get task ID, set time and queue
       counter.get('analysis')
@@ -20,6 +20,9 @@ const Analysis = {
               {
                 _id: taskID,
                 date: moment().format('MMMM Do YYYY, h:mm a'),
+                lab: user.lab,
+                userEmail: user.email,
+                userName: user.name,
               }
             )
           );
@@ -51,9 +54,10 @@ const Analysis = {
     return new Promise((resolve, reject) => {
       const storeItem = JSON.parse(JSON.stringify(item));
       delete storeItem._id;
-      delete storeItem.creatorEmail;
-      delete storeItem.creatorName;
       delete storeItem.date;
+      delete storeItem.lab;
+      delete storeItem.userEmail;
+      delete storeItem.userName;
       const insertObj = {
         _id: item._id,
         isComplete: false,
@@ -64,12 +68,13 @@ const Analysis = {
         folder: null,
         isRunning: true,
         kill: false,
+        lab: item.lab,
         log: null,
         pid: 'x',
         status: 'Task created',
         step: 'Initializing task',
-        userEmail: item.creatorEmail,
-        userName: item.creatorName,
+        userEmail: item.userEmail,
+        userName: item.userName,
       };
       crudCreate.insert('analysisTasks', insertObj)
         .then(() => {

@@ -1,5 +1,6 @@
 const query = require('../query/query');
 const owner = require('./user-owner');
+const Permission = require('../permission/permission');
 const permissions = require('./user-permission');
 const sort = require('../helpers/sort');
 const update = require('../crud/update');
@@ -8,7 +9,6 @@ const validate = require('./user-validate');
 const Users = {
   get: (_id, lab, permission, user) => {
     return new Promise((resolve) => {
-      const queryObj = Users.getQueryObj(lab, permission);
       const responseObj = {
         status: 200,
         clientResponse: {
@@ -17,29 +17,23 @@ const Users = {
         },
       };
       let userExceptions = [];
-      query.get('project', { _id: Number(_id) }, {}, 'findOne')
-        .then((document) => {
-          responseObj.clientResponse.creatorEmail = document.creatorEmail;
-          responseObj.clientResponse.creatorName = document.creatorName;
-          responseObj.clientResponse.ownerEmail = document.ownerEmail;
-          responseObj.clientResponse.ownerName = document.ownerName;
+      Permission.canEdit.project(_id, user)
+        .then(() => {
+          return query.get('project', { _id }, {}, 'findOne');
+        })
+        .then((project) => {
+          responseObj.clientResponse.creatorEmail = project.creatorEmail;
+          responseObj.clientResponse.creatorName = project.creatorName;
+          responseObj.clientResponse.ownerEmail = project.ownerEmail;
+          responseObj.clientResponse.ownerName = project.ownerName;
           if (
-            document.userPermission &&
-            document.userPermission.length > 0
+            project.userPermission &&
+            project.userPermission.length > 0
           ) {
-            userExceptions = document.userPermission;
+            userExceptions = project.userPermission;
           }
-          return permission === 'n' ? [] :
-            query.get(
-              'users',
-              queryObj,
-              {
-                email: 1,
-                lab: 1,
-                name: 1,
-              }
-            )
-          ;
+          const queryObj = Users.getQueryObj(project.ownerEmail, lab, permission);
+          return query.get('users', queryObj, { email: 1, lab: 1, name: 1 });
         })
         .then((users) => {
           responseObj.clientResponse.users = Users.getFormatUsers(
@@ -71,13 +65,17 @@ const Users = {
     usersArr.unshift(ownerObj);
     return usersArr;
   },
-  getQueryObj: (lab, permission) => {
+  getQueryObj: (email, lab, permission) => {
     const queryObj = {};
     if (
       permission === 'lr' ||
       permission === 'lw'
     ) {
       queryObj.lab = lab;
+    } else if (
+      permission === 'n'
+    ) {
+      queryObj.email = email;
     }
     return queryObj;
   },

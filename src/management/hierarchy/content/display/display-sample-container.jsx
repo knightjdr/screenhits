@@ -70,7 +70,7 @@ class DisplaySampleContainer extends React.Component {
       'tsv',
       queryString,
       'sample',
-      this.props.user
+      this.props.token
     )
       .catch((error) => {
         this.setState({
@@ -109,7 +109,7 @@ class DisplaySampleContainer extends React.Component {
     this.props.updateItem(updateObject);
   }
   viewSample = () => {
-    ViewSample(this.state.item._id, this.state.item.name, 'html', this.props.user);
+    ViewSample(this.state.item._id, this.state.item.name, 'html', this.props.token);
   }
   render() {
     return (
@@ -139,15 +139,6 @@ class DisplaySampleContainer extends React.Component {
   }
 }
 
-DisplaySampleContainer.defaultProps = {
-  user: {
-    email: null,
-    lab: null,
-    name: null,
-    token: null,
-  },
-};
-
 DisplaySampleContainer.propTypes = {
   canEdit: PropTypes.bool.isRequired,
   delete: PropTypes.func.isRequired,
@@ -176,12 +167,7 @@ DisplaySampleContainer.propTypes = {
     sample: PropTypes.number,
     screen: PropTypes.number,
   }).isRequired,
-  user: PropTypes.shape({
-    email: PropTypes.string,
-    lab: PropTypes.string,
-    name: PropTypes.string,
-    token: PropTypes.string,
-  }),
+  token: PropTypes.string.isRequired,
   updateErrors: PropTypes.func.isRequired,
   updateItem: PropTypes.func.isRequired,
 };
@@ -189,7 +175,7 @@ DisplaySampleContainer.propTypes = {
 const mapStateToProps = (state) => {
   return {
     selectedIndices: state.selected,
-    user: state.user,
+    token: state.token,
   };
 };
 

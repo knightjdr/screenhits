@@ -1,11 +1,11 @@
 import fetch from 'isomorphic-fetch';
 
 // retrieves queue from server
-const Delete = (_id, user) => {
+const Delete = (_id, authToken) => {
   return new Promise((resolve, reject) => {
     const headers = new Headers();
     headers.append('Accept', 'application/json');
-    headers.append('Auth', `${user.name}:${user.email}:${user.lab}:${user.token}`);
+    headers.append('Auth-Token', authToken);
     const url = `http://localhost:8003/analysis/tasks/${_id}`;
     fetch(
       url,

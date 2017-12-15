@@ -1,4 +1,5 @@
 const query = require('../query/query');
+const userProjects = require('../projects/user-projects');
 
 const available = {
   // experiments require addition processing to add protocols,
@@ -47,7 +48,7 @@ const available = {
     return formattedExperiments;
   },
   // entry point for 'getting'
-  get: (target, user, filters) => {
+  get: (target, filters, user) => {
     return new Promise((resolve) => {
       let queryFilters;
       if (!filters) {
@@ -59,85 +60,84 @@ const available = {
       } else {
         queryFilters = {};
       }
-      const queryObj = available.getFilters(target, user.email, user.lab, queryFilters);
 
-      const returnObj = target === 'sample' ? { records: 0 } : {};
-
-      const resolveGet = (documents) => {
-        resolve({
-          status: 200,
-          clientResponse: {
-            status: 200,
-            data: documents,
-          },
-        });
-      };
-      const rejectGet = (error) => {
-        resolve({
-          status: 500,
-          clientResponse: {
-            status: 500,
-            message: `There was an error performing this query: ${error}`,
-          },
-        });
-      };
-
-      switch (target) {
-        case 'experiment':
-          available.experiment(queryObj)
-            .then((documents) => {
-              resolveGet(documents);
-            })
-            .catch((error) => {
-              rejectGet(error);
-            })
+      // get list of projects the user can query
+      let { queryObj, returnObj } = userProjects.query(user);
+      query.get('project', queryObj, returnObj)
+        .then((projects) => {
+          // get array of project IDs the user has not been excluded from
+          const filteredProjects = userProjects.filterProjects(user, projects, { project: ['_id'] })
+            .map((project) => { return project._id; })
           ;
-          break;
-        default:
-          available.getGeneral(target, queryObj, returnObj)
-            .then((documents) => {
-              resolveGet(documents);
-            })
-            .catch((error) => {
-              rejectGet(error);
-            })
-          ;
-          break;
-      }
+          // get query and return objects for mongo
+          queryObj = available.getFilters(target, user, queryFilters, filteredProjects);
+          returnObj = target === 'sample' ? { records: 0 } : {};
+
+          // promise functions
+          const resolveGet = (documents) => {
+            resolve({
+              status: 200,
+              clientResponse: {
+                status: 200,
+                data: documents,
+              },
+            });
+          };
+          const rejectGet = (error) => {
+            resolve({
+              status: 500,
+              clientResponse: {
+                status: 500,
+                message: `There was an error performing this query: ${error}`,
+              },
+            });
+          };
+
+          switch (target) {
+            case 'experiment':
+              available.experiment(queryObj)
+                .then((documents) => {
+                  resolveGet(documents);
+                })
+                .catch((error) => {
+                  rejectGet(error);
+                })
+              ;
+              break;
+            default:
+              available.getGeneral(target, queryObj, returnObj)
+                .then((documents) => {
+                  resolveGet(documents);
+                })
+                .catch((error) => {
+                  rejectGet(error);
+                })
+              ;
+              break;
+          }
+        })
+      ;
     });
   },
   // create object for filtering queries
-  getFilters: (target, email, lab, filters) => {
+  getFilters: (target, user, filters, projects) => {
     switch (target) {
       case 'project':
-        return { $or: [
-          { creatorEmail: email },
-          { ownerEmail: email },
-          { $and: [
-            { lab },
-            {
-              permission: {
-                $in: ['lr', 'lw'],
-              },
-            },
-          ] },
-          {
-            permission: {
-              $in: ['ar', 'aw'],
-            },
-          },
-        ] };
+        return { _id: { $in: projects } };
       case 'protocol':
-        return {};
+        return { creatorEmail: user.email };
       default:
-        return { group: filters };
+        return {
+          group: projects.includes(filters.project) ? filters : {},
+        }
+      ;
     }
   },
   // entry point for getting when retrieving information via route (page load)
-  getForRoute: (target, email, lab, filters) => {
+  getForRoute: (target, user, filters, projects) => {
     return new Promise((resolve, reject) => {
       const queryFilters = filters ? JSON.parse(JSON.stringify(filters)) : {};
-      const queryObj = available.getFilters(target, email, lab, queryFilters);
+      const queryObj = available.getFilters(target, user, queryFilters, projects);
       const returnObj = target === 'sample' ? { records: 0 } : {};
 
       switch (target) {

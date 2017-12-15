@@ -12,6 +12,7 @@ import getAnalysisSamples from '../../state/get/analysis-samples-actions';
 import submitAnalysis from '../../state/post/analysis-submit-actions';
 import submitComparison from '../../state/post/comparison-submit-actions';
 import { uppercaseFirst } from '../../helpers/helpers';
+import { userProp } from '../../types/index';
 
 // import available from './test-data';
 
@@ -870,8 +871,6 @@ class NewAnalysisContainer extends React.Component {
           formData,
           {
             design: formattedDesign,
-            creatorEmail: this.props.user.email,
-            creatorName: this.props.user.name,
           }
         )
       );
@@ -882,8 +881,6 @@ class NewAnalysisContainer extends React.Component {
           formData,
           {
             design: formattedDesign,
-            creatorEmail: this.props.user.email,
-            creatorName: this.props.user.name,
           }
         )
       );
@@ -1137,10 +1134,7 @@ NewAnalysisContainer.propTypes = {
   }).isRequired,
   submitAnalysis: PropTypes.func.isRequired,
   submitComparison: PropTypes.func.isRequired,
-  user: PropTypes.shape({
-    email: PropTypes.string,
-    name: PropTypes.string,
-  }),
+  user: userProp,
 };
 
 const mapDispatchToProps = (dispatch) => {

@@ -64,7 +64,7 @@ const availableList = {
       const { queryObj, returnObj } = userProjects.query(user);
       query.get('project', queryObj, returnObj)
         .then((projects) => {
-          const filteredProjects = userProjects.filterProjects(user.email, projects, returnFields);
+          const filteredProjects = userProjects.filterProjects(user, projects, returnFields);
           // find screens matching desired type and available projects
           const projectIDs = filteredProjects.map((project) => { return project._id; });
           const queryObjCurr = {

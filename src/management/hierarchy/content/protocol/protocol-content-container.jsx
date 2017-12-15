@@ -208,6 +208,7 @@ class ProtocolContentContainer extends React.Component {
       const protocolObj = {
         creatorEmail: this.props.user.email,
         creatorName: this.props.user.name,
+        lab: this.props.user.lab,
         name: this.state.protocolName,
         subSections: JSON.parse(JSON.stringify(this.state.fields)),
         target: 'protocol',

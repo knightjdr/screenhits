@@ -1,7 +1,8 @@
+const Permission = require('../permission/permission');
 const query = require('../query/query');
 
 const Sample = {
-  get: (target, format) => {
+  get: (target, format, user) => {
     return new Promise((resolve) => {
       const contentType = {
         html: 'text/html',
@@ -53,26 +54,21 @@ const Sample = {
         }
         return returnElement;
       };
-      query.get('sample', { _id: Number(target) }, { _id: 0, properties: 1, records: 1 }, 'findOne')
+      let sampleObj = {};
+      query.get('sample', { _id: target }, { _id: 0, group: 1, properties: 1, records: 1 }, 'findOne')
         .then((sample) => {
-          if (sample) {
-            resolve({
+          sampleObj = sample;
+          return Permission.canView.project(sample.group.project, user);
+        })
+        .then(() => {
+          resolve({
+            status: 200,
+            clientResponse: {
               status: 200,
-              clientResponse: {
-                status: 200,
-                contentType: contentType[format],
-                data: formatSample(sample),
-              },
-            });
-          } else {
-            resolve({
-              status: 500,
-              clientResponse: {
-                status: 500,
-                message: 'There was an error retrieving this sample',
-              },
-            });
-          }
+              contentType: contentType[format],
+              data: formatSample(sampleObj),
+            },
+          });
         })
         .catch((error) => {
           resolve({

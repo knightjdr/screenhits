@@ -17,9 +17,7 @@ const Validate = (req, res, next) => {
     .catch(() => {
       res.status(403).send({
         status: 403,
-        message: `User could not be authenticated. Either \
-        your authentication token is invalid or it has expired. Try logging in from the \
-        home page again.`,
+        message: `User could not be authenticated.`,
       });
     })
   ;

@@ -1,7 +1,7 @@
 import fetch from 'isomorphic-fetch';
 
 // retrieves queue from server
-const View = (_id, name, format, user) => {
+const View = (_id, name, format, authToken) => {
   // determine window width
   const width = window.innerWidth > 600 ? 600 : window.innerWidth;
   // open window
@@ -18,7 +18,7 @@ const View = (_id, name, format, user) => {
   };
   const headers = new Headers();
   headers.append('Accept', 'application/json');
-  headers.append('Auth', `${user.name}:${user.email}:${user.lab}:${user.token}`);
+  headers.append('Auth-Token', authToken);
   const url = `http://localhost:8003/sample?target=${_id}&format=${format}`;
   fetch(
     url,

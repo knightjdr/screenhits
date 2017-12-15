@@ -19,7 +19,7 @@ class DisplayContentContainer extends React.Component {
     super(props);
     const project = this.getProject(this.props.projects, this.props.selected.project);
     this.state = {
-      canEdit: Permissions.canEdit(this.props.user, project),
+      canEdit: Permissions.canEditProject(this.props.user, project),
       errors: Format.blankError[this.props.activeLevel],
       inputWidth: window.innerWidth >= 555 ? 500 : window.innerWidth - 55,
       originalItem: JSON.parse(JSON.stringify(this.props.item)),
@@ -200,7 +200,7 @@ class DisplayContentContainer extends React.Component {
       newID !== currentID
     ) {
       const project = this.getProject(projects, newID);
-      return Permissions.canManage(user, project);
+      return Permissions.canManageProject(user, project);
     } else if (
       newID !== currentID
     ) {

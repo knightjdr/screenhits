@@ -97,6 +97,9 @@ const validate = {
       if (!validateObj.creatorName) {
         reject('missing user name');
       }
+      if (!validateObj.lab) {
+        reject('missing lab name');
+      }
       if (validateObj.target) {
         delete validateObj.target;
       }
