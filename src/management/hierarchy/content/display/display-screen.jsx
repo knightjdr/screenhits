@@ -1,3 +1,4 @@
+import AutoComplete from 'material-ui/AutoComplete';
 import DeleteForever from 'material-ui/svg-icons/action/delete-forever';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
@@ -13,11 +14,13 @@ import TextField from 'material-ui/TextField';
 import CellsDataSource from '../../../../assets/data/cells';
 import displayStyle from './display-style';
 import Fields from '../../../../modules/fields';
-import SelectInput from '../create/select-input/select-input-container';
 import SpeciesDataSource from '../../../../assets/data/species';
 import { objectEmpty, uppercaseFirst } from '../../../../helpers/helpers';
 
 class DisplayScreen extends React.Component {
+  autoCompleteFilter = (searchText, key) => {
+    return key.toLowerCase().includes(searchText.toLowerCase());
+  }
   confirmDeletion = () => {
     return (
     [
@@ -28,6 +31,12 @@ class DisplayScreen extends React.Component {
         onTouchTap={ () => { this.props.deleteScreen(this.props.screen._id); } }
       />,
     ]);
+  }
+  inputChangeCell = (value) => {
+    this.props.inputChange('cell', value);
+  }
+  inputChangeSpecies = (value) => {
+    this.props.inputChange('species', value);
   }
   dialogClose = () => {
     return (
@@ -297,7 +306,12 @@ class DisplayScreen extends React.Component {
           </div>
         }
         { this.props.edit &&
-          <div>
+          <div
+            style={ {
+              display: 'flex',
+              flexWrap: 'wrap',
+            } }
+          >
             <TextField
               errorText={ this.props.errors.name }
               floatingLabelText="Screen name (short)"
@@ -333,25 +347,29 @@ class DisplayScreen extends React.Component {
                 );
               }) }
             </SelectField>
-            <SelectInput
+            <AutoComplete
               dataSource={ SpeciesDataSource }
               errorText={ this.props.errors.species }
-              inputChange={ this.props.inputChange }
-              inputWidth={ this.props.inputWidth }
-              labelText="Species"
-              options={ Fields.screen.species.values }
-              type="species"
-              value={ this.props.screen.species }
+              filter={ this.autoCompleteFilter }
+              floatingLabelText="Species"
+              fullWidth={ true }
+              maxSearchResults={ 15 }
+              multiLine={ false }
+              onUpdateInput={ this.inputChangeSpecies }
+              searchText={ this.props.screen.species }
+              style={ displayStyle.input }
             />
-            <SelectInput
+            <AutoComplete
               dataSource={ CellsDataSource }
               errorText={ this.props.errors.cell }
-              inputChange={ this.props.inputChange }
-              inputWidth={ this.props.inputWidth }
-              labelText="Cell type"
-              options={ Fields.screen.cell.values }
-              type="cell"
-              value={ this.props.screen.cell }
+              filter={ this.autoCompleteFilter }
+              floatingLabelText="Cell type"
+              fullWidth={ true }
+              maxSearchResults={ 15 }
+              multiLine={ false }
+              onUpdateInput={ this.inputChangeCell }
+              searchText={ this.props.screen.cell }
+              style={ displayStyle.input }
             />
             <div
               style={ Object.assign(

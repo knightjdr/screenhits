@@ -287,7 +287,7 @@ class TaskList extends React.Component {
       />,
     ]);
   }
-  list = (headers, tasks) => {
+  list = (headers, tasks, canEdit) => {
     const tableList = tasks.map((task, index) => {
       const columns = headers.map((header) => {
         return {
@@ -296,7 +296,7 @@ class TaskList extends React.Component {
         };
       });
       // add options fields: Log, Task parameters, Delete, Set official
-      columns[columns.length - 1].value = this.options(task);
+      columns[columns.length - 1].value = this.options(task, canEdit);
       columns[columns.length - 1].style = {
         textAlign: 'left',
       };
@@ -307,7 +307,7 @@ class TaskList extends React.Component {
     });
     return tableList;
   }
-  options = (task) => {
+  options = (task, canEdit) => {
     const cancelText = task.isRunning || task.isQueued ?
       'Cancel task'
       :
@@ -385,19 +385,22 @@ class TaskList extends React.Component {
             </IconButton>
           </span>
         }
-        <IconButton
-          iconStyle={ {
-            color: this.props.muiTheme.palette.warning,
-          } }
-          onClick={ () => { this.props.deleteDialog.showFunc(task._id); } }
-          onMouseEnter={ (e) => {
-            this.props.iconTooltip.showFunc(e, cancelText);
-          } }
-          onMouseLeave={ this.props.iconTooltip.hideFunc }
-          style={ ArchiveStyle.smallIcon }
-        >
-          <ClearIcon />
-        </IconButton>
+        {
+          canEdit[task._id] &&
+          <IconButton
+            iconStyle={ {
+              color: this.props.muiTheme.palette.warning,
+            } }
+            onClick={ () => { this.props.deleteDialog.showFunc(task._id); } }
+            onMouseEnter={ (e) => {
+              this.props.iconTooltip.showFunc(e, cancelText);
+            } }
+            onMouseLeave={ this.props.iconTooltip.hideFunc }
+            style={ ArchiveStyle.smallIcon }
+          >
+            <ClearIcon />
+          </IconButton>
+        }
       </span>
     );
   }
@@ -525,7 +528,7 @@ class TaskList extends React.Component {
               <CustomTable
                 data={ {
                   header: this.props.header,
-                  list: this.list(this.props.header, this.props.tasks),
+                  list: this.list(this.props.header, this.props.tasks, this.props.canEdit),
                 } }
                 footer={ false }
                 height={ this.props.tableHeight }
@@ -600,7 +603,7 @@ class TaskList extends React.Component {
           open={ this.props.deleteDialog.show }
           title="Confirmation"
         >
-          This action will permanently the analysis and any stored results.
+          This action will permanently delete the analysis and any stored results.
         </Dialog>
         <Dialog
           actions={ [
@@ -631,6 +634,9 @@ class TaskList extends React.Component {
 
 TaskList.propTypes = {
   applyFilters: PropTypes.func.isRequired,
+  canEdit: PropTypes.arrayOf(
+    PropTypes.bool
+  ).isRequired,
   clearFilters: PropTypes.func.isRequired,
   deleteDialog: PropTypes.shape({
     _id: PropTypes.number,

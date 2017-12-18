@@ -33,7 +33,7 @@ const routes = {
           },
           childRoutes: [
             { path: 'hierarchy', component: ManagementHierachy },
-            { path: 'list(/:level)(/:id)', component: ManagementList },
+            { path: 'list(/:level)', component: ManagementList },
           ],
         },
         { path: 'analysis(/:view)(/:id)', component: Analysis },

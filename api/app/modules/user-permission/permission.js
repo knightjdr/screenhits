@@ -1,14 +1,18 @@
 const query = require('../query/query');
+const Permission = require('../permission/permission');
 const permissionUpdate = require('./permission-update');
 const update = require('../crud/update');
 const validate = require('./permission-validate');
 
-const Permission = {
+const UserPermission = {
   put: (_id, permission, user) => {
     return new Promise((resolve) => {
-      validate.type(permission)
+      Permission.isOwner(_id, user)
         .then(() => {
-          return query.get('project', { _id: Number(_id) }, { _id: 0, lab: 1, userPermission: 1 }, 'findOne');
+          return validate.type(permission);
+        })
+        .then(() => {
+          return query.get('project', { _id }, { _id: 0, lab: 1, userPermission: 1 }, 'findOne');
         })
         .then((document) => {
           const userPermission = permissionUpdate[permission](
@@ -46,4 +50,4 @@ const Permission = {
     });
   },
 };
-module.exports = Permission;
+module.exports = UserPermission;

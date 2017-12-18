@@ -106,9 +106,10 @@ class TaskListContainer extends React.Component {
     window.addEventListener('resize', this.resize);
   }
   componentWillReceiveProps = (nextProps) => {
-    const { tasks } = nextProps;
+    const { tasks, user } = nextProps;
     if (!deepEqual(tasks, this.props.tasks)) {
       this.setState({
+        canEdit: Permissions.canEditTask(user, tasks),
         tasks: this.sortTasks(tasks, 'date', 'desc'),
         tableHeight: this.getHeight(tasks),
       });
@@ -403,6 +404,7 @@ class TaskListContainer extends React.Component {
     return (
       <TaskList
         applyFilters={ this.props.applyFilters }
+        canEdit={ this.state.canEdit }
         clearFilters={ this.props.clearFilters }
         deleteDialog={ Object.assign(
           {},

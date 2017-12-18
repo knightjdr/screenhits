@@ -6,7 +6,7 @@ const Update = {
     return new Promise((resolve, reject) => {
       database.acquire(config.settings().database.name)
         .collection(collection)
-        .update(queryObject, updateObject, { upsert: createIfNotPresent }, (err) => {
+        .update(queryObject, { $set: updateObject }, { upsert: createIfNotPresent }, (err) => {
           if (!err) {
             resolve();
           } else {

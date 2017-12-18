@@ -439,7 +439,7 @@ class NewAnalysisContainer extends React.Component {
       formatError = formattedDesign.length <= 0;
     } else if (
       design &&
-      design.length > 0
+      design[0].items.length > 0
     ) {
       formattedDesign = design[0].items.map((item) => { return item._id; });
     } else {

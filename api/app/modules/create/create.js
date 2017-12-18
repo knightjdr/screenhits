@@ -3,6 +3,7 @@ const create = require('../crud/create');
 const counter = require('../helpers/counter');
 const deleteSample = require('../delete/delete').sample();
 const moment = require('moment');
+const Permission = require('../permission/permission');
 const query = require('../query/query');
 const readFile = require('./read-file');
 const update = require('../crud/update');
@@ -12,9 +13,12 @@ const Create = {
   experiment: (req, user) => {
     return new Promise((resolve) => {
       let objCreate = {};
-      validate.experiment(req.body, 'creationDate')
-        .then((newObj) => {
-          objCreate = newObj;
+      Promise.all([
+        validate.create.experiment(req.body, 'creationDate', user),
+        Permission.canEdit.project(req.body.project, user),
+      ])
+        .then((values) => {
+          objCreate = values[0];
           return counter.get('experiment');
         })
         .then((sequence) => {
@@ -52,7 +56,7 @@ const Create = {
   project: (req, user) => {
     return new Promise((resolve) => {
       let objCreate = {};
-      validate.project(req.body, 'creationDate')
+      validate.create.project(req.body, 'creationDate', user)
         .then((newObj) => {
           objCreate = newObj;
           return counter.get('project');
@@ -88,7 +92,7 @@ const Create = {
   protocol: (req, user) => {
     return new Promise((resolve) => {
       let objCreate = {};
-      validate.protocol(req.body, 'creationDate')
+      validate.create.protocol(req.body, 'creationDate', user)
         .then((newObj) => {
           objCreate = newObj;
           return counter.get('protocol');
@@ -123,11 +127,14 @@ const Create = {
   processSample: (sample) => {
     return new Promise((resolve, reject) => {
       const objCreate = {};
-      validate.sample(sample.body, 'creationDate')
-        .then((validatedObj) => {
+      Promise.all([
+        validate.create.sample(sample.body, 'creationDate', sample.user),
+        Permission.canEdit.project(sample.body.project, sample.user),
+      ])
+        .then((values) => {
           return Promise.all([
             counter.get('sample'),
-            validatedObj,
+            values[0],
           ]);
         })
         .then((data) => {
@@ -166,8 +173,10 @@ const Create = {
   },
   sample: (req, user) => {
     return new Promise((resolve) => {
+      const sample = req;
+      sample.user = user;
       // add to queue
-      Create.queue.running.push(req);
+      Create.queue.running.push(sample);
       resolve({
         status: 200,
         clientResponse: {
@@ -209,9 +218,12 @@ const Create = {
   screen: (req, user) => {
     return new Promise((resolve) => {
       let objCreate = {};
-      validate.screen(req.body, 'creationDate')
-        .then((newObj) => {
-          objCreate = newObj;
+      Promise.all([
+        validate.create.screen(req.body, 'creationDate', user),
+        Permission.canEdit.project(req.body.project, user),
+      ])
+        .then((values) => {
+          objCreate = values[0];
           return counter.get('screen');
         })
         .then((sequence) => {

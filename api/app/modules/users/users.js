@@ -17,7 +17,7 @@ const Users = {
         },
       };
       let userExceptions = [];
-      Permission.canEdit.project(_id, user)
+      Permission.isOwner(_id, user)
         .then(() => {
           return query.get('project', { _id }, {}, 'findOne');
         })
@@ -82,10 +82,13 @@ const Users = {
   post: {
     current: (_id, list, user) => {
       return new Promise((resolve) => {
-        validate.userArray(list)
+        Permission.isOwner(_id, user)
           .then(() => {
-            const updateObj = list.map((user) => {
-              const newUser = user;
+            return validate.userArray(list);
+          })
+          .then(() => {
+            const updateObj = list.map((projectUser) => {
+              const newUser = projectUser;
               delete newUser._id;
               return newUser;
             });
@@ -119,7 +122,10 @@ const Users = {
   },
   put: (_id, users, user) => {
     return new Promise((resolve) => {
-      validate.userArray(users)
+      Permission.isOwner(_id, user)
+        .then(() => {
+          return validate.userArray(users);
+        })
         .then(() => {
           return query.get('project', { _id: Number(_id) }, { _id: 0, userPermission: 1 }, 'findOne');
         })

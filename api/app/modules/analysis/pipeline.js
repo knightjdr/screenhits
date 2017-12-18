@@ -3,6 +3,7 @@ const config = require('../../../config').settings();
 const Convert = require('./convert-input.js');
 const CrisprDefaults = require('./CRISPR/crispr-defaults');
 const fs = require('mz/fs');
+const Permission = require('../permission/permission');
 const query = require('../query/query');
 const samplesToFiles = require('./CRISPR/samples-to-files');
 const StoreOutput = require('./store-output.js');
@@ -210,15 +211,24 @@ const Pipeline = {
           step: 'Database query',
         };
         UpdateTask.sync(task.id, taskStatus);
-        query.get('sample', { _id: { $in: sampleIDs } }, { records: 1 })
-          .then((samples) => {
+        let formSamples;
+        Promise.all([
+          query.get('sample', { _id: { $in: sampleIDs } }, { group: 1, records: 1 }),
+          query.get('users', { email: task.userEmail }, { }, 'findOne'),
+        ])
+          .then((values) => {
+            formSamples = values[0];
+            const projects = values[0].map((sample) => { return sample.group.project; });
+            return Permission.canView.projects(projects, values[1]);
+          })
+          .then(() => {
             // write samples to files based on design
             taskStatus = {
               status: 'Writing database samples to file system',
               step: 'File creation',
             };
             return Promise.all([
-              samplesToFiles.fromDatabase(task.folder, analysisDetails.design, samples),
+              samplesToFiles.fromDatabase(task.folder, analysisDetails.design, formSamples),
               UpdateTask.async(task.id, taskStatus),
             ]);
           })

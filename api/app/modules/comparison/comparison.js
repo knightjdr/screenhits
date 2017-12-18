@@ -1,9 +1,10 @@
 const median = require('../helpers/median');
+const Permission = require('../permission/permission');
 const query = require('../query/query');
 const arrUnique = require('../helpers/array-unique');
 
 const Comparison = {
-  get: (form) => {
+  get: (form, user) => {
     return new Promise((resolve) => {
       // format header
       const formatHeader = (sampleOrder, samples) => {
@@ -135,11 +136,17 @@ const Comparison = {
         });
       };
 
+      let formSamples;
       query.get('sample', { _id: { $in: form.design } }, { })
         .then((samples) => {
-          const header = formatHeader(form.design, samples);
-          const { legend, metricName } = formatLegend(samples[0], form.metric);
-          const { formattedSamples, rows } = formatSamples(samples, form.metric, form.readout);
+          formSamples = samples;
+          const projects = samples.map((sample) => { return sample.group.project; });
+          return Permission.canView.projects(projects, user);
+        })
+        .then(() => {
+          const header = formatHeader(form.design, formSamples);
+          const { legend, metricName } = formatLegend(formSamples[0], form.metric);
+          const { formattedSamples, rows } = formatSamples(formSamples, form.metric, form.readout);
           const normResults = form.norm ?
             normalize(formattedSamples, form.normCount)
             :

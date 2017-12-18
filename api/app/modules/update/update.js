@@ -1,4 +1,5 @@
 const format = require('../helpers/format');
+const Permission = require('../permission/permission');
 const update = require('../crud/update');
 const validate = require('../validation/validation');
 
@@ -7,9 +8,13 @@ const Update = {
     return new Promise((resolve) => {
       const id = obj._id;
       const target = obj.target;
-      validate[target](obj, 'updateDate', false)
-        .then((newObj) => {
-          return update.insert(target, { _id: id }, newObj);
+
+      Promise.all([
+        validate.update[target](obj, 'updateDate'),
+        Permission.canEdit[target](id, user),
+      ])
+        .then((values) => {
+          return update.insert(target, { _id: id }, values[0]);
         })
         .then(() => {
           resolve({

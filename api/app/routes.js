@@ -152,7 +152,7 @@ const routes = {
     });
     // submit comparison
     app.post('/analysis/comparison', auth.validate, (req, res) => {
-      comparison.get(req.body)
+      comparison.get(req.body, res.locals.user)
         .then((response) => {
           routes.response(res, response);
         })
@@ -194,7 +194,7 @@ const routes = {
     });
     // update user permissions
     app.put('/permission', auth.validate, (req, res) => {
-      userPermission.put(req.body._id, req.body.permission, res.locals.user)
+      userPermission.put(Number(req.body._id), req.body.permission, res.locals.user)
         .then((response) => {
           routes.response(res, response);
         })

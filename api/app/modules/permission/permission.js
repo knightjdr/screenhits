@@ -204,6 +204,29 @@ const Permission = {
         ;
       });
     },
+    projects: (projectsArr, user) => {
+      return new Promise((resolve, reject) => {
+        if (user.privilege === 'siteAdmin') {
+          resolve(true);
+        }
+
+        query.get('project', { _id: { $in: projectsArr } }, { lab: 1, ownerEmail: 1, userPermission: 1 })
+          .then((projects) => {
+            return Permission.checkViewProjects(projects, user) ?
+              Promise.resolve()
+              :
+              Promise.reject()
+            ;
+          })
+          .then(() => {
+            resolve();
+          })
+          .catch(() => {
+            reject('not authorized');
+          })
+        ;
+      });
+    },
   },
   checkEditProject: (project, user) => {
     if (
@@ -214,6 +237,17 @@ const Permission = {
     } else if (user.email === project.ownerEmail) {
       return true;
     } else if (Permission.hasWritePermission(user.email, project.userPermission)) {
+      return true;
+    }
+    return false;
+  },
+  checkOwnProject: (project, user) => {
+    if (
+      user.privilege === 'labAdmin' &&
+      user.lab === project.lab
+    ) {
+      return true;
+    } else if (user.email === project.ownerEmail) {
       return true;
     }
     return false;
@@ -248,10 +282,15 @@ const Permission = {
       return true;
     } else if (user.email === project.ownerEmail) {
       return true;
-    } else if (Permission.hasReadPermission(user.email, project.userPermission)) {
+    } else if (Permission.hasReadPermission(user, project.lab, project.userPermission)) {
       return true;
     }
     return false;
+  },
+  checkViewProjects: (projects, user) => {
+    return projects.every((project) => {
+      return Permission.checkViewProject(project, user);
+    });
   },
   checkViewTask: (task, customPermissions, user) => {
     // check if there is an exception allowing/blocking use access
@@ -300,14 +339,21 @@ const Permission = {
     }
     return false;
   },
-  hasReadPermission: (email, specialUsers) => {
-    const userIndex = specialUsers.findIndex((user) => {
-      return user.email === email;
+  hasReadPermission: (user, projectLab, specialUsers) => {
+    const userIndex = specialUsers.findIndex((specialUser) => {
+      return specialUser.email === user.email;
     });
     if (
       userIndex > -1 &&
       specialUsers[userIndex].permission !== 'n'
     ) {
+      return true;
+    } else if (
+      userIndex > -1 &&
+      specialUsers[userIndex].permission === 'n'
+    ) {
+      return false;
+    } else if (user.lab === projectLab) {
       return true;
     }
     return false;
@@ -323,6 +369,29 @@ const Permission = {
       return true;
     }
     return false;
+  },
+  isOwner: (_id, user) => {
+    return new Promise((resolve, reject) => {
+      if (user.privilege === 'siteAdmin') {
+        resolve(true);
+      }
+
+      query.get('project', { _id }, { lab: 1, ownerEmail: 1 }, 'findOne')
+        .then((project) => {
+          return Permission.checkOwnProject(project, user) ?
+            Promise.resolve()
+            :
+            Promise.reject()
+          ;
+        })
+        .then(() => {
+          resolve();
+        })
+        .catch(() => {
+          reject('not authorized');
+        })
+      ;
+    });
   },
 };
 module.exports = Permission;

@@ -21,11 +21,13 @@ class ManagementListContainer extends React.Component {
   constructor(props) {
     super(props);
     const routeState = this.getRouteState(this.props.params);
+    const filters = this.getFiltersFromRoute(
+      routeState.level,
+      this.props.queryParams
+    );
     const items = this.filterItems(
       this.props.availableList[routeState.level].items,
-      {
-        user: this.props.user.name,
-      },
+      filters,
       routeState.level
     );
     const dateRange = this.getDateRange(items);
@@ -35,9 +37,7 @@ class ManagementListContainer extends React.Component {
       filterDialogState: {
         show: false,
       },
-      filters: {
-        user: this.props.user.name,
-      },
+      filters,
       header: TableHeader[routeState.level],
       itemID: routeState.id,
       items,
@@ -51,7 +51,12 @@ class ManagementListContainer extends React.Component {
     };
   }
   componentWillMount = () => {
-    this.verifyRoute(this.props.params, this.props.path);
+    this.verifyRoute(
+      this.props.params,
+      this.props.path,
+      this.props.queryParams,
+      this.props.user.name
+    );
   }
   componentDidMount = () => {
     this.props.getLevelData(this.state.activeLevel);
@@ -69,7 +74,7 @@ class ManagementListContainer extends React.Component {
   }
   componentWillUpdate = (nextProps, nextState) => {
     if (nextState.activeLevel !== this.state.activeLevel) {
-      browserHistory.replace(`/management/list/${nextState.activeLevel}`);
+      this.updateRoute(this.state.filters, nextState.activeLevel);
       this.props.getLevelData(nextState.activeLevel);
     }
   };
@@ -96,6 +101,53 @@ class ManagementListContainer extends React.Component {
       },
     };
   }
+  getFilters = (filters, level, defaultFilters = false, userName) => {
+    const acceptedFields = availableLevels.includes(level) ?
+      FilterFields[level].map((field) => { return field.value; })
+      :
+      []
+    ;
+    const acceptedFilters = defaultFilters ?
+    {
+      user: userName,
+    }
+    :
+    {};
+    Object.keys(filters).forEach((key) => {
+      if (
+        acceptedFields.includes(key) &&
+        filters[key]
+      ) {
+        acceptedFilters[key] = filters[key];
+      }
+    });
+    return acceptedFilters;
+  }
+  getFilterString = (filters, level, defaultFilters = false, userName) => {
+    const acceptedFilters = this.getFilters(filters, level, defaultFilters, userName);
+    const newQueryString = Object.keys(acceptedFilters).sort().map((key) => {
+      return `${key}=${acceptedFilters[key]}`;
+    }).join('&');
+    return newQueryString;
+  }
+  getFiltersFromRoute = (level, queryParams) => {
+    // get acceptable filters from query params
+    const filters = this.getFilters(queryParams, level);
+    // correct 'type' for filter values
+    Object.entries(filters).forEach(([key, value]) => {
+      if (!isNaN) {
+        filters[key] = Number(value);
+      } else if (
+        key === 'endDate' ||
+        key === 'startDate'
+      ) {
+        filters[key] = Moment(value);
+      } else {
+        filters[key] = value;
+      }
+    });
+    return filters;
+  }
   getHeight = (table) => {
     // 240 = 170 to top of table, 20 for bottom padding, 50 for footer
     const maxHeightRows = window.innerHeight - 240;
@@ -109,25 +161,16 @@ class ManagementListContainer extends React.Component {
   }
   getRouteState = (params) => {
     const routeParams = {};
-    if (
-      availableLevels.includes(params.level) &&
-      !isNaN(params.id)
-    ) {
-      routeParams.id = Number(params.id);
-      routeParams.level = params.level;
-    } else if (
-      availableLevels.includes(params.level)
-    ) {
-      routeParams.id = null;
+    if (availableLevels.includes(params.level)) {
       routeParams.level = params.level;
     } else {
-      routeParams.id = null;
       routeParams.level = 'project';
     }
     return routeParams;
   }
   applyFilters = () => {
     this.setState(({ activeLevel, filters }) => {
+      this.updateRoute(filters, activeLevel);
       return {
         items: this.filterItems(
           this.props.availableList[activeLevel].items,
@@ -184,7 +227,7 @@ class ManagementListContainer extends React.Component {
   }
   filterChange = (field, value) => {
     this.setState(({ filters }) => {
-      const newFilters = JSON.parse(JSON.stringify(filters));
+      const newFilters = Object.assign({}, filters);
       newFilters[field] = value;
       return {
         filters: newFilters,
@@ -257,17 +300,15 @@ class ManagementListContainer extends React.Component {
       showList: true,
     });
   }
-  verifyRoute = (params, path) => {
+  verifyRoute = (params, path, queryParams, userName) => {
+    const queryString = this.getFilterString(queryParams, params.level, true, userName);
+    console.log(queryString);
     let newPath;
     if (
       availableLevels.includes(params.level) &&
-      !isNaN(params.id)
+      queryString
     ) {
-      newPath = `/management/list/${params.level}/${params.id}`;
-    } else if (
-      availableLevels.includes(params.level)
-    ) {
-      newPath = `/management/list/${params.level}`;
+      newPath = `/management/list/${params.level}?${queryString}`;
     } else {
       newPath = '/management/list/project';
     }
@@ -336,6 +377,10 @@ class ManagementListContainer extends React.Component {
         tableHeight: this.getHeight(items),
       };
     });
+  }
+  updateRoute = (filters, level) => {
+    const filterString = this.getFilterString(filters, level);
+    browserHistory.replace(`/management/list/${level}?${filterString}`);
   }
   render() {
     return (
@@ -412,6 +457,7 @@ ManagementListContainer.propTypes = {
     }),
   }).isRequired,
   getLevelData: PropTypes.func.isRequired,
+  queryParams: PropTypes.shape({}).isRequired,
   params: PropTypes.shape({
     id: PropTypes.string,
     view: PropTypes.string,
@@ -432,9 +478,16 @@ const mapDispatchToProps = (dispatch) => {
 
 const mapStateToProps = (state, ownProps) => {
   const path = `${ownProps.location.pathname.substr(1)}${ownProps.location.search}`;
+  const queryParams = ownProps.location.query;
+  Object.keys(queryParams).forEach((queryParam) => {
+    if (!isNaN(queryParams[queryParam])) {
+      queryParams[queryParam] = Number(queryParams[queryParam]);
+    }
+  });
   return {
     availableList: state.availableList,
     path,
+    queryParams,
     user: state.user,
   };
 };

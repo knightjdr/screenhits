@@ -50,7 +50,7 @@ class ActionMenuContainer extends React.Component {
         retrieving: true,
       },
     });
-    Queue.get(this.props.user)
+    Queue.get(this.props.token)
       .then((details) => {
         this.setState({
           queue: {
@@ -106,27 +106,13 @@ class ActionMenuContainer extends React.Component {
   }
 }
 
-ActionMenuContainer.defaultProps = {
-  user: PropTypes.shape({
-    email: null,
-    user: null,
-    name: null,
-    token: null,
-  }),
-};
-
 ActionMenuContainer.propTypes = {
-  user: PropTypes.shape({
-    email: PropTypes.string,
-    user: PropTypes.string,
-    name: PropTypes.string,
-    token: PropTypes.string,
-  }),
+  token: PropTypes.string.isRequired,
 };
 
 const mapStateToProps = (state) => {
   return {
-    user: state.user,
+    token: state.token,
   };
 };
 

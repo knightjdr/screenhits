@@ -11,6 +11,7 @@ const Analysis = {
   create: (form, user) => {
     return new Promise((resolve) => {
       // get task ID, set time and queue
+
       counter.get('analysis')
         .then((taskID) => {
           Analysis.queue.running.push(
@@ -81,7 +82,6 @@ const Analysis = {
           resolve();
         })
         .catch((error) => {
-          console.log(error);
           reject(error);
         })
       ;
@@ -92,6 +92,7 @@ const Analysis = {
       const task = {
         folder: null,
         id: item._id,
+        userEmail: item.userEmail,
       };
       // delete task folder
       const deleteFolder = (folderID) => {
