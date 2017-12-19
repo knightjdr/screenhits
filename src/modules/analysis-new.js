@@ -5,7 +5,7 @@ const AnalysisModule = {
       'drugZ',
       'generic',
       'MAGeCK',
-      'RANKs',
+      'RANKS',
     ],
     BAGEL: {
       parameters: [

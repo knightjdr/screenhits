@@ -141,22 +141,16 @@ class ManagementListContainer extends React.Component {
         key === 'endDate' ||
         key === 'startDate'
       ) {
-        filters[key] = Moment(value);
+        filters[key] = new Date(value);
       } else {
         filters[key] = value;
       }
     });
     return filters;
   }
-  getHeight = (table) => {
+  getHeight = () => {
     // 240 = 170 to top of table, 20 for bottom padding, 50 for footer
-    const maxHeightRows = window.innerHeight - 240;
-    const neededHeightRows = (table.length * 50);
-    let rowHeight = neededHeightRows < maxHeightRows ? neededHeightRows : maxHeightRows;
-    // must give space for at least one row
-    if (rowHeight < 50) {
-      rowHeight = 50;
-    }
+    const rowHeight = window.innerHeight - 240;
     return rowHeight + 111;
   }
   getRouteState = (params) => {
@@ -294,6 +288,38 @@ class ManagementListContainer extends React.Component {
       },
     });
   }
+  showHierarchy = (_id, parents) => {
+    if (_id) {
+      const parentsObject = {};
+      if (parents) {
+        const parentsArray = parents.split(', ');
+        parentsArray.forEach((parent) => {
+          const parentValue = parent.split('-');
+          parentsObject[parentValue[0]] = parentValue[1];
+        });
+      }
+      let route = '';
+      switch (this.state.activeLevel) {
+        case 'project':
+          route = `/management/hierarchy?project=${_id}`;
+          break;
+        case 'screen':
+          route = `/management/hierarchy?project=${parentsObject.P}&screen=${_id}`;
+          break;
+        case 'experiment':
+          route = `/management/hierarchy?project=${parentsObject.P}&screen=${parentsObject.S}&experiment=${_id}`;
+          break;
+        case 'sample':
+          route = `/management/hierarchy?project=${parentsObject.P}&screen=${parentsObject.S}&experiment=${parentsObject.E}&sample=${_id}`;
+          break;
+        default:
+          break;
+      }
+      if (route) {
+        browserHistory.push(route);
+      }
+    }
+  }
   showList = (event) => {
     this.setState({
       anchorEl: event.currentTarget,
@@ -302,7 +328,6 @@ class ManagementListContainer extends React.Component {
   }
   verifyRoute = (params, path, queryParams, userName) => {
     const queryString = this.getFilterString(queryParams, params.level, true, userName);
-    console.log(queryString);
     let newPath;
     if (
       availableLevels.includes(params.level) &&
@@ -312,7 +337,7 @@ class ManagementListContainer extends React.Component {
     } else {
       newPath = '/management/list/project';
     }
-    if (newPath !== `/${path}`) {
+    if (newPath !== `/${decodeURI(path)}`) {
       browserHistory.replace(newPath);
     }
   }
@@ -348,7 +373,7 @@ class ManagementListContainer extends React.Component {
     }
     if (
       newFilters.endDate &&
-      Moment(newFilters.endDate).format('x') < Moment(dateRange.end.max).format('x')
+      Moment(newFilters.endDate).format('x') > Moment(dateRange.end.max).format('x')
     ) {
       newFilters.endDate = dateRange.end.max;
     }
@@ -408,6 +433,7 @@ class ManagementListContainer extends React.Component {
         itemID={ this.state.itemID }
         listStatus={ this.state.listStatus }
         refreshLevel={ this.refreshLevel }
+        showHierarchy={ this.showHierarchy }
         showList={ this.showList }
         showListBoolean={ this.state.showList }
         tableHeight={ this.state.tableHeight }

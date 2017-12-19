@@ -35,6 +35,11 @@ const listHeaders = {
       sort: true,
       type: 'creationDate',
     },
+    {
+      name: 'View',
+      sort: false,
+      type: 'selectAndView',
+    },
   ],
   project: [
     {
@@ -56,6 +61,11 @@ const listHeaders = {
       name: 'Created',
       sort: true,
       type: 'creationDate',
+    },
+    {
+      name: 'View',
+      sort: false,
+      type: 'selectAndView',
     },
   ],
   sample: [
@@ -98,6 +108,11 @@ const listHeaders = {
       name: 'Created',
       sort: true,
       type: 'creationDate',
+    },
+    {
+      name: 'View',
+      sort: false,
+      type: 'selectAndView',
     },
   ],
   screen: [
@@ -145,6 +160,11 @@ const listHeaders = {
       name: 'Created',
       sort: true,
       type: 'creationDate',
+    },
+    {
+      name: 'View',
+      sort: false,
+      type: 'selectAndView',
     },
   ],
 };

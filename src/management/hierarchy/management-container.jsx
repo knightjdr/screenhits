@@ -33,7 +33,10 @@ class ManagementContainer extends React.Component {
     // if "selected" indices have changed, update underlying data and route
     if (
       !routeLoading &&
-      location.action === 'POP' &&
+      (
+        location.action === 'POP' ||
+        location.action === 'PUSH'
+      ) &&
       !isObjectLooseEqual(queryParams, this.props.selected)
     ) {
       this.props.setIndex('all', queryParams);

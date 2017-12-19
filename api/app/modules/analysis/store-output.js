@@ -1,55 +1,6 @@
-const create = require('../crud/create');
 const csv = require('csvtojson');
-const query = require('../query/query');
 
 const StoreOutput = {
-  BAGEL: (task) => {
-    return new Promise((resolve, reject) => {
-      // file options
-      const csvParams = {
-        delimiter: '\t',
-        trim: true,
-      };
-      const columns = {
-        gene: 'GENE',
-        other: [
-          {
-            name: 'BF',
-            type: 'number',
-          },
-          {
-            name: 'STD',
-            type: 'number',
-          },
-          {
-            name: 'NumObs',
-            type: 'number',
-          },
-        ],
-      };
-      // get sample set names
-      query.get('analysisTasks', { _id: task.id }, { details: 1 }, 'findOne')
-        .then((taskDetails) => {
-          const setNames = taskDetails.details.design.map((sampleSet) => {
-            return {
-              file: `bagel_foldchange_filtered_${sampleSet.name}.txt`,
-              name: sampleSet.name,
-            };
-          });
-          return StoreOutput.readFiles(columns, csvParams, setNames, task);
-        })
-        .then((results) => {
-          return create.insert('analysisResults', { _id: task.id, results });
-        })
-        .then(() => {
-          resolve();
-        })
-        .catch((error) => {
-          reject(error);
-        })
-      ;
-    });
-  },
   readFiles: (columns, options, setNames, task) => {
     return new Promise((resolve, reject) => {
       const results = {};

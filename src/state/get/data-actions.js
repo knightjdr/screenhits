@@ -3,7 +3,7 @@ import { updateToken } from '../set/token-actions';
 
 import activeLevel from '../../helpers/find-active-level';
 import { objectEmpty } from '../../helpers/helpers';
-import { routeLoaded } from '../routing/routeload-actions';
+import { routeIsLoading, routeLoaded } from '../routing/routeload-actions';
 import { setIndex } from '../set/index-actions';
 
 export const FILL_DATA = 'FILL_DATA';
@@ -89,6 +89,7 @@ const getData = (target, filters, selected) => {
 
 const getRouteData = (selected) => {
   return (dispatch, getState) => {
+    dispatch(routeIsLoading());
     Object.keys(selected).forEach((target) => {
       if (target) {
         dispatch(isFilling(target));

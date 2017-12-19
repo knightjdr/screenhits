@@ -11,7 +11,7 @@ const UpdateTask = {
           if (taskStatus.kill) {
             reject('Task was cancelled');
           }
-          return crudUpdate.insert('analysisTasks', { _id: taskID }, { $set: updateObj });
+          return crudUpdate.insert('analysisTasks', { _id: taskID }, updateObj);
         })
         .then(() => {
           resolve();
@@ -80,7 +80,7 @@ const UpdateTask = {
   },
   sync: (taskID, updateObj) => {
     // create update object
-    crudUpdate.insert('analysisTasks', { _id: taskID }, { $set: updateObj });
+    crudUpdate.insert('analysisTasks', { _id: taskID }, updateObj);
   },
 };
 module.exports = UpdateTask;

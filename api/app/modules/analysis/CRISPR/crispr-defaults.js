@@ -9,5 +9,6 @@ const CrisprDefaults = {
     bootstrapIter: 1000,
     essentialVersion: 'v1',
   },
+  RANKS: {},
 };
 module.exports = CrisprDefaults;

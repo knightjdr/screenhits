@@ -2,6 +2,7 @@ import DatePicker from 'material-ui/DatePicker';
 import FlatButton from 'material-ui/FlatButton';
 import FloatingActionButton from 'material-ui/FloatingActionButton';
 import FontAwesome from 'react-fontawesome';
+import IconButton from 'material-ui/IconButton';
 import Menu from 'material-ui/Menu';
 import MenuItem from 'material-ui/MenuItem';
 import muiThemeable from 'material-ui/styles/muiThemeable';
@@ -13,6 +14,7 @@ import ReactTooltip from 'react-tooltip';
 import RefreshIcon from 'material-ui/svg-icons/navigation/refresh';
 import SelectField from 'material-ui/SelectField';
 import TextField from 'material-ui/TextField';
+import ViewIcon from 'material-ui/svg-icons/action/visibility';
 import { CSSTransitionGroup } from 'react-transition-group';
 
 import ActionMenu from '../menu/action-menu-container';
@@ -113,6 +115,13 @@ class ManagementList extends React.Component {
   list = (headers, items) => {
     const tableList = items.map((item, index) => {
       const columns = headers.map((header) => {
+        if (header.type === 'selectAndView') {
+          return {
+            style: { textAlign: 'center' },
+            type: header.type,
+            value: this.selectButton(item),
+          };
+        }
         return {
           type: header.type,
           value: item[header.type] || '-',
@@ -124,6 +133,15 @@ class ManagementList extends React.Component {
       };
     });
     return tableList;
+  }
+  selectButton = (item) => {
+    return (
+      <IconButton
+        onClick={ () => { this.props.showHierarchy(item._id, item.parents); } }
+      >
+        <ViewIcon />
+      </IconButton>
+    );
   }
   render() {
     return (
@@ -383,6 +401,7 @@ ManagementList.propTypes = {
     }),
   }).isRequired,
   refreshLevel: PropTypes.func.isRequired,
+  showHierarchy: PropTypes.func.isRequired,
   showList: PropTypes.func.isRequired,
   showListBoolean: PropTypes.bool.isRequired,
   tableHeight: PropTypes.number.isRequired,
