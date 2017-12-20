@@ -298,7 +298,7 @@ const AnalysisModule = {
             for a guide that has no effect on cell growth. Alternatively you can
             specify a list of control genes. These must be entered as a
             comma-separated list of gene names, eg. 'luciferase, chr10, etc'`,
-          inputType: 'number',
+          inputType: 'text',
           name: 'controlGenes',
           layName: 'Control genes',
         },

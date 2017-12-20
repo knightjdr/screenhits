@@ -4,6 +4,7 @@ const CrisprDefaults = require('../CRISPR/crispr-defaults');
 const deepEqual = require('deep-equal');
 const fs = require('mz/fs');
 const Log = require('../log');
+const Mean = require('../../helpers/mean');
 const Params = require('./params');
 const query = require('../../query/query');
 const StoreOutput = require('../store-output.js');
@@ -11,79 +12,50 @@ const spawn = require('child_process').spawn;
 const UpdateTask = require('../update-task');
 
 const RANKS = {
-  foldChange: (fileNames, task, logBase, writeLog) => {
+  controlDist: (task, writeLog) => {
     return new Promise((resolve, reject) => {
-      const numFiles = fileNames.length;
-
-      // run normalize script
-      const foldChange = (fileName) => {
-        return new Promise((resolveFoldChange, rejectFoldChange) => {
-          const foldChangeProcess = spawn(
-            `${config.scriptPath}CRISPR/RANKS/foldChange.py`,
-            [
-              '--filename',
-              `${fileName}`,
-              '--path',
-              `${task.folder}/`,
-              '--log',
-              `${logBase}`,
-            ]
-          );
-          let taskStatus = {
-            pid: foldChangeProcess.pid,
-            status: 'Calculating fold changes',
-            step: 'File processing',
-          };
-          UpdateTask.sync(task.id, taskStatus);
-          foldChangeProcess.stdout.on('data', (data) => {
-            // log stdout, if any
-            writeLog(task.folder, data);
-          });
-          foldChangeProcess.on('error', (processError) => {
-            reject(processError);
-          });
-          foldChangeProcess.on('exit', () => {
-            fs.access(`${task.folder}/foldchange_${fileName}`)
-              .then(() => {
-                taskStatus = {
-                  pid: 'x',
-                  status: 'Complete',
-                };
-                return UpdateTask.async(task.id, taskStatus);
-              })
-              .then(() => {
-                resolveFoldChange(`foldchange_${fileName}`);
-              })
-              .catch((accessError) => {
-                rejectFoldChange(accessError);
-              })
-            ;
-          });
-        });
+      const ranksProcess = spawn(
+        `${config.scriptPath}CRISPR/RANKS/${config.scripts.RANKScontrolDist}`,
+        [
+          '-p',
+          `${task.folder}`,
+        ]
+      );
+      let taskStatus = {
+        pid: ranksProcess.pid,
+        status: 'generating control distribution',
+        step: 'RANKS',
       };
-
-      const outFileNames = [];
-      const next = (fileName, index) => {
-        foldChange(fileName)
-          .then((outFileName) => {
-            outFileNames.push(outFileName);
-            if (index < numFiles - 1) {
-              next(fileNames[index + 1], index + 1);
-            } else {
-              resolve(outFileNames);
-            }
+      UpdateTask.sync(task.id, taskStatus);
+      ranksProcess.stdout.on('data', (data) => {
+        // log stdout, if any
+        writeLog(task.folder, data);
+      });
+      ranksProcess.on('error', (processError) => {
+        reject(processError);
+      });
+      ranksProcess.on('exit', () => {
+        fs.access(`${task.folder}/ctrlscores10`)
+          .then(() => {
+            taskStatus = {
+              pid: 'x',
+              status: 'Complete',
+            };
+            return UpdateTask.async(task.id, taskStatus);
           })
-          .catch((error) => {
-            reject(error);
+          .then(() => {
+            resolve();
+          })
+          .catch((accessError) => {
+            reject(accessError);
           })
         ;
-      };
-      next(fileNames[0], 0);
+      });
     });
   },
-  normalizeAndFilter: (fileNames, task, params, writeLog) => {
+  normalizeAndFilter: (sampleSet, task, params, writeLog) => {
     return new Promise((resolve, reject) => {
-      const numFiles = fileNames.length;
+      const numFiles = sampleSet.length;
 
       // run normalize script
       const normalize = (fileName) => {
@@ -119,16 +91,13 @@ const RANKS = {
             reject(processError);
           });
           normalizeProcess.on('exit', () => {
-            fs.access(`${task.folder}/filtered_${fileName}`)
+            taskStatus = {
+              pid: 'x',
+              status: 'Complete',
+            };
+            UpdateTask.async(task.id, taskStatus)
               .then(() => {
-                taskStatus = {
-                  pid: 'x',
-                  status: 'Complete',
-                };
-                return UpdateTask.async(task.id, taskStatus);
-              })
-              .then(() => {
-                resolveNormalize(`filtered_${fileName}`);
+                resolveNormalize();
               })
               .catch((accessError) => {
                 rejectNormalize(accessError);
@@ -138,15 +107,14 @@ const RANKS = {
         });
       };
 
-      const outFileNames = [];
-      const next = (fileName, index) => {
+      const next = (index) => {
+        const fileName = `${sampleSet[index].name}.txt`;
         normalize(fileName)
-          .then((outFileName) => {
-            outFileNames.push(outFileName);
+          .then(() => {
             if (index < numFiles - 1) {
-              next(fileNames[index + 1], index + 1);
+              next(index + 1);
             } else {
-              resolve(outFileNames);
+              resolve();
             }
           })
           .catch((error) => {
@@ -154,7 +122,58 @@ const RANKS = {
           })
         ;
       };
-      next(fileNames[0], 0);
+      next(0);
+    });
+  },
+  readAndMerge: (sampleSet, output) => {
+    sampleSet.forEach((set) => {
+      const neg = {};
+      const pos = {};
+      set.replicates.forEach((_id, index) => {
+        output[set.name][index].forEach((geneResult) => {
+          if (geneResult.score > 0) {
+            if (!Object.prototype.hasOwnProperty.call(pos, geneResult.gene)) {
+              pos[geneResult.gene] = {
+                score: [],
+                pValue: [],
+                fdr: [],
+                numGuides: [],
+              };
+            }
+            pos[geneResult.gene].score.push(geneResult.score);
+            pos[geneResult.gene].pValue.push(geneResult.pValue);
+            pos[geneResult.gene].fdr.push(geneResult.fdr);
+            pos[geneResult.gene].numGuides.push(geneResult.numGuides);
+          } else {
+            if (!Object.prototype.hasOwnProperty.call(neg, geneResult.gene)) {
+              neg[geneResult.gene] = {
+                score: [],
+                pValue: [],
+                fdr: [],
+                numGuides: [],
+              };
+            }
+            neg[geneResult.gene].score.push(geneResult.score);
+            neg[geneResult.gene].pValue.push(geneResult.pValue);
+            neg[geneResult.gene].fdr.push(geneResult.fdr);
+            neg[geneResult.gene].numGuides.push(geneResult.numGuides);
+          }
+        });
+      });
+      const numReplicates = set.replicates.length;
+      // average postive scores
+      const avgPos = {};
+      Object.keys(pos).forEach((gene) => {
+        if (pos[gene].score.length === numReplicates) {
+          avgPos[gene] = {
+            score: Mean(pos[gene].score),
+            pValue: Mean(pos[gene].pValue),
+            fdr: Mean(pos[gene].fdr),
+            numGuides: Mean(pos[gene].numGuides),
+          };
+        }
+      });
+      console.log(pos);
     });
   },
   run: (formSamples, details, task, writeLog) => {
@@ -166,55 +185,245 @@ const RANKS = {
       };
 
       Promise.all([
-        RANKS.sampleToFiles(task.folder, details.design, formSamples),
+        RANKS.writeFiles(task.folder, details.design, details.controlGenes, formSamples),
         UpdateTask.async(task.id, taskStatus),
       ])
-        .then((values) => {
+        .then(() => {
           // apply filters and normalization
           const initParams = Params.get(details, CrisprDefaults.all);
           return RANKS.normalizeAndFilter(
-            values[0],
+            details.design,
             task,
             initParams,
             writeLog
           );
         })
-        .then((filteredFileNames) => {
-          return RANKS.foldChange(filteredFileNames, task, 2, writeLog);
+        .then(() => {
+          return RANKS.controlDist(task, writeLog);
         })
-        .then((fcFileNames) => {
-          // get RANKS params
-          const RANKSParams = Params.get(details, CrisprDefaults.RANKS);
+        .then(() => {
           // run RANKS
           return RANKS.script(
-            fcFileNames,
+            details.design,
+            details.controlGenes,
             task,
-            details,
-            RANKSParams,
             writeLog
           );
         })
+        .then((output) => {
+          const mergedResults = RANKS.readAndMerge(details.design, output);
+        })
         .then(() => {
           // store log and analysis results
-          return Promise.all([
+          /* return Promise.all([
             Log.write(task),
-            RANKS.storeOutput(task),
-          ]);
+            RANKS.storeOutput(details.design, task),
+          ]);*/
         })
         .then(() => {
           resolve();
         })
         .catch((error) => {
-          console.log(error);
           reject(error);
         })
       ;
     });
   },
-  sampleToFiles: (folder, design, samples) => {
+  script: (sampleSet, controlGenes, task) => {
     return new Promise((resolve, reject) => {
-      const errors = [];
-      const fileNames = [];
+      // output
+      const output = {};
+      // run normalize script
+      const ranks = (sampleSetName, replicate) => {
+        return new Promise((resolveRANKS, rejectRANKS) => {
+          let args = [
+            `${task.folder}/filtered_C${replicate + 1}_${sampleSetName}.txt`,
+            `${task.folder}/filtered_R${replicate + 1}_${sampleSetName}.txt`,
+            '-lib',
+            `${task.folder}/guides_${sampleSetName}.txt`,
+            '-p',
+            `${task.folder}/`,
+          ];
+          // check if user specified control genes and if a guide file was created
+          if (
+            controlGenes &&
+            fs.statSync(`${task.folder}/controls_${sampleSetName}.txt`)
+          ) {
+            args = args.concat([
+              '-ctrl',
+              `${task.folder}/controls_${sampleSetName}.txt`,
+            ]);
+          }
+
+          let stdout = '';
+          const ranksProcess = spawn(
+            `${config.scriptPath}CRISPR/RANKS/${config.scripts.RANKS}`,
+            args
+          );
+          let taskStatus = {
+            pid: ranksProcess.pid,
+            status: 'Starting RANKS',
+            step: 'RANKS',
+          };
+          UpdateTask.sync(task.id, taskStatus);
+          ranksProcess.stdout.on('data', (data) => {
+            stdout += data.toString();
+          });
+          ranksProcess.on('error', (processError) => {
+            reject(processError);
+          });
+          ranksProcess.on('exit', () => {
+            // parse stdout to JSON
+            output[sampleSetName][replicate] = [];
+            const data = stdout.split('\n');
+            data.forEach((line, index) => {
+              if (index !== 0) {
+                const lineArr = line.split('\t');
+                output[sampleSetName][replicate].push({
+                  gene: lineArr[0],
+                  score: lineArr[1],
+                  pValue: lineArr[2],
+                  fdr: lineArr[3],
+                  numGuides: lineArr[4],
+                });
+              }
+            });
+            // updat task status
+            taskStatus = {
+              pid: 'x',
+              status: 'Complete',
+            };
+            UpdateTask.async(task.id, taskStatus)
+              .then(() => {
+                resolveRANKS();
+              })
+              .catch((accessError) => {
+                rejectRANKS(accessError);
+              })
+            ;
+          });
+        });
+      };
+
+      // run sample set
+      const runSampleSet = (set) => {
+        return new Promise((resolveSampleSet, rejectSampleSet) => {
+          // init output object for stdout
+          output[set.name] = [];
+          const nextSample = (index) => {
+            ranks(set.name, index)
+              .then(() => {
+                if (index < set.controls.length - 1) {
+                  nextSample(index + 1);
+                } else {
+                  resolveSampleSet();
+                }
+              })
+              .catch((error) => {
+                rejectSampleSet(error);
+              })
+            ;
+          };
+          nextSample(0);
+        });
+      };
+
+      const nextSampleSet = (index) => {
+        runSampleSet(sampleSet[index])
+          .then(() => {
+            if (index < sampleSet.length - 1) {
+              nextSampleSet(index + 1);
+            } else {
+              resolve(output);
+            }
+          })
+          .catch((error) => {
+            reject(error);
+          })
+        ;
+      };
+      nextSampleSet(0);
+    });
+  },
+  storeOutput: (sampleSet, task) => {
+    return new Promise((resolve, reject) => {
+      // file options
+      const csvParams = {
+        delimiter: '\t',
+        trim: true,
+      };
+      const columns = {
+        gene: 'GENE',
+        other: [
+          {
+            name: 'pos-RANKs',
+            type: 'number',
+          },
+          {
+            name: 'pos-pValue',
+            type: 'number',
+          },
+          {
+            name: 'pos-FDR',
+            type: 'number',
+          },
+          {
+            name: 'pos-sgRNA considered',
+            type: 'number',
+          },
+          {
+            name: 'neg-RANKs',
+            type: 'number',
+          },
+          {
+            name: 'neg-pValue',
+            type: 'number',
+          },
+          {
+            name: 'neg-FDR',
+            type: 'number',
+          },
+          {
+            name: 'neg-sgRNA considered',
+            type: 'number',
+          },
+        ],
+      };
+      /* const setNames = sampleSet.map((set) => {
+            return {
+              file: `RANKS_foldchange_filtered_${set.name}.txt`,
+              name: set.name,
+            };
+          });
+          return StoreOutput.readFiles(columns, csvParams, setNames, task);
+        })
+        .then((results) => {
+          return create.insert('analysisResults', { _id: task.id, results });
+        })
+        .then(() => {
+          resolve();
+        })
+        .catch((error) => {
+          reject(error);
+        })
+      ;*/
+    });
+  },
+  writeFiles: (folder, design, controlGenes, samples) => {
+    return new Promise((resolve, reject) => {
+      // create header
+      const createHeader = (controls, replicates) => {
+        let header = 'SEQID\tGENE\t';
+        header += controls.map((control, i) => {
+          return `C${i + 1}`;
+        }).join('\t');
+        header += '\t';
+        header += replicates.map((control, i) => {
+          return `R${i + 1}`;
+        }).join('\t');
+        header += '\n';
+        return header;
+      };
 
       // check if samples have same guide list (in the same order)
       const compareGuideOrder = (currSamples) => {
@@ -256,245 +465,158 @@ const RANKS = {
         return guides;
       };
 
-      // write to file where samples have the same guide set
-      const writeInOrder = (guides, sampleSet, currSamples) => {
-        sampleSet.controls.forEach((_id, index) => {
-          const file = fs.createWriteStream(`${folder}/${sampleSet.name}_C${index + 1}.txt`);
-          const sampleIndex = currSamples.findIndex((sample) => {
-            return sample._id === _id;
-          });
-          guides.forEach((guideEntry, i) => {
-            const line = `${guideEntry.guide}\t${currSamples[sampleIndex].records[i].readCount}\n`;
-            file.write(line);
-          });
-          file.on('error', () => {
-            errors.push(`Input file could not be created from the database,
-              for sample ${sampleSet.name}_C${index + 1}`
-            );
-          });
-          fileNames.push(`${sampleSet.name}_C${index + 1}.txt`);
-          file.end();
+      // write control genes to a file (if specified)
+      const writeControls = (guides, controls, sampleSet) => {
+        return new Promise((resolveWriteControls, rejectWriteControls) => {
+          if (controls) {
+            // split user specified control string
+            const controlGeneArray = controls.split(/, */);
+            const guideSequences = [];
+            // for each control gene, find matching guide sequences and write to file
+            controlGeneArray.forEach((gene) => {
+              const guideIndices = guides.reduce((arr, guideEntry, index) => {
+                return guideEntry.gene === gene ? arr.concat(index) : arr;
+              }, []);
+              guideIndices.forEach((index) => {
+                guideSequences.push(guides[index].guide);
+              });
+              if (guideSequences.length > 0) {
+                const file = fs.createWriteStream(`${folder}/controls_${sampleSet.name}.txt`);
+                guideSequences.forEach((sequence) => {
+                  file.write(`${sequence}\n`);
+                });
+                file.on('error', () => {
+                  rejectWriteControls(`Control file could not be created for sample ${sampleSet.name}`);
+                });
+                file.end();
+                resolveWriteControls();
+              } else {
+                resolveWriteControls();
+              }
+            });
+          } else {
+            resolveWriteControls();
+          }
         });
-        sampleSet.replicates.forEach((_id, index) => {
-          const file = fs.createWriteStream(`${folder}/${sampleSet.name}_R${index + 1}.txt`);
-          const sampleIndex = currSamples.findIndex((sample) => {
-            return sample._id === _id;
+      };
+
+      // write to file where sampleshave the same guide set
+      const writeGuides = (guides, sampleSet) => {
+        return new Promise((resolveGuideWrite, rejectGuideWrite) => {
+          const file = fs.createWriteStream(`${folder}/guides_${sampleSet.name}.txt`);
+          guides.forEach((guideEntry) => {
+            file.write(`${guideEntry.guide}\t${guideEntry.gene}\n`);
           });
+          file.on('error', () => {
+            rejectGuideWrite(`Guide file could not be created for sample ${sampleSet.name}`);
+          });
+          file.end();
+          resolveGuideWrite();
+        });
+      };
+
+      // write to file where sampleshave the same guide set
+      const writeInOrder = (guides, header, sampleSet, currSamples) => {
+        return new Promise((resolveFileWrite, rejectFileWrite) => {
+          const file = fs.createWriteStream(`${folder}/${sampleSet.name}.txt`);
+          file.write(header);
           guides.forEach((guideEntry, i) => {
-            const line = `${guideEntry.guide}\t${currSamples[sampleIndex].records[i].readCount}\n`;
+            let line = `${guideEntry.guide}\t${guideEntry.gene}`;
+            sampleSet.controls.concat(sampleSet.replicates).forEach((_id) => {
+              const sampleIndex = currSamples.findIndex((sample) => {
+                return sample._id === _id;
+              });
+              line += `\t${currSamples[sampleIndex].records[i].readCount}`;
+            });
+            line += '\n';
             file.write(line);
           });
           file.on('error', () => {
-            errors.push(`Input file could not be created from the database,
-              for sample ${sampleSet.name}_R${index + 1}`
-            );
+            rejectFileWrite(`Input file could not be created from the database for sample ${sampleSet.name}`);
           });
-          fileNames.push(`${sampleSet.name}_R${index + 1}.txt`);
           file.end();
+          resolveFileWrite();
         });
       };
 
       // write to file where samples do not have the same guide set
-      const writeLineByLine = (guides, sampleSet, currSamples) => {
-        sampleSet.controls.forEach((_id, index) => {
-          const file = fs.createWriteStream(`${folder}/${sampleSet.name}_C${index + 1}.txt`);
-          const sampleIndex = currSamples.findIndex((sample) => {
-            return sample._id === _id;
-          });
-          guides.forEach((guideEntry, i) => {
-            const recordIndex = currSamples[sampleIndex].records.findIndex((record) => {
-              return record.guideSequence === guideEntry.guide;
+      const writeLineByLine = (guides, header, sampleSet, currSamples) => {
+        return new Promise((resolveFileWrite, rejectFileWrite) => {
+          const file = fs.createWriteStream(`${folder}/${sampleSet.name}.txt`);
+          file.write(header);
+          guides.forEach((guideEntry) => {
+            let line = `${guideEntry.guide}\t${guideEntry.gene}`;
+            sampleSet.controls.concat(sampleSet.replicates).forEach((_id) => {
+              const sampleIndex = currSamples.findIndex((sample) => {
+                return sample._id === _id;
+              });
+              const recordIndex = currSamples[sampleIndex].records.findIndex((record) => {
+                return record.guideSequence === guideEntry.guide;
+              });
+              line += recordIndex > -1 ?
+                `\t${currSamples[sampleIndex].records[recordIndex].readCount}`
+                :
+                0
+              ;
             });
-            const line = recordIndex > -1 ?
-              `${guideEntry.guide}\t${currSamples[sampleIndex].records[i].readCount}\n`
-              :
-              `${guideEntry.guide}\t0\n`
-            ;
+            line += '\n';
             file.write(line);
           });
           file.on('error', () => {
-            errors.push(`Input file could not be created from the database,
-              for sample ${sampleSet.name}_C${index + 1}`
-            );
+            rejectFileWrite(`Input file could not be created from the database for sample ${sampleSet.name}`);
           });
-          fileNames.push(`${sampleSet.name}_C${index + 1}.txt`);
           file.end();
-        });
-        sampleSet.replicates.forEach((_id, index) => {
-          const file = fs.createWriteStream(`${folder}/${sampleSet.name}_R${index + 1}.txt`);
-          const sampleIndex = currSamples.findIndex((sample) => {
-            return sample._id === _id;
-          });
-          guides.forEach((guideEntry, i) => {
-            const recordIndex = currSamples[sampleIndex].records.findIndex((record) => {
-              return record.guideSequence === guideEntry.guide;
-            });
-            const line = recordIndex > -1 ?
-              `${guideEntry.guide}\t${currSamples[sampleIndex].records[i].readCount}\n`
-              :
-              `${guideEntry.guide}\t0\n`
-            ;
-            file.write(line);
-          });
-          file.on('error', () => {
-            errors.push(`Input file could not be created from the database,
-              for sample ${sampleSet.name}_R${index + 1}`
-            );
-          });
-          fileNames.push(`${sampleSet.name}_R${index + 1}.txt`);
-          file.end();
+          resolveFileWrite();
         });
       };
 
-      design.forEach((sampleSet) => {
-        // get currSamples to use
+      const next = (index) => {
+        const sampleSet = design[index];
         const currSamples = sampleSet.controls.concat(sampleSet.replicates).map((_id) => {
           const sampleIndex = samples.findIndex((sample) => { return sample._id === _id; });
           return samples[sampleIndex];
         });
         // write to file
+        const header = createHeader(sampleSet.controls, sampleSet.replicates);
         const sameFormat = compareGuideOrder(currSamples);
         if (sameFormat) {
           const guides = getGuides([currSamples[0]]);
-          writeInOrder(guides, sampleSet, currSamples);
+          Promise.all([
+            writeControls(guides, controlGenes, sampleSet),
+            writeGuides(guides, sampleSet),
+            writeInOrder(guides, header, sampleSet, currSamples),
+          ])
+            .then(() => {
+              if (index < design.length - 2) {
+                next(index + 1);
+              } else {
+                resolve();
+              }
+            })
+            .catch((error) => {
+              reject(error);
+            })
+          ;
         } else {
           const guides = getGuides(samples);
-          writeLineByLine(guides, sampleSet, currSamples);
+          Promise.all([
+            writeGuides(guides, sampleSet),
+            writeLineByLine(guides, header, sampleSet, currSamples),
+          ])
+            .then(() => {
+              if (index < design.length - 2) {
+                next(index + 1);
+              } else {
+                resolve();
+              }
+            })
+            .catch((error) => {
+              reject(error);
+            })
+          ;
         }
-      });
-      if (errors.length === 0) {
-        resolve(fileNames);
-      } else {
-        reject(errors.join('. '));
-      }
-    });
-  },
-  script: (fileNames, task, details, params, writeLog) => {
-    return new Promise((resolve, reject) => {
-      const essentialList = `essential_${params.essentialVersion}.txt`;
-      const nonEssentialList = `nonessential_${params.essentialVersion}.txt`;
-      const numFiles = fileNames.length;
-
-      // run normalize script
-      const ranks = (fileName, design) => {
-        return new Promise((resolveRANKS, rejectRANKS) => {
-          const columns = Array.from(
-            new Array(design.replicates.length), (x, i) => { return i + 1; }
-          ).join(',');
-          const ranksProcess = spawn(
-            `${config.scriptPath}CRISPR/RANKS/${config.scripts.RANKS}`,
-            [
-              '--filename',
-              `${fileName}`,
-              '--path',
-              `${task.folder}/`,
-              '--essential',
-              `${config.scriptPath}CRISPR/RANKS/EssentialLists/${essentialList}`,
-              '--nonessential',
-              `${config.scriptPath}CRISPR/RANKS/EssentialLists/${nonEssentialList}`,
-              '--columns',
-              `${columns}`,
-              '--numiter',
-              `${params.bootstrapIter}`,
-            ]
-          );
-          let taskStatus = {
-            pid: ranks.pid,
-            status: 'Starting RANKS',
-            step: 'RANKS',
-          };
-          UpdateTask.sync(task.id, taskStatus);
-          ranksProcess.stdout.on('data', (data) => {
-            // log stdout, if any
-            writeLog(task.folder, data);
-          });
-          ranksProcess.on('error', (processError) => {
-            reject(processError);
-          });
-          ranksProcess.on('exit', () => {
-            fs.access(`${task.folder}/RANKS_${fileName}`)
-              .then(() => {
-                taskStatus = {
-                  pid: 'x',
-                  status: 'Complete',
-                };
-                return UpdateTask.async(task.id, taskStatus);
-              })
-              .then(() => {
-                resolveRANKS(`RANKS_${fileName}`);
-              })
-              .catch((accessError) => {
-                rejectRANKS(accessError);
-              })
-            ;
-          });
-        });
       };
-
-      const outFileNames = [];
-      const next = (fileName, index) => {
-        RANKS(fileName, details.design[index])
-          .then((outFileName) => {
-            outFileNames.push(outFileName);
-            if (index < numFiles - 1) {
-              next(fileNames[index + 1], index + 1);
-            } else {
-              resolve(outFileNames);
-            }
-          })
-          .catch((error) => {
-            reject(error);
-          })
-        ;
-      };
-      next(fileNames[0], 0);
-    });
-  },
-  storeOutput: (task) => {
-    return new Promise((resolve, reject) => {
-      // file options
-      const csvParams = {
-        delimiter: '\t',
-        trim: true,
-      };
-      const columns = {
-        gene: 'GENE',
-        other: [
-          {
-            name: 'BF',
-            type: 'number',
-          },
-          {
-            name: 'STD',
-            type: 'number',
-          },
-          {
-            name: 'NumObs',
-            type: 'number',
-          },
-        ],
-      };
-      // get sample set names
-      query.get('analysisTasks', { _id: task.id }, { details: 1 }, 'findOne')
-        .then((taskDetails) => {
-          const setNames = taskDetails.details.design.map((sampleSet) => {
-            return {
-              file: `RANKS_foldchange_filtered_${sampleSet.name}.txt`,
-              name: sampleSet.name,
-            };
-          });
-          return StoreOutput.readFiles(columns, csvParams, setNames, task);
-        })
-        .then((results) => {
-          return create.insert('analysisResults', { _id: task.id, results });
-        })
-        .then(() => {
-          resolve();
-        })
-        .catch((error) => {
-          reject(error);
-        })
-      ;
+      next(0);
     });
   },
 };
