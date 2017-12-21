@@ -1,4 +1,4 @@
-// calculates median
+// calculates mean
 
 const Mean = (arr) => {
   const sum = arr.reduce((a, b) => { return a + b; });

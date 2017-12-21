@@ -1,3 +1,4 @@
+const ArrayUnique = require('../../helpers/array-unique');
 const create = require('../../crud/create');
 const config = require('../../../../config').settings();
 const CrisprDefaults = require('../CRISPR/crispr-defaults');
@@ -6,8 +7,7 @@ const fs = require('mz/fs');
 const Log = require('../log');
 const Mean = require('../../helpers/mean');
 const Params = require('./params');
-const query = require('../../query/query');
-const StoreOutput = require('../store-output.js');
+const Round = require('../../helpers/round');
 const spawn = require('child_process').spawn;
 const UpdateTask = require('../update-task');
 
@@ -126,6 +126,7 @@ const RANKS = {
     });
   },
   readAndMerge: (sampleSet, output) => {
+    const geneSetData = {};
     sampleSet.forEach((set) => {
       const neg = {};
       const pos = {};
@@ -166,14 +167,54 @@ const RANKS = {
       Object.keys(pos).forEach((gene) => {
         if (pos[gene].score.length === numReplicates) {
           avgPos[gene] = {
-            score: Mean(pos[gene].score),
+            score: Round(Mean(pos[gene].score), 3),
             pValue: Mean(pos[gene].pValue),
-            fdr: Mean(pos[gene].fdr),
-            numGuides: Mean(pos[gene].numGuides),
+            fdr: Round(Mean(pos[gene].fdr), 3),
+            numGuides: Round(Mean(pos[gene].numGuides), 3),
           };
         }
       });
-      console.log(pos);
+      // average negative scores
+      const avgNeg = {};
+      Object.keys(neg).forEach((gene) => {
+        if (neg[gene].score.length === numReplicates) {
+          avgNeg[gene] = {
+            score: Round(Mean(neg[gene].score), 3),
+            pValue: Mean(neg[gene].pValue),
+            fdr: Round(Mean(neg[gene].fdr), 3),
+            numGuides: Round(Mean(neg[gene].numGuides), 3),
+          };
+        }
+      });
+      const genes = ArrayUnique(Object.keys(avgPos).concat(Object.keys(avgNeg)));
+      genes.forEach((gene) => {
+        const currGeneData = {
+          sample: set.name,
+        };
+        if (Object.prototype.hasOwnProperty.call(avgPos, gene)) {
+          currGeneData['pos-score'] = avgPos[gene].score;
+          currGeneData['pos-pValue'] = avgPos[gene].pValue;
+          currGeneData['pos-fdr'] = avgPos[gene].fdr;
+          currGeneData['pos-numGuides'] = avgPos[gene].numGuides;
+        }
+        if (Object.prototype.hasOwnProperty.call(avgNeg, gene)) {
+          currGeneData['neg-score'] = avgNeg[gene].score;
+          currGeneData['neg-pValue'] = avgNeg[gene].pValue;
+          currGeneData['neg-fdr'] = avgNeg[gene].fdr;
+          currGeneData['neg-numGuides'] = avgNeg[gene].numGuides;
+        }
+        if (!Object.prototype.hasOwnProperty.call(geneSetData, gene)) {
+          geneSetData[gene] = [currGeneData];
+        } else {
+          geneSetData[gene].push(currGeneData);
+        }
+      });
+    });
+    return Object.keys(geneSetData).sort().map((gene) => {
+      return {
+        gene,
+        records: geneSetData[gene],
+      };
     });
   },
   run: (formSamples, details, task, writeLog) => {
@@ -212,13 +253,10 @@ const RANKS = {
         })
         .then((output) => {
           const mergedResults = RANKS.readAndMerge(details.design, output);
-        })
-        .then(() => {
-          // store log and analysis results
-          /* return Promise.all([
+          return Promise.all([
             Log.write(task),
-            RANKS.storeOutput(details.design, task),
-          ]);*/
+            RANKS.storeOutput(mergedResults, task),
+          ]);
         })
         .then(() => {
           resolve();
@@ -281,10 +319,10 @@ const RANKS = {
                 const lineArr = line.split('\t');
                 output[sampleSetName][replicate].push({
                   gene: lineArr[0],
-                  score: lineArr[1],
-                  pValue: lineArr[2],
-                  fdr: lineArr[3],
-                  numGuides: lineArr[4],
+                  score: Number(lineArr[1]),
+                  pValue: Number(lineArr[2]),
+                  fdr: Number(lineArr[3]),
+                  numGuides: Number(lineArr[4]),
                 });
               }
             });
@@ -345,68 +383,16 @@ const RANKS = {
       nextSampleSet(0);
     });
   },
-  storeOutput: (sampleSet, task) => {
+  storeOutput: (data, task) => {
     return new Promise((resolve, reject) => {
-      // file options
-      const csvParams = {
-        delimiter: '\t',
-        trim: true,
-      };
-      const columns = {
-        gene: 'GENE',
-        other: [
-          {
-            name: 'pos-RANKs',
-            type: 'number',
-          },
-          {
-            name: 'pos-pValue',
-            type: 'number',
-          },
-          {
-            name: 'pos-FDR',
-            type: 'number',
-          },
-          {
-            name: 'pos-sgRNA considered',
-            type: 'number',
-          },
-          {
-            name: 'neg-RANKs',
-            type: 'number',
-          },
-          {
-            name: 'neg-pValue',
-            type: 'number',
-          },
-          {
-            name: 'neg-FDR',
-            type: 'number',
-          },
-          {
-            name: 'neg-sgRNA considered',
-            type: 'number',
-          },
-        ],
-      };
-      /* const setNames = sampleSet.map((set) => {
-            return {
-              file: `RANKS_foldchange_filtered_${set.name}.txt`,
-              name: set.name,
-            };
-          });
-          return StoreOutput.readFiles(columns, csvParams, setNames, task);
-        })
-        .then((results) => {
-          return create.insert('analysisResults', { _id: task.id, results });
-        })
+      create.insert('analysisResults', { _id: task.id, results: data })
         .then(() => {
           resolve();
         })
         .catch((error) => {
           reject(error);
         })
-      ;*/
+      ;
     });
   },
   writeFiles: (folder, design, controlGenes, samples) => {

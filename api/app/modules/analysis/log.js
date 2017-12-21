@@ -3,7 +3,7 @@ const UpdateTask = require('./update-task');
 
 const LOG = {
   write: (task) => {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       fs.readFile(`${task.folder}/log.txt`, 'utf8')
         .then((log) => {
           return UpdateTask.async(task.id, { log });
@@ -11,8 +11,9 @@ const LOG = {
         .then(() => {
           resolve();
         })
-        .catch((error) => {
-          reject(error);
+        .catch(() => {
+          // if there is not file, simply resolve
+          resolve();
         })
       ;
     });
