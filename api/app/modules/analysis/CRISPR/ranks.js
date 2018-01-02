@@ -189,19 +189,19 @@ const RANKS = {
       const genes = ArrayUnique(Object.keys(avgPos).concat(Object.keys(avgNeg)));
       genes.forEach((gene) => {
         const currGeneData = {
-          sample: set.name,
+          sampleSet: set.name,
         };
         if (Object.prototype.hasOwnProperty.call(avgPos, gene)) {
-          currGeneData['pos-score'] = avgPos[gene].score;
-          currGeneData['pos-pValue'] = avgPos[gene].pValue;
-          currGeneData['pos-fdr'] = avgPos[gene].fdr;
-          currGeneData['pos-numGuides'] = avgPos[gene].numGuides;
+          currGeneData['enrichment-score'] = avgPos[gene].score;
+          currGeneData['enrichment-pValue'] = avgPos[gene].pValue;
+          currGeneData['enrichment-fdr'] = avgPos[gene].fdr;
+          currGeneData['enrichment-numGuides'] = avgPos[gene].numGuides;
         }
         if (Object.prototype.hasOwnProperty.call(avgNeg, gene)) {
-          currGeneData['neg-score'] = avgNeg[gene].score;
-          currGeneData['neg-pValue'] = avgNeg[gene].pValue;
-          currGeneData['neg-fdr'] = avgNeg[gene].fdr;
-          currGeneData['neg-numGuides'] = avgNeg[gene].numGuides;
+          currGeneData['depletion-score'] = avgNeg[gene].score;
+          currGeneData['depletion-pValue'] = avgNeg[gene].pValue;
+          currGeneData['depletion-fdr'] = avgNeg[gene].fdr;
+          currGeneData['depletion-numGuides'] = avgNeg[gene].numGuides;
         }
         if (!Object.prototype.hasOwnProperty.call(geneSetData, gene)) {
           geneSetData[gene] = [currGeneData];
@@ -315,8 +315,11 @@ const RANKS = {
             output[sampleSetName][replicate] = [];
             const data = stdout.split('\n');
             data.forEach((line, index) => {
-              if (index !== 0) {
-                const lineArr = line.split('\t');
+              const lineArr = line.split('\t');
+              if (
+                index !== 0 &&
+                lineArr[0]
+              ) {
                 output[sampleSetName][replicate].push({
                   gene: lineArr[0],
                   score: Number(lineArr[1]),

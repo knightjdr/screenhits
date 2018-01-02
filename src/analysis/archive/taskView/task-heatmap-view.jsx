@@ -11,12 +11,15 @@ import ArrowUpIcon from 'material-ui/svg-icons/navigation/expand-less';
 import Checkbox from 'material-ui/Checkbox';
 import ClearIcon from 'material-ui/svg-icons/content/clear';
 import IconButton from 'material-ui/IconButton';
+import MenuItem from 'material-ui/MenuItem';
 import muiThemeable from 'material-ui/styles/muiThemeable';
 import PropTypes from 'prop-types';
 import Radium from 'radium';
 import React from 'react';
 import ReactTooltip from 'react-tooltip';
+import RefreshIcon from 'material-ui/svg-icons/navigation/refresh';
 import RestoreIcon from 'material-ui/svg-icons/action/restore';
+import SelectField from 'material-ui/SelectField';
 import SettingsIcon from 'material-ui/svg-icons/action/settings';
 import TextField from 'material-ui/TextField';
 
@@ -75,9 +78,6 @@ const legendGridCellStyle = {
   height: 30,
   width: 2,
 };
-const optionFieldContainerStyle = {
-  marginTop: 10,
-};
 const optionFieldStyle = {
   margin: '15px 0',
   width: 213,
@@ -111,6 +111,15 @@ const optionsInputStyle = {
   ':focus': {
     outline: 0,
   },
+};
+const optionSelectStyle = {
+  width: 213,
+};
+const optionTitleStyle = {
+  borderRadius: 4,
+  marginTop: 10,
+  padding: 4,
+  position: 'relative',
 };
 const panelOptionsStyle = {
   backgroundColor: 'white',
@@ -180,6 +189,14 @@ const settingsIconStyle = {
   height: 24,
   width: 26,
   padding: '5px 7px 5px 5px',
+};
+const settingsUpdateFilterStyle = {
+  height: 24,
+  width: 26,
+  padding: '5px 7px 5px 5px',
+  position: 'absolute',
+  right: 5,
+  top: -1,
 };
 const tableContainerStyle = {
   display: 'grid',
@@ -366,7 +383,7 @@ class TaskHeatmapView extends React.Component {
                             {},
                             gridItemStyle,
                             {
-                              backgroundColor: gridColor(column.value),
+                              backgroundColor: gridColor(column[this.props.valueName]),
                               gridColumn: columnIndex + 2,
                               gridRow: rowIndex + 1,
                             }
@@ -585,10 +602,99 @@ class TaskHeatmapView extends React.Component {
                 <ClearIcon />
               </IconButton>
             </div>
-            <div
-              style={ optionFieldContainerStyle }
-            >
-              Options
+            <div>
+              {
+                this.props.options.filters &&
+                this.props.options.filters.length > 0 &&
+                <div>
+                  <div
+                    style={ Object.assign(
+                      {},
+                      optionTitleStyle,
+                      {
+                        backgroundColor: this.props.muiTheme.palette.primary1Color,
+                      },
+                    ) }
+                  >
+                    Filters
+                    <IconButton
+                      data-tip={ true }
+                      data-for={ 'filter-viz-view' }
+                      iconStyle={ settingsFontStyle }
+                      onClick={ this.props.updateFilters }
+                      style={ settingsUpdateFilterStyle }
+                    >
+                      <RefreshIcon />
+                    </IconButton>
+                  </div>
+                  {
+                    this.props.options.filters.map((filter) => {
+                      return (
+                        <div
+                          key={ `filter-container-${filter.name}` }
+                          style={ {
+                            margin: '10px 0 5px 0',
+                          } }
+                        >
+                          <input
+                            key={ `filter-input-${filter.name}` }
+                            onChange={ (e) => {
+                              this.props.changeFilter(filter.name, e.target.value);
+                            } }
+                            style={ optionsInputStyle }
+                            type="number"
+                            value={ filter.value }
+                          />
+                          <span>
+                            {
+                              filter.type === 'gte' ? String.fromCharCode(8804) : String.fromCharCode(8805)
+                            }
+                          </span>
+                          <span
+                            key={ `filter-text-${filter.name}` }
+                            style={ optionFieldTextStyle }
+                          >
+                            { filter.name }
+                          </span>
+                        </div>
+                      );
+                    })
+                  }
+                </div>
+              }
+              <div
+                style={ Object.assign(
+                  {},
+                  optionTitleStyle,
+                  {
+                    backgroundColor: this.props.muiTheme.palette.primary1Color,
+                  },
+                ) }
+              >
+                Options
+              </div>
+              {
+                this.props.options.valueName.length > 1 &&
+                <SelectField
+                  floatingLabelText="Fill value"
+                  listStyle={ ArchiveStyle.selectList }
+                  onChange={ this.props.changeValueName }
+                  style={ optionSelectStyle }
+                  value={ this.props.valueName }
+                >
+                  {
+                    this.props.options.valueName.map((valueName) => {
+                      return (
+                        <MenuItem
+                          key={ valueName.value }
+                          primaryText={ valueName.text }
+                          value={ valueName.value }
+                        />
+                      );
+                    })
+                  }
+                </SelectField>
+              }
               <Checkbox
                 checked={ this.props.options.enableTooltips }
                 label="Enable tooltips"
@@ -665,6 +771,14 @@ class TaskHeatmapView extends React.Component {
         />
         <ReactTooltip
           effect="solid"
+          id="filter-viz-view"
+          type="dark"
+          place="top"
+        >
+          Update filters
+        </ReactTooltip>
+        <ReactTooltip
+          effect="solid"
           id="toggle-viz-panel"
           type="dark"
           place="top"
@@ -695,7 +809,9 @@ class TaskHeatmapView extends React.Component {
 
 TaskHeatmapView.propTypes = {
   centerView: PropTypes.bool.isRequired,
+  changeFilter: PropTypes.func.isRequired,
   changeGridHeight: PropTypes.func.isRequired,
+  changeValueName: PropTypes.func.isRequired,
   changeView: PropTypes.shape({
     colBack: PropTypes.func,
     colForward: PropTypes.func,
@@ -737,11 +853,17 @@ TaskHeatmapView.propTypes = {
   optionChange: PropTypes.func.isRequired,
   options: PropTypes.shape({
     enableTooltips: PropTypes.bool,
+    filters: PropTypes.arrayOf(
+      PropTypes.shape({}),
+    ),
     gene: PropTypes.string,
     rangeMax: PropTypes.number,
     rangeMaxStr: PropTypes.string,
     rangeMin: PropTypes.number,
     rangeMinStr: PropTypes.string,
+    valueName: PropTypes.arrayOf(
+      PropTypes.shape({}),
+    ),
   }).isRequired,
   page: PropTypes.arrayOf(
     PropTypes.shape({})
@@ -787,8 +909,10 @@ TaskHeatmapView.propTypes = {
       name: PropTypes.string,
     })
   ).isRequired,
+  updateFilters: PropTypes.func.isRequired,
   updateGene: PropTypes.func.isRequired,
   updateGridHeight: PropTypes.func.isRequired,
+  valueName: PropTypes.string.isRequired,
 };
 
 export default muiThemeable()(Radium(TaskHeatmapView));

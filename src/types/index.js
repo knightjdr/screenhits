@@ -69,12 +69,24 @@ export const userProp = shape({
 export const viewTaskProp = shape({
   header: arrayOf(string),
   legend: shape({
-    valueName: string,
+    valueName: shape({}),
   }),
-  range: shape({
-    max: number,
-    min: number,
+  options: shape({
+    filters: arrayOf(
+      shape({
+        name: string,
+        type: string,
+        value: number,
+      }),
+    ),
+    valueName: arrayOf(
+      shape({
+        text: string,
+        value: string,
+      }),
+    ),
   }),
+  range: shape({}),
   results: arrayOf(shape({})),
 });
 

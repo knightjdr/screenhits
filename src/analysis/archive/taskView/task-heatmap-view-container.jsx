@@ -40,11 +40,14 @@ class TaskHeatmapViewContainer extends React.Component {
     const numRows = this.calculateRows(headerHeight, defaultGridHeight);
     const tableHeight = this.getTableHeight(numRows, defaultGridHeight);
     // set range
-    const range = this.setRange(this.props.task.range);
+    const valueName = this.props.task.options.valueName[0].value;
+    const range = this.setRange(this.props.task.range[valueName]);
+    // set filters
+    const data = this.setData(this.props.task.results, this.props.task.options.filters, valueName);
     this.state = {
       centerView: this.checkWidth(tableWidth),
       colorRange: this.initRainbow(range),
-      data: this.props.task.results ? JSON.parse(JSON.stringify(this.props.task.results)) : [],
+      data,
       fontSize: defaults.fontSize,
       gridHeight: defaultGridHeight,
       gridHeightInput: defaultGridHeight,
@@ -55,14 +58,16 @@ class TaskHeatmapViewContainer extends React.Component {
       numRows,
       options: {
         enableTooltips: false,
+        filters: JSON.parse(JSON.stringify(this.props.task.options.filters)),
         gene: '',
         rangeMax: range.max,
         rangeMaxStr: String(range.max),
         rangeMin: range.min,
         rangeMinStr: String(range.min),
+        valueName: this.props.task.options.valueName,
       },
       page: this.subsetData(
-        this.props.task.results,
+        data,
         {
           start: 0,
           end: numRows,
@@ -88,6 +93,7 @@ class TaskHeatmapViewContainer extends React.Component {
         text: '',
       },
       trackSortHeader: this.setSortHeader(this.props.task.header),
+      valueName,
       viewCols: {
         start: 0,
         end: numCols - 1,
@@ -133,6 +139,34 @@ class TaskHeatmapViewContainer extends React.Component {
   }
   getTableWidth = (numCols, gridWidth) => {
     return numCols * gridWidth;
+  }
+  setData = (data, filters, valueName) => {
+    if (!data) {
+      return [];
+    }
+    const filteredData = JSON.parse(JSON.stringify(data));
+    const validFilters = filters.filter((option) => { return option.value; });
+    if (validFilters.length > 0) {
+      const filterFuncs = {
+        gte: (value, filterValue) => {
+          return value >= filterValue;
+        },
+        lte: (value, filterValue) => {
+          return value <= filterValue;
+        },
+      };
+      return filteredData.filter((row) => {
+        return row.columns.some((column) => {
+          return validFilters.every((validFilter) => {
+            return filterFuncs[validFilter.type](
+              column[`${valueName}-${validFilter.name}`],
+              validFilter.value
+            );
+          });
+        });
+      });
+    }
+    return filteredData;
   }
   setHeader = (header, start, end) => {
     if (header) {
@@ -185,6 +219,22 @@ class TaskHeatmapViewContainer extends React.Component {
     const parentHeight = Math.floor(window.innerHeight) - 100;
     return Math.floor((parentHeight - headerHeight) / gridHeight);
   }
+  changeFilter = (filterName, value) => {
+    this.setState(({ options }) => {
+      const filters = options.filters;
+      const filterIndex = filters.findIndex((option) => {
+        return option.name === filterName;
+      });
+      filters[filterIndex].value = value;
+      return {
+        options: Object.assign(
+          {},
+          options,
+          filters,
+        ),
+      };
+    });
+  }
   changeGridHeight = (height) => {
     if (
       !height ||
@@ -195,6 +245,24 @@ class TaskHeatmapViewContainer extends React.Component {
         gridHeightInput: Math.ceil(Number(height)),
       });
     }
+  }
+  changeValueName = (e, index, value) => {
+    const range = this.setRange(this.props.task.range[value]);
+    this.setState(({ options }) => {
+      return {
+        options: Object.assign(
+          {},
+          options,
+          {
+            rangeMax: range.max,
+            rangeMaxStr: String(range.max),
+            rangeMin: range.min,
+            rangeMinStr: String(range.min),
+          },
+        ),
+        valueName: value,
+      };
+    });
   }
   checkWidth = (tableWidth) => {
     // 100 for row labels, 5 for column gap, 30 for nav buttons, 20 padding
@@ -510,7 +578,7 @@ class TaskHeatmapViewContainer extends React.Component {
           {
             start: newViewCols.start,
             end: newViewCols.end + 1,
-          },
+          }
         ),
         pageHeader: this.setHeader(header, newViewCols.start, newViewCols.end + 1),
         viewCols: newViewCols,
@@ -712,22 +780,31 @@ class TaskHeatmapViewContainer extends React.Component {
       const tableWidth = numCols * defaultGridHeight;
       const numRows = this.calculateRows(headerHeight, defaultGridHeight);
       const tableHeight = this.getTableHeight(numRows, defaultGridHeight);
+      const valueName = this.props.task.options.valueName[0].value;
+      const range = this.setRange(this.props.task.range[valueName]);
+      const data = this.setData(
+        this.props.task.results,
+        this.props.task.options.filters,
+        valueName
+      );
       return {
-        data: this.props.task.results ? JSON.parse(JSON.stringify(this.props.task.results)) : [],
+        data,
         gridHeight: defaultGridHeight,
         gridHeightInput: defaultGridHeight,
         numCols,
         numRows,
         options: {
           enableTooltips: false,
+          filters: JSON.parse(JSON.stringify(this.props.task.options.filters)),
           gene: '',
-          rangeMax: this.props.task.range ? this.props.task.range.max : 0,
-          rangeMaxStr: this.props.task.range ? String(this.props.task.range.max) : String(0),
-          rangeMin: this.props.task.range ? this.props.task.range.min : 0,
-          rangeMinStr: this.props.task.range ? String(this.props.task.range.min) : String(0),
+          rangeMax: range.max,
+          rangeMaxStr: String(range.max),
+          rangeMin: range.min,
+          rangeMinStr: String(range.min),
+          valueName: this.props.task.options.valueName,
         },
         page: this.subsetData(
-          this.props.task.results,
+          data,
           {
             start: 0,
             end: numRows,
@@ -740,6 +817,7 @@ class TaskHeatmapViewContainer extends React.Component {
         tableHeight,
         tableWidth,
         trackSortHeader: this.setSortHeader(this.props.task.header),
+        valueName,
         viewRows: {
           start: 0,
           end: numRows - 1,
@@ -826,15 +904,15 @@ class TaskHeatmapViewContainer extends React.Component {
       }
       return 0;
     };
-    this.setState(({ data, numCols, numRows, trackSortHeader }) => {
+    this.setState(({ data, numCols, numRows, trackSortHeader, valueName }) => {
       const direction = trackSortHeader[columnIndex].direction;
       const sortedData = JSON.parse(JSON.stringify(data));
       const newTrackSortHeader = JSON.parse(JSON.stringify(trackSortHeader));
       newTrackSortHeader[columnIndex].direction *= -1;
       // sort by value, or by name if value is the same
       sortedData.sort((a, b) => {
-        const valueA = a.columns[columnIndex].value;
-        const valueB = b.columns[columnIndex].value;
+        const valueA = a.columns[columnIndex][valueName];
+        const valueB = b.columns[columnIndex][valueName];
         if (
           !isNaN(valueA) &&
           !isNaN(valueB)
@@ -903,6 +981,25 @@ class TaskHeatmapViewContainer extends React.Component {
       };
     });
   }
+  updateFilters = () => {
+    this.setState(({ options, numCols, numRows, valueName }) => {
+      const data = this.setData(this.props.task.results, options.filters, valueName);
+      return {
+        data,
+        page: this.subsetData(
+          data,
+          {
+            start: 0,
+            end: numRows,
+          },
+          {
+            start: 0,
+            end: numCols,
+          }
+        ),
+      };
+    });
+  }
   updateGene = (e) => {
     const gene = e.target.value.toLowerCase();
     this.setState(({ options }) => {
@@ -965,7 +1062,9 @@ class TaskHeatmapViewContainer extends React.Component {
     return (
       <TaskHeatmapView
         centerView={ this.state.centerView }
+        changeFilter={ this.changeFilter }
         changeGridHeight={ this.changeGridHeight }
+        changeValueName={ this.changeValueName }
         changeView={ {
           colBack: this.colBack,
           colForward: this.colForward,
@@ -1024,8 +1123,10 @@ class TaskHeatmapViewContainer extends React.Component {
           }
         ) }
         trackSortHeader={ this.state.trackSortHeader }
+        updateFilters={ this.updateFilters }
         updateGene={ this.updateGene }
         updateGridHeight={ this.updateGridHeight }
+        valueName={ this.state.valueName }
       />
     );
   }
