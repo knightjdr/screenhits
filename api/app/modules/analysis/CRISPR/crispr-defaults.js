@@ -9,6 +9,11 @@ const CrisprDefaults = {
     bootstrapIter: 1000,
     essentialVersion: 'v1',
   },
+  drugZ: {
+    nonEssentialVersion: 'v1',
+    pseudoCount: 5,
+    removeGenes: '',
+  },
   RANKS: {},
 };
 module.exports = CrisprDefaults;

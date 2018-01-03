@@ -395,60 +395,63 @@ class TaskHeatmapView extends React.Component {
                 })
               }
             </div>
-            <div
-              style={ vertArrowContainerStyle }
-            >
-              <IconButton
-                onClick={ this.props.changeView.firstRow }
-                style={ Object.assign(
-                  {},
-                  ArchiveStyle.mediumIcon,
-                  {
-                    transform: 'rotate(90deg)',
-                  }
-                ) }
+            {
+              this.props.showRowNav &&
+              <div
+                style={ vertArrowContainerStyle }
               >
-                <ArrowFirstIcon />
-              </IconButton>
-              <IconButton
-                iconStyle={ arrowPageIconStyle }
-                onClick={ this.props.changeView.pageBack }
-                style={ ArchiveStyle.mediumIcon }
-              >
-                <ArrowPageBackIcon />
-              </IconButton>
-              <IconButton
-                onClick={ this.props.changeView.previousRow }
-                style={ ArchiveStyle.mediumIcon }
-              >
-                <ArrowUpIcon />
-              </IconButton>
-              <IconButton
-                onClick={ this.props.changeView.nextRow }
-                style={ ArchiveStyle.mediumIcon }
-              >
-                <ArrowDownIcon />
-              </IconButton>
-              <IconButton
-                iconStyle={ arrowPageIconStyle }
-                onClick={ this.props.changeView.pageForward }
-                style={ ArchiveStyle.mediumIcon }
-              >
-                <ArrowPageForwardIcon />
-              </IconButton>
-              <IconButton
-                onClick={ this.props.changeView.lastRow }
-                style={ Object.assign(
-                  {},
-                  ArchiveStyle.mediumIcon,
-                  {
-                    transform: 'rotate(90deg)',
-                  }
-                ) }
-              >
-                <ArrowLastIcon />
-              </IconButton>
-            </div>
+                <IconButton
+                  onClick={ this.props.changeView.firstRow }
+                  style={ Object.assign(
+                    {},
+                    ArchiveStyle.mediumIcon,
+                    {
+                      transform: 'rotate(90deg)',
+                    }
+                  ) }
+                >
+                  <ArrowFirstIcon />
+                </IconButton>
+                <IconButton
+                  iconStyle={ arrowPageIconStyle }
+                  onClick={ this.props.changeView.pageBack }
+                  style={ ArchiveStyle.mediumIcon }
+                >
+                  <ArrowPageBackIcon />
+                </IconButton>
+                <IconButton
+                  onClick={ this.props.changeView.previousRow }
+                  style={ ArchiveStyle.mediumIcon }
+                >
+                  <ArrowUpIcon />
+                </IconButton>
+                <IconButton
+                  onClick={ this.props.changeView.nextRow }
+                  style={ ArchiveStyle.mediumIcon }
+                >
+                  <ArrowDownIcon />
+                </IconButton>
+                <IconButton
+                  iconStyle={ arrowPageIconStyle }
+                  onClick={ this.props.changeView.pageForward }
+                  style={ ArchiveStyle.mediumIcon }
+                >
+                  <ArrowPageForwardIcon />
+                </IconButton>
+                <IconButton
+                  onClick={ this.props.changeView.lastRow }
+                  style={ Object.assign(
+                    {},
+                    ArchiveStyle.mediumIcon,
+                    {
+                      transform: 'rotate(90deg)',
+                    }
+                  ) }
+                >
+                  <ArrowLastIcon />
+                </IconButton>
+              </div>
+            }
             {
               !this.props.centerView &&
               <div
@@ -642,8 +645,8 @@ class TaskHeatmapView extends React.Component {
                               this.props.changeFilter(filter.name, e.target.value);
                             } }
                             style={ optionsInputStyle }
-                            type="number"
-                            value={ filter.value }
+                            type="text"
+                            value={ filter.value ? filter.value : '' }
                           />
                           <span>
                             {
@@ -879,6 +882,7 @@ TaskHeatmapView.propTypes = {
   rangeType: PropTypes.string.isRequired,
   resetView: PropTypes.func.isRequired,
   searchError: PropTypes.string.isRequired,
+  showRowNav: PropTypes.bool.isRequired,
   sortRows: PropTypes.func.isRequired,
   style: PropTypes.shape({}).isRequired,
   tooltip: PropTypes.shape({

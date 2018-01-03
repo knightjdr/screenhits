@@ -129,6 +129,15 @@ const AnalysisModule = {
             },
           ],
         },
+        {
+          defaultValue: 'chr10, EGFP, LacZ , luciferase',
+          element: 'TextField',
+          helpText: `Control genes to remove from analysis. These must be entered as a
+            comma-separated list of gene names, eg. 'luciferase, chr10, etc'`,
+          inputType: 'text',
+          name: 'removeGenes',
+          layName: 'Control genes',
+        },
       ],
     },
     generic: {

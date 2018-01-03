@@ -29,16 +29,18 @@ const Comparison = {
         const propIndex = sample.properties.findIndex((prop) => {
           return prop.name === metric;
         });
+        const legend = {
+          valueName: {},
+        };
+        legend.valueName[metric] = sample.properties[propIndex].layName;
         return {
-          legend: {
-            valueName: sample.properties[propIndex].layName,
-          },
-          metricName: sample.properties[propIndex].layName,
+          legend,
+          metricName: sample.properties[propIndex].layName.trim(),
         };
       };
 
       // format rows for heat map
-      const formatRows = (metric, readout, rows, samples, sampleIDs) => {
+      const formatRows = (metric, metricName, readout, rows, samples, sampleIDs) => {
         return rows.map((row) => {
           const currColumn = sampleIDs.map((sampleID) => {
             const sampleIndex = samples.findIndex((sample) => {
@@ -49,12 +51,13 @@ const Comparison = {
             if (value === null) {
               tooltip.text = `${readout} not present in sample set`;
             } else {
-              tooltip[metric] = value;
+              tooltip[metricName] = value;
             }
-            return {
-              value: value || 0,
+            const fillValue = {
               tooltip,
             };
+            fillValue[metric] = value || 0;
+            return fillValue;
           });
           return {
             name: row,
@@ -89,7 +92,7 @@ const Comparison = {
       };
 
       // get max and min for samples
-      const getRange = (samples) => {
+      const getRange = (samples, metric) => {
         let max = 0;
         let min = 0;
         samples.forEach((sample) => {
@@ -101,10 +104,12 @@ const Comparison = {
             }
           });
         });
-        return {
+        const range = {};
+        range[metric] = {
           max,
           min,
         };
+        return range;
       };
 
       // normalization
@@ -152,8 +157,9 @@ const Comparison = {
             :
             formattedSamples
           ;
-          const range = getRange(normResults);
+          const range = getRange(normResults, form.metric);
           const formattedRows = formatRows(
+            form.metric,
             metricName,
             form.readout,
             rows,
@@ -166,6 +172,15 @@ const Comparison = {
               data: {
                 header,
                 legend,
+                options: {
+                  filters: [],
+                  valueName: [
+                    {
+                      text: metricName,
+                      value: form.metric,
+                    },
+                  ],
+                },
                 range,
                 results: formattedRows,
               },

@@ -72,13 +72,8 @@ export const viewTaskProp = shape({
     valueName: shape({}),
   }),
   options: shape({
-    filters: arrayOf(
-      shape({
-        name: string,
-        type: string,
-        value: number,
-      }),
-    ),
+    filters: shape({
+    }),
     valueName: arrayOf(
       shape({
         text: string,
