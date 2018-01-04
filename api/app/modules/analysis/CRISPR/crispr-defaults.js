@@ -14,6 +14,12 @@ const CrisprDefaults = {
     pseudoCount: 5,
     removeGenes: '',
   },
+  MAGeCK: {
+    adjustMethod: '',
+    geneLfcMethod: 'median',
+    geneTestFdrThreshold: 0.25,
+    varianceFromAllSamples: false,
+  },
   RANKS: {},
 };
 module.exports = CrisprDefaults;

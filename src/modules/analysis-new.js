@@ -4,7 +4,8 @@ const AnalysisModule = {
       'BAGEL',
       'drugZ',
       'generic',
-      'MAGeCK',
+      'MAGeCKmle',
+      'MAGeCKtest',
       'RANKS',
     ],
     BAGEL: {
@@ -176,7 +177,7 @@ const AnalysisModule = {
         },
       ],
     },
-    MAGeCK: {
+    MAGeCKmle: {
       parameters: [
         {
           defaultValue: 30,
@@ -240,7 +241,6 @@ const AnalysisModule = {
           layName: 'Remove outliers',
         },
         {
-          defaultValue: 'fdr',
           element: 'SelectField',
           helpText: 'Method for sgRNA-level p-value adjustment',
           name: 'adjustMethod',
@@ -257,6 +257,121 @@ const AnalysisModule = {
             {
               name: "Pound's",
               value: 'pounds',
+            },
+            {
+              name: 'None',
+              value: 'unselect',
+            },
+          ],
+        },
+      ],
+    },
+    MAGeCKtest: {
+      parameters: [
+        {
+          defaultValue: 30,
+          element: 'TextField',
+          helpText: `The mimimum number of guides that must be found in all control
+            samples to be included in the analysis.`,
+          inputType: 'number',
+          name: 'minReadCount',
+          layName: 'Minimum read count',
+        },
+        {
+          defaultValue: 4,
+          element: 'TextField',
+          helpText: `The minimum number of guides per gene that must pass the
+            read count cutoff for a gene to be included in the analysis.`,
+          inputType: 'number',
+          name: 'minGuides',
+          layName: 'Minimum number of guides',
+        },
+        {
+          defaultValue: true,
+          element: 'CheckBox',
+          helpText: 'Specify whether samples should be normalized',
+          name: 'norm',
+          layName: 'Normalization',
+        },
+        {
+          defaultValue: 10000000,
+          element: 'TextField',
+          helpText: `Read counts will be nomalized to this value. The value
+            will not affect the analysis. It is a way of ensuring read count
+            values are on a similar scale across samples and experiments.`,
+          inputType: 'number',
+          name: 'normCount',
+          layName: 'Normalization read count',
+        },
+        {
+          defaultValue: 0.25,
+          element: 'TextField',
+          helpText: `FDR threshold for gene test. See
+            https://sourceforge.net/p/mageck/wiki/usage/#test for more.`,
+          inputType: 'number',
+          name: 'geneTestFdrThreshold',
+          layName: 'FDR threshold',
+        },
+        {
+          element: 'SelectField',
+          helpText: 'Method for sgRNA-level p-value adjustment',
+          name: 'adjustMethod',
+          layName: 'p-value adjustment',
+          options: [
+            {
+              name: 'FDR',
+              value: 'fdr',
+            },
+            {
+              name: "Holm's",
+              value: 'holm',
+            },
+            {
+              name: "Pound's",
+              value: 'pounds',
+            },
+            {
+              name: 'None',
+              value: 'unselect',
+            },
+          ],
+        },
+        {
+          defaultValue: false,
+          element: 'CheckBox',
+          helpText: `Estimate the variance from all samples, instead of from only
+            control samples. Use this option only if you believe there are relatively
+            few essential sgRNAs or genes between control and treatment samples.`,
+          name: 'varianceFromAllSamples',
+          layName: 'Est. variance from all samples',
+        },
+        {
+          defaultValue: 'median',
+          element: 'SelectField',
+          helpText: `Method to calculate gene log fold changes (LFC) from sgRNA LFCs.
+            See https://sourceforge.net/p/mageck/wiki/usage/#test for more.`,
+          name: 'geneLfcMethod',
+          layName: 'Gene LFC method',
+          options: [
+            {
+              name: '𝛂-mean',
+              value: 'alphamean',
+            },
+            {
+              name: '𝛂-median',
+              value: 'alphamedian',
+            },
+            {
+              name: 'mean',
+              value: 'mean',
+            },
+            {
+              name: 'median',
+              value: 'median',
+            },
+            {
+              name: 'secondbest',
+              value: 'secondbest',
             },
           ],
         },
@@ -306,7 +421,7 @@ const AnalysisModule = {
             modeling baseline behaviour, i.e. what would be expected to happen
             for a guide that has no effect on cell growth. Alternatively you can
             specify a list of control genes. These must be entered as a
-            comma-separated list of gene names, eg. 'luciferase, chr10, etc'`,
+            comma-separated list of gene names, eg. 'luciferase, chr10, etc'.`,
           inputType: 'text',
           name: 'controlGenes',
           layName: 'Control genes',

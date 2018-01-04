@@ -1,3 +1,4 @@
+const ArraySort = require('../helpers/sort');
 const csv = require('csvtojson');
 
 const StoreOutput = {
@@ -56,7 +57,7 @@ const StoreOutput = {
             records: results[gene],
           });
         });
-        return formattedResults;
+        return ArraySort.arrayOfObjectByKey(formattedResults, 'gene');
       };
 
       // next iterator

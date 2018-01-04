@@ -250,6 +250,198 @@ const FormatTask = {
         });
       });
     },
+    MAGeCKtest: (task) => {
+      return new Promise((resolve) => {
+        const headers = task.status.details.design.map((sampleSet) => {
+          return sampleSet.name;
+        });
+        const range = {
+          'neg|score': {
+            max: 0,
+            min: 0,
+          },
+          'pos|score': {
+            max: 0,
+            min: 0,
+          },
+        };
+        const results = task.results.map((row) => {
+          const columns = [];
+          headers.forEach((header) => {
+            const recordIndex = row.records.findIndex((record) => {
+              return record.sampleSet === header;
+            });
+            let currColumn = {};
+            if (recordIndex > -1) {
+              const currRow = row.records[recordIndex];
+              if (currRow['neg|score'] > range['neg|score'].max) {
+                range['neg|score'].max = currRow['neg|score'];
+              } else if (currRow['neg|score'] < range['neg|score'].min) {
+                range['neg|score'].min = currRow['neg|score'];
+              }
+              if (currRow['pos|score'] > range['pos|score'].max) {
+                range['pos|score'].max = currRow['pos|score'];
+              } else if (currRow['pos|score'] < range['pos|score'].min) {
+                range['pos|score'].min = currRow['pos|score'];
+              }
+              currColumn = {
+                'neg|score': currRow['neg|score'],
+                'neg|score-filters': {
+                  pValue: currRow['neg|p-value'],
+                  fdr: currRow['neg|fdr'],
+                  rank: currRow['neg|rank'],
+                  goodsgrna: currRow['neg|goodsgrna'],
+                  lfc: currRow['neg|lfc'],
+                  numGuides: currRow.num,
+                },
+                'pos|score': currRow['pos|score'],
+                'pos|score-filters': {
+                  pValue: currRow['pos|p-value'],
+                  fdr: currRow['pos|fdr'],
+                  rank: currRow['pos|rank'],
+                  goodsgRNA: currRow['pos|goodsgrna'],
+                  LFC: currRow['pos|lfc'],
+                  numGuides: currRow.num,
+                },
+                tooltip: {
+                  'depletion-score': currRow['neg|score'],
+                  'depletion-pValue': currRow['neg|p-value'],
+                  'depletion-fdr': currRow['neg|fdr'],
+                  'depletion-rank': currRow['neg|rank'],
+                  'depletion-goodsgRNA': currRow['neg|goodsgrna'],
+                  'depletion-LFC': currRow['neg|lfc'],
+                  'enrichment-score': currRow['pos|score'],
+                  'enrichment-pValue': currRow['pos|p-value'],
+                  'enrichment-fdr': currRow['pos|fdr'],
+                  'enrichment-rank': currRow['pos|rank'],
+                  'enrichment-goodsgRNA': currRow['pos|goodsgrna'],
+                  'enrichment-LFC': currRow['pos|lfc'],
+                  numGuides: currRow.num,
+                },
+              };
+            } else {
+              currColumn = {
+                'neg|score': 0,
+                'neg|score-filters': {
+                  pValue: 0,
+                  fdr: 1,
+                  rank: 0,
+                  goodsgrna: 0,
+                  lfc: 0,
+                  numGuides: 0,
+                },
+                'pos|score': 0,
+                'pos|score-filters': {
+                  pValue: 0,
+                  fdr: 1,
+                  rank: 0,
+                  goodsgRNA: 0,
+                  LFC: 0,
+                  numGuides: 0,
+                },
+                tooltip: {
+                  text: 'Gene not present in sample set',
+                },
+              };
+            }
+            columns.push(currColumn);
+          });
+          return {
+            name: row.gene,
+            columns,
+          };
+        });
+        resolve({
+          header: headers,
+          legend: {
+            valueName: {
+              'neg|score': 'sgRNA depletion',
+              'pos|score': 'sgRNA enrichment',
+            },
+          },
+          options: {
+            filters: {
+              'neg|score': [
+                {
+                  name: 'fdr',
+                  type: 'lte',
+                  value: null,
+                },
+                {
+                  name: 'goodsgRNA',
+                  type: 'gte',
+                  value: null,
+                },
+                {
+                  name: 'lfc',
+                  type: 'gte',
+                  value: null,
+                },
+                {
+                  name: 'numGuides',
+                  type: 'gte',
+                  value: null,
+                },
+                {
+                  name: 'pValue',
+                  type: 'lte',
+                  value: null,
+                },
+                {
+                  name: 'rank',
+                  type: 'lte',
+                  value: null,
+                },
+              ],
+              'pos|score': [
+                {
+                  name: 'fdr',
+                  type: 'lte',
+                  value: null,
+                },
+                {
+                  name: 'goodsgRNA',
+                  type: 'gte',
+                  value: null,
+                },
+                {
+                  name: 'lfc',
+                  type: 'gte',
+                  value: null,
+                },
+                {
+                  name: 'numGuides',
+                  type: 'gte',
+                  value: null,
+                },
+                {
+                  name: 'pValue',
+                  type: 'lte',
+                  value: null,
+                },
+                {
+                  name: 'rank',
+                  type: 'lte',
+                  value: null,
+                },
+              ],
+            },
+            valueName: [
+              {
+                text: 'sgRNA enrichment',
+                value: 'pos|score',
+              },
+              {
+                text: 'sgRNA depletion',
+                value: 'neg|score',
+              },
+            ],
+          },
+          range,
+          results,
+        });
+      });
+    },
     RANKS: (task) => {
       return new Promise((resolve) => {
         const headers = task.status.details.design.map((sampleSet) => {

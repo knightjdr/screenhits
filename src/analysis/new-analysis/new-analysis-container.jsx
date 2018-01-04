@@ -727,7 +727,7 @@ class NewAnalysisContainer extends React.Component {
           readout,
         };
       }
-      newFormData[type] = value;
+      newFormData[type] = value !== 'unselect' ? value : '';
       // reset error for this field
       newErrors[type] = null;
       return {

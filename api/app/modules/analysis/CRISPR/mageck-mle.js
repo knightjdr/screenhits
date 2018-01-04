@@ -10,7 +10,7 @@ const StoreOutput = require('../store-output.js');
 const spawn = require('child_process').spawn;
 const UpdateTask = require('../update-task');
 
-const drugZ = {
+const MAGeCK = {
   normalizeAndFilter: (fileNames, task, params, writeLog) => {
     return new Promise((resolve, reject) => {
       const numFiles = fileNames.length;
@@ -19,7 +19,7 @@ const drugZ = {
       const normalize = (fileName) => {
         return new Promise((resolveNormalize, rejectNormalize) => {
           const normalizeProcess = spawn(
-            `${config.scriptPath}CRISPR/drugZ/normalizeFilter.py`,
+            `${config.scriptPath}CRISPR/MAGeCK/normalizeFilter.py`,
             [
               '--filename',
               `${fileName}`,
@@ -96,13 +96,13 @@ const drugZ = {
       };
 
       Promise.all([
-        drugZ.sampleToFiles(task.folder, details.design, formSamples),
+        MAGeCK.sampleToFiles(task.folder, details.design, formSamples),
         UpdateTask.async(task.id, taskStatus),
       ])
         .then((values) => {
           // apply filters and normalization
           const initParams = Params.get(details, CrisprDefaults.all);
-          return drugZ.normalizeAndFilter(
+          return MAGeCK.normalizeAndFilter(
             values[0],
             task,
             initParams,
@@ -110,14 +110,14 @@ const drugZ = {
           );
         })
         .then((filteredFileNames) => {
-          // get drugZ params
-          const drugzParams = Params.get(details, CrisprDefaults.drugZ);
-          // run drugZ
-          return drugZ.script(
+          // get MAGeCK params
+          const mageckParams = Params.get(details, CrisprDefaults.MAGeCK);
+          // run MAGeCK
+          return MAGeCK.script(
             filteredFileNames,
             task,
             details,
-            drugzParams,
+            mageckParams,
             writeLog
           );
         })
@@ -125,7 +125,7 @@ const drugZ = {
           // store log and analysis results
           return Promise.all([
             Log.write(task),
-            drugZ.storeOutput(task),
+            MAGeCK.storeOutput(task),
           ]);
         })
         .then(() => {
@@ -277,69 +277,85 @@ const drugZ = {
   },
   script: (fileNames, task, details, params, writeLog) => {
     return new Promise((resolve, reject) => {
-      const nonEssentialList = `nonessential_${params.nonEssentialVersion}.txt`;
       const numFiles = fileNames.length;
 
-      // run drugz script
-      const drugz = (fileName, design) => {
-        return new Promise((resolveDrugz, rejectDrugz) => {
+      // run mageck script
+      const mageck = (fileName, design) => {
+        return new Promise((resolveMageck, rejectMageck) => {
+          // create control and replicate strings
           const controlColumns = Array.from(
             new Array(design.replicates.length), (x, i) => { return `C${i + 1}`; }
           ).join(',');
           const replicateColumns = Array.from(
             new Array(design.replicates.length), (x, i) => { return `R${i + 1}`; }
           ).join(',');
-          const removeGenes = params.removeGenes ?
-            params.removeGenes.split(/, */).join(',')
-            :
-            ''
-          ;
-          const drugzProcess = spawn(
-            `${config.scriptPath}CRISPR/drugZ/${config.scripts.drugZ}`,
-            [
-              '-i',
-              `${task.folder}/${fileName}`,
-              '-o',
-              `${task.folder}/drugz_${fileName}`,
-              '-n',
-              `${config.scriptPath}CRISPR/drugZ/EssentialLists/${nonEssentialList}`,
-              '-c',
-              `${controlColumns}`,
-              '-x',
-              `${replicateColumns}`,
-              '-p',
-              `${params.pseudoCount}`,
-              '-r',
-              `${removeGenes}`,
-            ]
+          // outfile name
+          const outfile = `mageck_${fileName.replace(/[^A-Za-z0-9._-]/g, '_')}`;
+          // create args array
+          const args = [
+            'mle',
+            '-k',
+            `${task.folder}/${fileName}`,
+            '-c',
+            `${controlColumns}`,
+            '-t',
+            `${replicateColumns}`,
+            '-n',
+            `${task.folder}/${outfile}`,
+            '--norm-method',
+            'none',
+            '--gene-lfc-method',
+            `${params.geneLfcMethod}`,
+            '--gene-test-fdr-threshold',
+            `${params.geneTestFdrThreshold}`,
+          ];
+          // optional args
+          if (params.adjustMethod) {
+            args.push('--adjust-method');
+            args.push(params.adjustMethod);
+          }
+          if (params.varianceFromAllSamples) {
+            args.push('--variance-from-all-samples');
+          }
+          writeLog(task.folder, `${config.scripts.MAGeCK} ${args.join(' ')}`);
+
+          const mageckProcess = spawn(
+            `${config.scriptPath}CRISPR/MAGeCK/${config.scripts.MAGeCK}`,
+            args
           );
           let taskStatus = {
-            pid: drugzProcess.pid,
-            status: 'Starting drugZ',
-            step: 'drugZ',
+            pid: mageckProcess.pid,
+            status: 'Starting MAGeCK',
+            step: 'MAGeCK',
           };
           UpdateTask.sync(task.id, taskStatus);
-          drugzProcess.stdout.on('data', (data) => {
+          mageckProcess.stdout.on('data', (data) => {
             // log stdout, if any
             writeLog(task.folder, data);
           });
-          drugzProcess.on('error', (processError) => {
+          mageckProcess.on('error', (processError) => {
             reject(processError);
           });
-          drugzProcess.on('exit', () => {
-            fs.access(`${task.folder}/drugz_${fileName}`)
-              .then(() => {
+          mageckProcess.on('exit', () => {
+            Promise.all([
+              fs.readFile(`${task.folder}/${outfile}.log`),
+              fs.access(`${task.folder}/${outfile}.gene_summary.txt`),
+            ])
+              .then((values) => {
                 taskStatus = {
                   pid: 'x',
                   status: 'Complete',
                 };
-                return UpdateTask.async(task.id, taskStatus);
+                return Promise.all([
+                  writeLog(task.folder, values[0]),
+                  UpdateTask.async(task.id, taskStatus),
+                ]);
               })
               .then(() => {
-                resolveDrugz(`drugz_${fileName}`);
+                resolveMageck(`mageck_${fileName}`);
               })
               .catch((accessError) => {
-                rejectDrugz(accessError);
+                rejectMageck(accessError);
               })
             ;
           });
@@ -348,7 +364,7 @@ const drugZ = {
 
       const outFileNames = [];
       const next = (fileName, index) => {
-        drugz(fileName, details.design[index])
+        mageck(fileName, details.design[index])
           .then((outFileName) => {
             outFileNames.push(outFileName);
             if (index < numFiles - 1) {
@@ -373,42 +389,58 @@ const drugZ = {
         trim: true,
       };
       const columns = {
-        gene: 'GENE',
+        gene: 'id',
         other: [
           {
-            name: 'sumZ',
+            name: 'num',
             type: 'number',
           },
           {
-            name: 'numObs',
+            name: 'neg|score',
             type: 'number',
           },
           {
-            name: 'normZ',
+            name: 'neg|p-value',
             type: 'number',
           },
           {
-            name: 'pval_synth',
+            name: 'neg|fdr',
             type: 'number',
           },
           {
-            name: 'rank_synth',
+            name: 'neg|rank',
             type: 'number',
           },
           {
-            name: 'fdr_synth',
+            name: 'neg|goodsgrna',
             type: 'number',
           },
           {
-            name: 'pval_supp',
+            name: 'neg|lfc',
             type: 'number',
           },
           {
-            name: 'rank_supp',
+            name: 'pos|score',
             type: 'number',
           },
           {
-            name: 'fdr_supp',
+            name: 'pos|p-value',
+            type: 'number',
+          },
+          {
+            name: 'pos|fdr',
+            type: 'number',
+          },
+          {
+            name: 'pos|rank',
+            type: 'number',
+          },
+          {
+            name: 'pos|goodsgrna',
+            type: 'number',
+          },
+          {
+            name: 'pos|lfc',
             type: 'number',
           },
         ],
@@ -418,7 +450,7 @@ const drugZ = {
         .then((taskDetails) => {
           const setNames = taskDetails.details.design.map((sampleSet) => {
             return {
-              file: `drugz_filtered_${sampleSet.name}.txt`,
+              file: `mageck_filtered_${sampleSet.name.replace(/[^A-Za-z0-9._-]/g, '_')}.txt.gene_summary.txt`,
               name: sampleSet.name,
             };
           });
@@ -437,4 +469,4 @@ const drugZ = {
     });
   },
 };
-module.exports = drugZ;
+module.exports = MAGeCK;
