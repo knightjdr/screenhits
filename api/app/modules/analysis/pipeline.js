@@ -1,6 +1,7 @@
 const arrayUnique = require('../helpers/array-unique');
 const BAGEL = require('./CRISPR/bagel');
 const drugZ = require('./CRISPR/drugz');
+const MAGeCKmle = require('./CRISPR/mageck-mle');
 const MAGeCKtest = require('./CRISPR/mageck-test');
 const Permission = require('../permission/permission');
 const query = require('../query/query');
@@ -10,6 +11,7 @@ const UpdateTask = require('./update-task');
 const analysisScripts = {
   BAGEL,
   drugZ,
+  MAGeCKmle,
   MAGeCKtest,
   RANKS,
 };

@@ -250,6 +250,179 @@ const FormatTask = {
         });
       });
     },
+    MAGeCKmle: (task) => {
+      return new Promise((resolve) => {
+        const headers = task.status.details.design.map((sampleSet) => {
+          return sampleSet.name;
+        });
+        const range = {
+          beta: {
+            max: 0,
+            min: 0,
+          },
+          z: {
+            max: 0,
+            min: 0,
+          },
+        };
+        console.log(task.results);
+        const results = task.results.map((row) => {
+          const columns = [];
+          headers.forEach((header) => {
+            const recordIndex = row.records.findIndex((record) => {
+              return record.sampleSet === header;
+            });
+            let currColumn = {};
+            if (recordIndex > -1) {
+              const currRow = row.records[recordIndex];
+              if (currRow.beta > range.beta.max) {
+                range.beta.max = currRow.beta;
+              } else if (currRow.beta < range.beta.min) {
+                range.beta.min = currRow.beta;
+              }
+              if (currRow.z > range.z.max) {
+                range.z.max = currRow.z;
+              } else if (currRow.z < range.z.min) {
+                range.z.min = currRow.z;
+              }
+              currColumn = {
+                beta: currRow.beta,
+                'beta-filters': {
+                  pValue: currRow['p-value'],
+                  FDR: currRow.fdr,
+                  numGuides: currRow.sgRNA,
+                  waldpValue: currRow['wald-p-value'],
+                  waldFDR: currRow['wald-fdr'],
+                },
+                z: currRow.z,
+                'z-filters': {
+                  pValue: currRow['p-value'],
+                  FDR: currRow.fdr,
+                  numGuides: currRow.sgRNA,
+                  waldpValue: currRow['wald-p-value'],
+                  waldFDR: currRow['wald-fdr'],
+                },
+                tooltip: {
+                  beta: currRow.beta,
+                  z: currRow.z,
+                  pValue: currRow['p-value'],
+                  FDR: currRow.fdr,
+                  numGuides: currRow.sgRNA,
+                  waldpValue: currRow['wald-p-value'],
+                  waldFDR: currRow['wald-fdr'],
+                },
+              };
+            } else {
+              currColumn = {
+                beta: 0,
+                'beta-filters': {
+                  pValue: 0,
+                  FDR: 1,
+                  numGuides: 0,
+                  waldpValue: 0,
+                  waldFDR: 1,
+                },
+                z: 0,
+                'z-filters': {
+                  pValue: 0,
+                  FDR: 1,
+                  numGuides: 0,
+                  waldpValue: 0,
+                  waldFDR: 1,
+                },
+                tooltip: {
+                  text: 'Gene not present in sample set',
+                },
+              };
+            }
+            columns.push(currColumn);
+          });
+          return {
+            name: row.gene,
+            columns,
+          };
+        });
+        resolve({
+          header: headers,
+          legend: {
+            valueName: {
+              beta: 'beta score',
+              z: 'z score',
+            },
+          },
+          options: {
+            filters: {
+              beta: [
+                {
+                  name: 'pValue',
+                  type: 'lte',
+                  value: null,
+                },
+                {
+                  name: 'FDR',
+                  type: 'lte',
+                  value: null,
+                },
+                {
+                  name: 'numGuides',
+                  type: 'gte',
+                  value: null,
+                },
+                {
+                  name: 'waldpValue',
+                  type: 'lte',
+                  value: null,
+                },
+                {
+                  name: 'waldFDR',
+                  type: 'lte',
+                  value: null,
+                },
+              ],
+              z: [
+                {
+                  name: 'pValue',
+                  type: 'lte',
+                  value: null,
+                },
+                {
+                  name: 'FDR',
+                  type: 'lte',
+                  value: null,
+                },
+                {
+                  name: 'numGuides',
+                  type: 'gte',
+                  value: null,
+                },
+                {
+                  name: 'waldpValue',
+                  type: 'lte',
+                  value: null,
+                },
+                {
+                  name: 'waldFDR',
+                  type: 'lte',
+                  value: null,
+                },
+              ],
+            },
+            valueName: [
+              {
+                text: 'beta score',
+                value: 'beta',
+              },
+              {
+                text: 'z score',
+                value: 'z',
+              },
+            ],
+          },
+          range,
+          results,
+        });
+      });
+    },
     MAGeCKtest: (task) => {
       return new Promise((resolve) => {
         const headers = task.status.details.design.map((sampleSet) => {

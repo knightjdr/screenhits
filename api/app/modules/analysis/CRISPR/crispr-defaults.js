@@ -14,7 +14,13 @@ const CrisprDefaults = {
     pseudoCount: 5,
     removeGenes: '',
   },
-  MAGeCK: {
+  MAGeCKmle: {
+    adjustMethod: '',
+    genesVarModeling: 1000,
+    permutationRounds: 10,
+    removeOutliers: false,
+  },
+  MAGeCKtest: {
     adjustMethod: '',
     geneLfcMethod: 'median',
     geneTestFdrThreshold: 0.25,

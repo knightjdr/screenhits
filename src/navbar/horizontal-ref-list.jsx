@@ -24,7 +24,7 @@ class HorizontalRefList extends React.Component {
                 cursor: 'pointer',
                 display: 'inline',
                 fontFamily: 'Lato',
-                fontSize: 26,
+                fontSize: 22,
                 margin: '0px 4px 0px 4px',
               } }
             >

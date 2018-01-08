@@ -1,22 +1,97 @@
-const create = require('../../crud/create');
+const ArraySort = require('../../helpers/sort');
 const config = require('../../../../config').settings();
+const create = require('../../crud/create');
 const CrisprDefaults = require('../CRISPR/crispr-defaults');
+const csv = require('csvtojson');
 const deepEqual = require('deep-equal');
 const fs = require('mz/fs');
 const Log = require('../log');
 const Params = require('./params');
-const query = require('../../query/query');
-const StoreOutput = require('../store-output.js');
 const spawn = require('child_process').spawn;
+const Unique = require('../../helpers/array-unique');
 const UpdateTask = require('../update-task');
 
 const MAGeCK = {
-  normalizeAndFilter: (fileNames, task, params, writeLog) => {
+  designFile: (design, folder) => {
     return new Promise((resolve, reject) => {
-      const numFiles = fileNames.length;
+      // get list of controls
+      let controls = [];
+      const sampleSets = [];
+      design.forEach((sampleSet) => {
+        sampleSet.controls.forEach((controlId) => {
+          controls.push(controlId);
+        });
+        sampleSets.push(sampleSet.name);
+      });
+      controls = Unique(controls);
 
+      // init design JSON
+      const designJson = {
+        Samples: [],
+        baseline: [],
+      };
+      sampleSets.forEach((sampleSetName) => {
+        designJson[sampleSetName] = [];
+      });
+
+      // fill control values into design JSON
+      controls.forEach((_id) => {
+        designJson.Samples.push(`C.${_id}`);
+        designJson.baseline.push(1);
+        sampleSets.forEach((sampleSetName) => {
+          designJson[sampleSetName].push(0);
+        });
+      });
+
+      // fill replicate values into design JSON
+      design.forEach((sampleSet) => {
+        const currSetName = sampleSet.name;
+        sampleSet.replicates.forEach((replicateId, repIndex) => {
+          designJson.Samples.push(`R.${replicateId}.${repIndex + 1}`);
+          designJson.baseline.push(1);
+          sampleSets.forEach((sampleSetName) => {
+            if (sampleSetName === currSetName) {
+              designJson[sampleSetName].push(1);
+            } else {
+              designJson[sampleSetName].push(0);
+            }
+          });
+        });
+      });
+
+      // convert JSON to tsv
+      let designProps = Object.keys(designJson);
+      let body = '';
+      designJson.Samples.forEach((sampleName, index) => {
+        const currRow = [];
+        designProps.forEach((headerName) => {
+          currRow.push(designJson[headerName][index]);
+        });
+        body += currRow.join('\t');
+        body += '\n';
+      });
+      // replace non-alphanumeric symbols in header names
+      designProps = designProps.map((prop) => {
+        return prop.replace(/[^A-Za-z0-9._-]/g, '_');
+      });
+      const header = designProps.join('\t');
+      const tsv = `${header}\n${body}`;
+
+      // write TSV
+      const file = fs.createWriteStream(`${folder}/designfile.tsv`);
+      file.write(tsv);
+      file.on('error', () => {
+        reject('Design file could not be created');
+      });
+      file.end();
+
+      resolve();
+    });
+  },
+  normalizeAndFilter: (fileName, task, params, writeLog) => {
+    return new Promise((resolve, reject) => {
       // run normalize script
-      const normalize = (fileName) => {
+      const normalize = () => {
         return new Promise((resolveNormalize, rejectNormalize) => {
           const normalizeProcess = spawn(
             `${config.scriptPath}CRISPR/MAGeCK/normalizeFilter.py`,
@@ -58,7 +133,7 @@ const MAGeCK = {
                 return UpdateTask.async(task.id, taskStatus);
               })
               .then(() => {
-                resolveNormalize(`filtered_${fileName}`);
+                resolveNormalize();
               })
               .catch((accessError) => {
                 rejectNormalize(accessError);
@@ -68,23 +143,14 @@ const MAGeCK = {
         });
       };
 
-      const outFileNames = [];
-      const next = (fileName, index) => {
-        normalize(fileName)
-          .then((outFileName) => {
-            outFileNames.push(outFileName);
-            if (index < numFiles - 1) {
-              next(fileNames[index + 1], index + 1);
-            } else {
-              resolve(outFileNames);
-            }
-          })
-          .catch((error) => {
-            reject(error);
-          })
-        ;
-      };
-      next(fileNames[0], 0);
+      normalize()
+        .then(() => {
+          resolve();
+        })
+        .catch((error) => {
+          reject(error);
+        })
+      ;
     });
   },
   run: (formSamples, details, task, writeLog) => {
@@ -99,24 +165,26 @@ const MAGeCK = {
         MAGeCK.sampleToFiles(task.folder, details.design, formSamples),
         UpdateTask.async(task.id, taskStatus),
       ])
-        .then((values) => {
+        .then(() => {
           // apply filters and normalization
           const initParams = Params.get(details, CrisprDefaults.all);
-          return MAGeCK.normalizeAndFilter(
-            values[0],
-            task,
-            initParams,
-            writeLog
-          );
+          return Promise.all([
+            MAGeCK.normalizeAndFilter(
+              'samples.txt',
+              task,
+              initParams,
+              writeLog
+            ),
+            MAGeCK.designFile(details.design, task.folder),
+          ]);
         })
-        .then((filteredFileNames) => {
+        .then(() => {
           // get MAGeCK params
-          const mageckParams = Params.get(details, CrisprDefaults.MAGeCK);
+          const mageckParams = Params.get(details, CrisprDefaults.MAGeCKmle);
           // run MAGeCK
           return MAGeCK.script(
-            filteredFileNames,
+            'filtered_samples.txt',
             task,
-            details,
             mageckParams,
             writeLog
           );
@@ -125,7 +193,7 @@ const MAGeCK = {
           // store log and analysis results
           return Promise.all([
             Log.write(task),
-            MAGeCK.storeOutput(task),
+            MAGeCK.storeOutput(details.design, task),
           ]);
         })
         .then(() => {
@@ -139,15 +207,12 @@ const MAGeCK = {
   },
   sampleToFiles: (folder, design, samples) => {
     return new Promise((resolve, reject) => {
-      const errors = [];
-      const fileNames = [];
-
       // check if samples have same guide list (in the same order)
-      const compareGuideOrder = (currSamples) => {
-        const expectedGuides = currSamples[0].records.map((record) => {
+      const compareGuideOrder = () => {
+        const expectedGuides = samples[0].records.map((record) => {
           return record.quideSequence;
         });
-        const sameGuideOrder = currSamples.every((sample, i) => {
+        const sameGuideOrder = samples.every((sample, i) => {
           if (i === 0) {
             return true;
           }
@@ -161,13 +226,13 @@ const MAGeCK = {
 
       // create header
       const createHeader = (controls, replicates) => {
-        let header = 'GENE_CLONE\tGENE\t';
-        header += controls.map((control, i) => {
-          return `C${i + 1}`;
+        let header = 'sgRNA\tgENE\t';
+        header += controls.map((control) => {
+          return `C.${control}`;
         }).join('\t');
         header += '\t';
-        header += replicates.map((control, i) => {
-          return `R${i + 1}`;
+        header += replicates.map((replicate) => {
+          return `R.${replicate}`;
         }).join('\t');
         header += '\n';
         return header;
@@ -197,44 +262,41 @@ const MAGeCK = {
       };
 
       // write to file where sampleshave the same guide set
-      const writeInOrder = (guides, header, sampleSet, currSamples) => {
-        const file = fs.createWriteStream(`${folder}/${sampleSet.name}.txt`);
+      const writeInOrder = (guides, header, sampleIds) => {
+        const file = fs.createWriteStream(`${folder}/samples.txt`);
         file.write(header);
         guides.forEach((guideEntry, i) => {
           let line = `${guideEntry.gene}_${guideEntry.guide}\t${guideEntry.gene}`;
-          sampleSet.controls.concat(sampleSet.replicates).forEach((_id) => {
-            const sampleIndex = currSamples.findIndex((sample) => {
+          sampleIds.forEach((_id) => {
+            const sampleIndex = samples.findIndex((sample) => {
               return sample._id === _id;
             });
-            line += `\t${currSamples[sampleIndex].records[i].readCount}`;
+            line += `\t${samples[sampleIndex].records[i].readCount}`;
           });
           line += '\n';
           file.write(line);
         });
         file.on('error', () => {
-          errors.push(`Input file could not be created from the database,
-            for sample ${sampleSet.name}`
-          );
+          reject('Input file could not be created');
         });
-        fileNames.push(`${sampleSet.name}.txt`);
         file.end();
       };
 
       // write to file where samples do not have the same guide set
-      const writeLineByLine = (guides, header, sampleSet, currSamples) => {
-        const file = fs.createWriteStream(`${folder}/${sampleSet.name}.txt`);
+      const writeLineByLine = (guides, header, sampleIds) => {
+        const file = fs.createWriteStream(`${folder}/samples.txt`);
         file.write(header);
         guides.forEach((guideEntry) => {
           let line = `${guideEntry.gene}_${guideEntry.guide}\t${guideEntry.gene}`;
-          sampleSet.controls.concat(sampleSet.replicates).forEach((_id) => {
-            const sampleIndex = currSamples.findIndex((sample) => {
+          sampleIds.forEach((_id) => {
+            const sampleIndex = samples.findIndex((sample) => {
               return sample._id === _id;
             });
-            const recordIndex = currSamples[sampleIndex].records.findIndex((record) => {
+            const recordIndex = samples[sampleIndex].records.findIndex((record) => {
               return record.guideSequence === guideEntry.guide;
             });
             line += recordIndex > -1 ?
-              `\t${currSamples[sampleIndex].records[recordIndex].readCount}`
+              `\t${samples[sampleIndex].records[recordIndex].readCount}`
               :
               0
             ;
@@ -243,79 +305,67 @@ const MAGeCK = {
           file.write(line);
         });
         file.on('error', () => {
-          errors.push(`Input file could not be created from the database,
-            for sample ${sampleSet.name}`
-          );
+          reject('Input file could not be created');
         });
-        fileNames.push(`${sampleSet.name}.txt`);
         file.end();
       };
 
+      // get list of controls and replicates
+      let controls = [];
+      const replicates = [];
+      const replicateNames = [];
       design.forEach((sampleSet) => {
-        // get currSamples to use
-        const currSamples = sampleSet.controls.concat(sampleSet.replicates).map((_id) => {
-          const sampleIndex = samples.findIndex((sample) => { return sample._id === _id; });
-          return samples[sampleIndex];
+        sampleSet.controls.forEach((controlId) => {
+          controls.push(controlId);
         });
-        // write to file
-        const header = createHeader(sampleSet.controls, sampleSet.replicates);
-        const sameFormat = compareGuideOrder(currSamples);
-        if (sameFormat) {
-          const guides = getGuides([currSamples[0]]);
-          writeInOrder(guides, header, sampleSet, currSamples);
-        } else {
-          const guides = getGuides(samples);
-          writeLineByLine(guides, header, sampleSet, currSamples);
-        }
+        sampleSet.replicates.forEach((replicateId, index) => {
+          replicates.push(replicateId);
+          replicateNames.push(`${replicateId}.${index + 1}`);
+        });
       });
-      if (errors.length === 0) {
-        resolve(fileNames);
+      controls = Unique(controls);
+      const allSampleIds = controls.concat(replicates);
+
+      const header = createHeader(controls, replicateNames);
+      const sameFormat = compareGuideOrder(allSampleIds);
+      if (sameFormat) {
+        const guides = getGuides([samples[0]]);
+        writeInOrder(guides, header, allSampleIds);
       } else {
-        reject(errors.join('. '));
+        const guides = getGuides(samples);
+        writeLineByLine(guides, header, allSampleIds);
       }
+      resolve();
     });
   },
-  script: (fileNames, task, details, params, writeLog) => {
+  script: (fileName, task, params, writeLog) => {
     return new Promise((resolve, reject) => {
-      const numFiles = fileNames.length;
-
       // run mageck script
-      const mageck = (fileName, design) => {
+      const mageck = () => {
         return new Promise((resolveMageck, rejectMageck) => {
-          // create control and replicate strings
-          const controlColumns = Array.from(
-            new Array(design.replicates.length), (x, i) => { return `C${i + 1}`; }
-          ).join(',');
-          const replicateColumns = Array.from(
-            new Array(design.replicates.length), (x, i) => { return `R${i + 1}`; }
-          ).join(',');
-          // outfile name
-          const outfile = `mageck_${fileName.replace(/[^A-Za-z0-9._-]/g, '_')}`;
           // create args array
           const args = [
             'mle',
             '-k',
             `${task.folder}/${fileName}`,
-            '-c',
-            `${controlColumns}`,
-            '-t',
-            `${replicateColumns}`,
+            '-d',
+            `${task.folder}/designfile.tsv`,
             '-n',
-            `${task.folder}/${outfile}`,
+            `${task.folder}/mageck_mle`,
             '--norm-method',
             'none',
-            '--gene-lfc-method',
-            `${params.geneLfcMethod}`,
-            '--gene-test-fdr-threshold',
-            `${params.geneTestFdrThreshold}`,
+            '--genes-varmodeling',
+            `${params.genesVarModeling}`,
+            '--permutation-round',
+            `${params.permutationRounds}`,
           ];
           // optional args
           if (params.adjustMethod) {
             args.push('--adjust-method');
             args.push(params.adjustMethod);
           }
-          if (params.varianceFromAllSamples) {
-            args.push('--variance-from-all-samples');
+          if (params.removeOutliers) {
+            args.push('--remove-outliers');
           }
           writeLog(task.folder, `${config.scripts.MAGeCK} ${args.join(' ')}`);
 
@@ -334,12 +384,12 @@ const MAGeCK = {
             writeLog(task.folder, data);
           });
           mageckProcess.on('error', (processError) => {
-            reject(processError);
+            rejectMageck(processError);
           });
           mageckProcess.on('exit', () => {
             Promise.all([
-              fs.readFile(`${task.folder}/${outfile}.log`),
-              fs.access(`${task.folder}/${outfile}.gene_summary.txt`),
+              fs.readFile(`${task.folder}/mageck_mle.log`),
+              fs.access(`${task.folder}/mageck_mle.gene_summary.txt`),
             ])
               .then((values) => {
                 taskStatus = {
@@ -352,7 +402,7 @@ const MAGeCK = {
                 ]);
               })
               .then(() => {
-                resolveMageck(`mageck_${fileName}`);
+                resolveMageck();
               })
               .catch((accessError) => {
                 rejectMageck(accessError);
@@ -362,102 +412,90 @@ const MAGeCK = {
         });
       };
 
-      const outFileNames = [];
-      const next = (fileName, index) => {
-        mageck(fileName, details.design[index])
-          .then((outFileName) => {
-            outFileNames.push(outFileName);
-            if (index < numFiles - 1) {
-              next(fileNames[index + 1], index + 1);
-            } else {
-              resolve(outFileNames);
-            }
-          })
-          .catch((error) => {
-            reject(error);
-          })
-        ;
-      };
-      next(fileNames[0], 0);
+      mageck()
+        .then(() => {
+          resolve();
+        })
+        .catch((error) => {
+          reject(error);
+        })
+      ;
     });
   },
-  storeOutput: (task) => {
+  storeOutput: (design, task) => {
     return new Promise((resolve, reject) => {
+      // map sample set names
+      const mappedSampleNames = {};
+      design.forEach((sampleSet) => {
+        mappedSampleNames[sampleSet.name.replace(/[^A-Za-z0-9._-]/g, '_')] = sampleSet.name;
+      });
+
       // file options
       const csvParams = {
         delimiter: '\t',
         trim: true,
       };
-      const columns = {
-        gene: 'id',
-        other: [
-          {
-            name: 'num',
-            type: 'number',
-          },
-          {
-            name: 'neg|score',
-            type: 'number',
-          },
-          {
-            name: 'neg|p-value',
-            type: 'number',
-          },
-          {
-            name: 'neg|fdr',
-            type: 'number',
-          },
-          {
-            name: 'neg|rank',
-            type: 'number',
-          },
-          {
-            name: 'neg|goodsgrna',
-            type: 'number',
-          },
-          {
-            name: 'neg|lfc',
-            type: 'number',
-          },
-          {
-            name: 'pos|score',
-            type: 'number',
-          },
-          {
-            name: 'pos|p-value',
-            type: 'number',
-          },
-          {
-            name: 'pos|fdr',
-            type: 'number',
-          },
-          {
-            name: 'pos|rank',
-            type: 'number',
-          },
-          {
-            name: 'pos|goodsgrna',
-            type: 'number',
-          },
-          {
-            name: 'pos|lfc',
-            type: 'number',
-          },
-        ],
+
+      // convert csv file to JSON
+      const csvToJson = () => {
+        return new Promise((resolveCSV, rejectCSV) => {
+          const jsonArray = [];
+          csv(csvParams).fromFile(`${task.folder}/mageck_mle.gene_summary.txt`)
+            .on('json', (jsonObj) => {
+              jsonArray.push(jsonObj);
+            })
+            .on('done', (error) => {
+              if (!error) {
+                resolveCSV(jsonArray);
+              } else {
+                rejectCSV(error);
+              }
+            })
+          ;
+        });
       };
-      // get sample set names
-      query.get('analysisTasks', { _id: task.id }, { details: 1 }, 'findOne')
-        .then((taskDetails) => {
-          const setNames = taskDetails.details.design.map((sampleSet) => {
-            return {
-              file: `mageck_filtered_${sampleSet.name.replace(/[^A-Za-z0-9._-]/g, '_')}.txt.gene_summary.txt`,
-              name: sampleSet.name,
-            };
+
+      // format JSON for DB insert
+      const formatSamples = (json) => {
+        const formattedResults = json.map((row) => {
+          const sampleSetResults = {};
+          Object.entries(row).forEach(([column, columnValue]) => {
+            if (
+              column !== 'Gene' &&
+              column !== 'sgRNA'
+            ) {
+              const re = /(.*)\|([^|]*$)/;
+              const matches = column.match(re);
+              const columnName = matches[2];
+              const columnSampleName = matches[1];
+              if (!Object.prototype.hasOwnProperty.call(sampleSetResults, columnSampleName)) {
+                sampleSetResults[columnSampleName] = {
+                  sgRNA: row.sgRNA,
+                };
+              }
+              sampleSetResults[columnSampleName][columnName] = Number(columnValue);
+            }
           });
-          return StoreOutput.readFiles(columns, csvParams, setNames, task);
-        })
-        .then((results) => {
-          return create.insert('analysisResults', { _id: task.id, results });
+          return {
+            gene: row.Gene,
+            records: Object.entries(sampleSetResults).map(([sampleName, entry]) => {
+              return Object.assign(
+                {},
+                entry,
+                {
+                  sampleSet: mappedSampleNames[sampleName],
+                }
+              );
+            }),
+          };
+        });
+        return ArraySort.arrayOfObjectByKey(formattedResults, 'gene');
+      };
+
+      csvToJson()
+        .then((json) => {
+          const formattedResults = formatSamples((json));
+          return create.insert('analysisResults', { _id: task.id, results: formattedResults });
         })
         .then(() => {
           resolve();

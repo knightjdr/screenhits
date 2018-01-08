@@ -111,7 +111,7 @@ const MAGeCK = {
         })
         .then((filteredFileNames) => {
           // get MAGeCK params
-          const mageckParams = Params.get(details, CrisprDefaults.MAGeCK);
+          const mageckParams = Params.get(details, CrisprDefaults.MAGeCKtest);
           // run MAGeCK
           return MAGeCK.script(
             filteredFileNames,
@@ -334,7 +334,7 @@ const MAGeCK = {
             writeLog(task.folder, data);
           });
           mageckProcess.on('error', (processError) => {
-            reject(processError);
+            rejectMageck(processError);
           });
           mageckProcess.on('exit', () => {
             Promise.all([
