@@ -88,7 +88,7 @@ const Validate = {
     checkFields: [
       'cell',
       'name',
-      'species',
+      'taxonID',
       'type',
     ],
     otherCheckFields: [
@@ -102,7 +102,7 @@ const Validate = {
       };
       if (!value) {
         errorObj.error = true;
-        errorObj.message = 'Select a cell type from the dropdown, or specify one via free text';
+        errorObj.message = 'Specify a cell type via free text';
       }
       return errorObj;
     },
@@ -117,14 +117,18 @@ const Validate = {
       }
       return errorObj;
     },
-    species: (value) => {
+    taxonID: (value) => {
       const errorObj = {
         error: false,
         message: null,
       };
-      if (!value) {
+      if (
+        !value ||
+        isNaN(value)
+      ) {
         errorObj.error = true;
-        errorObj.message = 'Select a species from the dropdown, or specify one via free text';
+        errorObj.message = `Enter a numeric taxon ID or specify a supported species to
+          retrieve this automatically`;
       }
       return errorObj;
     },

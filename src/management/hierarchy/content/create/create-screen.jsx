@@ -13,7 +13,6 @@ import TextField from 'material-ui/TextField';
 
 import createStyle from './create-style';
 import Fields from '../../../../modules/fields';
-import SpeciesDataSource from '../../../../assets/data/species';
 import CellsDataSource from '../../../../assets/data/cells';
 import { uppercaseFirst } from '../../../../helpers/helpers';
 
@@ -35,17 +34,30 @@ class CreateScreen extends React.Component {
   inputChangeCell = (value) => {
     this.props.inputChange('cell', value);
   }
+  inputChangeCellMods = (e) => {
+    this.props.inputChange('cellMods', e.target.value);
+  }
   inputChangeComment = (e) => {
     this.props.inputChange('comment', e.target.value);
   }
   inputChangeCondition = (e) => {
     this.props.inputChange('condition', e.target.value);
   }
+  inputChangeDrugs = (e) => {
+    this.props.inputChange('drugs', e.target.value);
+  }
   inputChangeName = (e) => {
     this.props.inputChange('name', e.target.value);
   }
   inputChangeSpecies = (value) => {
+    this.props.downloadDataSource('species', value);
     this.props.inputChange('species', value);
+  }
+  inputChangeTaxonID = (e) => {
+    const value = e.target.value;
+    if (!isNaN(value)) {
+      this.props.inputChange('taxonID', Number(value));
+    }
   }
   inputChangeType = (e, index, value) => {
     this.props.inputChange('type', value);
@@ -58,6 +70,7 @@ class CreateScreen extends React.Component {
         </div>
         <div
           style={ {
+            alignItems: 'flex-start',
             display: 'flex',
             flexWrap: 'wrap',
           } }
@@ -105,8 +118,7 @@ class CreateScreen extends React.Component {
             ) }
           >
             <AutoComplete
-              dataSource={ SpeciesDataSource }
-              errorText={ this.props.errors.species }
+              dataSource={ this.props.dataSource.species.map((entry) => { return entry.name; }) }
               filter={ this.autoCompleteFilter }
               floatingLabelText="Species"
               fullWidth={ true }
@@ -116,6 +128,15 @@ class CreateScreen extends React.Component {
               searchText={ this.props.formData.species }
             />
           </div>
+          <TextField
+            errorText={ this.props.errors.taxonID }
+            floatingLabelText="Taxon ID"
+            fullWidth={ true }
+            onChange={ this.inputChangeTaxonID }
+            style={ createStyle.input }
+            type="number"
+            value={ this.props.formData.taxonID || '' }
+          />
           <div
             style={ Object.assign(
               {},
@@ -147,7 +168,69 @@ class CreateScreen extends React.Component {
             ) }
           >
             <TextField
-              floatingLabelText="Condition (optional)"
+              floatingLabelText="Cell line modifications"
+              fullWidth={ true }
+              multiLine={ true }
+              onChange={ this.inputChangeCellMods }
+              rows={ 1 }
+              rowsMax={ 2 }
+              value={ this.props.formData.cellMods }
+            />
+            <IconButton
+              onTouchTap={ () => {
+                this.props.dialog.open(
+                  'Help for the "Cell line modifications" field',
+                  Fields.screen.cellMods.help
+                );
+              } }
+              tooltip="Help"
+              tooltipPosition="top-center"
+            >
+              <HelpIcon />
+            </IconButton>
+          </div>
+          <div
+            style={ Object.assign(
+              {},
+              createStyle.inputWithHelp,
+              {
+                width: this.props.inputWidth,
+              },
+            ) }
+          >
+            <TextField
+              floatingLabelText="Drug treatments"
+              fullWidth={ true }
+              multiLine={ true }
+              onChange={ this.inputChangeDrugs }
+              rows={ 1 }
+              rowsMax={ 2 }
+              value={ this.props.formData.drugs }
+            />
+            <IconButton
+              onTouchTap={ () => {
+                this.props.dialog.open(
+                  'Help for the "Drug treatments" field',
+                  Fields.screen.drugs.help
+                );
+              } }
+              tooltip="Help"
+              tooltipPosition="top-center"
+            >
+              <HelpIcon />
+            </IconButton>
+          </div>
+          <div
+            style={ Object.assign(
+              {},
+              createStyle.inputWithHelp,
+              {
+                width: this.props.inputWidth,
+              },
+            ) }
+          >
+            <TextField
+              floatingLabelText="Other conditions"
               fullWidth={ true }
               multiLine={ true }
               onChange={ this.inputChangeCondition }
@@ -157,7 +240,7 @@ class CreateScreen extends React.Component {
             />
             <IconButton
               onTouchTap={ () => {
-                this.props.dialog.open('Help for the "Condition" field', Fields.screen.condition.help);
+                this.props.dialog.open('Help for the "Other conditions" field', Fields.screen.condition.help);
               } }
               tooltip="Help"
               tooltipPosition="top-center"
@@ -235,6 +318,9 @@ class CreateScreen extends React.Component {
 }
 
 CreateScreen.propTypes = {
+  dataSource: PropTypes.shape({
+    species: PropTypes.array,
+  }).isRequired,
   dialog: PropTypes.shape({
     close: PropTypes.func,
     help: PropTypes.bool,
@@ -242,21 +328,25 @@ CreateScreen.propTypes = {
     text: PropTypes.string,
     title: PropTypes.string,
   }).isRequired,
+  downloadDataSource: PropTypes.func.isRequired,
   errors: PropTypes.shape({
     cell: PropTypes.string,
     condition: PropTypes.string,
     name: PropTypes.string,
     other: PropTypes.shape({}),
-    species: PropTypes.string,
+    taxonID: PropTypes.string,
     type: PropTypes.string,
   }).isRequired,
   formData: PropTypes.shape({
     cell: PropTypes.string,
+    cellMods: PropTypes.string,
     comment: PropTypes.string,
     condition: PropTypes.string,
+    drugs: PropTypes.string,
     name: PropTypes.string,
     other: PropTypes.shape({}),
     species: PropTypes.string,
+    taxonID: PropTypes.number,
     type: PropTypes.string,
   }).isRequired,
   inputChange: PropTypes.func.isRequired,

@@ -29,8 +29,16 @@ const Fields = {
     },
   },
   screen: {
+    cellMods: {
+      help: 'Enter any cell line modifications as a comma-separated list.',
+    },
     condition: {
-      help: 'Specificy the condition, drug or treatment used in the screen, if any.',
+      help: `Specificy any other conditions/cell treatments relevant to the screen
+        that were not specified under cell modifications or drug treatments.`,
+    },
+    drugs: {
+      help: `Enter all drugs used in the screen as a comma-separated list of
+      PubChem compound IDs`,
     },
     other: {
       CRISPR: [

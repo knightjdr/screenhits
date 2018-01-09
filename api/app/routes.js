@@ -5,6 +5,7 @@ const available = require('./modules/available/available');
 const availableList = require('./modules/available/available-list');
 const comparison = require('./modules/comparison/comparison');
 const create = require('./modules/create/create');
+const dataSource = require('./modules/data-source/data-source');
 const deleteQuery = require('./modules/delete/delete');
 const loadRoute = require('./modules/available/load-route');
 const queue = require('./modules/queue/queue');
@@ -115,6 +116,14 @@ const routes = {
     // returns sample details according to format
     app.get('/sample', auth.validate, (req, res) => {
       sample.get(Number(req.query.target), req.query.format, res.locals.user)
+        .then((response) => {
+          routes.response(res, response);
+        })
+      ;
+    });
+    // get list of available species
+    app.get('/species', auth.validate, (req, res) => {
+      dataSource.species(req.query.text)
         .then((response) => {
           routes.response(res, response);
         })

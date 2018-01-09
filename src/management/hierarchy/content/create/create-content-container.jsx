@@ -5,6 +5,7 @@ import React from 'react';
 import BlankState from '../../../../modules/blank-state';
 import CreateContent from './create-content';
 import DefaultProps from '../../../../types/default-props';
+import Download from './download-datasource';
 import Fields from '../../../../modules/fields';
 import FormSubmission from '../../../../modules/form-submission';
 import ValidateField from '../../../../modules/validate-field';
@@ -13,6 +14,8 @@ import { objectEmpty } from '../../../../helpers/helpers';
 import { resetPost, submitPost } from '../../../../state/post/actions';
 import { setIndex } from '../../../../state/set/index-actions';
 import { userProp } from '../../../../types/index';
+
+const timeout = {};
 
 class CreateContentContainer extends React.Component {
   constructor(props) {
@@ -27,6 +30,9 @@ class CreateContentContainer extends React.Component {
           title: null,
         },
         inputWidth: window.innerWidth >= 555 ? 500 : window.innerWidth - 55,
+        dataSource: {
+          species: [],
+        },
       },
     );
   }
@@ -72,50 +78,78 @@ class CreateContentContainer extends React.Component {
       },
     });
   }
-  inputChange = (field, value, other, type) => {
-    const errors = JSON.parse(JSON.stringify(this.state.errors));
-    const stateObject = Object.assign({}, this.state.formData);
-    if (!other) {
-      const validate = ValidateField[this.props.activeLevel][field] ?
-        ValidateField[this.props.activeLevel][field](value) :
-      {
-        error: false,
-        message: null,
-      };
-      if (
-        typeof stateObject[field] === 'object' &&
-        stateObject[field].isArray
-      ) {
-        stateObject[field] = Object.assign([], value);
+  downloadDataSource = (route, text) => {
+    const getDataSource = () => {
+      const queryString = `text=${text}`;
+      Download(
+        route,
+        queryString,
+        this.props.token
+      )
+        .then((data) => {
+          this.setState(({ dataSource }) => {
+            const newDataSource = {};
+            newDataSource[route] = data;
+            return {
+              dataSource: Object.assign(
+                {},
+                dataSource,
+                newDataSource,
+              ),
+            };
+          });
+        })
+      ;
+    };
+    window.clearTimeout(timeout[route]);
+    timeout[route] = setTimeout(getDataSource, 400);
+  }
+  inputChange = (field, value, other) => {
+    this.setState(({ dataSource, errors, formData }) => {
+      const newErrors = JSON.parse(JSON.stringify(errors));
+      const newFormData = Object.assign({}, formData);
+      if (!other) {
+        if (
+          typeof newFormData[field] === 'object' &&
+          newFormData[field] &&
+          newFormData[field].isArray
+        ) {
+          newFormData[field] = Object.assign([], value);
+        } else if (
+          field === 'species' &&
+          dataSource.species.length > 0
+        ) {
+          newFormData[field] = value;
+          const speciesIndex = dataSource.species.findIndex((entry) => {
+            return entry.name === value;
+          });
+          if (speciesIndex > -1) {
+            newFormData.taxonID = dataSource.species[speciesIndex]._id;
+          }
+        } else {
+          newFormData[field] = value;
+        }
+        newErrors[field] = null;
       } else {
-        stateObject[field] = value;
+        newFormData.other[field] = value;
+        newErrors.other[field] = null;
       }
-      errors[field] = validate.error ? validate.message : null;
-    } else {
-      const validate = ValidateField[this.props.activeLevel][`${type}_${field}`] ?
-        ValidateField[this.props.activeLevel][`${type}_${field}`](value) :
-      {
-        error: false,
-        message: null,
+      const warning = !objectEmpty(newErrors);
+      if (field === 'type') {
+        const newFields = {};
+        const otherErrors = {};
+        Fields[this.props.activeLevel].other[value].forEach((otherField) => {
+          otherErrors[otherField.name] = otherField.defaultError;
+          newFields[otherField.name] = otherField.defaultValue;
+        });
+        newFormData.other = newFields;
+        newErrors.other = otherErrors;
+      }
+      return {
+        errors: newErrors,
+        formData: newFormData,
+        warning,
       };
-      stateObject.other[field] = value;
-      errors.other[field] = validate.error ? validate.message : null;
-    }
-    const warning = !objectEmpty(errors);
-    if (field === 'type') {
-      const newFields = {};
-      const newErrors = {};
-      Fields[this.props.activeLevel].other[value].forEach((otherField) => {
-        newErrors[otherField.name] = otherField.defaultError;
-        newFields[otherField.name] = otherField.defaultValue;
-      });
-      stateObject.other = newFields;
-      errors.other = newErrors;
-    }
-    this.setState({
-      errors,
-      formData: stateObject,
-      warning,
     });
   }
   resetForm = () => {
@@ -167,6 +201,7 @@ class CreateContentContainer extends React.Component {
       <CreateContent
         activeLevel={ this.props.activeLevel }
         cancelForm={ this.cancelForm }
+        dataSource={ this.state.dataSource }
         dialog={ {
           close: this.dialogClose,
           help: this.state.dialog.help,
@@ -174,6 +209,7 @@ class CreateContentContainer extends React.Component {
           text: this.state.dialog.text,
           title: this.state.dialog.title,
         } }
+        downloadDataSource={ this.downloadDataSource }
         errors={ this.state.errors }
         formData={ this.state.formData }
         inputChange={ this.inputChange }
@@ -227,6 +263,7 @@ CreateContentContainer.propTypes = {
     screen: PropTypes.number,
   }).isRequired,
   setIndex: PropTypes.func.isRequired,
+  token: PropTypes.string.isRequired,
   user: userProp,
 };
 
@@ -252,6 +289,7 @@ const mapStateToProps = (state) => {
     postState: state.post,
     protocols: state.available.protocol,
     selected: state.selected,
+    token: state.token,
     user: state.user,
   };
 };

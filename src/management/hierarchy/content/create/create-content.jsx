@@ -39,7 +39,9 @@ class CreateContent extends React.Component {
           }
           { this.props.activeLevel === 'screen' &&
             <CreateScreen
+              dataSource={ this.props.dataSource }
               dialog={ this.props.dialog }
+              downloadDataSource={ this.props.downloadDataSource }
               errors={ this.props.errors }
               formData={ this.props.formData }
               inputChange={ this.props.inputChange }
@@ -132,6 +134,9 @@ class CreateContent extends React.Component {
 CreateContent.propTypes = {
   activeLevel: PropTypes.string.isRequired,
   cancelForm: PropTypes.func.isRequired,
+  dataSource: PropTypes.shape({
+    species: PropTypes.array,
+  }).isRequired,
   dialog: PropTypes.shape({
     close: PropTypes.func,
     help: PropTypes.bool,
@@ -139,6 +144,7 @@ CreateContent.propTypes = {
     text: PropTypes.string,
     title: PropTypes.string,
   }).isRequired,
+  downloadDataSource: PropTypes.func.isRequired,
   errors: PropTypes.shape({
     description: PropTypes.string,
     name: PropTypes.string,
@@ -162,8 +168,7 @@ CreateContent.propTypes = {
     didInvalidate: PropTypes.bool,
     isFetching: PropTypes.bool,
     items: PropTypes.arrayOf(
-      PropTypes.shape({
-      }),
+      PropTypes.shape({}),
     ),
     message: PropTypes.string,
   }).isRequired,

@@ -219,8 +219,11 @@ const validate = {
         if (!validateObj.project) {
           reject('missing project');
         }
-        if (!validateObj.species) {
-          reject('missing species');
+        if (
+          !validateObj.taxonID ||
+          isNaN(validateObj.taxonID)
+        ) {
+          reject('missing taxon ID');
         }
         if (!validateObj.type) {
           reject('missing screen type');

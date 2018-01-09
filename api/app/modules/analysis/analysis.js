@@ -103,7 +103,7 @@ const Analysis = {
         ) {
           fs.access(folderID)
             .then(() => {
-              // rimraf(folderID, () => {});
+              rimraf(folderID, () => {});
             })
           ;
         }

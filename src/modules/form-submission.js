@@ -75,10 +75,13 @@ const FormatSubmission = {
     submitObj.creatorEmail = user.email;
     submitObj.creatorName = user.name;
     submitObj.cell = form.cell;
+    submitObj.cellMods = form.cellMods;
+    submitObj.drugs = form.drugs;
     submitObj.name = form.name;
     submitObj.other = {};
     submitObj.project = selected.project;
     submitObj.species = form.species;
+    submitObj.taxonID = form.taxonID;
     submitObj.target = 'screen';
     submitObj.type = form.type;
     // screen type specific fields

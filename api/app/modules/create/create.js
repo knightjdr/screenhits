@@ -217,6 +217,7 @@ const Create = {
   },
   screen: (req, user) => {
     return new Promise((resolve) => {
+      console.log(req.body);
       let objCreate = {};
       Promise.all([
         validate.create.screen(req.body, 'creationDate', user),
@@ -224,10 +225,19 @@ const Create = {
       ])
         .then((values) => {
           objCreate = values[0];
-          return counter.get('screen');
+          return Promise.all([
+            counter.get('screen'),
+            query.get('species', { _id: objCreate.taxonID }, {}, 'findOne'),
+          ]);
         })
-        .then((sequence) => {
-          objCreate._id = sequence;
+        .then((values) => {
+          objCreate._id = values[0];
+          if (
+            !objCreate.species &&
+            values[1]
+          ) {
+            objCreate.species = values[1].name;
+          }
           return create.insert('screen', objCreate);
         })
         .then(() => {

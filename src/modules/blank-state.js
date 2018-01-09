@@ -43,18 +43,21 @@ const BlankState = {
   screen: {
     formData: {
       cell: '',
+      cellMods: '',
       comment: '',
       condition: '',
+      drugs: '',
       name: '',
       other: {},
       species: '',
+      taxonID: null,
       type: '',
     },
     errors: {
       cell: null,
       name: null,
       other: {},
-      species: null,
+      taxonID: null,
       type: null,
     },
     warning: false,
