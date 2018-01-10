@@ -102,7 +102,9 @@ class CreateContentContainer extends React.Component {
       ;
     };
     window.clearTimeout(timeout[route]);
-    timeout[route] = setTimeout(getDataSource, 400);
+    if (text) {
+      timeout[route] = setTimeout(getDataSource, 400);
+    }
   }
   inputChange = (field, value, other) => {
     this.setState(({ dataSource, errors, formData }) => {

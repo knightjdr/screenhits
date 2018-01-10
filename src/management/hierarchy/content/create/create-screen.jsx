@@ -34,6 +34,9 @@ class CreateScreen extends React.Component {
   inputChangeCell = (value) => {
     this.props.inputChange('cell', value);
   }
+  inputChangeCellID = (e) => {
+    this.props.inputChange('cellID', e.target.value);
+  }
   inputChangeCellMods = (e) => {
     this.props.inputChange('cellMods', e.target.value);
   }
@@ -77,7 +80,7 @@ class CreateScreen extends React.Component {
         >
           <TextField
             errorText={ this.props.errors.name }
-            floatingLabelText="Screen name (short)"
+            floatingLabelText="Screen name"
             fullWidth={ true }
             multiLine={ true }
             onChange={ this.inputChangeName }
@@ -157,6 +160,34 @@ class CreateScreen extends React.Component {
               onUpdateInput={ this.inputChangeCell }
               searchText={ this.props.formData.cell }
             />
+          </div>
+          <div
+            style={ Object.assign(
+              {},
+              createStyle.inputWithHelp,
+              {
+                width: this.props.inputWidth,
+              },
+            ) }
+          >
+            <TextField
+              floatingLabelText="Cell line ID"
+              fullWidth={ true }
+              onChange={ this.inputChangeCellID }
+              value={ this.props.formData.cellID }
+            />
+            <IconButton
+              onTouchTap={ () => {
+                this.props.dialog.open(
+                  'Help for the "Cell line ID" field',
+                  Fields.screen.cellID.help
+                );
+              } }
+              tooltip="Help"
+              tooltipPosition="top-center"
+            >
+              <HelpIcon />
+            </IconButton>
           </div>
           <div
             style={ Object.assign(
@@ -339,6 +370,7 @@ CreateScreen.propTypes = {
   }).isRequired,
   formData: PropTypes.shape({
     cell: PropTypes.string,
+    cellID: PropTypes.string,
     cellMods: PropTypes.string,
     comment: PropTypes.string,
     condition: PropTypes.string,

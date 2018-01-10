@@ -29,16 +29,20 @@ const Fields = {
     },
   },
   screen: {
+    cellID: {
+      help: `An identifier for the cell line, for example from ATCC or Cellosaurus.
+        This field is optional.`,
+    },
     cellMods: {
-      help: 'Enter any cell line modifications as a comma-separated list.',
+      help: 'Enter any cell line modifications as a comma-separated list. This field is optional.',
     },
     condition: {
       help: `Specificy any other conditions/cell treatments relevant to the screen
-        that were not specified under cell modifications or drug treatments.`,
+        that were not specified under cell modifications or drug treatments. This field is optional.`,
     },
     drugs: {
       help: `Enter all drugs used in the screen as a comma-separated list of
-      PubChem compound IDs`,
+      PubChem compound IDs. This field is optional.`,
     },
     other: {
       CRISPR: [

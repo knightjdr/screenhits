@@ -13,6 +13,7 @@ import TextField from 'material-ui/TextField';
 
 import CellsDataSource from '../../../../assets/data/cells';
 import displayStyle from './display-style';
+import Ellipsis from '../../../../ellipsis/ellipsis-container';
 import Fields from '../../../../modules/fields';
 import SpeciesDataSource from '../../../../assets/data/species';
 import { objectEmpty, uppercaseFirst } from '../../../../helpers/helpers';
@@ -123,7 +124,8 @@ class DisplayScreen extends React.Component {
               <div
                 style={ displayStyle.elementValue }
               >
-                { this.props.screen.species }
+                { this.props.screen.taxonID }
+                { this.props.screen.species ? ` (${this.props.screen.species})` : null }
               </div>
             </div>
             <div
@@ -149,6 +151,126 @@ class DisplayScreen extends React.Component {
                 { this.props.screen.cell }
               </div>
             </div>
+            {
+              this.props.screen.cellMods &&
+              <div
+                style={ Object.assign(
+                  {},
+                  displayStyle.elementContainer,
+                  {
+                    display: 'flex',
+                  },
+                ) }
+              >
+                <div
+                  style={ Object.assign(
+                    {},
+                    displayStyle.elementKey,
+                    {
+                      backgroundColor: this.props.muiTheme.palette.keyColor,
+                      border: `1px solid ${this.props.muiTheme.palette.keyColorBorder}`,
+                    },
+                  ) }
+                >
+                  <span>
+                    Cell modifications:
+                  </span>
+                </div>
+                <div
+                  style={ displayStyle.elementValue }
+                >
+                  { this.props.screen.cellMods.join(', ') }
+                </div>
+              </div>
+            }
+            {
+              this.props.screen.drugNames &&
+              <div
+                style={ Object.assign(
+                  {},
+                  displayStyle.elementContainer,
+                  {
+                    display: 'flex',
+                  },
+                ) }
+              >
+                <div
+                  style={ Object.assign(
+                    {},
+                    displayStyle.elementKey,
+                    {
+                      backgroundColor: this.props.muiTheme.palette.keyColor,
+                      border: `1px solid ${this.props.muiTheme.palette.keyColorBorder}`,
+                    },
+                  ) }
+                >
+                  <span>
+                    Drugs:
+                  </span>
+                </div>
+                <div
+                  style={ Object.assign(
+                    {},
+                    displayStyle.elementValue,
+                    {
+                      display: 'grid',
+                      gridColumnGap: 10,
+                      gridRowGap: 10,
+                      gridTemplateColumns: 'auto 1fr',
+                    }
+                  ) }
+                >
+                  <div
+                    style={ {
+                      gridColumn: 1,
+                      gridRow: 1,
+                      justifySelf: 'center',
+                    } }
+                  >
+                    PubChem ID
+                  </div>
+                  <div
+                    style={ {
+                      gridColumn: 2,
+                      gridRow: 1,
+                      justifySelf: 'center',
+                    } }
+                  >
+                    Names
+                  </div>
+                  {
+                    this.props.screen.drugNames.map((drug, row) => {
+                      return ([
+                        <div
+                          style={ {
+                            gridColumn: 1,
+                            gridRow: row + 2,
+                            justifySelf: 'end',
+                          } }
+                        >
+                          <a
+                            href={ `https://pubchem.ncbi.nlm.nih.gov/compound/${drug._id}` }
+                            rel="noopener noreferrer"
+                            target="_blank"
+                          >
+                            { drug._id }
+                          </a>
+                        </div>,
+                        <div
+                          style={ {
+                            gridColumn: 2,
+                            gridRow: row + 2,
+                            justifySelf: 'start',
+                          } }
+                        >
+                          <Ellipsis text={ drug.names.join('; ') } />
+                        </div>,
+                      ]);
+                    })
+                  }
+                </div>
+              </div>
+            }
             <div
               style={ Object.assign(
                 {},
@@ -521,13 +643,21 @@ DisplayScreen.propTypes = {
   screen: PropTypes.shape({
     _id: PropTypes.number,
     cell: PropTypes.string,
+    cellMods: PropTypes.array,
     comment: PropTypes.string,
     condition: PropTypes.string,
     creatorEmail: PropTypes.string,
     creatorName: PropTypes.string,
+    drugNames: PropTypes.arrayOf(
+      PropTypes.shape({
+        _id: PropTypes.number,
+        names: PropTypes.array,
+      }),
+    ),
     name: PropTypes.string,
     other: PropTypes.shape({}),
     species: PropTypes.string,
+    taxonID: PropTypes.number,
     type: PropTypes.string,
     creationDate: PropTypes.string,
     updateDate: PropTypes.string,

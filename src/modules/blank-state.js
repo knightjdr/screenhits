@@ -43,6 +43,7 @@ const BlankState = {
   screen: {
     formData: {
       cell: '',
+      cellID: '',
       cellMods: '',
       comment: '',
       condition: '',

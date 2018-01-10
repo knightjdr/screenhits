@@ -47,6 +47,30 @@ const available = {
     });
     return formattedExperiments;
   },
+  // formatting experiments to add protocols
+  formatScreens: (screens, drugs) => {
+    const formattedScreens = [];
+    screens.forEach((screen) => {
+      const currScreen = JSON.parse(JSON.stringify(screen));
+      const currDrugIds = currScreen.drugs ? currScreen.drugs : [];
+      currScreen.drugNames = [];
+      currDrugIds.forEach((_id) => {
+        const index = drugs.findIndex((drug) => {
+          return drug._id === _id;
+        });
+        if (index > -1) {
+          currScreen.drugNames.push(drugs[index]);
+        } else {
+          currScreen.drugNames.push({
+            _id,
+            name: '-',
+          });
+        }
+      });
+      formattedScreens.push(currScreen);
+    });
+    return formattedScreens;
+  },
   // entry point for 'getting'
   get: (target, filters, user) => {
     return new Promise((resolve) => {
@@ -104,6 +128,16 @@ const available = {
                 })
               ;
               break;
+            case 'screen':
+              available.screen(queryObj)
+                .then((documents) => {
+                  resolveGet(documents);
+                })
+                .catch((error) => {
+                  rejectGet(error);
+                })
+              ;
+              break;
             default:
               available.getGeneral(target, queryObj, returnObj)
                 .then((documents) => {
@@ -151,6 +185,16 @@ const available = {
             })
           ;
           break;
+        case 'screen':
+          available.screen(queryObj)
+            .then((documents) => {
+              resolve(documents);
+            })
+            .catch((error) => {
+              reject(error);
+            })
+          ;
+          break;
         default:
           available.getGeneral(target, queryObj, returnObj)
             .then((documents) => {
@@ -164,6 +208,15 @@ const available = {
       }
     });
   },
+  getDrugs: (screens) => {
+    let drugs = [];
+    screens.forEach((screen) => {
+      if (screen.drugs) {
+        drugs = drugs.concat(screen.drugs);
+      }
+    });
+    return drugs;
+  },
   // general get method for retrieving protocols, screen, etc information
   getGeneral: (target, queryObj, returnObj) => {
     return query.get(target, queryObj, returnObj);
@@ -174,6 +227,27 @@ const available = {
       protocols = protocols.concat(experiment.protocols);
     });
     return protocols;
+  },
+  // screens require addition processing to add drug names,
+  // hence separate method
+  screen: (queryObj) => {
+    return new Promise((resolve, reject) => {
+      query.get('screen', queryObj)
+        .then((documents) => {
+          const drugIds = available.getDrugs(documents);
+          return Promise.all([
+            query.get('drugs', { _id: { $in: drugIds } }),
+            documents,
+          ]);
+        })
+        .then((promises) => {
+          resolve(available.formatScreens(promises[1], promises[0]));
+        })
+        .catch((error) => {
+          reject(error);
+        })
+      ;
+    });
   },
 };
 module.exports = available;

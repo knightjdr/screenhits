@@ -14,5 +14,15 @@ const Sort = {
     });
     return sortArray;
   },
+  arrayOfObjectByKeyNumber: (arr, key, direction = 'asc') => {
+    const sortArray = JSON.parse(JSON.stringify(arr));
+    sortArray.sort((a, b) => {
+      if (direction === 'asc') {
+        return a[key] - b[key];
+      }
+      return b[key] - a[key];
+    });
+    return sortArray;
+  },
 };
 module.exports = Sort;

@@ -235,6 +235,16 @@ const validate = {
         if (validateObj.target) {
           delete validateObj.target;
         }
+        // parse drug and cell line mod strings
+        if (validateObj.cellMods) {
+          validateObj.cellMods = validateObj.cellMods.split(/\s*,\s*/);
+        }
+        if (validateObj.drugs) {
+          validateObj.drugs = validateObj.drugs.split(/\s*,\s*/).map((drug) => {
+            return !isNaN(drug) ? Number(drug) : drug;
+          });
+        }
+        // and creation date
         validateObj[dateType] = moment().format('MMMM Do YYYY, h:mm a');
         resolve(validateObj);
       });

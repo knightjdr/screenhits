@@ -217,7 +217,15 @@ const Create = {
   },
   screen: (req, user) => {
     return new Promise((resolve) => {
-      console.log(req.body);
+      const addSpecies = (current, dbEntry) => {
+        if (
+          !current &&
+          dbEntry
+        ) {
+          return dbEntry.name;
+        }
+        return current;
+      };
       let objCreate = {};
       Promise.all([
         validate.create.screen(req.body, 'creationDate', user),
@@ -231,13 +239,10 @@ const Create = {
           ]);
         })
         .then((values) => {
+          // add new id
           objCreate._id = values[0];
-          if (
-            !objCreate.species &&
-            values[1]
-          ) {
-            objCreate.species = values[1].name;
-          }
+          // species name if only taxon ID was supplied
+          objCreate.species = addSpecies(objCreate.species, values[1]);
           return create.insert('screen', objCreate);
         })
         .then(() => {
