@@ -238,11 +238,18 @@ class ManagementListContainer extends React.Component {
           });
           const expectedName = FilterFields[level][fieldIndex].expectedName;
           const type = FilterFields[level][fieldIndex].type;
-          if (type === 'text') {
-            const re = new RegExp(filters[filterField], 'i');
-            return re.test(item[expectedName]);
-          } else if (type === 'select') {
-            return item[expectedName] === filters[filterField];
+          if (!item[expectedName]) {
+            return false;
+          } else if (type === 'arrNumber') {
+            const terms = filters[filterField].split(/\s+/);
+            return terms.some((term) => {
+              return item[expectedName].includes(Number(term));
+            });
+          } else if (type === 'arrString') {
+            const terms = filters[filterField].split(/\s+/);
+            return terms.some((term) => {
+              return item[expectedName].includes(term);
+            });
           } else if (type === 'date') {
             const place = FilterFields[level][fieldIndex].place;
             if (place === 'start') {
@@ -251,6 +258,13 @@ class ManagementListContainer extends React.Component {
             }
             return Moment(item[expectedName], 'MMMM Do YYYY, h:mm a').format('x') <=
             Moment(filters[filterField]).format('x');
+          } else if (type === 'number') {
+            return item[expectedName] === filters[filterField];
+          } else if (type === 'select') {
+            return item[expectedName] === filters[filterField];
+          } else if (type === 'text') {
+            const re = new RegExp(filters[filterField], 'i');
+            return re.test(item[expectedName]);
           }
           return true;
         }

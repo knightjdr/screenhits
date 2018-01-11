@@ -132,18 +132,21 @@ const listHeaders = {
       type: 'type',
     },
     {
+      kind: 'species',
       name: 'Species',
       sort: true,
       type: 'species',
     },
     {
+      kind: 'cell',
       name: 'Cell',
       sort: true,
       type: 'cell',
     },
     {
+      kind: 'condition',
       name: 'Condition',
-      sort: true,
+      sort: false,
       type: 'condition',
     },
     {
@@ -157,6 +160,7 @@ const listHeaders = {
       type: 'creatorName',
     },
     {
+      kind: 'date',
       name: 'Created',
       sort: true,
       type: 'creationDate',

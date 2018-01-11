@@ -149,10 +149,34 @@ const Filters = {
       value: 'species',
     },
     {
+      expectedName: 'taxonID',
+      hint: 'TaxonID',
+      type: 'number',
+      value: 'taxonID',
+    },
+    {
       expectedName: 'cell',
       hint: 'Cell type',
       type: 'text',
       value: 'cell',
+    },
+    {
+      expectedName: 'cellID',
+      hint: 'Cell ID',
+      type: 'text',
+      value: 'cellID',
+    },
+    {
+      expectedName: 'cellMods',
+      hint: 'Cell modifications',
+      type: 'arrString',
+      value: 'cellMods',
+    },
+    {
+      expectedName: 'drugs',
+      hint: 'Drugs',
+      type: 'arrNumber',
+      value: 'drugs',
     },
     {
       expectedName: 'condition',

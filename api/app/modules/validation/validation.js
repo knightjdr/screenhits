@@ -418,6 +418,12 @@ const validate = {
         if (!validateObj.species) {
           reject('missing species');
         }
+        if (
+          !validateObj.taxonID ||
+          isNaN(validateObj.taxonID)
+        ) {
+          reject('missing taxon ID');
+        }
         if (!validateObj.type) {
           reject('missing screen type');
         }
@@ -425,6 +431,22 @@ const validate = {
         if (validateObj.target) {
           delete validateObj.target;
         }
+        // parse drug and cell line mod strings
+        if (
+          validateObj.cellMods &&
+          !Array.isArray(validateObj.cellMods)
+        ) {
+          validateObj.cellMods = validateObj.cellMods.split(/\s*,\s*/);
+        }
+        if (
+          validateObj.drugs &&
+          !Array.isArray(validateObj.drugs)
+        ) {
+          validateObj.drugs = validateObj.drugs.split(/\s*,\s*/).map((drug) => {
+            return !isNaN(drug) ? Number(drug) : drug;
+          });
+        }
+        delete validateObj.drugNames;
         validateObj[dateType] = moment().format('MMMM Do YYYY, h:mm a');
         resolve(validateObj);
       });

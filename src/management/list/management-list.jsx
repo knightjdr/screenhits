@@ -5,6 +5,7 @@ import FontAwesome from 'react-fontawesome';
 import IconButton from 'material-ui/IconButton';
 import Menu from 'material-ui/Menu';
 import MenuItem from 'material-ui/MenuItem';
+import Moment from 'moment';
 import muiThemeable from 'material-ui/styles/muiThemeable';
 import Popover, { PopoverAnimationVertical } from 'material-ui/Popover';
 import PropTypes from 'prop-types';
@@ -48,25 +49,64 @@ class ManagementList extends React.Component {
         } }
       >
         {
-          FilterFields[level].map((field) => {
-            return this.filterFieldElement(field, filters);
+          FilterFields[level].map((field, index) => {
+            const key = `indexKey-${field.value || index + 1}`;
+            return this.filterFieldElement(field, filters, key);
           })
         }
       </div>
     );
   }
-  filterFieldElement = (field, filters) => {
+  filterFieldElement = (field, filters, key) => {
     switch (field.type) {
-      case 'text':
+      case 'arrNumber':
         return (
           <TextField
             floatingLabelText={ field.hint }
             hintText={ field.hint }
-            key={ field.value }
+            key={ key }
             onChange={ (e) => { this.props.filterChange(field.value, e.target.value); } }
             style={ ListStyle.filterField }
             type="text"
-            value={ filters[field.value] }
+            value={ filters[field.value] || '' }
+          />
+        );
+      case 'arrString':
+        return (
+          <TextField
+            floatingLabelText={ field.hint }
+            hintText={ field.hint }
+            key={ key }
+            onChange={ (e) => { this.props.filterChange(field.value, e.target.value); } }
+            style={ ListStyle.filterField }
+            type="text"
+            value={ filters[field.value] || '' }
+          />
+        );
+      case 'date':
+        return (
+          <DatePicker
+            floatingLabelText={ field.hint }
+            key={ key }
+            maxDate={ this.props.dateRange[field.place].max }
+            minDate={ this.props.dateRange[field.place].min }
+            mode="landscape"
+            onChange={ (e, date) => { this.props.filterChange(`${field.place}Date`, date); } }
+            style={ ListStyle.filterField }
+            textFieldStyle={ ListStyle.dateTextField }
+            value={ filters[`${field.place}Date`] }
+          />
+        );
+      case 'number':
+        return (
+          <TextField
+            floatingLabelText={ field.hint }
+            hintText={ field.hint }
+            key={ key }
+            onChange={ (e) => { this.props.filterChange(field.value, Number(e.target.value)); } }
+            style={ ListStyle.filterField }
+            type="number"
+            value={ filters[field.value] || '' }
           />
         );
       case 'select':
@@ -74,7 +114,7 @@ class ManagementList extends React.Component {
           <SelectField
             floatingLabelText={ field.hint }
             listStyle={ ListStyle.selectList }
-            key={ field.value }
+            key={ key }
             onChange={ (e, index, value) => {
               this.props.filterChange(field.value, value);
             } }
@@ -94,22 +134,62 @@ class ManagementList extends React.Component {
             }
           </SelectField>
         );
-      case 'date':
+      case 'text':
         return (
-          <DatePicker
+          <TextField
             floatingLabelText={ field.hint }
-            key={ `${field.place}Date` }
-            maxDate={ this.props.dateRange[field.place].max }
-            minDate={ this.props.dateRange[field.place].min }
-            mode="landscape"
-            onChange={ (e, date) => { this.props.filterChange(`${field.place}Date`, date); } }
+            hintText={ field.hint }
+            key={ key }
+            onChange={ (e) => { this.props.filterChange(field.value, e.target.value); } }
             style={ ListStyle.filterField }
-            textFieldStyle={ ListStyle.dateTextField }
-            value={ filters[`${field.place}Date`] }
+            type="text"
+            value={ filters[field.value] }
           />
         );
       default:
-        return <div />;
+        return <div key={ key } />;
+    }
+  }
+  convertValue = (kind, type, item) => {
+    let returnValue;
+    switch (kind) {
+      case 'cell':
+        return item.cell ? item.cell : item.cellID;
+      case 'condition':
+        returnValue = [];
+        if (item.cellMods) {
+          returnValue.push(
+            <div key="cellMods">
+              cell mods.: { item.cellMods ? item.cellMods.sort().join(', ') : '-' }
+            </div>
+          );
+        }
+        if (item.drugs) {
+          returnValue.push(
+            <div key="drugs">
+              drugs: { item.drugs ? item.drugs.sort().join(', ') : '-' }
+            </div>
+          );
+        }
+        if (item.condition) {
+          returnValue.push(
+            <div key="condition">
+              other: { item.condition }
+            </div>
+          );
+        }
+        return (
+          <span>
+            { returnValue }
+          </span>
+        );
+      case 'date':
+        return Moment(item[type], 'MMMM Do YYYY, h:mm a').format('L');
+      case 'species':
+        return item.species ? item.species : item.taxonID;
+      default:
+        return item[type] || '-'
+      ;
     }
   }
   list = (headers, items) => {
@@ -117,14 +197,18 @@ class ManagementList extends React.Component {
       const columns = headers.map((header) => {
         if (header.type === 'selectAndView') {
           return {
-            style: { textAlign: 'center' },
+            style: {
+              padding: 5,
+              textAlign: 'center',
+            },
             type: header.type,
             value: this.selectButton(item),
           };
         }
         return {
+          style: { padding: 5 },
           type: header.type,
-          value: item[header.type] || '-',
+          value: this.convertValue(header.kind, header.type, item),
         };
       });
       return {
@@ -328,6 +412,9 @@ class ManagementList extends React.Component {
                         list: this.list(this.props.header, this.props.items),
                       } }
                       footer={ false }
+                      headerStyle={ {
+                        padding: 5,
+                      } }
                       height={ this.props.tableHeight }
                     />
                   }

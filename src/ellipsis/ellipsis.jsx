@@ -10,16 +10,14 @@ class Ellipsis extends React.Component {
       overflow: 'visible',
       textOverflow: 'inherit',
       whiteSpace: 'inherit',
-      width: this.props.width,
     }
     :
     {
       display: 'inline-block',
-      maxWidth: this.props.width - 50,
+      maxWidth: this.props.width - 40,
       overflow: 'hidden',
       textOverflow: 'ellipsis',
       whiteSpace: 'nowrap',
-      width: this.props.width - 50,
     };
     return (
       <div
@@ -32,23 +30,28 @@ class Ellipsis extends React.Component {
         >
           { this.props.text }
         </div>
-        <button
-          onClick={ this.props.toggleEllipsis }
-          style={ {
-            border: 'none',
-            borderBottom: '1px dotted blue',
-            color: 'blue',
-            cursor: 'pointer',
-            display: 'inline',
-            fontWeight: 'normal',
-            marginLeft: 5,
-            outline: 'none',
-            position: this.props.more ? 'relative' : 'absolute',
-            top: 0,
-          } }
-        >
-          { this.props.more ? 'less' : 'more' }
-        </button>
+        {
+          this.props.showButton &&
+          <button
+            onClick={ this.props.toggleEllipsis }
+            style={ {
+              border: 'none',
+              borderBottom: '1px dotted blue',
+              color: 'blue',
+              cursor: 'pointer',
+              display: 'inline',
+              fontWeight: 'normal',
+              marginLeft: 5,
+              outline: 'none',
+              padding: 0,
+              position: this.props.more ? 'relative' : 'absolute',
+              right: 0,
+              top: -2,
+            } }
+          >
+            { this.props.more ? 'less' : 'more' }
+          </button>
+        }
       </div>
     );
   }
@@ -61,6 +64,7 @@ Ellipsis.defaultProps = {
 
 Ellipsis.propTypes = {
   more: PropTypes.bool.isRequired,
+  showButton: PropTypes.bool.isRequired,
   text: PropTypes.string,
   toggleEllipsis: PropTypes.func.isRequired,
   width: PropTypes.number,

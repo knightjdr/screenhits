@@ -48,10 +48,15 @@ class CustomTable extends React.Component {
                 Object.assign(
                   {},
                   { textAlign: 'center' },
+                  this.props.headerStyle,
                   column.style,
                 )
                 :
-                { textAlign: 'center' }
+                Object.assign(
+                  {},
+                  { textAlign: 'center' },
+                  this.props.headerStyle,
+                )
               ;
               return (
                 <TableHeaderColumn
@@ -175,6 +180,7 @@ CustomTable.propTypes = {
       type: PropTypes.string,
     }),
   ).isRequired,
+  headerStyle: PropTypes.shape({}).isRequired,
   muiTheme: PropTypes.shape({
     palette: PropTypes.shape({
       offWhite: PropTypes.string,

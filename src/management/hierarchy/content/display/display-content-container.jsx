@@ -88,7 +88,7 @@ class DisplayContentContainer extends React.Component {
     // update state
     this.setState(newState);
   }
-  componentWillUnmount() {
+  componentWillUnmount = () => {
     window.removeEventListener('resize', this.resize);
     this.resetMessages();
   }
@@ -116,6 +116,7 @@ class DisplayContentContainer extends React.Component {
   }
   cancel = () => {
     this.props.cancelMenuAction();
+    this.reset();
   }
   delete = (_id, type, group) => {
     this.resetMessages();

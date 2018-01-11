@@ -15,10 +15,23 @@ import CellsDataSource from '../../../../assets/data/cells';
 import displayStyle from './display-style';
 import Ellipsis from '../../../../ellipsis/ellipsis-container';
 import Fields from '../../../../modules/fields';
-import SpeciesDataSource from '../../../../assets/data/species';
 import { objectEmpty, uppercaseFirst } from '../../../../helpers/helpers';
 
+const drugGridHeader = {
+  borderRadius: 2,
+  gridRow: 1,
+  padding: 2,
+  textAlign: 'center',
+  width: '100%',
+};
+
 class DisplayScreen extends React.Component {
+  arrToString = (value) => {
+    if (Array.isArray(value)) {
+      return value.join(', ');
+    }
+    return String(value);
+  }
   autoCompleteFilter = (searchText, key) => {
     return key.toLowerCase().includes(searchText.toLowerCase());
   }
@@ -37,7 +50,14 @@ class DisplayScreen extends React.Component {
     this.props.inputChange('cell', value);
   }
   inputChangeSpecies = (value) => {
+    this.props.downloadDataSource('species', value);
     this.props.inputChange('species', value);
+  }
+  inputChangeTaxonID = (e) => {
+    const value = e.target.value;
+    if (!isNaN(value)) {
+      this.props.inputChange('taxonID', Number(value));
+    }
   }
   dialogClose = () => {
     return (
@@ -125,7 +145,7 @@ class DisplayScreen extends React.Component {
                 style={ displayStyle.elementValue }
               >
                 { this.props.screen.taxonID }
-                { this.props.screen.species ? ` (${this.props.screen.species})` : null }
+                { this.props.screen.species ? `: ${this.props.screen.species}` : null }
               </div>
             </div>
             <div
@@ -179,7 +199,7 @@ class DisplayScreen extends React.Component {
                 <div
                   style={ displayStyle.elementValue }
                 >
-                  { this.props.screen.cellMods.join(', ') }
+                  { this.arrToString(this.props.screen.cellMods) }
                 </div>
               </div>
             }
@@ -221,20 +241,26 @@ class DisplayScreen extends React.Component {
                   ) }
                 >
                   <div
-                    style={ {
-                      gridColumn: 1,
-                      gridRow: 1,
-                      justifySelf: 'center',
-                    } }
+                    style={ Object.assign(
+                      {},
+                      drugGridHeader,
+                      {
+                        backgroundColor: this.props.muiTheme.palette.keyColor,
+                        gridColumn: 1,
+                      }
+                    ) }
                   >
                     PubChem ID
                   </div>
                   <div
-                    style={ {
-                      gridColumn: 2,
-                      gridRow: 1,
-                      justifySelf: 'center',
-                    } }
+                    style={ Object.assign(
+                      {},
+                      drugGridHeader,
+                      {
+                        backgroundColor: this.props.muiTheme.palette.keyColor,
+                        gridColumn: 2,
+                      }
+                    ) }
                   >
                     Names
                   </div>
@@ -242,6 +268,7 @@ class DisplayScreen extends React.Component {
                     this.props.screen.drugNames.map((drug, row) => {
                       return ([
                         <div
+                          key={ `drugID-container-${drug._id}` }
                           style={ {
                             gridColumn: 1,
                             gridRow: row + 2,
@@ -250,6 +277,7 @@ class DisplayScreen extends React.Component {
                         >
                           <a
                             href={ `https://pubchem.ncbi.nlm.nih.gov/compound/${drug._id}` }
+                            key={ `drugID-link-${drug._id}` }
                             rel="noopener noreferrer"
                             target="_blank"
                           >
@@ -257,13 +285,18 @@ class DisplayScreen extends React.Component {
                           </a>
                         </div>,
                         <div
+                          key={ `drugID-names-${drug._id}` }
                           style={ {
                             gridColumn: 2,
                             gridRow: row + 2,
                             justifySelf: 'start',
+                            width: '100%',
                           } }
                         >
-                          <Ellipsis text={ drug.names.join('; ') } />
+                          <Ellipsis
+                            key={ `drugID-ellipsis-${drug._id}` }
+                            text={ drug.names.join('; ') }
+                          />
                         </div>,
                       ]);
                     })
@@ -470,8 +503,7 @@ class DisplayScreen extends React.Component {
               }) }
             </SelectField>
             <AutoComplete
-              dataSource={ SpeciesDataSource }
-              errorText={ this.props.errors.species }
+              dataSource={ this.props.dataSource.species.map((entry) => { return entry.name; }) }
               filter={ this.autoCompleteFilter }
               floatingLabelText="Species"
               fullWidth={ true }
@@ -480,6 +512,15 @@ class DisplayScreen extends React.Component {
               onUpdateInput={ this.inputChangeSpecies }
               searchText={ this.props.screen.species }
               style={ displayStyle.input }
+            />
+            <TextField
+              errorText={ this.props.errors.taxonID }
+              floatingLabelText="Taxon ID"
+              fullWidth={ true }
+              onChange={ this.inputChangeTaxonID }
+              style={ displayStyle.input }
+              type="number"
+              value={ this.props.screen.taxonID || '' }
             />
             <AutoComplete
               dataSource={ CellsDataSource }
@@ -503,7 +544,71 @@ class DisplayScreen extends React.Component {
               ) }
             >
               <TextField
-                floatingLabelText="Condition (optional)"
+                floatingLabelText="Cell line modifications"
+                fullWidth={ true }
+                multiLine={ true }
+                onChange={ (e) => { this.props.inputChange('cellMods', e.target.value); } }
+                rows={ 1 }
+                rowsMax={ 2 }
+                value={ this.arrToString(this.props.screen.cellMods) }
+              />
+              <IconButton
+                onTouchTap={ () => {
+                  this.props.dialog.open(
+                    'help',
+                    'Help for the "Cell line modifications" field',
+                    Fields.screen.cellMods.help
+                  );
+                } }
+                tooltip="Help"
+                tooltipPosition="top-center"
+              >
+                <HelpIcon />
+              </IconButton>
+            </div>
+            <div
+              style={ Object.assign(
+                {},
+                displayStyle.inputWithHelp,
+                {
+                  width: this.props.inputWidth,
+                },
+              ) }
+            >
+              <TextField
+                floatingLabelText="Drugs"
+                fullWidth={ true }
+                multiLine={ true }
+                onChange={ (e) => { this.props.inputChange('drugs', e.target.value); } }
+                rows={ 1 }
+                rowsMax={ 2 }
+                value={ this.arrToString(this.props.screen.drugs) }
+              />
+              <IconButton
+                onTouchTap={ () => {
+                  this.props.dialog.open(
+                    'help',
+                    'Help for the "Drugs" field',
+                    Fields.screen.drugs.help
+                  );
+                } }
+                tooltip="Help"
+                tooltipPosition="top-center"
+              >
+                <HelpIcon />
+              </IconButton>
+            </div>
+            <div
+              style={ Object.assign(
+                {},
+                displayStyle.inputWithHelp,
+                {
+                  width: this.props.inputWidth,
+                },
+              ) }
+            >
+              <TextField
+                floatingLabelText="Condition"
                 fullWidth={ true }
                 multiLine={ true }
                 onChange={ (e) => { this.props.inputChange('condition', e.target.value); } }
@@ -621,6 +726,9 @@ class DisplayScreen extends React.Component {
 
 DisplayScreen.propTypes = {
   canEdit: PropTypes.bool.isRequired,
+  dataSource: PropTypes.shape({
+    species: PropTypes.array,
+  }).isRequired,
   deleteScreen: PropTypes.func.isRequired,
   dialog: PropTypes.shape({
     close: PropTypes.func,
@@ -630,12 +738,14 @@ DisplayScreen.propTypes = {
     text: PropTypes.string,
     title: PropTypes.string,
   }).isRequired,
+  downloadDataSource: PropTypes.func.isRequired,
   edit: PropTypes.bool.isRequired,
   errors: PropTypes.shape({
     cell: PropTypes.string,
     name: PropTypes.string,
     other: PropTypes.shape({}),
     species: PropTypes.string,
+    taxonID: PropTypes.number,
     type: PropTypes.string,
   }).isRequired,
   inputChange: PropTypes.func.isRequired,
@@ -643,11 +753,18 @@ DisplayScreen.propTypes = {
   screen: PropTypes.shape({
     _id: PropTypes.number,
     cell: PropTypes.string,
-    cellMods: PropTypes.array,
+    cellMods: PropTypes.oneOfType([
+      PropTypes.array,
+      PropTypes.string,
+    ]),
     comment: PropTypes.string,
     condition: PropTypes.string,
     creatorEmail: PropTypes.string,
     creatorName: PropTypes.string,
+    drugs: PropTypes.oneOfType([
+      PropTypes.array,
+      PropTypes.string,
+    ]),
     drugNames: PropTypes.arrayOf(
       PropTypes.shape({
         _id: PropTypes.number,

@@ -1,3 +1,4 @@
+const ArraySort = require('../helpers/sort');
 const query = require('../query/query');
 const userProjects = require('../projects/user-projects');
 
@@ -47,7 +48,7 @@ const available = {
     });
     return formattedExperiments;
   },
-  // formatting experiments to add protocols
+  // formatting screens to add drug names
   formatScreens: (screens, drugs) => {
     const formattedScreens = [];
     screens.forEach((screen) => {
@@ -67,6 +68,7 @@ const available = {
           });
         }
       });
+      currScreen.drugNames = ArraySort.arrayOfObjectByKeyNumber(currScreen.drugNames, '_id', 'desc');
       formattedScreens.push(currScreen);
     });
     return formattedScreens;

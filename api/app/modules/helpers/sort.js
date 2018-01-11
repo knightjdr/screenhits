@@ -17,10 +17,12 @@ const Sort = {
   arrayOfObjectByKeyNumber: (arr, key, direction = 'asc') => {
     const sortArray = JSON.parse(JSON.stringify(arr));
     sortArray.sort((a, b) => {
+      const x = Number(a[key]);
+      const y = Number(b[key]);
       if (direction === 'asc') {
-        return a[key] - b[key];
+        return x - y;
       }
-      return b[key] - a[key];
+      return x - y;
     });
     return sortArray;
   },

@@ -177,6 +177,7 @@ class TableContainer extends React.Component {
         changePage={ this.changePage }
         footer={ this.props.footer }
         header={ this.props.data.header }
+        headerStyle={ this.props.headerStyle }
         page={ this.state.page }
         pageData={ this.state.pageData }
         pageTotal={ this.state.pageTotal }
@@ -189,6 +190,7 @@ class TableContainer extends React.Component {
 
 TableContainer.defaultProps = {
   footer: {},
+  headerStyle: {},
   reset: 0,
 };
 
@@ -227,6 +229,7 @@ TableContainer.propTypes = {
     PropTypes.shape({}),
   ]),
   height: PropTypes.number.isRequired,
+  headerStyle: PropTypes.shape({}),
   reset: PropTypes.number,
 };
 
