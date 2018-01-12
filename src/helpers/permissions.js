@@ -54,6 +54,17 @@ const Permissions = {
     }
     return false;
   },
+  canTemplateProtocol: (user, project) => {
+    if (user.privilege === 'siteAdmin') {
+      return true;
+    } else if (
+      user.privilege === 'labAdmin' &&
+      user.lab === project.lab
+    ) {
+      return true;
+    }
+    return false;
+  },
   hasWritePermission: (email, specialUsers) => {
     if (specialUsers) {
       const userIndex = specialUsers.findIndex((user) => {

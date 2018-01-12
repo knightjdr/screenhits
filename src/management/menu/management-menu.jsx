@@ -90,6 +90,15 @@ class ManagementMenu extends React.Component {
                   primaryText={ [<FontAwesome key="manage" name="user-plus" />, ' Manage users'] }
                 />
               }
+              {
+                this.props.activeLevel === 'experiment' &&
+                this.props.canTemplateProtocol &&
+                <MenuItem
+                  key="protocolTemplate"
+                  onClick={ this.props.protocolTemplateMenuAction }
+                  primaryText={ [<FontAwesome key="protocolTemplate" name="file-code-o" />, ' Protocol templating '] }
+                />
+              }
               { this.props.activeLevel === 'experiment' &&
                 <MenuItem
                   key="protocol"
@@ -129,6 +138,7 @@ ManagementMenu.propTypes = {
   anchorEl: PropTypes.shape({}),
   canEdit: PropTypes.bool.isRequired,
   canManage: PropTypes.bool.isRequired,
+  canTemplateProtocol: PropTypes.bool.isRequired,
   createMenuAction: PropTypes.func.isRequired,
   editMenuAction: PropTypes.func.isRequired,
   enlargeMenu: PropTypes.func.isRequired,
@@ -140,6 +150,7 @@ ManagementMenu.propTypes = {
     }),
   }).isRequired,
   protocolMenuAction: PropTypes.func.isRequired,
+  protocolTemplateMenuAction: PropTypes.func.isRequired,
   radius: PropTypes.number.isRequired,
   showList: PropTypes.bool.isRequired,
   showManagementList: PropTypes.func.isRequired,

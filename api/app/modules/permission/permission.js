@@ -153,6 +153,29 @@ const Permission = {
         ;
       });
     },
+    template: (_id, user) => {
+      return new Promise((resolve, reject) => {
+        if (user.privilege === 'siteAdmin') {
+          resolve(true);
+        }
+
+        query.get('template', { _id }, { creatorEmail: 1 }, 'findOne')
+          .then((template) => {
+            return Permission.checkEditTemplate(template, user) ?
+              Promise.resolve()
+              :
+              Promise.reject()
+            ;
+          })
+          .then(() => {
+            resolve();
+          })
+          .catch(() => {
+            reject('not authorized');
+          })
+        ;
+      });
+    },
   },
   canView: {
     analysis: (_id, user) => {
@@ -270,6 +293,17 @@ const Permission = {
     ) {
       return true;
     } else if (user.email === task.userEmail) {
+      return true;
+    }
+    return false;
+  },
+  checkEditTemplate: (template, user) => {
+    if (
+      user.privilege === 'labAdmin' &&
+      user.lab === template.lab
+    ) {
+      return true;
+    } else if (user.email === template.creatorEmail) {
       return true;
     }
     return false;

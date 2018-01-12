@@ -14,6 +14,7 @@ class ManagementMenuContainer extends React.Component {
       anchorEl: null,
       canEdit: Permissions.canEditProject(this.props.user, project),
       canManage: Permissions.canManageProject(this.props.user, project),
+      canTemplateProtocol: Permissions.canTemplateProtocol(this.props.user, project),
       radius: 30,
       showList: false,
     };
@@ -57,6 +58,10 @@ class ManagementMenuContainer extends React.Component {
     this.hideManagementList();
     this.props.menuActions.protocol();
   }
+  protocolTemplateMenuAction = () => {
+    this.hideManagementList();
+    this.props.menuActions.protocolTemplate();
+  }
   showManagementList = (event) => {
     this.setState({
       anchorEl: event.currentTarget,
@@ -98,12 +103,14 @@ class ManagementMenuContainer extends React.Component {
         anchorEl={ this.state.anchorEl }
         canEdit={ this.state.canEdit }
         canManage={ this.state.canManage }
+        canTemplateProtocol={ this.state.canTemplateProtocol }
         createMenuAction={ this.createMenuAction }
         editMenuAction={ this.editMenuAction }
         enlargeMenu={ this.enlargeMenu }
         hideManagementList={ this.hideManagementList }
         manageMenuAction={ this.manageMenuAction }
         protocolMenuAction={ this.protocolMenuAction }
+        protocolTemplateMenuAction={ this.protocolTemplateMenuAction }
         radius={ this.state.radius }
         viewID={ this.props.viewID }
         showList={ this.state.showList }
@@ -126,6 +133,7 @@ ManagementMenuContainer.propTypes = {
     edit: PropTypes.func,
     manage: PropTypes.func,
     protocol: PropTypes.func,
+    protocolTemplate: PropTypes.func,
     update: PropTypes.func,
   }).isRequired,
   projects: projectItemProp.isRequired,

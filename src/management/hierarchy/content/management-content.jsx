@@ -6,6 +6,7 @@ import CreateContent from './create/create-content-container';
 import DisplayContent from './display/display-content-container';
 import ManageContent from './manage/manage-content-container';
 import ProtocolContent from './protocol/protocol-content-container';
+import ProtocolTemplateContent from './protocol/template-content-container';
 import ManagementMenu from '../../menu/management-menu-container';
 
 const introStyle = {
@@ -38,6 +39,12 @@ class ManagementContent extends React.Component {
       />);
     } else if (this.props.menuBoolean.protocol) {
       content = (<ProtocolContent
+        cancelMenuAction={ this.props.cancelMenuAction }
+        lab={ this.props.item.lab }
+        name={ this.props.item.name }
+      />);
+    } else if (this.props.menuBoolean.protocolTemplate) {
+      content = (<ProtocolTemplateContent
         cancelMenuAction={ this.props.cancelMenuAction }
         lab={ this.props.item.lab }
         name={ this.props.item.name }
@@ -96,6 +103,7 @@ ManagementContent.propTypes = {
     edit: PropTypes.func,
     manage: PropTypes.func,
     protocol: PropTypes.func,
+    protocolTemplate: PropTypes.func,
     update: PropTypes.func,
   }).isRequired,
   menuBoolean: PropTypes.shape({
@@ -103,6 +111,7 @@ ManagementContent.propTypes = {
     edit: PropTypes.bool,
     manage: PropTypes.bool,
     protocol: PropTypes.bool,
+    protocolTemplate: PropTypes.bool,
   }).isRequired,
   item: PropTypes.shape({
     lab: PropTypes.string,

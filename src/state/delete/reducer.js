@@ -36,6 +36,12 @@ const Delete = (state = {
     _id: null,
     isDelete: false,
   },
+  template: {
+    didDeleteFail: false,
+    message: null,
+    _id: null,
+    isDelete: false,
+  },
 }, action) => {
   let modifiedFields = {};
   const updateObject = {};

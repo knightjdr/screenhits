@@ -81,6 +81,14 @@ const Delete = {
             .catch((error) => { reject(error); })
           ;
           break;
+        case 'template':
+          Promise.all([
+            deleteQuery.item('template', { _id }),
+          ])
+            .then(resolve())
+            .catch((error) => { reject(error); })
+          ;
+          break;
         default:
           reject('Invalid target for deletion');
           break;

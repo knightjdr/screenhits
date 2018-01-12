@@ -19,10 +19,14 @@ const Create = {
       ])
         .then((values) => {
           objCreate = values[0];
-          return counter.get('experiment');
+          return Promise.all([
+            counter.get('experiment'),
+            query.get('screen', { _id: objCreate.group.screen }, { type: 1 }, 'findOne'),
+          ]);
         })
-        .then((sequence) => {
-          objCreate._id = sequence;
+        .then((values) => {
+          objCreate._id = values[0];
+          objCreate.type = values[1].type;
           return create.insert('experiment', objCreate);
         })
         .then(() => {
@@ -262,6 +266,41 @@ const Create = {
             clientResponse: {
               status: 500,
               message: `There was an error creating this screen: ${error}`,
+            },
+          });
+        })
+      ;
+    });
+  },
+  template: (req, user) => {
+    return new Promise((resolve) => {
+      let objCreate = {};
+      validate.create.template(req.body, 'creationDate', user)
+        .then((newObj) => {
+          objCreate = newObj;
+          return counter.get('template');
+        })
+        .then((sequence) => {
+          objCreate._id = sequence;
+          return create.insert('template', objCreate);
+        })
+        .then(() => {
+          resolve({
+            status: 200,
+            clientResponse: {
+              status: 200,
+              _id: objCreate._id,
+              message: `Template successfully created with ID ${objCreate._id}`,
+              obj: objCreate,
+            },
+          });
+        })
+        .catch((error) => {
+          resolve({
+            status: 500,
+            clientResponse: {
+              status: 500,
+              message: `There was an error creating this template: ${error}`,
             },
           });
         })

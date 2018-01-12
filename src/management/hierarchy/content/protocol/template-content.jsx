@@ -3,11 +3,9 @@ import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import FontAwesome from 'react-fontawesome';
 import IconButton from 'material-ui/IconButton';
-import Menu from 'material-ui/Menu';
 import MenuItem from 'material-ui/MenuItem';
 import muiThemeable from 'material-ui/styles/muiThemeable';
 import Paper from 'material-ui/Paper';
-import Popover from 'material-ui/Popover';
 import PropTypes from 'prop-types';
 import React from 'react';
 import RemoveCircleIcon from 'material-ui/svg-icons/content/remove-circle';
@@ -65,7 +63,7 @@ const inputWithHelpFullWidthStyle = {
   width: '98%',
 };
 
-class ProtocolContent extends React.Component {
+class TemplateContent extends React.Component {
   confirmDeletion = () => {
     return (
     [
@@ -73,7 +71,7 @@ class ProtocolContent extends React.Component {
         backgroundColor={ this.props.muiTheme.palette.success }
         hoverColor={ this.props.muiTheme.palette.successHover }
         label="Confirm"
-        onTouchTap={ () => { this.props.deleteProtocol(this.props.selectedProtocol); } }
+        onTouchTap={ () => { this.props.deleteTemplate(this.props.selectedTemplate); } }
       />,
     ]);
   }
@@ -98,27 +96,10 @@ class ProtocolContent extends React.Component {
     this.props.inputChange('fieldName', e.target.value);
   }
   inputChangeName = (e) => {
-    this.props.inputChange('protocolName', e.target.value);
+    this.props.inputChange('templateName', e.target.value);
   }
   inputChangeSubField = (index, value) => {
     this.props.inputChangeSubField(index, value);
-  }
-  templateButtonName = (selectedTemplate, templates) => {
-    if (selectedTemplate) {
-      const templateIndex = templates.findIndex((template) => {
-        return template._id === selectedTemplate;
-      });
-      return (
-        <span
-          style={ {
-            marginLeft: 10,
-          } }
-        >
-          Selected: { templates[templateIndex].name }
-        </span>
-      );
-    }
-    return null;
   }
   render() {
     return (
@@ -138,16 +119,16 @@ class ProtocolContent extends React.Component {
           autoHeightMax={ 'calc(100vh - 150px)' }
         >
           <div>
-            { this.props.protocols.items.length > 0 ?
+            { this.props.templates.items.length > 0 ?
               <span>
-                Edit an existing protocol by selecting it from the dropdown or create a new
-                protocol using the &quot;<FontAwesome key="icon" name="plus-circle" /> Protocol&quot;
-                button.
+                Edit an existing template template by selecting it from the dropdown or create a new
+                template using the &quot;<FontAwesome key="icon" name="plus-circle" />
+                Template&quot; button.
               </span>
               :
               <span>
-                Create a new protocol using the
-                &quot;<FontAwesome key="icon" name="plus-circle" /> Protocol&quot; button.
+                Create a new template template using the &quot;<FontAwesome key="icon" name="plus-circle" />
+                Template&quot; button.
               </span>
             }
             <div
@@ -156,34 +137,34 @@ class ProtocolContent extends React.Component {
                 minHeight: 90,
               } }
             >
-              { this.props.protocols.isFetching &&
+              { this.props.templates.isFetching &&
                 <span>
-                  <FontAwesome key="fetching" name="spinner" pulse={ true } /> Fetching protocols...
+                  <FontAwesome key="fetching" name="spinner" pulse={ true } /> Fetching templates...
                 </span>
               }
               {
-                this.props.protocols.items.length > 0 &&
+                this.props.templates.items.length > 0 &&
                 <SelectField
-                  floatingLabelText="Existing protocols"
+                  floatingLabelText="Existing templates"
                   fullWidth={ true }
                   listStyle={ {
                     paddingBottom: 0,
                     paddingTop: 0,
                   } }
-                  onChange={ (e, index, value) => { this.props.protocolChange(value); } }
+                  onChange={ (e, index, value) => { this.props.templateChange(value); } }
                   style={ inputStyle }
-                  value={ this.props.selectedProtocol }
+                  value={ this.props.selectedTemplate }
                 >
                   { customSort.arrayOfObjectByKey(
-                      this.props.protocols.items,
+                      this.props.templates.items,
                       'name',
                       'asc',
-                    ).map((protocol) => {
+                    ).map((template) => {
                       return (
                         <MenuItem
-                          key={ protocol._id }
-                          value={ protocol._id }
-                          primaryText={ protocol.name }
+                          key={ template._id }
+                          value={ template._id }
+                          primaryText={ template.name }
                         />
                       );
                     })
@@ -199,7 +180,7 @@ class ProtocolContent extends React.Component {
                 <FlatButton
                   backgroundColor={ this.props.muiTheme.palette.buttonColor }
                   hoverColor={ this.props.muiTheme.palette.buttonColorHover }
-                  label={ [<FontAwesome key="icon" name="plus-circle" />, ' Protocol'] }
+                  label={ [<FontAwesome key="icon" name="plus-circle" />, ' Template'] }
                   labelStyle={ {
                     color: this.props.muiTheme.palette.offWhite,
                   } }
@@ -211,12 +192,12 @@ class ProtocolContent extends React.Component {
                     label: 'Close',
                     toolTipText: 'Close view',
                   } }
-                  idSuffix="delete-protocol"
+                  idSuffix="delete-template"
                 />
               </div>
             </div>
             { this.props.display &&
-              this.props.protocols.items.length > 0 &&
+              this.props.templates.items.length > 0 &&
               <div
                 style={ displayStyle }
               >
@@ -234,24 +215,24 @@ class ProtocolContent extends React.Component {
                     ) }
                   >
                     <span>
-                      Protocol name:
+                      Temlpate name:
                     </span>
                   </div>
                   <div
                     style={ elementValueStyle }
                   >
-                    { this.props.protocols.items[this.props.selectedProtocolIndex].name }
+                    { this.props.templates.items[this.props.selectedTemplateIndex].name }
                   </div>
                 </div>
-                { this.props.protocols.items[this.props.selectedProtocolIndex]
+                { this.props.templates.items[this.props.selectedTemplateIndex]
                   .subSections.map((subsection) => {
                     return (
                       <div
-                        key={ `protocolDisplay-container-${subsection.name}` }
+                        key={ `templateDisplay-container-${subsection.name}` }
                         style={ elementContainerStyle }
                       >
                         <div
-                          key={ `protocolDisplay-keyContainer-${subsection.name}` }
+                          key={ `templateDisplay-keyContainer-${subsection.name}` }
                           style={ Object.assign(
                             {},
                             elementKeyStyle,
@@ -262,13 +243,13 @@ class ProtocolContent extends React.Component {
                           ) }
                         >
                           <span
-                            key={ `protocolDisplay-key-${subsection.name}` }
+                            key={ `templateDisplay-key-${subsection.name}` }
                           >
                             { subsection.name }:
                           </span>
                         </div>
                         <div
-                          key={ `protocolDisplay-value-${subsection.name}` }
+                          key={ `templateDisplay-value-${subsection.name}` }
                           style={ elementValueStyle }
                         >
                           { subsection.content }
@@ -293,9 +274,9 @@ class ProtocolContent extends React.Component {
                     cancel={ {
                       func: this.props.dialog.open,
                       label: 'Delete',
-                      toolTipText: 'Delete protocol',
+                      toolTipText: 'Delete template',
                     } }
-                    idSuffix="delete-protocol"
+                    idSuffix="delete-template"
                   />
                 </div>
                 <Notice
@@ -307,10 +288,10 @@ class ProtocolContent extends React.Component {
                 />
                 <Notice
                   fail={ this.props.editMessages.didPutFail }
-                  failMessage={ `Protocol edit failed. ${this.props.editMessages.message}` }
+                  failMessage={ `Template edit failed. ${this.props.editMessages.message}` }
                   label="edit-notification"
                   submit={ this.props.editMessages.isPut }
-                  submitMessage={ 'Protocol edit submitted' }
+                  submitMessage={ 'Template edit submitted' }
                   succeed={ this.props.editMessages.message &&
                     !this.props.editMessages.didPutFail }
                   succeedMessage={ this.props.editMessages.message }
@@ -320,18 +301,18 @@ class ProtocolContent extends React.Component {
             { this.props.edit &&
               <div>
                 <TextField
-                  errorText={ this.props.errors.protocolName }
-                  floatingLabelText="Protocol name"
+                  errorText={ this.props.errors.templateName }
+                  floatingLabelText="Template name"
                   fullWidth={ true }
                   multiLine={ true }
                   onChange={ (e) => { this.props.editChangeField('name', e.target.value); } }
                   rows={ 1 }
                   rowsMax={ 2 }
                   style={ inputFullWidthStyle }
-                  value={ this.props.editProtocol.name }
+                  value={ this.props.editTemplate.name }
                 />
                 {
-                  this.props.editProtocol.subSections.map((field, index) => {
+                  this.props.editTemplate.subSections.map((field, index) => {
                     return (
                       <div
                         key={ `container-${field.name}` }
@@ -394,11 +375,11 @@ class ProtocolContent extends React.Component {
                       func: this.props.cancelEdit,
                       toolTipText: 'Cancel editing',
                     } }
-                    idSuffix="edit-protocol"
+                    idSuffix="edit-template"
                     update={ {
-                      func: this.props.updateProtocol,
+                      func: this.props.updateTemplate,
                       label: 'Update',
-                      toolTipText: 'Update protocol',
+                      toolTipText: 'Update template',
                     } }
                   />
                 </div>
@@ -413,25 +394,14 @@ class ProtocolContent extends React.Component {
                 } }
               >
                 <div>
-                  Create a new protocol using this form. Use the
+                  Create a new template using this form. Use the
                   <FontAwesome
                     name="plus-square"
                     style={ {
                       margin: '0px 5px 0px 5px',
                     } }
                   />
-                  button to add new subsections to your protocol.
-                  {
-                    this.props.templates.items.length > 0 &&
-                    <span
-                      style={ {
-                        marginLeft: 2,
-                      } }
-                    >
-                      Alternatively, you can
-                      import a protocol template by selecting it from the dropdown.
-                    </span>
-                  }
+                  button to add new subsections to your template.
                 </div>
                 <div
                   style={ {
@@ -439,72 +409,16 @@ class ProtocolContent extends React.Component {
                     flexWrap: 'wrap',
                   } }
                 >
-                  {
-                    this.props.templates.items.length > 0 &&
-                    <span
-                      style={ {
-                        marginTop: 10,
-                      } }
-                    >
-                      <FlatButton
-                        backgroundColor={ this.props.muiTheme.palette.buttonColor }
-                        hoverColor={ this.props.muiTheme.palette.buttonColorHover }
-                        key="button"
-                        label="Templates"
-                        onTouchTap={ (e) => { this.props.openTemplatePopover(e.target); } }
-                        secondary={ true }
-                      />
-                      <Popover
-                        anchorEl={ this.props.anchorEl }
-                        anchorOrigin={ { horizontal: 'left', vertical: 'top' } }
-                        key="popover"
-                        onRequestClose={ this.props.closeTemplatePopover }
-                        open={ this.props.templatePopover }
-                        targetOrigin={ { horizontal: 'left', vertical: 'top' } }
-                      >
-                        <Menu
-                          listStyle={ {
-                            paddingBottom: 0,
-                            paddingTop: 0,
-                          } }
-                        >
-                          { customSort.arrayOfObjectByKey(
-                              this.props.templates.items,
-                              'name',
-                              'asc',
-                            ).map((template) => {
-                              return (
-                                <MenuItem
-                                  key={ template._id }
-                                  onClick={ () => {
-                                    this.props.templateChange(template._id);
-                                  } }
-                                  value={ template._id }
-                                  primaryText={ template.name }
-                                />
-                              );
-                            })
-                          }
-                        </Menu>
-                      </Popover>
-                      {
-                        this.templateButtonName(
-                          this.props.selectedTemplate,
-                          this.props.templates.items
-                        )
-                      }
-                    </span>
-                  }
                   <TextField
-                    errorText={ this.props.errors.protocolName }
-                    floatingLabelText="Protocol name"
+                    errorText={ this.props.errors.templateName }
+                    floatingLabelText="Template name"
                     fullWidth={ true }
                     multiLine={ true }
                     onChange={ this.inputChangeName }
                     rows={ 1 }
                     rowsMax={ 2 }
                     style={ inputFullWidthStyle }
-                    value={ this.props.protocolName }
+                    value={ this.props.templateName }
                   />
                   {
                     this.props.fields.map((field, index) => {
@@ -577,21 +491,21 @@ class ProtocolContent extends React.Component {
                   <ActionButtons
                     cancel={ {
                       func: this.props.cancel,
-                      toolTipText: 'Cancel protocol creation',
+                      toolTipText: 'Cancel template creation',
                     } }
-                    idSuffix="create-protocol"
+                    idSuffix="create-template"
                     update={ {
-                      func: this.props.createProtocol,
+                      func: this.props.createTemplate,
                       label: 'Create',
                     } }
                   />
                 </div>
                 <Notice
                   fail={ this.props.postState.didSubmitFail }
-                  failMessage={ `Protocol creation failed. ${this.props.postState.message}.` }
+                  failMessage={ `Template creation failed. ${this.props.postState.message}.` }
                   label="create-notification"
                   submit={ this.props.postState.isSubmitted }
-                  submitMessage="Protocol submitted"
+                  submitMessage="Template submitted"
                   succeed={ this.props.postState.message &&
                     !this.props.postState.didSubmitFail
                   }
@@ -599,11 +513,11 @@ class ProtocolContent extends React.Component {
                 />
                 <Notice
                   fail={ this.props.deleteMessages.didDeleteFail }
-                  failMessage={ `Protocol deletion failed.
+                  failMessage={ `Template deletion failed.
                   ${this.props.deleteMessages.message}` }
                   label="delete-notification"
                   submit={ this.props.deleteMessages.isDelete }
-                  submitMessage="Protocol deletion requested"
+                  submitMessage="Template deletion requested"
                   succeed={ this.props.deleteMessages.message &&
                     !this.props.deleteMessages.didDeleteFail }
                   succeedMessage={ this.props.deleteMessages.message }
@@ -622,42 +536,39 @@ class ProtocolContent extends React.Component {
           open={ this.props.dialog.bool }
           title="Confirmation"
         >
-          This action will permanently delete the protocol. Press confirm to proceed.
+          This action will permanently delete the template. Press confirm to proceed.
         </Dialog>
       </Paper>
     );
   }
 }
 
-ProtocolContent.defaultProps = {
+TemplateContent.defaultProps = {
   editFieldError: '',
   editFieldName: '',
   fieldError: '',
   fieldName: '',
-  protocolName: '',
-  selectedProtocol: null,
-  selectedProtocolIndex: null,
+  templateName: '',
   selectedTemplate: null,
+  selectedTemplateIndex: null,
 };
 
-ProtocolContent.propTypes = {
+TemplateContent.propTypes = {
   addField: PropTypes.func.isRequired,
   addFieldEdit: PropTypes.func.isRequired,
-  anchorEl: PropTypes.shape({}).isRequired,
   back: PropTypes.func.isRequired,
   cancel: PropTypes.func.isRequired,
   cancelEdit: PropTypes.func.isRequired,
   changeNew: PropTypes.func.isRequired,
   changeEdit: PropTypes.func.isRequired,
-  closeTemplatePopover: PropTypes.func.isRequired,
-  createProtocol: PropTypes.func.isRequired,
+  createTemplate: PropTypes.func.isRequired,
   deleteMessages: PropTypes.shape({
     _id: PropTypes.number,
     didDeleteFail: PropTypes.bool,
     message: PropTypes.string,
     isDelete: PropTypes.bool,
   }).isRequired,
-  deleteProtocol: PropTypes.func.isRequired,
+  deleteTemplate: PropTypes.func.isRequired,
   dialog: PropTypes.shape({
     bool: PropTypes.bool,
     close: PropTypes.func,
@@ -674,7 +585,7 @@ ProtocolContent.propTypes = {
     message: PropTypes.string,
     isPut: PropTypes.bool,
   }).isRequired,
-  editProtocol: PropTypes.shape({
+  editTemplate: PropTypes.shape({
     name: PropTypes.string,
     subSections: PropTypes.arrayOf(
       PropTypes.shape({}),
@@ -682,7 +593,7 @@ ProtocolContent.propTypes = {
   }).isRequired,
   editRemoveField: PropTypes.func.isRequired,
   errors: PropTypes.shape({
-    protocolName: PropTypes.string,
+    templateName: PropTypes.string,
   }).isRequired,
   fields: PropTypes.arrayOf(
     PropTypes.shape({
@@ -709,30 +620,14 @@ ProtocolContent.propTypes = {
     }),
   }).isRequired,
   new: PropTypes.bool.isRequired,
-  openTemplatePopover: PropTypes.func.isRequired,
   postState: PropTypes.shape({
     didSubmitFail: PropTypes.bool,
     _id: PropTypes.number,
     isSubmitted: PropTypes.bool,
     message: PropTypes.string,
   }).isRequired,
-  protocolChange: PropTypes.func.isRequired,
-  protocolName: PropTypes.string,
-  protocols: PropTypes.shape({
-    didInvalidate: PropTypes.bool,
-    isFetching: PropTypes.bool,
-    items: PropTypes.arrayOf(
-      PropTypes.shape({
-      }),
-    ),
-    message: PropTypes.string,
-  }).isRequired,
-  removeField: PropTypes.func.isRequired,
-  selectedProtocol: PropTypes.number,
-  selectedProtocolIndex: PropTypes.number,
-  selectedTemplate: PropTypes.number,
   templateChange: PropTypes.func.isRequired,
-  templatePopover: PropTypes.bool.isRequired,
+  templateName: PropTypes.string,
   templates: PropTypes.shape({
     didInvalidate: PropTypes.bool,
     isFetching: PropTypes.bool,
@@ -742,7 +637,10 @@ ProtocolContent.propTypes = {
     ),
     message: PropTypes.string,
   }).isRequired,
-  updateProtocol: PropTypes.func.isRequired,
+  removeField: PropTypes.func.isRequired,
+  selectedTemplate: PropTypes.number,
+  selectedTemplateIndex: PropTypes.number,
+  updateTemplate: PropTypes.func.isRequired,
 };
 
-export default muiThemeable()(ProtocolContent);
+export default muiThemeable()(TemplateContent);

@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 
 import DefaultProps from '../../../../types/default-props';
-import ProtocolContent from './protocol-content';
+import TemplateContent from './template-content';
 import { getData } from '../../../../state/get/data-actions';
 import { resetPost, submitPost } from '../../../../state/post/actions';
 import { resetPut, submitPut } from '../../../../state/put/actions';
@@ -11,49 +11,45 @@ import { resetDelete, submitDelete } from '../../../../state/delete/actions';
 import { userProp } from '../../../../types/index';
 
 const defaultErrors = {
-  protocolName: '',
+  templateName: '',
 };
 
 const defaultState = {
-  anchorEl: {},
   dialogBoolean: false,
   display: false,
   edit: false,
   editFieldName: '',
-  editProtocol: {
+  editTemplate: {
     _id: '',
     creationDate: '',
     creatorEmail: '',
     creatorName: '',
     name: '',
     subSections: [],
-    target: 'protocol',
+    target: 'template',
   },
   errors: defaultErrors,
   fields: [],
   fieldError: '',
   fieldName: '',
   new: false,
-  protocolName: '',
-  selectedProtocol: null,
-  selectedProtocolIndex: null,
+  templateName: '',
   selectedTemplate: null,
-  templatePopover: false,
+  selectedTemplateIndex: null,
 };
 
-class ProtocolContentContainer extends React.Component {
+class TemplateContentContainer extends React.Component {
   constructor(props) {
     super(props);
     this.state = JSON.parse(JSON.stringify(defaultState));
   }
   componentWillMount = () => {
-    this.props.protocolGet();
     this.props.templateGet();
   }
   componentWillReceiveProps = (nextProps) => {
-    const { deleteState, postState, protocols, putState } = nextProps;
+    const { deleteState, postState, templates, putState } = nextProps;
     let newState = {};
-    // on a succesful creation, set the selected protocol to the last array item
+    // on a succseful creation, set the selected template to the last array item
     if (
       postState.message &&
       !postState.didSubmitFail
@@ -64,12 +60,10 @@ class ProtocolContentContainer extends React.Component {
         {
           display: true,
           edit: false,
-          fields: [],
           new: false,
-          protocolName: '',
-          selectedProtocol: protocols.items[protocols.items.length - 1]._id,
-          selectedProtocolIndex: protocols.items.length - 1,
-          selectedTemplate: null,
+          templateName: '',
+          selectedTemplate: templates.items[templates.items.length - 1]._id,
+          selectedTemplateIndex: templates.items.length - 1,
         },
       );
     }
@@ -84,9 +78,8 @@ class ProtocolContentContainer extends React.Component {
         newState,
         {
           display: false,
-          selectedProtocol: null,
-          selectedProtocolIndex: null,
           selectedTemplate: null,
+          selectedTemplateIndex: null,
         },
       );
     }
@@ -138,7 +131,7 @@ class ProtocolContentContainer extends React.Component {
       // make sure fieldName doesn't exist
       let alreadyExists = fieldName === 'name';
       let newState;
-      prevState.editProtocol.subSections.forEach((field) => {
+      prevState.editTemplate.subSections.forEach((field) => {
         if (field.name === fieldName) {
           alreadyExists = true;
         }
@@ -148,15 +141,15 @@ class ProtocolContentContainer extends React.Component {
           editFieldError: `A field named ${fieldName} already exists`,
         };
       } else if (fieldName) {
-        const newEditProtocol = JSON.parse(JSON.stringify(prevState.editProtocol));
-        newEditProtocol.subSections.push({
+        const newEditTemplate = JSON.parse(JSON.stringify(prevState.editTemplate));
+        newEditTemplate.subSections.push({
           name: fieldName,
           content: '',
         });
         newState = {
           editFieldError: '',
           editFieldName: '',
-          editProtocol: newEditProtocol,
+          editTemplate: newEditTemplate,
         };
       }
       return newState;
@@ -170,14 +163,14 @@ class ProtocolContentContainer extends React.Component {
     this.setState({
       display: true,
       edit: false,
-      editProtocol: {
+      editTemplate: {
         _id: '',
         creationDate: '',
         creatorEmail: '',
         creatorName: '',
         name: '',
         subSections: [],
-        target: 'protocol',
+        target: 'template',
       },
       new: false,
     });
@@ -187,7 +180,7 @@ class ProtocolContentContainer extends React.Component {
       return {
         display: false,
         edit: true,
-        editProtocol: props.protocols.items[this.state.selectedProtocolIndex],
+        editTemplate: props.templates.items[this.state.selectedTemplateIndex],
         new: false,
       };
     });
@@ -198,40 +191,33 @@ class ProtocolContentContainer extends React.Component {
       display: false,
       edit: false,
       new: true,
-      selectedProtocol: null,
-      selectedProtocolIndex: null,
       selectedTemplate: null,
+      selectedTemplateIndex: null,
     });
   }
-  closeTemplatePopover = () => {
-    this.setState({
-      anchorEl: {},
-      templatePopover: false,
-    });
-  }
-  createProtocol = () => {
-    if (!this.state.protocolName) {
+  createTemplate = () => {
+    if (!this.state.templateName) {
       this.setState((prevState) => {
         const newErrors = Object.assign({}, prevState.errors);
-        newErrors.protocolName = 'The protocol must be given a name';
+        newErrors.templateName = 'The template must be given a name';
         return {
           errors: newErrors,
         };
       });
     } else {
-      const protocolObj = {
+      const templateObj = {
         creatorEmail: this.props.user.email,
         creatorName: this.props.user.name,
         lab: this.props.user.lab,
-        name: this.state.protocolName,
+        name: this.state.templateName,
         subSections: JSON.parse(JSON.stringify(this.state.fields)),
-        target: 'protocol',
+        target: 'template',
       };
       this.resetMessages();
-      this.props.createProtocol(protocolObj);
+      this.props.createTemplate(templateObj);
     }
   }
-  deleteProtocol = (_id) => {
+  deleteTemplate = (_id) => {
     this.dialogClose();
     this.resetMessages();
     this.props.delete(_id);
@@ -248,26 +234,26 @@ class ProtocolContentContainer extends React.Component {
   }
   editChangeField = (field, value, index = false) => {
     this.setState((prevState) => {
-      const newEditProtocol = JSON.parse(JSON.stringify(prevState.editProtocol));
+      const newEditTemplate = JSON.parse(JSON.stringify(prevState.editTemplate));
       if (!Number.isInteger(index)) {
-        newEditProtocol[field] = value;
+        newEditTemplate[field] = value;
       } else {
-        newEditProtocol.subSections[index] = {
-          name: newEditProtocol.subSections[index].name,
+        newEditTemplate.subSections[index] = {
+          name: newEditTemplate.subSections[index].name,
           content: value,
         };
       }
       return {
-        editProtocol: newEditProtocol,
+        editTemplate: newEditTemplate,
       };
     });
   }
   editRemoveField = (index) => {
     this.setState((prevState) => {
-      const newEditProtocol = JSON.parse(JSON.stringify(prevState.editProtocol));
-      newEditProtocol.subSections.splice(index, 1);
+      const newEditTemplate = JSON.parse(JSON.stringify(prevState.editTemplate));
+      newEditTemplate.subSections.splice(index, 1);
       return {
-        editProtocol: newEditProtocol,
+        editTemplate: newEditTemplate,
       };
     });
   }
@@ -303,22 +289,16 @@ class ProtocolContentContainer extends React.Component {
       };
     });
   }
-  openTemplatePopover = (target) => {
-    this.setState({
-      anchorEl: target,
-      templatePopover: true,
-    });
-  }
-  protocolChange = (value) => {
+  templateChange = (value) => {
     this.resetMessages();
     this.setState((prevState, props) => {
       return {
         display: true,
         edit: false,
         new: false,
-        selectedProtocol: value,
-        selectedProtocolIndex: props.protocols.items.findIndex((protocol) => {
-          return protocol._id === value;
+        selectedTemplate: value,
+        selectedTemplateIndex: props.templates.items.findIndex((template) => {
+          return template._id === value;
         }),
       };
     });
@@ -334,49 +314,35 @@ class ProtocolContentContainer extends React.Component {
   }
   resetMessages = () => {
     if (this.props.deleteState.message) {
-      this.props.resetDelete('protocol');
+      this.props.resetDelete('template');
     }
     if (this.props.postState.message) {
-      this.props.resetPost('protocol');
+      this.props.resetPost('template');
     }
     if (this.props.putState.message) {
-      this.props.resetPut('protocol');
+      this.props.resetPut('template');
     }
   }
-  templateChange = (_id) => {
-    const templateID = this.props.templates.items.findIndex((template) => {
-      return template._id === _id;
-    });
-    this.resetMessages();
-    this.setState({
-      protocolName: this.props.templates.items[templateID].name,
-      fields: JSON.parse(JSON.stringify(this.props.templates.items[templateID].subSections)),
-      selectedTemplate: _id,
-      templatePopover: false,
-    });
-  }
-  updateProtocol = () => {
+  updateTemplate = () => {
     this.resetMessages();
     this.props.update(
-      this.state.editProtocol._id,
-      this.state.editProtocol
+      this.state.editTemplate._id,
+      this.state.editTemplate
     );
   }
   render() {
     return (
-      <ProtocolContent
+      <TemplateContent
         addField={ this.addField }
         addFieldEdit={ this.addFieldEdit }
-        anchorEl={ this.state.anchorEl }
         back={ this.props.cancelMenuAction }
         cancel={ this.cancel }
         cancelEdit={ this.cancelEdit }
         changeEdit={ this.changeEdit }
         changeNew={ this.changeNew }
-        closeTemplatePopover={ this.closeTemplatePopover }
-        createProtocol={ this.createProtocol }
+        createTemplate={ this.createTemplate }
         deleteMessages={ this.props.deleteState }
-        deleteProtocol={ this.deleteProtocol }
+        deleteTemplate={ this.deleteTemplate }
         dialog={ {
           bool: this.state.dialogBoolean,
           close: this.dialogClose,
@@ -389,7 +355,7 @@ class ProtocolContentContainer extends React.Component {
         editFieldError={ this.state.editFieldError }
         editFieldName={ this.state.editFieldName }
         editMessages={ this.props.putState }
-        editProtocol={ this.state.editProtocol }
+        editTemplate={ this.state.editTemplate }
         editRemoveField={ this.editRemoveField }
         errors={ this.state.errors }
         fields={ this.state.fields }
@@ -399,31 +365,26 @@ class ProtocolContentContainer extends React.Component {
         inputChangeEdit={ this.inputChangeEdit }
         inputChangeSubField={ this.inputChangeSubField }
         new={ this.state.new }
-        openTemplatePopover={ this.openTemplatePopover }
         postState={ this.props.postState }
-        protocolChange={ this.protocolChange }
-        protocolName={ this.state.protocolName }
-        protocols={ this.props.protocols }
-        removeField={ this.removeField }
-        selectedProtocol={ this.state.selectedProtocol }
-        selectedProtocolIndex={ this.state.selectedProtocolIndex }
-        selectedTemplate={ this.state.selectedTemplate }
         templateChange={ this.templateChange }
-        templatePopover={ this.state.templatePopover }
+        templateName={ this.state.templateName }
         templates={ this.props.templates }
-        updateProtocol={ this.updateProtocol }
+        removeField={ this.removeField }
+        selectedTemplate={ this.state.selectedTemplate }
+        selectedTemplateIndex={ this.state.selectedTemplateIndex }
+        updateTemplate={ this.updateTemplate }
       />
     );
   }
 }
 
-ProtocolContentContainer.defaultProps = {
+TemplateContentContainer.defaultProps = {
   user: DefaultProps.user,
 };
 
-ProtocolContentContainer.propTypes = {
+TemplateContentContainer.propTypes = {
   cancelMenuAction: PropTypes.func.isRequired,
-  createProtocol: PropTypes.func.isRequired,
+  createTemplate: PropTypes.func.isRequired,
   delete: PropTypes.func.isRequired,
   deleteState: PropTypes.shape({
     _id: PropTypes.number,
@@ -437,8 +398,8 @@ ProtocolContentContainer.propTypes = {
     isSubmitted: PropTypes.bool,
     message: PropTypes.string,
   }).isRequired,
-  protocolGet: PropTypes.func.isRequired,
-  protocols: PropTypes.shape({
+  templateGet: PropTypes.func.isRequired,
+  templates: PropTypes.shape({
     didInvalidate: PropTypes.bool,
     isFetching: PropTypes.bool,
     items: PropTypes.arrayOf(
@@ -456,57 +417,41 @@ ProtocolContentContainer.propTypes = {
   resetDelete: PropTypes.func.isRequired,
   resetPost: PropTypes.func.isRequired,
   resetPut: PropTypes.func.isRequired,
-  templateGet: PropTypes.func.isRequired,
-  templates: PropTypes.shape({
-    didInvalidate: PropTypes.bool,
-    isFetching: PropTypes.bool,
-    items: PropTypes.arrayOf(
-      PropTypes.shape({
-        name: PropTypes.string,
-        subSections: PropTypes.array,
-      }),
-    ),
-    message: PropTypes.string,
-  }).isRequired,
   update: PropTypes.func.isRequired,
   user: userProp,
 };
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    createProtocol: (obj) => {
-      dispatch(submitPost('protocol', obj, false));
+    createTemplate: (obj) => {
+      dispatch(submitPost('template', obj, false));
     },
     delete: (_id) => {
-      dispatch(submitDelete(_id, 'protocol', {}));
-    },
-    protocolGet: () => {
-      dispatch(getData('protocol', {}, null));
-    },
-    resetPut: () => {
-      dispatch(resetPut('protocol'));
-    },
-    resetDelete: () => {
-      dispatch(resetDelete('protocol'));
-    },
-    resetPost: () => {
-      dispatch(resetPost('protocol'));
+      dispatch(submitDelete(_id, 'template', {}));
     },
     templateGet: () => {
       dispatch(getData('template', {}, null));
     },
+    resetPut: () => {
+      dispatch(resetPut('template'));
+    },
+    resetDelete: () => {
+      dispatch(resetDelete('template'));
+    },
+    resetPost: () => {
+      dispatch(resetPost('template'));
+    },
     update: (_id, obj) => {
-      dispatch(submitPut(_id, obj, 'protocol'));
+      dispatch(submitPut(_id, obj, 'template'));
     },
   };
 };
 
 const mapStateToProps = (state) => {
   return {
-    deleteState: state.delete.protocol,
-    postState: state.post.protocol,
-    putState: state.put.protocol,
-    protocols: state.available.protocol,
+    deleteState: state.delete.template,
+    postState: state.post.template,
+    putState: state.put.template,
     templates: state.available.template,
     user: state.user,
   };
@@ -515,6 +460,6 @@ const mapStateToProps = (state) => {
 const Container = connect(
   mapStateToProps,
   mapDispatchToProps,
-)(ProtocolContentContainer);
+)(TemplateContentContainer);
 
 export default Container;

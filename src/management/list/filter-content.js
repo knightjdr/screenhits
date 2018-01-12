@@ -8,15 +8,15 @@ const Filters = {
     },
     {
       expectedName: 'name',
-      hint: 'Project name',
+      hint: 'Experiment name',
       type: 'text',
       value: 'name',
     },
     {
-      expectedName: 'concentration',
-      hint: 'Concentration',
+      expectedName: 'type',
+      hint: 'Screen type',
       type: 'text',
-      value: 'concentration',
+      value: 'type',
     },
     {
       expectedName: 'timepoint',
@@ -76,9 +76,15 @@ const Filters = {
     },
     {
       expectedName: 'name',
-      hint: 'Project name',
+      hint: 'Sample name',
       type: 'text',
       value: 'name',
+    },
+    {
+      expectedName: 'type',
+      hint: 'Screen type',
+      type: 'text',
+      value: 'type',
     },
     {
       expectedName: 'replicate',
@@ -122,7 +128,7 @@ const Filters = {
     },
     {
       expectedName: 'name',
-      hint: 'Project name',
+      hint: 'Screen name',
       type: 'text',
       value: 'name',
     },

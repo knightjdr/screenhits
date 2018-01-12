@@ -36,6 +36,12 @@ const Put = (state = {
     _id: null,
     isPut: false,
   },
+  template: {
+    didPutFail: false,
+    message: null,
+    _id: null,
+    isPut: false,
+  },
 }, action) => {
   let modifiedFields = {};
   const updateObject = {};

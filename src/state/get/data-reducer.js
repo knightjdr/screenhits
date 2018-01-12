@@ -36,6 +36,12 @@ const Available = (state = {
     items: [],
     message: null,
   },
+  template: {
+    didInvalidate: false,
+    isFetching: false,
+    items: [],
+    message: null,
+  },
 }, action) => {
   let modifiedFields = {};
   const updateObject = {};

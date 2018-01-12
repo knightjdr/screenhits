@@ -249,6 +249,40 @@ const validate = {
         resolve(validateObj);
       });
     },
+    template: (obj, dateType, user) => {
+      return new Promise((resolve, reject) => {
+        const validateObj = JSON.parse(JSON.stringify(obj));
+        if (
+          !validateObj.creatorEmail ||
+          !validators.email(validateObj.creatorEmail) ||
+          validateObj.creatorEmail !== user.email
+        ) {
+          reject('invalid email');
+        }
+        if (
+          !validateObj.creatorName ||
+          validateObj.creatorName !== user.name
+        ) {
+          reject('missing user name');
+        }
+        if (
+          !validateObj.lab ||
+          validateObj.lab !== user.lab
+        ) {
+          reject('missing lab name');
+        }
+        if (validateObj.target) {
+          delete validateObj.target;
+        }
+        // sort subsections by name
+        if (validateObj.subSections.length > 0) {
+          validateObj.subSections = sort.arrayOfObjectByKey(validateObj.subSections, 'name');
+        }
+        // add date
+        validateObj[dateType] = moment().format('MMMM Do YYYY, h:mm a');
+        resolve(validateObj);
+      });
+    },
   },
   update: {
     experiment: (obj, dateType) => {
@@ -447,6 +481,33 @@ const validate = {
           });
         }
         delete validateObj.drugNames;
+        validateObj[dateType] = moment().format('MMMM Do YYYY, h:mm a');
+        resolve(validateObj);
+      });
+    },
+    template: (obj, dateType) => {
+      return new Promise((resolve, reject) => {
+        const validateObj = obj;
+        if (
+          !validateObj.creatorEmail ||
+          !validators.email(validateObj.creatorEmail)
+        ) {
+          reject('invalid email');
+        }
+        if (!validateObj.creatorName) {
+          reject('missing user name');
+        }
+        if (!validateObj.lab) {
+          reject('missing lab name');
+        }
+        if (validateObj.target) {
+          delete validateObj.target;
+        }
+        // sort subsections by name
+        if (validateObj.subSections.length > 0) {
+          validateObj.subSections = sort.arrayOfObjectByKey(validateObj.subSections, 'name');
+        }
+        // add date
         validateObj[dateType] = moment().format('MMMM Do YYYY, h:mm a');
         resolve(validateObj);
       });

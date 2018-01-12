@@ -36,6 +36,12 @@ const Post = (state = {
     _id: null,
     isSubmitted: false,
   },
+  template: {
+    didSubmitFail: false,
+    message: null,
+    _id: null,
+    isSubmitted: false,
+  },
 }, action) => {
   let modifiedFields = {};
   const updateObject = {};

@@ -15,6 +15,7 @@ const resetBooleans = {
   edit: false,
   manage: false,
   protocol: false,
+  protocolTemplate: false,
 };
 
 class ManagementContentContainer extends React.Component {
@@ -67,6 +68,7 @@ class ManagementContentContainer extends React.Component {
         edit: false,
         manage: false,
         protocol: false,
+        protocolTemplate: false,
       },
     });
   }
@@ -78,6 +80,7 @@ class ManagementContentContainer extends React.Component {
         edit: true,
         manage: false,
         protocol: false,
+        protocolTemplate: false,
       },
     });
   }
@@ -88,6 +91,7 @@ class ManagementContentContainer extends React.Component {
         edit: false,
         manage: true,
         protocol: false,
+        protocolTemplate: false,
       },
     });
   }
@@ -98,6 +102,18 @@ class ManagementContentContainer extends React.Component {
         edit: false,
         manage: false,
         protocol: true,
+        protocolTemplate: false,
+      },
+    });
+  }
+  protocolTemplateMenuAction = () => {
+    this.setState({
+      menuBooleans: {
+        create: false,
+        edit: false,
+        manage: false,
+        protocol: false,
+        protocolTemplate: true,
       },
     });
   }
@@ -153,6 +169,7 @@ class ManagementContentContainer extends React.Component {
             edit: this.editMenuAction,
             manage: this.manageMenuAction,
             protocol: this.protocolMenuAction,
+            protocolTemplate: this.protocolTemplateMenuAction,
             update: this.updateMenuAction,
           } }
           selected={ this.props.selected[this.props.activeLevel] }

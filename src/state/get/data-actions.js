@@ -42,6 +42,13 @@ export const pushData = (obj, target) => {
   };
 };
 
+const levels = [
+  'protcol',
+  'screen',
+  'experiment',
+  'sample',
+];
+
 // thunks
 const getData = (target, filters, selected) => {
   return (dispatch, getState) => {
@@ -70,7 +77,7 @@ const getData = (target, filters, selected) => {
         // See management-container.js for implementation
         if (
           selected &&
-          target !== 'protocol'
+          levels.includes(target)
         ) {
           const index = selected === -1 ? null : selected;
           dispatch(setIndex(target, index));

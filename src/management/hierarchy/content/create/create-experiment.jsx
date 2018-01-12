@@ -61,7 +61,7 @@ class CreateExperiment extends React.Component {
         >
           <TextField
             errorText={ this.props.errors.name }
-            floatingLabelText="Experiment name (short)"
+            floatingLabelText="Experiment name"
             fullWidth={ true }
             multiLine={ true }
             onChange={ this.inputChangeName }

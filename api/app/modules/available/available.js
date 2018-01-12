@@ -162,6 +162,8 @@ const available = {
         return { _id: { $in: projects } };
       case 'protocol':
         return { creatorEmail: user.email };
+      case 'template':
+        return { lab: user.lab };
       default:
         return {
           group: projects.includes(filters.project) ? filters : {},
@@ -219,7 +221,7 @@ const available = {
     });
     return drugs;
   },
-  // general get method for retrieving protocols, screen, etc information
+  // general get method for retrieving projects, screen, etc information
   getGeneral: (target, queryObj, returnObj) => {
     return query.get(target, queryObj, returnObj);
   },

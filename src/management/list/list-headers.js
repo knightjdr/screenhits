@@ -26,11 +26,17 @@ const listHeaders = {
       type: 'parents',
     },
     {
+      name: 'Screen type',
+      sort: true,
+      type: 'type',
+    },
+    {
       name: 'Creator',
       sort: true,
       type: 'creatorName',
     },
     {
+      kind: 'date',
       name: 'Created',
       sort: true,
       type: 'creationDate',
@@ -58,6 +64,7 @@ const listHeaders = {
       type: 'creatorName',
     },
     {
+      kind: 'date',
       name: 'Created',
       sort: true,
       type: 'creationDate',
@@ -100,11 +107,17 @@ const listHeaders = {
       type: 'parents',
     },
     {
+      name: 'Screen type',
+      sort: true,
+      type: 'type',
+    },
+    {
       name: 'Creator',
       sort: true,
       type: 'creatorName',
     },
     {
+      kind: 'date',
       name: 'Created',
       sort: true,
       type: 'creationDate',
