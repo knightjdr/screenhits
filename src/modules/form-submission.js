@@ -5,6 +5,7 @@ const FormatSubmission = {
     const submitObj = {};
     submitObj.creatorEmail = user.email;
     submitObj.creatorName = user.name;
+    submitObj.lab = user.lab ? user.lab : null;
     submitObj.name = form.name;
     submitObj.project = selected.project;
     submitObj.protocols = form.protocols;
@@ -44,6 +45,7 @@ const FormatSubmission = {
     submitObj.append('creatorEmail', user.email);
     submitObj.append('creatorName', user.name);
     submitObj.append('experiment', selected.experiment);
+    submitObj.append('creatorName', user.lab ? user.lab : null);
     submitObj.append('name', form.name);
     submitObj.append('project', selected.project);
     submitObj.append('screen', selected.screen);
@@ -78,6 +80,7 @@ const FormatSubmission = {
     submitObj.cellID = form.cellID;
     submitObj.cellMods = form.cellMods;
     submitObj.drugs = form.drugs;
+    submitObj.lab = user.lab ? user.lab : null;
     submitObj.name = form.name;
     submitObj.other = {};
     submitObj.project = selected.project;

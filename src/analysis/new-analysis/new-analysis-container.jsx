@@ -40,6 +40,7 @@ const emptyRect = {
 const omitFromTooltip = [
   '_id',
   'name',
+  'properties',
 ];
 
 class NewAnalysisContainer extends React.Component {
@@ -280,11 +281,16 @@ class NewAnalysisContainer extends React.Component {
   checkFilters = (items, filters) => {
     const newItems = [];
     const nameRegex = new RegExp(filters.name, 'i');
+    const labRegex = new RegExp(filters.lab, 'i');
     const userRegex = new RegExp(filters.user, 'i');
     items.forEach((item) => {
       let addItem = true;
       // filter by user name
       if (!userRegex.test(item.creatorName)) {
+        addItem = false;
+      }
+      // filter by lab
+      if (!labRegex.test(item.lab)) {
         addItem = false;
       }
       // filter by sample name
@@ -325,6 +331,7 @@ class NewAnalysisContainer extends React.Component {
         max: dateRange.end,
         min: dateRange.start,
       },
+      lab: '',
       name: '',
       user: this.props.user.name,
     };
@@ -380,6 +387,19 @@ class NewAnalysisContainer extends React.Component {
       return {
         dateRange: newDateRange,
         filters: newFilters,
+      };
+    });
+  }
+  filterLab = (value) => {
+    this.setState(({ filters }) => {
+      return {
+        filters: Object.assign(
+          {},
+          filters,
+          {
+            lab: value,
+          },
+        ),
       };
     });
   }
@@ -811,10 +831,19 @@ class NewAnalysisContainer extends React.Component {
       const otherFields = [];
       Object.keys(item).sort().forEach((field) => {
         if (
+          item[field] &&
           omitFromTooltip.indexOf(field) < 0 &&
           typeof item[field] !== 'object'
         ) {
           const str = `${uppercaseFirst(convertCamel.toLower(field))}: ${item[field]}`;
+          otherFields.push(str);
+        } else if (
+          item[field] &&
+          omitFromTooltip.indexOf(field) < 0 &&
+          Array.isArray(item[field])
+        ) {
+          console.log(field);
+          const str = `${uppercaseFirst(convertCamel.toLower(field))}: ${item[field].join(', ')}`;
           otherFields.push(str);
         }
       });
@@ -1041,6 +1070,7 @@ class NewAnalysisContainer extends React.Component {
         fetchStatus={ this.state.fetchStatus }
         filterFuncs={ {
           fromDate: this.filterFromDate,
+          lab: this.filterLab,
           name: this.filterName,
           toDate: this.filterToDate,
           user: this.filterUser,

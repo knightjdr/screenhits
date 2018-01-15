@@ -275,9 +275,12 @@ const Create = {
   template: (req, user) => {
     return new Promise((resolve) => {
       let objCreate = {};
-      validate.create.template(req.body, 'creationDate', user)
-        .then((newObj) => {
-          objCreate = newObj;
+      Promise.all([
+        validate.create.template(req.body, 'creationDate', user),
+        Permission.isAdmin(user),
+      ])
+        .then((values) => {
+          objCreate = values[0];
           return counter.get('template');
         })
         .then((sequence) => {

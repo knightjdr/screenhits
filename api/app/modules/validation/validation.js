@@ -22,6 +22,12 @@ const validate = {
         ) {
           reject('missing user name');
         }
+        if (
+          !validateObj.lab ||
+          validateObj.lab !== user.lab
+        ) {
+          reject('missing lab name');
+        }
         if (!validateObj.name) {
           reject('missing experiment name');
         }
@@ -135,6 +141,12 @@ const validate = {
         ) {
           reject('missing user name');
         }
+        if (
+          !validateObj.lab ||
+          validateObj.lab !== user.lab
+        ) {
+          reject('missing lab name');
+        }
         if (!validateObj.name) {
           reject('missing sample name');
         }
@@ -209,6 +221,12 @@ const validate = {
           validateObj.creatorName !== user.name
         ) {
           reject('missing user name');
+        }
+        if (
+          !validateObj.lab ||
+          validateObj.lab !== user.lab
+        ) {
+          reject('missing lab name');
         }
         if (!validateObj.cell) {
           reject('missing cell type');

@@ -339,6 +339,14 @@ class SelectSamples extends React.Component {
                 value={ this.props.filters.user }
               />
               <TextField
+                hintText="Lab"
+                floatingLabelText="Lab"
+                onChange={ (e) => { this.props.filterFuncs.lab(e.target.value); } }
+                style={ analysisStyle.filterField }
+                type="text"
+                value={ this.props.filters.lab }
+              />
+              <TextField
                 hintText={ `${uppercaseFirst(this.props.selection.level)} name` }
                 floatingLabelText={ `${uppercaseFirst(this.props.selection.level)} name contains` }
                 onChange={ (e) => { this.props.filterFuncs.name(e.target.value); } }
@@ -471,6 +479,7 @@ SelectSamples.propTypes = {
   }).isRequired,
   filterFuncs: PropTypes.shape({
     fromDate: PropTypes.func,
+    lab: PropTypes.func,
     name: PropTypes.func,
     toDate: PropTypes.func,
     user: PropTypes.func,
@@ -480,6 +489,7 @@ SelectSamples.propTypes = {
       max: PropTypes.instanceOf(Date),
       min: PropTypes.instanceOf(Date),
     }),
+    lab: PropTypes.string,
     name: PropTypes.string,
     user: PropTypes.string,
   }).isRequired,

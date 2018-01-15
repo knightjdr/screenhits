@@ -8,6 +8,7 @@ import getAnalysisTasks from '../../state/get/analysis-task-actions';
 
 const defaultFilters = {
   analysisType: null,
+  lab: '',
   screenType: null,
 };
 
@@ -100,8 +101,14 @@ class ArchiveContainer extends React.Component {
   }
   filterTasks = (tasks, filters) => {
     return tasks.filter((task) => {
+      const labRE = new RegExp(filters.lab);
       const userRE = new RegExp(filters.user);
       if (
+        filters.lab &&
+        !labRE.test(task.lab)
+      ) {
+        return false;
+      } if (
         filters.user &&
         !userRE.test(task.user)
       ) {
@@ -118,6 +125,20 @@ class ArchiveContainer extends React.Component {
         return false;
       }
       return true;
+    });
+  }
+  filterLab = (e) => {
+    const lab = e.target.value;
+    this.setState(({ filters }) => {
+      return {
+        filters: Object.assign(
+          {},
+          filters,
+          {
+            lab,
+          },
+        ),
+      };
     });
   }
   filterUser = (e) => {
@@ -144,6 +165,7 @@ class ArchiveContainer extends React.Component {
         clearFilters={ this.clearFilters }
         filterFuncs={ {
           analysisType: this.filterAnalysisType,
+          lab: this.filterLab,
           screenType: this.filterScreenType,
           user: this.filterUser,
         } }

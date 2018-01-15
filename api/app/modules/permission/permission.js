@@ -159,7 +159,7 @@ const Permission = {
           resolve(true);
         }
 
-        query.get('template', { _id }, { creatorEmail: 1 }, 'findOne')
+        query.get('template', { _id }, { creatorEmail: 1, lab: 1 }, 'findOne')
           .then((template) => {
             return Permission.checkEditTemplate(template, user) ?
               Promise.resolve()
@@ -303,8 +303,6 @@ const Permission = {
       user.lab === template.lab
     ) {
       return true;
-    } else if (user.email === template.creatorEmail) {
-      return true;
     }
     return false;
   },
@@ -403,6 +401,16 @@ const Permission = {
       return true;
     }
     return false;
+  },
+  isAdmin: (user) => {
+    return new Promise((resolve, reject) => {
+      if (user.privilege === 'siteAdmin') {
+        resolve();
+      } else if (user.privilege === 'labAdmin') {
+        resolve();
+      }
+      reject('User is not an admin');
+    });
   },
   isOwner: (_id, user) => {
     return new Promise((resolve, reject) => {

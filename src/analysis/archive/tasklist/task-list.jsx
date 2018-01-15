@@ -9,6 +9,7 @@ import FloatingActionButton from 'material-ui/FloatingActionButton';
 import FontAwesome from 'react-fontawesome';
 import IconButton from 'material-ui/IconButton';
 import MenuItem from 'material-ui/MenuItem';
+import Moment from 'moment';
 import muiThemeable from 'material-ui/styles/muiThemeable';
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -292,7 +293,11 @@ class TaskList extends React.Component {
       const columns = headers.map((header) => {
         return {
           type: header.type,
-          value: task[header.type],
+          value: header.type === 'date' ?
+            Moment(task[header.type], 'MMMM Do YYYY, h:mm a').format('L')
+            :
+            task[header.type]
+          ,
         };
       });
       // add options fields: Log, Task parameters, Delete, Set official
@@ -441,6 +446,14 @@ class TaskList extends React.Component {
           style={ ArchiveStyle.filterField }
           type="text"
           value={ this.props.filters.user }
+        />
+        <TextField
+          hintText="Lab"
+          floatingLabelText="Lab"
+          onChange={ this.props.filterFuncs.lab }
+          style={ ArchiveStyle.filterField }
+          type="text"
+          value={ this.props.filters.lab }
         />
         <SelectField
           floatingLabelText="Screen type"
@@ -671,11 +684,13 @@ TaskList.propTypes = {
   }).isRequired,
   filterFuncs: PropTypes.shape({
     analysisType: PropTypes.func,
+    lab: PropTypes.func,
     screenType: PropTypes.func,
     user: PropTypes.func,
   }).isRequired,
   filters: PropTypes.shape({
     analysisType: PropTypes.string,
+    lab: PropTypes.lab,
     screenType: PropTypes.string,
     user: PropTypes.string,
   }).isRequired,

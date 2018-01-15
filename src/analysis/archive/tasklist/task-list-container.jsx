@@ -41,6 +41,16 @@ const tableHeader = [
     type: 'name',
   },
   {
+    name: 'Screen type',
+    sort: true,
+    type: 'screenType',
+  },
+  {
+    name: 'Analysis type',
+    sort: true,
+    type: 'analysisType',
+  },
+  {
     name: 'User',
     sort: true,
     type: 'user',
@@ -481,11 +491,13 @@ TaskListContainer.propTypes = {
   filterFuncs: PropTypes.shape({
     analysisType: PropTypes.func,
     screenType: PropTypes.func,
+    lab: PropTypes.func,
     user: PropTypes.func,
   }).isRequired,
   filters: PropTypes.shape({
     analysisType: PropTypes.string,
     screenType: PropTypes.string,
+    lab: PropTypes.string,
     user: PropTypes.string,
   }).isRequired,
   tasks: PropTypes.arrayOf(
