@@ -1,7 +1,8 @@
 const Fields = {
   experiment: {
     concentration: {
-      help: 'Specificy the drug or treatment concentration used in the experiment, if any.',
+      help: `Specificy the drug or treatment concentration used in the experiment, if any.
+        This field is optional.`,
     },
     protocols: {
       help: `Select all protocols associated with this experiment. Use the menu action bottom
@@ -9,7 +10,7 @@ const Fields = {
       visible here.`,
     },
     timepoint: {
-      help: 'Specificy the time point of the experiment, if any.',
+      help: 'Specificy the time point of the experiment, if any. This field is optional.',
     },
   },
   project: {
@@ -17,7 +18,17 @@ const Fields = {
   sample: {
     concentration: {
       help: `Specificy the drug or treatment concentration used on the sample if
-      the experiment was performed at a fixed timepoint.`,
+      the experiment was performed at a fixed timepoint. This field is optional.`,
+    },
+    digitalZoom: {
+      help: `Specify any digital zooming done via the microscope or post image
+        acquisition in Photoshop, etc. This field is optional.`,
+    },
+    microscope: {
+      help: 'Indicate the micoscrope used for acquiring the image. This field is optional.',
+    },
+    objective: {
+      help: 'Indicate the objective used for acquiring the image. This field is optional.',
     },
     replicate: {
       help: `Use this field to indicate the replicate number and type (biological
@@ -25,7 +36,7 @@ const Fields = {
     },
     timepoint: {
       help: `Specificy the time point of the sample if the experiment was performed
-      with a fixed drug concentration.`,
+      with a fixed drug concentration. This field is optional.`,
     },
   },
   screen: {
@@ -76,6 +87,7 @@ const Fields = {
     type: {
       values: [
         'CRISPR',
+        'Microscopy',
       ],
     },
   },

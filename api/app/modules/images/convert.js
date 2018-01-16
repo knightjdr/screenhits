@@ -3,27 +3,26 @@
 const Jimp = require('jimp');
 const sharp = require('sharp');
 
-const Convert = (image, type) => {
+const Convert = (image) => {
   return new Promise((resolve, reject) => {
-    if (type.mime === 'image/png') {
+    if (image.mimetype === 'image/png') {
       resolve(image);
     } else if (
-      type.mime === 'image/bmp' ||
-      type.mime === 'image/jpeg'
+      image.mimetype === 'image/bmp' ||
+      image.mimetype === 'image/jpeg'
     ) {
-      Jimp.read(image)
+      Jimp.read(image.data)
         .then((imageToConvert) => {
-          return imageToConvert.getBuffer('image/png');
-        })
-        .then((convertedImage) => {
-          resolve(convertedImage);
+          imageToConvert.getBuffer('image/png', (err, convertedImage) => {
+            resolve(convertedImage);
+          });
         })
         .catch((error) => {
           reject(`There was an error with Jimp converting the image: ${error}`);
         })
       ;
-    } else if (type.mime === 'image/tif') {
-      sharp(image)
+    } else if (image.mimetype === 'image/tiff') {
+      sharp(image.data)
         .png()
         .toBuffer()
         .then((convertedImage) => {

@@ -50,6 +50,55 @@ const validate = {
         resolve(validateObj);
       });
     },
+    microscopy: (obj, dateType, user) => {
+      return new Promise((resolve, reject) => {
+        const validateObj = JSON.parse(JSON.stringify(obj));
+        if (
+          !validateObj.creatorEmail ||
+          !validators.email(validateObj.creatorEmail) ||
+          validateObj.creatorEmail !== user.email
+        ) {
+          reject('invalid email');
+        }
+        if (
+          !validateObj.creatorName ||
+          validateObj.creatorName !== user.name
+        ) {
+          reject('missing user name');
+        }
+        if (
+          !validateObj.lab ||
+          validateObj.lab !== user.lab
+        ) {
+          reject('missing lab name');
+        }
+        if (!validateObj.name) {
+          reject('missing sample name');
+        }
+        if (!validateObj.project) {
+          reject('missing project');
+        }
+        if (!validateObj.screen) {
+          reject('missing screen');
+        }
+        if (!validateObj.experiment) {
+          reject('missing experiment');
+        }
+        validateObj.group = {
+          experiment: Number(validateObj.experiment),
+          project: Number(validateObj.project),
+          screen: Number(validateObj.screen),
+        };
+        delete validateObj.experiment;
+        delete validateObj.project;
+        delete validateObj.screen;
+        if (validateObj.target) {
+          delete validateObj.target;
+        }
+        validateObj[dateType] = moment().format('MMMM Do YYYY, h:mm a');
+        resolve(validateObj);
+      });
+    },
     project: (obj, dateType, user) => {
       return new Promise((resolve, reject) => {
         const validateObj = JSON.parse(JSON.stringify(obj));

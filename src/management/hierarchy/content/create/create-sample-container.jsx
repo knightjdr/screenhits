@@ -61,12 +61,12 @@ class CreateSampleContainer extends React.Component {
         FileTypes[screenType]
         :
         [],
-      formData: Object.assign({}, BlankState.sample.formData),
-      errors: Object.assign({}, BlankState.sample.errors),
+      formData: Object.assign({}, BlankState.sample.CRISPR.formData),
+      errors: Object.assign({}, BlankState.sample.CRISPR.errors),
       lines: Object.assign([], reset.lines),
       screenType,
       snackbar: Object.assign({}, reset.snackbar),
-      warning: BlankState.sample.warning,
+      warning: BlankState.sample.CRISPR.warning,
     };
   }
   componentWillReceiveProps = (nextProps) => {
@@ -360,10 +360,10 @@ class CreateSampleContainer extends React.Component {
           FileTypes[prevState.screenType]
           :
           [],
-        formData: Object.assign({}, BlankState.sample.formData),
-        errors: Object.assign({}, BlankState.sample.errors),
+        formData: Object.assign({}, BlankState.sample.CRISPR.formData),
+        errors: Object.assign({}, BlankState.sample.CRISPR.errors),
         lines: Object.assign([], reset.lines),
-        warning: BlankState.sample.warning,
+        warning: BlankState.sample.CRISPR.warning,
       };
     });
   }
@@ -397,7 +397,7 @@ class CreateSampleContainer extends React.Component {
     if (error) {
       this.setState({ errors, warning: true });
     } else {
-      const submitObj = FormSubmission.sample(
+      const submitObj = FormSubmission.sample.CRISPR(
         this.state.formData,
         this.state.file,
         this.props.user,

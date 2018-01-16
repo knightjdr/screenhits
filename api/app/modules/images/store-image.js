@@ -27,10 +27,10 @@
 const databases = require('../../connections/database');
 const Readable = require('stream').Readable;
 
-const storeImage = (fileName, image, metadata) => {
+const storeImage = (image, metadata = {}, fileName) => {
   return new Promise((resolve, reject) => {
     const imageOptions = {
-      filename: fileName,
+      filename: fileName || image.name,
       mode: 'w',
       content_type: 'image/png',
       root: 'imagefs',

@@ -27,18 +27,58 @@ const BlankState = {
     warning: false,
   },
   sample: {
-    formData: {
-      comment: '',
-      concentration: '',
-      fileType: '',
-      name: '',
-      replicate: '',
-      timepoint: '',
+    CRISPR: {
+      formData: {
+        comment: '',
+        concentration: '',
+        fileType: '',
+        name: '',
+        replicate: '',
+        timepoint: '',
+      },
+      errors: {
+        name: null,
+      },
+      warning: false,
     },
-    errors: {
-      name: null,
+    Microscopy: {
+      formData: {
+        channels: {
+          blue: {
+            marker: '',
+            antibody: '',
+            dilution: '',
+            wavelength: null,
+          },
+          green: {
+            marker: '',
+            antibody: '',
+            dilution: '',
+            wavelength: null,
+          },
+          red: {
+            marker: '',
+            antibody: '',
+            dilution: '',
+            wavelength: null,
+          },
+        },
+        comment: '',
+        concentration: '',
+        digitalZoom: '',
+        file: {},
+        microsope: '',
+        name: '',
+        objective: '',
+        replicate: '',
+        timepoint: '',
+      },
+      errors: {
+        name: null,
+        file: null,
+      },
+      warning: false,
     },
-    warning: false,
   },
   screen: {
     formData: {

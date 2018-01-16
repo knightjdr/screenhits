@@ -40,37 +40,76 @@ const FormatSubmission = {
     }
     return submitObj;
   },
-  sample: (form, file, user, selected, screenType, parser) => {
-    const submitObj = new FormData();
-    submitObj.append('creatorEmail', user.email);
-    submitObj.append('creatorName', user.name);
-    submitObj.append('experiment', selected.experiment);
-    submitObj.append('creatorName', user.lab ? user.lab : null);
-    submitObj.append('name', form.name);
-    submitObj.append('project', selected.project);
-    submitObj.append('screen', selected.screen);
-    submitObj.append('target', 'sample');
-    submitObj.append('type', screenType);
-    // optional fields
-    if (form.comment) {
-      submitObj.append('comment', form.comment);
-    }
-    if (form.concentration) {
-      submitObj.append('concentration', form.concentration);
-    }
-    if (form.fileType) {
-      submitObj.append('fileType', form.fileType);
-    }
-    if (form.replicate) {
-      submitObj.append('replicate', form.replicate);
-    }
-    if (form.timepoint) {
-      submitObj.append('timepoint', form.timepoint);
-    }
-    submitObj.append('file', file.file);
-    submitObj.append('header', JSON.stringify(file.header));
-    submitObj.append('parser', JSON.stringify(parser));
-    return submitObj;
+  sample: {
+    CRISPR: (form, file, user, selected, screenType, parser) => {
+      const submitObj = new FormData();
+      submitObj.append('creatorEmail', user.email);
+      submitObj.append('creatorName', user.name);
+      submitObj.append('experiment', selected.experiment);
+      submitObj.append('lab', user.lab ? user.lab : null);
+      submitObj.append('name', form.name);
+      submitObj.append('project', selected.project);
+      submitObj.append('screen', selected.screen);
+      submitObj.append('target', 'sample');
+      submitObj.append('type', screenType);
+      // optional fields
+      if (form.comment) {
+        submitObj.append('comment', form.comment);
+      }
+      if (form.concentration) {
+        submitObj.append('concentration', form.concentration);
+      }
+      if (form.fileType) {
+        submitObj.append('fileType', form.fileType);
+      }
+      if (form.replicate) {
+        submitObj.append('replicate', form.replicate);
+      }
+      if (form.timepoint) {
+        submitObj.append('timepoint', form.timepoint);
+      }
+      submitObj.append('file', file.file);
+      submitObj.append('header', JSON.stringify(file.header));
+      submitObj.append('parser', JSON.stringify(parser));
+      return submitObj;
+    },
+    Microscopy: (form, user, selected, screenType) => {
+      const submitObj = new FormData();
+      submitObj.append('channels', form.channels);
+      submitObj.append('creatorEmail', user.email);
+      submitObj.append('creatorName', user.name);
+      submitObj.append('experiment', selected.experiment);
+      submitObj.append('file', form.file);
+      submitObj.append('lab', user.lab ? user.lab : null);
+      submitObj.append('name', form.name);
+      submitObj.append('project', selected.project);
+      submitObj.append('screen', selected.screen);
+      submitObj.append('target', 'sample');
+      submitObj.append('type', screenType);
+      // optional fields
+      if (form.comment) {
+        submitObj.append('comment', form.comment);
+      }
+      if (form.concentration) {
+        submitObj.append('concentration', form.concentration);
+      }
+      if (form.replicate) {
+        submitObj.append('digitalZoom', form.digitalZoom);
+      }
+      if (form.replicate) {
+        submitObj.append('microsope', form.microsope);
+      }
+      if (form.replicate) {
+        submitObj.append('objective', form.objective);
+      }
+      if (form.replicate) {
+        submitObj.append('replicate', form.replicate);
+      }
+      if (form.timepoint) {
+        submitObj.append('timepoint', form.timepoint);
+      }
+      return submitObj;
+    },
   },
   screen: (form, user, selected) => {
     const submitObj = {};

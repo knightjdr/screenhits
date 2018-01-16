@@ -6,6 +6,7 @@ import { Scrollbars } from 'react-custom-scrollbars';
 
 import ActionButtons from '../../../../action-buttons/action-buttons-container';
 import CreateExperiment from './create-experiment';
+import CreateMicroscopySample from './create-microscopy-sample-container';
 import CreateProject from './create-project';
 import CreateSample from './create-sample-container';
 import CreateScreen from './create-screen';
@@ -59,8 +60,19 @@ class CreateContent extends React.Component {
               protocols={ this.props.protocols }
             />
           }
-          { this.props.activeLevel === 'sample' &&
+          {
+            this.props.activeLevel === 'sample' &&
+            this.props.screenType !== 'Microscopy' &&
             <CreateSample
+              dialog={ this.props.dialog }
+              cancel={ this.props.cancelForm }
+              inputWidth={ this.props.inputWidth }
+            />
+          }
+          {
+            this.props.activeLevel === 'sample' &&
+            this.props.screenType === 'Microscopy' &&
+            <CreateMicroscopySample
               dialog={ this.props.dialog }
               cancel={ this.props.cancelForm }
               inputWidth={ this.props.inputWidth }
@@ -131,6 +143,10 @@ class CreateContent extends React.Component {
   }
 }
 
+CreateContent.defaultProps = {
+  screenType: '',
+};
+
 CreateContent.propTypes = {
   activeLevel: PropTypes.string.isRequired,
   cancelForm: PropTypes.func.isRequired,
@@ -173,6 +189,7 @@ CreateContent.propTypes = {
     message: PropTypes.string,
   }).isRequired,
   resetForm: PropTypes.func.isRequired,
+  screenType: PropTypes.string,
   submitForm: PropTypes.func.isRequired,
   warning: PropTypes.bool.isRequired,
 };

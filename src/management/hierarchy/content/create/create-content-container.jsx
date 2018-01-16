@@ -20,9 +20,10 @@ const timeout = {};
 class CreateContentContainer extends React.Component {
   constructor(props) {
     super(props);
+    const screenType = this.getScreenType(this.props.selected.screen, this.props.screens);
     this.state = Object.assign(
       {},
-      BlankState[this.props.activeLevel],
+      this.getBlankState(this.props.activeLevel, screenType),
       {
         dialog: {
           help: false,
@@ -33,32 +34,54 @@ class CreateContentContainer extends React.Component {
         dataSource: {
           species: [],
         },
+        screenType,
       },
     );
   }
-  componentDidMount() {
+  componentDidMount = () => {
     window.addEventListener('resize', this.resize);
   }
-  componentWillReceiveProps(nextProps) {
-    const { activeLevel, postState } = nextProps;
-    const success = this.props.postState[activeLevel].isSubmitted &&
-      !postState[activeLevel].isSubmitted &&
-      !postState[activeLevel].didSubmitFail
+  componentWillReceiveProps = (nextProps) => {
+    const { activeLevel, postState, screens, selected } = nextProps;
+    this.onCreate(activeLevel, postState, this.props.postState);
+    this.updateScreenType(selected.screen, screens);
+  }
+  componentWillUnmount = () => {
+    window.removeEventListener('resize', this.resize);
+  }
+  onCreate = (activeLevel, nextPostState, currPostState) => {
+    const success = currPostState[activeLevel].isSubmitted &&
+      !currPostState[activeLevel].isSubmitted &&
+      !currPostState[activeLevel].didSubmitFail
     ;
     if (
       success &&
       activeLevel !== 'sample'
     ) {
-      this.props.setIndex(activeLevel, postState[activeLevel]._id);
+      this.props.setIndex(activeLevel, nextPostState[activeLevel]._id);
       this.props.cancelMenuAction();
     }
   }
-  componentWillUnmount() {
-    window.removeEventListener('resize', this.resize);
+  getBlankState = (activeLevel, screenType) => {
+    if (activeLevel !== 'sample') {
+      return BlankState[this.props.activeLevel];
+    }
+    return BlankState[this.props.activeLevel][screenType];
+  }
+  getScreenType = (screenID, screens) => {
+    if (screenID) {
+      const screenIndex = screens.findIndex((screen) => {
+        return screen._id === screenID;
+      });
+      return screens[screenIndex].type;
+    }
+    return null;
   }
   cancelForm = () => {
     this.props.cancelMenuAction();
-    this.setState(BlankState[this.props.activeLevel]);
+    this.setState(({ screenType }) => {
+      return this.getBlankState(this.props.activeLevel, screenType);
+    });
   }
   dialogClose = () => {
     this.setState({
@@ -156,7 +179,9 @@ class CreateContentContainer extends React.Component {
   }
   resetForm = () => {
     this.props.reset(this.props.activeLevel);
-    this.setState(BlankState[this.props.activeLevel]);
+    this.setState(({ screenType }) => {
+      return this.getBlankState(this.props.activeLevel, screenType);
+    });
   }
   resize = () => {
     this.setState({
@@ -198,6 +223,20 @@ class CreateContentContainer extends React.Component {
       this.props.create(this.props.activeLevel, submitObj);
     }
   }
+  updateScreenType = (screenID, screens) => {
+    const screenIndex = screens.findIndex((screen) => {
+      return screen._id === screenID;
+    });
+    const nextType = screens[screenIndex].type;
+    this.setState(({ screenType }) => {
+      if (nextType !== screenType) {
+        return {
+          screenType: nextType,
+        };
+      }
+      return {};
+    });
+  }
   render() {
     return (
       <CreateContent
@@ -220,6 +259,7 @@ class CreateContentContainer extends React.Component {
         protocols={ this.props.protocols }
         postState={ this.props.postState }
         resetForm={ this.resetForm }
+        screenType={ this.state.screenType }
         submitForm={ this.submitForm }
         warning={ this.state.warning }
       />
@@ -258,6 +298,10 @@ CreateContentContainer.propTypes = {
     message: PropTypes.string,
   }).isRequired,
   reset: PropTypes.func.isRequired,
+  screens: PropTypes.arrayOf(
+    PropTypes.shape({
+    }),
+  ).isRequired,
   selected: PropTypes.shape({
     experiment: PropTypes.number,
     project: PropTypes.number,
@@ -290,6 +334,7 @@ const mapStateToProps = (state) => {
   return {
     postState: state.post,
     protocols: state.available.protocol,
+    screens: state.available.screen.items,
     selected: state.selected,
     token: state.token,
     user: state.user,

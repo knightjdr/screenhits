@@ -1,11 +1,13 @@
 const available = require('../available/available');
-const create = require('../crud/create');
+const imageConvert = require('../images/convert');
 const counter = require('../helpers/counter');
+const create = require('../crud/create');
 const deleteSample = require('../delete/delete').sample();
 const moment = require('moment');
 const Permission = require('../permission/permission');
 const query = require('../query/query');
 const readFile = require('./read-file');
+const storeImage = require('../images/store-image');
 const update = require('../crud/update');
 const validate = require('../validation/validation');
 
@@ -51,6 +53,51 @@ const Create = {
             clientResponse: {
               status: 500,
               message: `There was an error creating this experiment: ${error}`,
+            },
+          });
+        })
+      ;
+    });
+  },
+  microscopy: (sample) => {
+    return new Promise((resolve) => {
+      let objCreate = {};
+      Promise.all([
+        validate.create.microscopy(sample.body, 'creationDate', sample.user),
+        Permission.canEdit.project(sample.body.project, sample.user),
+      ])
+        .then((values) => {
+          objCreate = values[0];
+          return imageConvert(sample.files.file);
+        })
+        .then((image) => {
+          /*return Promise.all([
+            counter.get('sample'),
+            storeImage(image, sample.body.channels, sample.files.file.name),
+          ]);*/
+        })
+        .then((values) => {
+          // add new id
+          objCreate._id = values[0];
+          return create.insert('screen', objCreate);
+        })
+        .then(() => {
+          resolve({
+            status: 200,
+            clientResponse: {
+              status: 200,
+              _id: objCreate._id,
+              message: `Sample successfully created with ID ${objCreate._id}`,
+              obj: objCreate,
+            },
+          });
+        })
+        .catch((error) => {
+          resolve({
+            status: 500,
+            clientResponse: {
+              status: 500,
+              message: `There was an error creating this sample: ${error}`,
             },
           });
         })
@@ -179,8 +226,16 @@ const Create = {
     return new Promise((resolve) => {
       const sample = req;
       sample.user = user;
-      // add to queue
-      Create.queue.running.push(sample);
+      // process immediately, or add to queue
+      if (sample.body.type === 'Microscopy') {
+        Create.microscopy(sample);
+      } else {
+        Create.queue.running.push(sample);
+        // if queue isn't running, start it
+        if (!Create.queue.inProgress) {
+          Create.runQueue();
+        }
+      }
       resolve({
         status: 200,
         clientResponse: {
@@ -190,10 +245,6 @@ const Create = {
           status by clicking the info button at the bottom right.`,
         },
       });
-      // if queue isn't running, start it
-      if (!Create.queue.inProgress) {
-        Create.runQueue();
-      }
     });
   },
   runQueue: () => {

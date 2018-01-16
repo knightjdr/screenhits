@@ -204,6 +204,7 @@ class DisplayScreen extends React.Component {
               </div>
             }
             {
+              this.props.screen.drugNames &&
               this.props.screen.drugNames.length > 0 &&
               <div
                 style={ Object.assign(

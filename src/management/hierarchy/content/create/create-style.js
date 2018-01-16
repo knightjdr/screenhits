@@ -21,6 +21,12 @@ const createStyle = {
     marginRight: 4,
     maxWidth: 500,
   },
+  inputChannel: {
+    marginLeft: 4,
+    marginRight: 4,
+    minWidth: 200,
+    maxWidth: 500,
+  },
   inputSmall: {
     marginLeft: 4,
     marginRight: 4,
