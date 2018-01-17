@@ -31,7 +31,8 @@ class DisplayContent extends React.Component {
           autoHeight={ true }
           autoHeightMax={ 'calc(100vh - 150px)' }
         >
-          { this.props.activeLevel === 'project' ?
+          {
+            this.props.activeLevel === 'project' &&
             <DisplayProject
               cancel={ this.props.cancel }
               canEdit={ this.props.canEdit }
@@ -43,9 +44,9 @@ class DisplayContent extends React.Component {
               updateErrors={ this.props.updateErrors }
               updateItem={ this.props.updateItem }
             />
-              : null
           }
-          { this.props.activeLevel === 'screen' ?
+          {
+            this.props.activeLevel === 'screen' &&
             <DisplayScreen
               cancel={ this.props.cancel }
               canEdit={ this.props.canEdit }
@@ -58,9 +59,9 @@ class DisplayContent extends React.Component {
               updateErrors={ this.props.updateErrors }
               updateItem={ this.props.updateItem }
             />
-              : null
           }
-          { this.props.activeLevel === 'experiment' ?
+          {
+            this.props.activeLevel === 'experiment' &&
             <DisplayExperiment
               cancel={ this.props.cancel }
               canEdit={ this.props.canEdit }
@@ -73,9 +74,10 @@ class DisplayContent extends React.Component {
               updateErrors={ this.props.updateErrors }
               updateItem={ this.props.updateItem }
             />
-              : null
           }
-          { this.props.activeLevel === 'sample' ?
+          {
+            this.props.activeLevel === 'sample' &&
+            this.props.screenType !== 'Microscopy' &&
             <DisplaySample
               cancel={ this.props.cancel }
               canEdit={ this.props.canEdit }
@@ -88,7 +90,6 @@ class DisplayContent extends React.Component {
               updateErrors={ this.props.updateErrors }
               updateItem={ this.props.updateItem }
             />
-              : null
           }
           { this.props.warning &&
             <div
@@ -176,6 +177,7 @@ DisplayContent.defaultProps = {
     _id: null,
     message: null,
   },
+  screenType: '',
 };
 
 DisplayContent.propTypes = {
@@ -222,6 +224,7 @@ DisplayContent.propTypes = {
   }),
   reset: PropTypes.func.isRequired,
   resetKey: PropTypes.number.isRequired,
+  screenType: PropTypes.string,
   update: PropTypes.func.isRequired,
   updateErrors: PropTypes.func.isRequired,
   updateItem: PropTypes.func.isRequired,

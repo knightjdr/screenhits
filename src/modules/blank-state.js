@@ -67,7 +67,7 @@ const BlankState = {
         concentration: '',
         digitalZoom: '',
         file: {},
-        microsope: '',
+        microscope: '',
         name: '',
         objective: '',
         replicate: '',

@@ -6,7 +6,7 @@ const sharp = require('sharp');
 const Convert = (image) => {
   return new Promise((resolve, reject) => {
     if (image.mimetype === 'image/png') {
-      resolve(image);
+      resolve(image.data);
     } else if (
       image.mimetype === 'image/bmp' ||
       image.mimetype === 'image/jpeg'

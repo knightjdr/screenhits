@@ -3,7 +3,6 @@
 const Format = {
   blankError: {
     experiment: {
-      description: null,
       name: null,
     },
     project: {
@@ -17,9 +16,8 @@ const Format = {
     },
     screen: {
       cell: null,
-      description: null,
       name: null,
-      species: null,
+      taxonID: null,
       type: null,
     },
   },

@@ -27,10 +27,10 @@
 const databases = require('../../connections/database');
 const Readable = require('stream').Readable;
 
-const storeImage = (image, metadata = {}, fileName) => {
+const storeImage = (image, metadata = {}, fileName = 'file') => {
   return new Promise((resolve, reject) => {
     const imageOptions = {
-      filename: fileName || image.name,
+      filename: fileName,
       mode: 'w',
       content_type: 'image/png',
       root: 'imagefs',
@@ -42,8 +42,8 @@ const storeImage = (image, metadata = {}, fileName) => {
     tempStream.push(image);
     tempStream.push(null);
     tempStream.pipe(writestream);
-    writestream.on('finish', () => {
-      resolve();
+    writestream.on('close', (file) => {
+      resolve(file._id);
     });
     writestream.on('error', (err) => {
       reject(`There was an error writing the image to the database: ${err}`);

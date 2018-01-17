@@ -73,13 +73,13 @@ const FormatSubmission = {
       submitObj.append('parser', JSON.stringify(parser));
       return submitObj;
     },
-    Microscopy: (form, user, selected, screenType) => {
+    Microscopy: (form, file, user, selected, screenType) => {
       const submitObj = new FormData();
-      submitObj.append('channels', form.channels);
+      submitObj.append('channels', JSON.stringify(form.channels));
       submitObj.append('creatorEmail', user.email);
       submitObj.append('creatorName', user.name);
       submitObj.append('experiment', selected.experiment);
-      submitObj.append('file', form.file);
+      submitObj.append('file', file);
       submitObj.append('lab', user.lab ? user.lab : null);
       submitObj.append('name', form.name);
       submitObj.append('project', selected.project);
@@ -97,7 +97,7 @@ const FormatSubmission = {
         submitObj.append('digitalZoom', form.digitalZoom);
       }
       if (form.replicate) {
-        submitObj.append('microsope', form.microsope);
+        submitObj.append('microscope', form.microscope);
       }
       if (form.replicate) {
         submitObj.append('objective', form.objective);

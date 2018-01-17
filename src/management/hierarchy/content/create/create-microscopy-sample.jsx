@@ -205,7 +205,7 @@ class CreateMicroscopySample extends React.Component {
               onChange={ (e) => { this.props.inputChange('digitalZoom', e.target.value); } }
               rows={ 1 }
               rowsMax={ 2 }
-              value={ this.props.formData.objective }
+              value={ this.props.formData.digitalZoom }
             />
             <IconButton
               onTouchTap={ () => {
@@ -420,6 +420,7 @@ class CreateMicroscopySample extends React.Component {
             <div
               style={ {
                 marginLeft: 10,
+                marginTop: 10,
               } }
             >
               { `error: ${this.props.errors.file}` }
@@ -427,6 +428,7 @@ class CreateMicroscopySample extends React.Component {
           }
           {
             this.props.imgSrc &&
+            !this.props.tiffWarning &&
             <img
               alt="Uploaded"
               src={ this.props.imgSrc }
@@ -436,6 +438,17 @@ class CreateMicroscopySample extends React.Component {
                 maxWidth: 300,
               } }
             />
+          }
+          {
+            this.props.tiffWarning &&
+            <div
+              style={ {
+                marginLeft: 10,
+                marginTop: 10,
+              } }
+            >
+              Image preview is not supported for .tif files
+            </div>
           }
         </div>
         <div
@@ -545,9 +558,6 @@ CreateMicroscopySample.propTypes = {
     comment: PropTypes.string,
     concentration: PropTypes.string,
     digitalZoom: PropTypes.string,
-    file: PropTypes.shape({
-      name: PropTypes.string,
-    }),
     microscope: PropTypes.string,
     name: PropTypes.string,
     objective: PropTypes.string,
@@ -575,6 +585,7 @@ CreateMicroscopySample.propTypes = {
     message: PropTypes.string,
     open: PropTypes.bool,
   }).isRequired,
+  tiffWarning: PropTypes.bool.isRequired,
   updateChannel: PropTypes.func.isRequired,
   warning: PropTypes.bool.isRequired,
 };

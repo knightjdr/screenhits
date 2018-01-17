@@ -84,6 +84,7 @@ const validate = {
         if (!validateObj.experiment) {
           reject('missing experiment');
         }
+        validateObj.channels = JSON.parse(validateObj.channels);
         validateObj.group = {
           experiment: Number(validateObj.experiment),
           project: Number(validateObj.project),

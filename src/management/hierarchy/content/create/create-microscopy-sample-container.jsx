@@ -33,11 +33,13 @@ class CreateMicroscopySampleContainer extends React.Component {
     this.state = {
       cancelButton: Object.assign({}, reset.cancelButton),
       didSubmit: false,
+      file: {},
       formData: Object.assign({}, BlankState.sample.Microscopy.formData),
       errors: Object.assign({}, BlankState.sample.Microscopy.errors),
       imgSrc: null,
       screenType,
       snackbar: Object.assign({}, reset.snackbar),
+      tiffWarning: false,
       warning: BlankState.sample.Microscopy.warning,
     };
   }
@@ -49,14 +51,16 @@ class CreateMicroscopySampleContainer extends React.Component {
     }
   }
   componentDidUpdate = (prevProps, prevState) => {
-    const { didSubmit, formData } = prevState;
-    this.didFormUpdate(didSubmit, formData);
+    const { didSubmit, file, formData } = prevState;
+    this.didFormUpdate(didSubmit, file, formData);
   }
-  didFormUpdate = (didSubmit, prevFormData) => {
+  didFormUpdate = (didSubmit, prevFile, prevFormData) => {
+    // the file name check is added because the deepEqual module doesn't compare
+    // file objects
     if (
       didSubmit &&
       (
-        this.state.formData.file.name !== prevFormData.file.name ||
+        this.state.file.name !== prevFile.name ||
         !deepEqual(this.state.formData, prevFormData)
       )
     ) {
@@ -71,6 +75,10 @@ class CreateMicroscopySampleContainer extends React.Component {
     this.resetForm();
     this.props.cancel();
   }
+  copyFormData = (formData) => {
+    const newFormData = JSON.parse(JSON.stringify((formData)));
+    return newFormData;
+  }
   findScreen = () => {
     const index = this.props.screens.findIndex((screen) => {
       return screen._id === this.props.selected.screen;
@@ -79,7 +87,7 @@ class CreateMicroscopySampleContainer extends React.Component {
   }
   inputChange = (field, value) => {
     const errors = JSON.parse(JSON.stringify(this.state.errors));
-    const stateObject = Object.assign({}, this.state.formData);
+    const stateObject = this.copyFormData(this.state.formData);
     const validate = ValidateField.sample[field] ?
       ValidateField.sample[field](value)
       : {
@@ -109,37 +117,24 @@ class CreateMicroscopySampleContainer extends React.Component {
     ImageReader(file)
       .then((imageURL) => {
         if (imageURL) {
-          this.setState(({ errors, formData }) => {
+          this.setState(({ errors }) => {
+            const newErrors = JSON.parse(JSON.stringify(errors));
+            newErrors.file = null;
+            const warning = !objectEmpty(newErrors);
             return {
-              formData: Object.assign(
-                {},
-                formData,
-                {
-                  file,
-                }
-              ),
-              errors: Object.assign(
-                {},
-                errors,
-                {
-                  file: '',
-                }
-              ),
+              file,
+              errors: newErrors,
               imgSrc: imageURL[0],
+              tiffWarning: file.type === 'image/tiff',
+              warning,
             };
           });
         }
       })
       .catch((error) => {
-        this.setState(({ errors, formData }) => {
+        this.setState(({ errors }) => {
           return {
-            formData: Object.assign(
-              {},
-              formData,
-              {
-                file: { },
-              }
-            ),
+            file: {},
             errors: Object.assign(
               {},
               errors,
@@ -148,6 +143,7 @@ class CreateMicroscopySampleContainer extends React.Component {
               }
             ),
             imgSrc: null,
+            tiffWarning: false,
           };
         });
       })
@@ -159,8 +155,16 @@ class CreateMicroscopySampleContainer extends React.Component {
       formData: Object.assign({}, BlankState.sample.Microscopy.formData),
       errors: Object.assign({}, BlankState.sample.Microscopy.errors),
       imgSrc: null,
+      tiffWarning: false,
       warning: BlankState.sample.Microscopy.warning,
     });
+  }
+  resetSnackbar = (delay = 0) => {
+    setTimeout(() => {
+      this.setState({
+        snackbar: Object.assign({}, reset.snackbar),
+      });
+    }, delay);
   }
   submitSample = () => {
     let error = false;
@@ -175,7 +179,7 @@ class CreateMicroscopySampleContainer extends React.Component {
       }
     });
     // make sure file has been selected
-    if (!this.state.formData.file.name) {
+    if (!this.state.file.name) {
       error = true;
       errors.file = 'Please select a file for upload';
     }
@@ -185,6 +189,7 @@ class CreateMicroscopySampleContainer extends React.Component {
     } else {
       const submitObj = FormSubmission.sample.Microscopy(
         this.state.formData,
+        this.state.file,
         this.props.user,
         this.props.selected,
         this.state.screenType,
@@ -201,7 +206,7 @@ class CreateMicroscopySampleContainer extends React.Component {
   }
   updateChannel = (channel, prop, value) => {
     this.setState(({ formData }) => {
-      const newFormData = JSON.parse(JSON.stringify((formData)));
+      const newFormData = this.copyFormData(formData);
       newFormData.channels[channel][prop] = value;
       return {
         formData: newFormData,
@@ -251,6 +256,7 @@ class CreateMicroscopySampleContainer extends React.Component {
             current.isSubmitted &&
             !next.isSubmitted
           ) {
+            this.resetSnackbar(2000);
             return newSnackBarState(
               snackbar,
               {
@@ -283,6 +289,7 @@ class CreateMicroscopySampleContainer extends React.Component {
         readImage={ this.readImage }
         resetForm={ this.resetForm }
         snackbar={ this.state.snackbar }
+        tiffWarning={ this.state.tiffWarning }
         updateChannel={ this.updateChannel }
         warning={ this.state.warning }
       />

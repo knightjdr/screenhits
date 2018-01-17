@@ -71,15 +71,17 @@ const Create = {
           return imageConvert(sample.files.file);
         })
         .then((image) => {
-          /*return Promise.all([
+          const filename = sample.files.file.name.replace(/\.[^/.]+$/, '');
+          return Promise.all([
             counter.get('sample'),
-            storeImage(image, sample.body.channels, sample.files.file.name),
-          ]);*/
+            storeImage(image, objCreate.channels, `${filename}.png`),
+          ]);
         })
         .then((values) => {
           // add new id
           objCreate._id = values[0];
-          return create.insert('screen', objCreate);
+          objCreate.files_id = values[1];
+          return create.insert('sample', objCreate);
         })
         .then(() => {
           resolve({

@@ -18,6 +18,7 @@ class DisplayContentContainer extends React.Component {
   constructor(props) {
     super(props);
     const project = this.getProject(this.props.projects, this.props.selected.project);
+    const screenType = this.getScreenType(this.props.selected.screen, this.props.screens);
     this.state = {
       canEdit: Permissions.canEditProject(this.props.user, project),
       errors: Format.blankError[this.props.activeLevel],
@@ -29,6 +30,7 @@ class DisplayContentContainer extends React.Component {
         this.props.viewID,
       ),
       reset: 0,
+      screenType,
       updateItem: JSON.parse(JSON.stringify(this.props.item)),
       warning: false,
     };
@@ -45,52 +47,54 @@ class DisplayContentContainer extends React.Component {
       projects,
       putState,
       postState,
+      screens,
       selected,
       user,
       viewID,
     } = nextProps;
-    const newState = {};
-    // update item when store item updates
-    if (!deepEqual(item, this.props.item)) {
-      newState.originalItem = JSON.parse(JSON.stringify(item));
-      newState.updateItem = JSON.parse(JSON.stringify(item));
-    }
-    // on project change, check permission
-    newState.canEdit = this.updateProject(
+    this.updateScreenType(selected.screen, screens);
+    this.updateStateItem(item, this.props.item);
+    this.checkPermission(
       selected.project,
       this.props.selected.project,
-      this.state.canEdit,
       projects,
       user
     );
-    // on successful delete
-    if (
-      this.props.deleteState[activeLevel].isDelete &&
-      !deleteState[activeLevel].isDelete &&
-      !deleteState[activeLevel].didDeleteFail
-    ) {
-      this.props.changeSelected(activeLevel, null);
-    }
-    // on successful edit
-    if (
-      this.props.putState[activeLevel].isPut &&
-      !putState[activeLevel].isPut &&
-      !putState[activeLevel].didPutFail
-    ) {
-      this.props.cancelMenuAction();
-    }
-    // check for post messages
-    newState.postMessage = this.setPostMessage(postState, activeLevel, viewID);
+    this.onDelete(
+      activeLevel,
+      deleteState[activeLevel],
+      this.props.deleteState[activeLevel]
+    );
+    this.onEdit(putState[activeLevel], this.props.putState[activeLevel]);
+    this.updatePostMessage(postState, activeLevel, viewID);
     // when switching to edit mode
     if (edit) {
       this.resetMessages();
     }
-    // update state
-    this.setState(newState);
   }
   componentWillUnmount = () => {
     window.removeEventListener('resize', this.resize);
     this.resetMessages();
+  }
+  onDelete = (activeLevel, newDeleteState, currDeleteState) => {
+    // on successful delete
+    if (
+      currDeleteState.isDelete &&
+      !newDeleteState.isDelete &&
+      !newDeleteState.didDeleteFail
+    ) {
+      this.props.changeSelected(activeLevel, null);
+    }
+  }
+  onEdit = (newEditState, currEditState) => {
+    // on successful edit
+    if (
+      currEditState.isPut &&
+      !newEditState.isPut &&
+      !newEditState.didPutFail
+    ) {
+      this.props.cancelMenuAction();
+    }
   }
   setPostMessage = (postState, activeLevel, viewID) => {
     return postState[activeLevel]._id === viewID ?
@@ -114,9 +118,31 @@ class DisplayContentContainer extends React.Component {
     }
     return {};
   }
+  getScreenType = (screenID, screens) => {
+    if (screenID) {
+      const screenIndex = screens.findIndex((screen) => {
+        return screen._id === screenID;
+      });
+      return screens[screenIndex].type;
+    }
+    return null;
+  }
   cancel = () => {
     this.props.cancelMenuAction();
     this.reset();
+  }
+  checkPermission = (newSelectedProject, currSelectedProject, projects, user) => {
+    this.setState(({ canEdit }) => {
+      return {
+        canEdit: this.updateProject(
+          newSelectedProject,
+          currSelectedProject,
+          canEdit,
+          projects,
+          user
+        ),
+      };
+    });
   }
   delete = (_id, type, group) => {
     this.resetMessages();
@@ -195,6 +221,12 @@ class DisplayContentContainer extends React.Component {
   updateItem = (updateObject) => {
     this.setState({ updateItem: updateObject });
   };
+  updatePostMessage = (postState, activeLevel, viewID) => {
+    // check for post messages
+    this.setState({
+      postMessage: this.setPostMessage(postState, activeLevel, viewID),
+    });
+  }
   updateProject = (newID, currentID, canEdit, projects, user) => {
     if (
       newID &&
@@ -208,6 +240,29 @@ class DisplayContentContainer extends React.Component {
       return false;
     }
     return canEdit;
+  }
+  updateScreenType = (screenID, screens) => {
+    const screenIndex = screens.findIndex((screen) => {
+      return screen._id === screenID;
+    });
+    const nextType = screens[screenIndex].type;
+    this.setState(({ screenType }) => {
+      if (nextType !== screenType) {
+        return {
+          screenType: nextType,
+        };
+      }
+      return {};
+    });
+  }
+  updateStateItem = (newItem, currItem) => {
+    // update item when store item updates
+    if (!deepEqual(newItem, currItem)) {
+      this.setState({
+        originalItem: JSON.parse(JSON.stringify(newItem)),
+        updateItem: JSON.parse(JSON.stringify(newItem)),
+      });
+    }
   }
   render() {
     return (
@@ -225,6 +280,7 @@ class DisplayContentContainer extends React.Component {
         postMessage={ this.state.postMessage }
         reset={ this.reset }
         resetKey={ this.state.reset }
+        screenType={ this.state.screenType }
         update={ this.update }
         updateErrors={ this.updateErrors }
         updateItem={ this.updateItem }
@@ -357,6 +413,10 @@ DisplayContentContainer.propTypes = {
   resetDelete: PropTypes.func.isRequired,
   resetPost: PropTypes.func.isRequired,
   resetPut: PropTypes.func.isRequired,
+  screens: PropTypes.arrayOf(
+    PropTypes.shape({
+    }),
+  ).isRequired,
   selected: selectedProp.isRequired,
   update: PropTypes.func.isRequired,
   user: userProp.isRequired,
@@ -392,6 +452,7 @@ const mapStateToProps = (state) => {
     postState: state.post,
     projects: state.available.project.items,
     putState: state.put,
+    screens: state.available.screen.items,
     selected: state.selected,
     user: state.user,
   };
