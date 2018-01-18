@@ -6,10 +6,11 @@ import React from 'react';
 import { Scrollbars } from 'react-custom-scrollbars';
 
 import ActionButtons from '../../../../action-buttons/action-buttons-container';
-import DisplayProject from './display-project-container';
-import DisplayScreen from './display-screen-container';
 import DisplayExperiment from './display-experiment-container';
+import DisplayMicroscopySample from './display-microscopy-sample-container';
+import DisplayProject from './display-project-container';
 import DisplaySample from './display-sample-container';
+import DisplayScreen from './display-screen-container';
 import Notice from '../../../../messages/notice/notice';
 import { uppercaseFirst } from '../../../../helpers/helpers';
 
@@ -79,6 +80,22 @@ class DisplayContent extends React.Component {
             this.props.activeLevel === 'sample' &&
             this.props.screenType !== 'Microscopy' &&
             <DisplaySample
+              cancel={ this.props.cancel }
+              canEdit={ this.props.canEdit }
+              delete={ this.props.delete }
+              edit={ this.props.edit }
+              errors={ this.props.errors }
+              inputWidth={ this.props.inputWidth }
+              item={ this.props.item }
+              key={ this.props.resetKey }
+              updateErrors={ this.props.updateErrors }
+              updateItem={ this.props.updateItem }
+            />
+          }
+          {
+            this.props.activeLevel === 'sample' &&
+            this.props.screenType === 'Microscopy' &&
+            <DisplayMicroscopySample
               cancel={ this.props.cancel }
               canEdit={ this.props.canEdit }
               delete={ this.props.delete }
