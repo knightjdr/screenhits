@@ -27,7 +27,7 @@
 const databases = require('../../connections/database');
 const Readable = require('stream').Readable;
 
-const storeImage = (image, metadata = {}, fileName = 'file') => {
+const storeImage = (image, metadata, fileName = 'file') => {
   return new Promise((resolve, reject) => {
     const imageOptions = {
       filename: fileName,

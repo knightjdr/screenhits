@@ -26,7 +26,14 @@ const displayStyle = {
   elementValue: {
     flex: 1,
     marginLeft: 10,
-    padding: '5px 5px 5px 5px',
+    padding: 5,
+  },
+  gridHeader: {
+    borderRadius: 2,
+    gridRow: 1,
+    padding: 2,
+    textAlign: 'center',
+    width: '100%',
   },
   input: {
     marginLeft: 4,

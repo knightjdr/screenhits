@@ -1,6 +1,8 @@
+import ContentAdd from 'material-ui/svg-icons/content/add';
 import DeleteForever from 'material-ui/svg-icons/action/delete-forever';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
+import FloatingActionButton from 'material-ui/FloatingActionButton';
 import IconButton from 'material-ui/IconButton';
 import HelpIcon from 'material-ui/svg-icons/action/help';
 import muiThemeable from 'material-ui/styles/muiThemeable';
@@ -12,6 +14,32 @@ import displayStyle from './display-style';
 import Fields from '../../../../modules/fields';
 
 class DisplayMicroscopySample extends React.Component {
+  channelHeader = () => {
+    const header = (col, text) => {
+      return (
+        <div
+          key={ `${text}-header` }
+          style={ Object.assign(
+            {},
+            displayStyle.gridHeader,
+            {
+              backgroundColor: this.props.muiTheme.palette.keyColor,
+              gridColumn: col,
+            }
+          ) }
+        >
+          { text }
+        </div>
+      );
+    };
+    return [
+      header(1, 'Channel'),
+      header(2, 'Wavelength'),
+      header(3, 'Marker'),
+      header(4, 'Antibody'),
+      header(5, 'Dilution'),
+    ];
+  }
   confirmDeletion = () => {
     return (
     [
@@ -37,59 +65,200 @@ class DisplayMicroscopySample extends React.Component {
       />,
     ]);
   }
+  displayElement = (sample, field, text) => {
+    return sample[field] ?
+      <div
+        style={ displayStyle.elementContainer }
+      >
+        <div
+          style={ Object.assign(
+            {},
+            displayStyle.elementKey,
+            {
+              backgroundColor: this.props.muiTheme.palette.keyColor,
+              border: `1px solid ${this.props.muiTheme.palette.keyColorBorder}`,
+            },
+          ) }
+        >
+          <span>
+            { text }:
+          </span>
+        </div>
+        <div
+          style={ displayStyle.elementValue }
+        >
+          { sample[field] }
+        </div>
+      </div>
+      :
+      null
+    ;
+  }
+  fillChannel = (color, channel, row) => {
+    return [
+      <div
+        key={ `color-${color}` }
+        style={ {
+          gridColumn: 1,
+          gridRow: row + 1,
+          textAlign: 'center',
+        } }
+      >
+        { color }
+      </div>,
+      <div
+        key={ `wavelength-${color}` }
+        style={ {
+          gridColumn: 2,
+          gridRow: row + 1,
+          textAlign: 'center',
+        } }
+      >
+        { channel.wavelength || '-' }
+      </div>,
+      <div
+        key={ `marker-${color}` }
+        style={ {
+          gridColumn: 3,
+          gridRow: row + 1,
+          textAlign: 'center',
+        } }
+      >
+        { channel.marker || '-' }
+      </div>,
+      <div
+        key={ `antibody-${color}` }
+        style={ {
+          gridColumn: 4,
+          gridRow: row + 1,
+          textAlign: 'center',
+        } }
+      >
+        { channel.antibody || '-' }
+      </div>,
+      <div
+        key={ `dilution-${color}` }
+        style={ {
+          gridColumn: 5,
+          gridRow: row + 1,
+          textAlign: 'center',
+        } }
+      >
+        { channel.dilution || '-' }
+      </div>,
+    ];
+  }
+  showChannels = (channels) => {
+    if (
+      channels.blue &&
+      (
+        channels.blue.antibody ||
+        channels.blue.dilution ||
+        channels.blue.marker ||
+        channels.blue.wavelength
+      )
+    ) {
+      return true;
+    } else if (
+      channels.green &&
+      (
+        channels.green.antibody ||
+        channels.green.dilution ||
+        channels.green.marker ||
+        channels.green.wavelength
+      )
+    ) {
+      return true;
+    } else if (
+      channels.red &&
+      (
+        channels.red.antibody ||
+        channels.red.dilution ||
+        channels.red.marker ||
+        channels.red.wavelength
+      )
+    ) {
+      return true;
+    }
+    return false;
+  }
+  showImage = (altText, image) => {
+    const header = (text) => {
+      return (
+        <div
+          key={ `${text}-header` }
+          style={ Object.assign(
+            {},
+            displayStyle.gridHeader,
+            {
+              backgroundColor: this.props.muiTheme.palette.keyColor,
+              marginBottom: 10,
+            }
+          ) }
+        >
+          { text }
+        </div>
+      );
+    };
+    return (
+      <div
+        style={ {
+          alignItems: 'center',
+          display: 'flex',
+          flexDirection: 'column',
+          margin: 5,
+        } }
+      >
+        { header(altText) }
+        <div
+          style={ {
+            alignItems: 'center',
+            backgroundColor: '#e0e0e0',
+            display: 'flex',
+            height: 310,
+            justifyContent: 'center',
+            padding: 5,
+            width: 310,
+          } }
+        >
+          {
+            image ?
+              <img
+                alt={ altText }
+                src={ image }
+                style={ {
+                  maxHeight: 300,
+                  maxWidth: 300,
+                } }
+              />
+              :
+              <FloatingActionButton
+                mini={ true }
+              >
+                <ContentAdd />
+              </FloatingActionButton>
+         }
+        </div>
+      </div>
+    );
+  }
   render() {
     return (
       <div>
         { !this.props.edit &&
           <div>
-            <div
-              style={ displayStyle.elementContainer }
-            >
-              <div
-                style={ Object.assign(
-                  {},
-                  displayStyle.elementKey,
-                  {
-                    backgroundColor: this.props.muiTheme.palette.keyColor,
-                    border: `1px solid ${this.props.muiTheme.palette.keyColorBorder}`,
-                  },
-                ) }
-              >
-                <span>
-                  Name:
-                </span>
-              </div>
-              <div
-                style={ displayStyle.elementValue }
-              >
-                { this.props.sample.name }
-              </div>
-            </div>
-            <div
-              style={ displayStyle.elementContainer }
-            >
-              <div
-                style={ Object.assign(
-                  {},
-                  displayStyle.elementKey,
-                  {
-                    backgroundColor: this.props.muiTheme.palette.keyColor,
-                    border: `1px solid ${this.props.muiTheme.palette.keyColorBorder}`,
-                  },
-                ) }
-              >
-                <span>
-                  Replicate:
-                </span>
-              </div>
-              <div
-                style={ displayStyle.elementValue }
-              >
-                { this.props.sample.replicate }
-              </div>
-            </div>
+            { this.displayElement(this.props.sample, 'name', 'name') }
+            { this.displayElement(this.props.sample, 'replicate', 'Replicate') }
+            { this.displayElement(this.props.sample, 'concentration', 'Concentration') }
+            { this.displayElement(this.props.sample, 'timepoint', 'Timepoint') }
+            { this.displayElement(this.props.sample, 'microscope', 'Microscope') }
+            { this.displayElement(this.props.sample, 'objective', 'Objective') }
+            { this.displayElement(this.props.sample, 'digitalZoom', 'Digital zoom') }
+            { this.displayElement(this.props.sample, 'comment', 'Comment') }
+            { this.displayElement(this.props.sample, 'creatorName', 'Creator') }
+            { this.displayElement(this.props.sample, 'creationDate', 'Creation date') }
             {
-              this.props.sample.concentration &&
+              this.showChannels(this.props.sample.channels) &&
               <div
                 style={ displayStyle.elementContainer }
               >
@@ -104,114 +273,47 @@ class DisplayMicroscopySample extends React.Component {
                   ) }
                 >
                   <span>
-                    Concentration:
+                    Channels:
                   </span>
                 </div>
                 <div
                   style={ displayStyle.elementValue }
                 >
-                  { this.props.sample.concentration }
+                  <div
+                    style={ Object.assign(
+                      {},
+                      displayStyle.elementValue,
+                      {
+                        display: 'grid',
+                        gridColumnGap: 10,
+                        gridRowGap: 10,
+                        gridTemplateColumns: 'auto',
+                      }
+                    ) }
+                  >
+                    { this.channelHeader() }
+                    { this.fillChannel('blue', this.props.sample.channels.blue, 1) }
+                    { this.fillChannel('green', this.props.sample.channels.green, 2) }
+                    { this.fillChannel('red', this.props.sample.channels.red, 3) }
+                  </div>
                 </div>
               </div>
             }
             {
-              this.props.sample.timepoint &&
+              this.props.images.main &&
               <div
-                style={ displayStyle.elementContainer }
+                style={ {
+                  display: 'flex',
+                  flexWrap: 'wrap',
+                  padding: 5,
+                } }
               >
-                <div
-                  style={ Object.assign(
-                    {},
-                    displayStyle.elementKey,
-                    {
-                      backgroundColor: this.props.muiTheme.palette.keyColor,
-                      border: `1px solid ${this.props.muiTheme.palette.keyColorBorder}`,
-                    },
-                  ) }
-                >
-                  <span>
-                    Timepoint:
-                  </span>
-                </div>
-                <div
-                  style={ displayStyle.elementValue }
-                >
-                  { this.props.sample.timepoint }
-                </div>
+                { this.showImage('Full color', this.props.images.main) }
+                { this.showImage('Blue', this.props.images.blue) }
+                { this.showImage('Green', this.props.images.green) }
+                { this.showImage('Red', this.props.images.red) }
               </div>
             }
-            {
-              this.props.sample.comment &&
-              <div
-                style={ displayStyle.elementContainer }
-              >
-                <div
-                  style={ Object.assign(
-                    {},
-                    displayStyle.elementKey,
-                    {
-                      backgroundColor: this.props.muiTheme.palette.keyColor,
-                      border: `1px solid ${this.props.muiTheme.palette.keyColorBorder}`,
-                    },
-                  ) }
-                >
-                  <span>
-                    Comments:
-                  </span>
-                </div>
-                <div
-                  style={ displayStyle.elementValue }
-                >
-                  { this.props.sample.comment }
-                </div>
-              </div>
-            }
-            <div
-              style={ displayStyle.elementContainer }
-            >
-              <div
-                style={ Object.assign(
-                  {},
-                  displayStyle.elementKey,
-                  {
-                    backgroundColor: this.props.muiTheme.palette.keyColor,
-                    border: `1px solid ${this.props.muiTheme.palette.keyColorBorder}`,
-                  },
-                ) }
-              >
-                <span>
-                  Creator:
-                </span>
-              </div>
-              <div
-                style={ displayStyle.elementValue }
-              >
-                { this.props.sample.creatorName }
-              </div>
-            </div>
-            <div
-              style={ displayStyle.elementContainer }
-            >
-              <div
-                style={ Object.assign(
-                  {},
-                  displayStyle.elementKey,
-                  {
-                    backgroundColor: this.props.muiTheme.palette.keyColor,
-                    border: `1px solid ${this.props.muiTheme.palette.keyColorBorder}`,
-                  },
-                ) }
-              >
-                <span>
-                  Creation Date:
-                </span>
-              </div>
-              <div
-                style={ displayStyle.elementValue }
-              >
-                { this.props.sample.creationDate}
-              </div>
-            </div>
             <div
               style={ displayStyle.deleteContainer }
             >
@@ -388,16 +490,30 @@ DisplayMicroscopySample.propTypes = {
     name: PropTypes.string,
     replicate: PropTypes.string,
   }).isRequired,
+  images: PropTypes.shape({
+    blue: PropTypes.string,
+    green: PropTypes.string,
+    main: PropTypes.string,
+    red: PropTypes.string,
+  }).isRequired,
   inputChange: PropTypes.func.isRequired,
   inputWidth: PropTypes.number.isRequired,
   sample: PropTypes.shape({
     _id: PropTypes.number,
+    channels: PropTypes.shape({
+      blue: PropTypes.shape({}),
+      green: PropTypes.shape({}),
+      red: PropTypes.shape({}),
+    }),
     comment: PropTypes.string,
     concentration: PropTypes.string,
     creatorEmail: PropTypes.string,
     creatorName: PropTypes.string,
     description: PropTypes.string,
+    digitalZoom: PropTypes.string,
+    microscope: PropTypes.string,
     name: PropTypes.string,
+    objective: PropTypes.string,
     replicate: PropTypes.string,
     timepoint: PropTypes.string,
     creationDate: PropTypes.string,

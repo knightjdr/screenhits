@@ -7,6 +7,7 @@ const comparison = require('./modules/comparison/comparison');
 const create = require('./modules/create/create');
 const dataSource = require('./modules/data-source/data-source');
 const deleteQuery = require('./modules/delete/delete');
+const image = require('./modules/images/route-handler');
 const loadRoute = require('./modules/available/load-route');
 const queue = require('./modules/queue/queue');
 const sample = require('./modules/sample/sample');
@@ -60,6 +61,13 @@ const routes = {
     });
     app.get('/analysis/tasks/:id', auth.validate, (req, res) => {
       tasks.getOne(Number(req.params.id), req.query, res.locals.user)
+        .then((response) => {
+          routes.response(res, response);
+        })
+      ;
+    });
+    app.get('/image/:fileID', auth.validate, (req, res) => {
+      image.get(req.params.fileID, res.locals.user)
         .then((response) => {
           routes.response(res, response);
         })

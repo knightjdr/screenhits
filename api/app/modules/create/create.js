@@ -74,7 +74,7 @@ const Create = {
           const filename = sample.files.file.name.replace(/\.[^/.]+$/, '');
           return Promise.all([
             counter.get('sample'),
-            storeImage(image, objCreate.channels, `${filename}.png`),
+            storeImage(image, { project: Number(sample.body.project) }, `${filename}.png`),
           ]);
         })
         .then((values) => {

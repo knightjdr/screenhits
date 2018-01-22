@@ -4,6 +4,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 
 import DisplayMicroscopySample from './display-microscopy-sample';
+import DownloadImage from '../../../../fetch/download-image';
 import { objectEmpty } from '../../../../helpers/helpers';
 import ValidateField from '../../../../modules/validate-field';
 
@@ -17,9 +18,16 @@ class DisplayMicroscopySampleContainer extends React.Component {
         text: '',
         title: '',
       },
+      imageBlue: null,
+      imageGreen: null,
+      imageMain: null,
+      imageRed: null,
       item: Object.assign({}, this.props.item),
       warning: null,
     };
+  }
+  componentDidMount = () => {
+    this.getMainImage();
   }
   componentWillReceiveProps = (nextProps) => {
     const { item } = nextProps;
@@ -28,6 +36,20 @@ class DisplayMicroscopySampleContainer extends React.Component {
       this.setState({
         item: Object.assign({}, item),
       });
+    }
+  }
+  getMainImage = () => {
+    if (this.props.item.files_id) {
+      DownloadImage(this.props.item.files_id, this.props.token)
+        .then((image) => {
+          this.setState({
+            imageMain: image,
+          });
+        })
+        .catch((error) => {
+          console.log(error);
+        })
+      ;
     }
   }
   deleteSample = (_id) => {
@@ -101,6 +123,12 @@ class DisplayMicroscopySampleContainer extends React.Component {
           } }
           edit={ this.props.edit }
           errors={ this.props.errors }
+          images={ {
+            blue: this.state.imageBlue,
+            green: this.state.imageGreen,
+            main: this.state.imageMain,
+            red: this.state.imageRed,
+          } }
           inputChange={ this.inputChange }
           inputWidth={ this.props.inputWidth }
           sample={ this.state.item }
@@ -127,6 +155,7 @@ DisplayMicroscopySampleContainer.propTypes = {
     creatorEmail: PropTypes.string,
     creatorName: PropTypes.string,
     description: PropTypes.string,
+    files_id: PropTypes.string,
     name: PropTypes.string,
     replicate: PropTypes.string,
     timepoint: PropTypes.string,
@@ -139,6 +168,7 @@ DisplayMicroscopySampleContainer.propTypes = {
     sample: PropTypes.number,
     screen: PropTypes.number,
   }).isRequired,
+  token: PropTypes.string.isRequired,
   updateErrors: PropTypes.func.isRequired,
   updateItem: PropTypes.func.isRequired,
 };
@@ -146,6 +176,7 @@ DisplayMicroscopySampleContainer.propTypes = {
 const mapStateToProps = (state) => {
   return {
     selectedIndices: state.selected,
+    token: state.token,
   };
 };
 
