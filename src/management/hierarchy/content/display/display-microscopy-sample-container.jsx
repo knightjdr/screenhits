@@ -18,16 +18,34 @@ class DisplayMicroscopySampleContainer extends React.Component {
         text: '',
         title: '',
       },
-      imageBlue: null,
-      imageGreen: null,
-      imageMain: null,
-      imageRed: null,
+      errorDialog: {
+        show: false,
+        text: null,
+        title: null,
+      },
+      imageDialog: {
+        images: [],
+        index: 0,
+        show: false,
+      },
+      images: {
+        fullColor: null,
+        blue: null,
+        green: null,
+        red: null,
+      },
       item: Object.assign({}, this.props.item),
+      loading: {
+        blue: true,
+        fullColor: true,
+        green: true,
+        red: true,
+      },
       warning: null,
     };
   }
   componentDidMount = () => {
-    this.getMainImage();
+    this.getFullColorImage();
   }
   componentWillReceiveProps = (nextProps) => {
     const { item } = nextProps;
@@ -38,20 +56,101 @@ class DisplayMicroscopySampleContainer extends React.Component {
       });
     }
   }
-  getMainImage = () => {
+  getChannelImage = (channel) => {
+    const channelLoadObj = {};
+    channelLoadObj[channel] = true;
+    this.setState(({ loading }) => {
+      return {
+        loading: Object.assign(
+          {},
+          loading,
+          channelLoadObj
+        ),
+      };
+    });
+    DownloadImage(`channel/${this.props.item.files_id}/${channel}`, this.props.token)
+      .then((image) => {
+        this.setState(({ images, loading }) => {
+          const channelImageObj = {};
+          channelImageObj[channel] = image;
+          channelLoadObj[channel] = false;
+          return {
+            images: Object.assign(
+              {},
+              images,
+              channelImageObj
+            ),
+            loading: Object.assign(
+              {},
+              loading,
+              channelLoadObj
+            ),
+          };
+        });
+      })
+      .catch((error) => {
+        this.setState({
+          errorDialog: {
+            show: true,
+            text: error.text,
+            title: error.title,
+          },
+        });
+      })
+    ;
+  }
+  getFullColorImage = () => {
     if (this.props.item.files_id) {
-      DownloadImage(this.props.item.files_id, this.props.token)
+      DownloadImage(`image/${this.props.item.files_id}`, this.props.token)
         .then((image) => {
           this.setState({
-            imageMain: image,
+            images: {
+              fullColor: image,
+              blue: null,
+              green: null,
+              red: null,
+            },
+            loading: {
+              blue: false,
+              fullColor: false,
+              green: false,
+              red: false,
+            },
           });
         })
         .catch((error) => {
-          console.log(error);
+          this.setState({
+            errorDialog: {
+              show: true,
+              text: error.text,
+              title: error.title,
+            },
+          });
         })
       ;
     }
   }
+  changeCarouselIndex = (increment) => {
+    this.setState(({ imageDialog }) => {
+      const index = imageDialog.index;
+      const maxIndex = imageDialog.images.length - 1;
+      let newIndex = index + increment;
+      if (newIndex < 0) {
+        newIndex = maxIndex;
+      } else if (newIndex > maxIndex) {
+        newIndex = 0;
+      }
+      return {
+        imageDialog: Object.assign(
+          {},
+          imageDialog,
+          {
+            index: newIndex,
+          }
+        ),
+      };
+    });
+  };
   deleteSample = (_id) => {
     this.dialogClose();
     this.props.delete(
@@ -83,6 +182,24 @@ class DisplayMicroscopySampleContainer extends React.Component {
       };
     });
   }
+  errorDialogClose = () => {
+    this.setState({
+      errorDialog: {
+        show: false,
+        text: null,
+        title: null,
+      },
+    });
+  }
+  imageDialogClose = () => {
+    this.setState({
+      imageDialog: {
+        images: [],
+        index: 0,
+        show: false,
+      },
+    });
+  }
   inputChange = (field, value) => {
     // check if field is valid and update errors object
     const errors = Object.assign({}, this.props.errors);
@@ -107,11 +224,44 @@ class DisplayMicroscopySampleContainer extends React.Component {
     this.setState({ item: updateObject });
     this.props.updateItem(updateObject);
   }
+  showImage = (channel) => {
+    this.setState(({ images, item }) => {
+      let carouselImages = [];
+      Object.keys(images).forEach((key) => {
+        const title = key !== 'fullColor' ?
+          `${key}: ${item.channels[key].marker}`
+          :
+          null
+        ;
+        if (images[key]) {
+          carouselImages.push({
+            channel: key,
+            image: images[key],
+            title,
+          });
+        }
+      });
+      // reorder carousel
+      const channelIndex = carouselImages.findIndex((image) => {
+        return image.channel === channel;
+      });
+      const toMove = carouselImages.splice(0, channelIndex);
+      carouselImages = carouselImages.concat(toMove);
+      return {
+        imageDialog: {
+          images: carouselImages,
+          index: 0,
+          show: true,
+        },
+      };
+    });
+  }
   render() {
     return (
       <div>
         <DisplayMicroscopySample
           canEdit={ this.props.canEdit }
+          changeCarouselIndex={ this.changeCarouselIndex }
           deleteSample={ this.deleteSample }
           dialog={ {
             close: this.dialogClose,
@@ -123,15 +273,27 @@ class DisplayMicroscopySampleContainer extends React.Component {
           } }
           edit={ this.props.edit }
           errors={ this.props.errors }
-          images={ {
-            blue: this.state.imageBlue,
-            green: this.state.imageGreen,
-            main: this.state.imageMain,
-            red: this.state.imageRed,
-          } }
+          errorDialog={ Object.assign(
+            {},
+            this.state.errorDialog,
+            {
+              close: this.errorDialogClose,
+            }
+          ) }
+          getChannelImage={ this.getChannelImage }
+          imageDialog={ Object.assign(
+            {},
+            this.state.imageDialog,
+            {
+              close: this.imageDialogClose,
+            }
+          ) }
+          images={ this.state.images }
           inputChange={ this.inputChange }
           inputWidth={ this.props.inputWidth }
+          loading={ this.state.loading }
           sample={ this.state.item }
+          showImage={ this.showImage }
         />
       </div>
 

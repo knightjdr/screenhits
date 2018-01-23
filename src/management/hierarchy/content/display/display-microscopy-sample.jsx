@@ -1,3 +1,6 @@
+import ChevronLeft from 'material-ui/svg-icons/navigation/chevron-left';
+import ChevronRight from 'material-ui/svg-icons/navigation/chevron-right';
+import CircularProgress from 'material-ui/CircularProgress';
 import ContentAdd from 'material-ui/svg-icons/content/add';
 import DeleteForever from 'material-ui/svg-icons/action/delete-forever';
 import Dialog from 'material-ui/Dialog';
@@ -94,6 +97,17 @@ class DisplayMicroscopySample extends React.Component {
       null
     ;
   }
+  errorDialogClose = () => {
+    return (
+    [
+      <FlatButton
+        backgroundColor={ this.props.muiTheme.palette.warning }
+        hoverColor={ this.props.muiTheme.palette.warningHover }
+        label="Close"
+        onTouchTap={ this.props.errorDialog.close }
+      />,
+    ]);
+  }
   fillChannel = (color, channel, row) => {
     return [
       <div
@@ -148,6 +162,78 @@ class DisplayMicroscopySample extends React.Component {
       </div>,
     ];
   }
+  imageDialogClose = () => {
+    return (
+    [
+      <FlatButton
+        backgroundColor={ this.props.muiTheme.palette.warning }
+        hoverColor={ this.props.muiTheme.palette.warningHover }
+        label="Close"
+        onTouchTap={ this.props.imageDialog.close }
+      />,
+    ]);
+  }
+  imageDialogContent = (images, index = 0) => {
+    const imageContent = images.length > 0 ?
+      (
+        <img
+          alt={ images[index].title }
+          src={ images[index].image }
+        />
+      )
+      :
+      null
+    ;
+    const imageTitle = (
+      <div
+        style={ {
+          height: 20,
+          marginBottom: 10,
+          textAlign: 'center',
+        } }
+      >
+        { images.length > 0 ? images[index].title : null }
+      </div>
+    );
+    return (
+      <div>
+        { imageTitle }
+        <div
+          style={ {
+            alignItems: 'center',
+            display: 'flex',
+            justifyContent: 'center',
+          } }
+        >
+          {
+            images.length > 1 &&
+            <FloatingActionButton
+              mini={ true }
+              onTouchTap={ () => { this.props.changeCarouselIndex(-1); } }
+              style={ {
+                margin: 20,
+              } }
+            >
+              <ChevronLeft />
+            </FloatingActionButton>
+          }
+          { imageContent }
+          {
+            images.length > 1 &&
+            <FloatingActionButton
+              mini={ true }
+              onTouchTap={ () => { this.props.changeCarouselIndex(1); } }
+              style={ {
+                margin: 20,
+              } }
+            >
+              <ChevronRight />
+            </FloatingActionButton>
+          }
+        </div>
+      </div>
+    );
+  }
   showChannels = (channels) => {
     if (
       channels.blue &&
@@ -182,7 +268,37 @@ class DisplayMicroscopySample extends React.Component {
     }
     return false;
   }
-  showImage = (altText, image) => {
+  showImage = (altText, channel, image, loading) => {
+    let content;
+    if (loading) {
+      content = <CircularProgress />;
+    } else if (image) {
+      content = (
+        <button
+          onClick={ () => { this.props.showImage(channel); } }
+          style={ displayStyle.noButton }
+        >
+          <img
+            alt={ altText }
+            src={ image }
+            style={ {
+              cursor: 'zoom-in',
+              maxHeight: 300,
+              maxWidth: 300,
+            } }
+          />
+        </button>
+      );
+    } else {
+      content = (
+        <FloatingActionButton
+          mini={ true }
+          onTouchTap={ () => { this.props.getChannelImage(channel); } }
+        >
+          <ContentAdd />
+        </FloatingActionButton>
+      );
+    }
     const header = (text) => {
       return (
         <div
@@ -221,23 +337,7 @@ class DisplayMicroscopySample extends React.Component {
             width: 310,
           } }
         >
-          {
-            image ?
-              <img
-                alt={ altText }
-                src={ image }
-                style={ {
-                  maxHeight: 300,
-                  maxWidth: 300,
-                } }
-              />
-              :
-              <FloatingActionButton
-                mini={ true }
-              >
-                <ContentAdd />
-              </FloatingActionButton>
-         }
+          { content }
         </div>
       </div>
     );
@@ -300,7 +400,7 @@ class DisplayMicroscopySample extends React.Component {
               </div>
             }
             {
-              this.props.images.main &&
+              this.props.images.fullColor &&
               <div
                 style={ {
                   display: 'flex',
@@ -308,10 +408,15 @@ class DisplayMicroscopySample extends React.Component {
                   padding: 5,
                 } }
               >
-                { this.showImage('Full color', this.props.images.main) }
-                { this.showImage('Blue', this.props.images.blue) }
-                { this.showImage('Green', this.props.images.green) }
-                { this.showImage('Red', this.props.images.red) }
+                { this.showImage(
+                  'Full color',
+                  'fullColor',
+                  this.props.images.fullColor,
+                  this.props.loading.fullColor
+                ) }
+                { this.showImage('Blue', 'blue', this.props.images.blue, this.props.loading.blue) }
+                { this.showImage('Green', 'green', this.props.images.green, this.props.loading.green) }
+                { this.showImage('Red', 'red', this.props.images.red, this.props.loading.red) }
               </div>
             }
             <div
@@ -469,6 +574,31 @@ class DisplayMicroscopySample extends React.Component {
         >
           { this.props.dialog.text }
         </Dialog>
+        <Dialog
+          actions={ this.errorDialogClose() }
+          modal={ false }
+          onRequestClose={ this.props.errorDialog.close }
+          open={ this.props.errorDialog.show }
+          title={ this.props.errorDialog.title }
+        >
+          { this.props.errorDialog.text }
+        </Dialog>
+        <Dialog
+          actions={ this.imageDialogClose() }
+          contentStyle={ {
+            width: 'auto',
+          } }
+          modal={ false }
+          onRequestClose={ this.props.imageDialog.close }
+          open={ this.props.imageDialog.show }
+        >
+          {
+            this.imageDialogContent(
+              this.props.imageDialog.images,
+              this.props.imageDialog.index
+            )
+          }
+        </Dialog>
       </div>
     );
   }
@@ -476,6 +606,7 @@ class DisplayMicroscopySample extends React.Component {
 
 DisplayMicroscopySample.propTypes = {
   canEdit: PropTypes.bool.isRequired,
+  changeCarouselIndex: PropTypes.func.isRequired,
   deleteSample: PropTypes.func.isRequired,
   dialog: PropTypes.shape({
     close: PropTypes.func,
@@ -486,18 +617,57 @@ DisplayMicroscopySample.propTypes = {
     title: PropTypes.string,
   }).isRequired,
   edit: PropTypes.bool.isRequired,
+  errorDialog: PropTypes.shape({
+    close: PropTypes.func,
+    show: PropTypes.bool,
+    text: PropTypes.string,
+    title: PropTypes.string,
+  }).isRequired,
   errors: PropTypes.shape({
     name: PropTypes.string,
     replicate: PropTypes.string,
   }).isRequired,
+  getChannelImage: PropTypes.func.isRequired,
+  imageDialog: PropTypes.shape({
+    close: PropTypes.func,
+    images: PropTypes.arrayOf(
+      PropTypes.shape({
+        image: PropTypes.string,
+        title: PropTypes.string,
+      }),
+    ),
+    index: PropTypes.number,
+    show: PropTypes.bool,
+  }).isRequired,
   images: PropTypes.shape({
     blue: PropTypes.string,
+    fullColor: PropTypes.string,
     green: PropTypes.string,
-    main: PropTypes.string,
     red: PropTypes.string,
   }).isRequired,
   inputChange: PropTypes.func.isRequired,
   inputWidth: PropTypes.number.isRequired,
+  loading: PropTypes.shape({
+    blue: PropTypes.bool,
+    fullColor: PropTypes.bool,
+    green: PropTypes.bool,
+    red: PropTypes.bool,
+  }).isRequired,
+  muiTheme: PropTypes.shape({
+    palette: PropTypes.shape({
+      buttonColor: PropTypes.string,
+      buttonColorHover: PropTypes.string,
+      keyColor: PropTypes.string,
+      keyColorBorder: PropTypes.string,
+      offWhite: PropTypes.string,
+      primary3Color: PropTypes.string,
+      primary4Color: PropTypes.string,
+      success: PropTypes.string,
+      successHover: PropTypes.string,
+      warning: PropTypes.string,
+      warningHover: PropTypes.string,
+    }),
+  }).isRequired,
   sample: PropTypes.shape({
     _id: PropTypes.number,
     channels: PropTypes.shape({
@@ -519,19 +689,7 @@ DisplayMicroscopySample.propTypes = {
     creationDate: PropTypes.string,
     updateDate: PropTypes.string,
   }).isRequired,
-  muiTheme: PropTypes.shape({
-    palette: PropTypes.shape({
-      buttonColor: PropTypes.string,
-      buttonColorHover: PropTypes.string,
-      keyColor: PropTypes.string,
-      keyColorBorder: PropTypes.string,
-      offWhite: PropTypes.string,
-      success: PropTypes.string,
-      successHover: PropTypes.string,
-      warning: PropTypes.string,
-      warningHover: PropTypes.string,
-    }),
-  }).isRequired,
+  showImage: PropTypes.func.isRequired,
 };
 
 export default muiThemeable()(DisplayMicroscopySample);

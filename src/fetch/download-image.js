@@ -1,12 +1,12 @@
 import fetch from 'isomorphic-fetch';
 
 // retrieves queue from server
-const Download = (fileID, authToken) => {
+const Download = (route, authToken) => {
   return new Promise((resolve, reject) => {
     const headers = new Headers();
     headers.append('Accept', 'application/json');
     headers.append('Auth-Token', authToken);
-    const url = `http://localhost:8003/image/${fileID}`;
+    const url = `http://localhost:8003/${route}`;
     fetch(
       url,
       {

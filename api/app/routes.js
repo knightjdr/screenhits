@@ -66,6 +66,13 @@ const routes = {
         })
       ;
     });
+    app.get('/channel/:fileID/:channel', auth.validate, (req, res) => {
+      image.getChannel(req.params.fileID, req.params.channel, res.locals.user)
+        .then((response) => {
+          routes.response(res, response);
+        })
+      ;
+    });
     app.get('/image/:fileID', auth.validate, (req, res) => {
       image.get(req.params.fileID, res.locals.user)
         .then((response) => {

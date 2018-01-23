@@ -56,5 +56,10 @@ const displayStyle = {
     marginRight: 4,
     maxWidth: 442,
   },
+  noButton: {
+    border: 'none',
+    outline: 0,
+    padding: 0,
+  },
 };
 export default displayStyle;
