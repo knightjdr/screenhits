@@ -20,6 +20,14 @@ const userPermission = require('./modules/user-permission/permission');
 
 const routes = {
   configure: (app) => {
+    // delete analysis tasks
+    app.delete('/analysis/tasks/:id', auth.validate, (req, res) => {
+      tasks.delete(Number(req.params.id), res.locals.user)
+        .then((response) => {
+          routes.response(res, response);
+        })
+      ;
+    });
     // deleting
     app.delete('/management', auth.validate, (req, res) => {
       deleteQuery.item(req.query.target, Number(req.query._id), res.locals.user)
@@ -28,9 +36,9 @@ const routes = {
         })
       ;
     });
-    // delete analysis tasks
-    app.delete('/analysis/tasks/:id', auth.validate, (req, res) => {
-      tasks.delete(Number(req.params.id), res.locals.user)
+    // delete images channels
+    app.delete('/image/:fileID', auth.validate, (req, res) => {
+      image.delete(req.params.fileID, res.locals.user)
         .then((response) => {
           routes.response(res, response);
         })
@@ -128,6 +136,13 @@ const routes = {
         })
       ;
     });
+    app.get('/split/:fileID', auth.validate, (req, res) => {
+      image.splitImage(req.params.fileID, res.locals.user)
+        .then((response) => {
+          routes.response(res, response);
+        })
+      ;
+    });
     // returns sample details according to format
     app.get('/sample', auth.validate, (req, res) => {
       sample.get(Number(req.query.target), req.query.format, res.locals.user)
@@ -190,9 +205,25 @@ const routes = {
         })
       ;
     });
+    // save image(s)
+    app.post('/image/:fileID', auth.validate, (req, res) => {
+      image.save(req.params.fileID, req.body, res.locals.user)
+        .then((response) => {
+          routes.response(res, response);
+        })
+      ;
+    });
     // create new projects, screens or experiments
     app.post('/management', auth.validate, (req, res) => {
       create[req.body.target](req, res.locals.user)
+        .then((response) => {
+          routes.response(res, response);
+        })
+      ;
+    });
+    // get merged image
+    app.post('/merge/:fileID', auth.validate, (req, res) => {
+      image.getMerge(req.params.fileID, req.body, res.locals.user)
         .then((response) => {
           routes.response(res, response);
         })
@@ -208,6 +239,14 @@ const routes = {
     });
     // invalid post routes
     app.post('/*', (req, res) => { routes.invalidRoute(res); });
+    // for updating images (brightness, contrast)
+    app.put('/image', auth.validate, (req, res) => {
+      image.update(req.body, res.locals.user)
+        .then((response) => {
+          routes.response(res, response);
+        })
+      ;
+    });
     // updating projects, screens, etc
     app.put('/management', auth.validate, (req, res) => {
       update.put(req.body, res.locals.user)

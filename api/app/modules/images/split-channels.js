@@ -75,15 +75,15 @@ const Channels = {
   splitAll: (image) => { // takes image buffer
     return new Promise((resolve, reject) => {
       Promise.all([
-        Channels.get(image, ['red']),
-        Channels.get(image, ['green']),
-        Channels.get(image, ['blue']),
+        Channels.getURI(image, ['blue']),
+        Channels.getURI(image, ['green']),
+        Channels.getURI(image, ['red']),
       ])
         .then((splitImages) => {
           resolve({
-            red: splitImages[0],
+            blue: splitImages[0],
             green: splitImages[1],
-            blue: splitImages[2],
+            red: splitImages[2],
           });
         })
         .catch((error) => {

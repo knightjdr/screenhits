@@ -68,13 +68,13 @@ const Create = {
       ])
         .then((values) => {
           objCreate = values[0];
-          return imageConvert(sample.files.file);
+          return imageConvert.toPNG(sample.files.file);
         })
         .then((image) => {
           const filename = sample.files.file.name.replace(/\.[^/.]+$/, '');
           return Promise.all([
             counter.get('sample'),
-            storeImage(image, { project: Number(sample.body.project) }, `${filename}.png`),
+            storeImage.image(image, { project: Number(sample.body.project) }, `${filename}.png`),
           ]);
         })
         .then((values) => {

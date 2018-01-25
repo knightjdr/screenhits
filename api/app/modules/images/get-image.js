@@ -28,7 +28,7 @@ const getImage = {
     return new Promise((resolve, reject) => {
       const chunkBuffer = [];
       const imageObject = {
-        _id: new ObjectId(_id),
+        _id: typeof _id === 'string' ? new ObjectId(_id) : _id,
         root: 'imagefs',
       };
       const readstream = databases.grid().createReadStream(imageObject);
@@ -43,6 +43,27 @@ const getImage = {
       readstream.on('error', (readError) => {
         reject(`There was an error retrieving the image: ${readError}`);
       });
+    });
+  },
+  uriArr: (arr) => {
+    return new Promise((resolve, reject) => {
+      const imageObj = {};
+      const next = (index) => {
+        if (index < arr.length) {
+          getImage.uri(arr[index]._id)
+            .then((uri) => {
+              imageObj[arr[index].channel] = uri;
+              next(index + 1);
+            })
+            .catch((error) => {
+              reject(`There was an error deleting the images: ${error}`);
+            })
+          ;
+        } else {
+          resolve(imageObj);
+        }
+      };
+      next(0);
     });
   },
 };

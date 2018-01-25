@@ -10,11 +10,25 @@ import IconButton from 'material-ui/IconButton';
 import HelpIcon from 'material-ui/svg-icons/action/help';
 import muiThemeable from 'material-ui/styles/muiThemeable';
 import PropTypes from 'prop-types';
+import Slider from 'material-ui/Slider';
+import Snackbar from 'material-ui/Snackbar';
 import React from 'react';
+import ReactTooltip from 'react-tooltip';
 import TextField from 'material-ui/TextField';
+import Toggle from 'material-ui/Toggle';
+import UpdateIcon from 'material-ui/svg-icons/action/update';
 
 import displayStyle from './display-style';
 import Fields from '../../../../modules/fields';
+
+const toggleStyle = {
+  thumbOff: {
+    backgroundColor: '#bdbdbd',
+  },
+  trackOff: {
+    backgroundColor: '#9e9e9e',
+  },
+};
 
 class DisplayMicroscopySample extends React.Component {
   channelHeader = () => {
@@ -42,6 +56,17 @@ class DisplayMicroscopySample extends React.Component {
       header(4, 'Antibody'),
       header(5, 'Dilution'),
     ];
+  }
+  confirmClear = () => {
+    return (
+    [
+      <FlatButton
+        backgroundColor={ this.props.muiTheme.palette.success }
+        hoverColor={ this.props.muiTheme.palette.successHover }
+        label="Confirm"
+        onTouchTap={ () => { this.props.clearImages(); } }
+      />,
+    ]);
   }
   confirmDeletion = () => {
     return (
@@ -162,6 +187,23 @@ class DisplayMicroscopySample extends React.Component {
       </div>,
     ];
   }
+  imagePanelHeader = (text) => {
+    return (
+      <div
+        key={ `${text}-header` }
+        style={ Object.assign(
+          {},
+          displayStyle.gridHeader,
+          {
+            backgroundColor: this.props.muiTheme.palette.keyColor,
+            marginBottom: 10,
+          }
+        ) }
+      >
+        { text }
+      </div>
+    );
+  };
   imageDialogClose = () => {
     return (
     [
@@ -234,6 +276,163 @@ class DisplayMicroscopySample extends React.Component {
       </div>
     );
   }
+  imageOptions = () => {
+    return (
+      <div
+        style={ {
+          margin: 5,
+        } }
+      >
+        { this.imagePanelHeader('Options') }
+        <div
+          style={ {
+            alignItems: 'center',
+            display: 'flex',
+            flexDirection: 'column',
+            height: 310,
+            justifyContent: 'center',
+            padding: 5,
+            width: 310,
+          } }
+        >
+          <div>
+            <FlatButton
+              backgroundColor={ this.props.muiTheme.palette.buttonColor }
+              hoverColor={ this.props.muiTheme.palette.buttonColorHover }
+              label="Split all"
+              onTouchTap={ () => { this.props.splitAll(); } }
+              style={ {
+                marginBottom: 20,
+              } }
+            />
+          </div>
+          <div
+            style={ {
+              alignItems: 'center',
+              display: 'flex',
+              marginBottom: 20,
+            } }
+          >
+            <div
+              style={ {
+                display: 'flex',
+                flexDirection: 'column',
+                marginRight: 10,
+              } }
+            >
+              <Toggle
+                label="B"
+                onToggle={ () => { this.props.toggleMerge('blue'); } }
+                thumbStyle={ toggleStyle.thumbOff }
+                thumbSwitchedStyle={ {
+                  backgroundColor: this.props.muiTheme.palette.buttonColor,
+                } }
+                toggled={ this.props.mergeOptions.blue }
+                trackStyle={ toggleStyle.trackOff }
+                trackSwitchedStyle={ {
+                  backgroundColor: this.props.muiTheme.palette.buttonColorHover,
+                } }
+              />
+              <Toggle
+                label="G"
+                onToggle={ () => { this.props.toggleMerge('green'); } }
+                thumbStyle={ toggleStyle.thumbOff }
+                thumbSwitchedStyle={ {
+                  backgroundColor: this.props.muiTheme.palette.success,
+                } }
+                toggled={ this.props.mergeOptions.green }
+                trackStyle={ toggleStyle.trackOff }
+                trackSwitchedStyle={ {
+                  backgroundColor: this.props.muiTheme.palette.successHover,
+                } }
+              />
+              <Toggle
+                label="R"
+                onToggle={ () => { this.props.toggleMerge('red'); } }
+                thumbStyle={ toggleStyle.thumbOff }
+                thumbSwitchedStyle={ {
+                  backgroundColor: this.props.muiTheme.palette.warning,
+                } }
+                toggled={ this.props.mergeOptions.red }
+                trackStyle={ toggleStyle.trackOff }
+                trackSwitchedStyle={ {
+                  backgroundColor: this.props.muiTheme.palette.warningHover,
+                } }
+              />
+            </div>
+            <FlatButton
+              backgroundColor={ this.props.muiTheme.palette.buttonColor }
+              hoverColor={ this.props.muiTheme.palette.buttonColorHover }
+              label="Merge"
+              onTouchTap={ () => { this.props.mergeChannels(); } }
+            />
+          </div>
+          <div
+            style={ {
+              marginBottom: 20,
+            } }
+          >
+            {
+              this.props.isSaving ?
+                <div
+                  style={ {
+                    height: 36,
+                  } }
+                >
+                  <CircularProgress
+                    size={ 30 }
+                    thickness={ 3 }
+                  />
+                </div>
+                : [
+                  <FlatButton
+                    backgroundColor={ this.props.muiTheme.palette.success }
+                    data-tip={ true }
+                    data-for="saveImages"
+                    hoverColor={ this.props.muiTheme.palette.successHover }
+                    label="Save"
+                    key="SaveButton"
+                    onTouchTap={ () => { this.props.saveImages(); } }
+                  />,
+                  <ReactTooltip
+                    effect="solid"
+                    id="saveImages"
+                    key="SaveButtonTooltip"
+                  >
+                    Save all images and settings
+                  </ReactTooltip>,
+                ]
+            }
+          </div>
+          <div>
+            {
+              this.props.isClearing ?
+                <div
+                  style={ {
+                    height: 36,
+                  } }
+                >
+                  <CircularProgress
+                    size={ 30 }
+                    thickness={ 3 }
+                  />
+                </div>
+                :
+                <FlatButton
+                  backgroundColor={ this.props.muiTheme.palette.warning }
+                  hoverColor={ this.props.muiTheme.palette.warning }
+                  label="Clear"
+                  onTouchTap={ () => { this.props.dialog.open('clear'); } }
+                  style={ {
+                    marginBottom: 20,
+                  } }
+                />
+            }
+          </div>
+        </div>
+      </div>
+    );
+  }
   showChannels = (channels) => {
     if (
       channels.blue &&
@@ -272,14 +471,198 @@ class DisplayMicroscopySample extends React.Component {
     let content;
     if (loading) {
       content = <CircularProgress />;
+    } else if (
+      image &&
+      channel === 'fullColor'
+    ) {
+      content = (
+        <div
+          style={ {
+            alignSelf: 'flex-start',
+          } }
+        >
+          <button
+            onClick={ () => { this.props.showImage(channel); } }
+            style={ displayStyle.noButton }
+          >
+            <img
+              alt={ altText }
+              src={ image }
+              style={ {
+                cursor: 'zoom-in',
+                display: 'block',
+                maxHeight: 300,
+                maxWidth: 300,
+              } }
+            />
+          </button>
+        </div>
+      );
+    } else if (image) {
+      content = (
+        <div
+          style={ {
+            display: 'flex',
+            flexDirection: 'column',
+          } }
+        >
+          <button
+            onClick={ () => { this.props.showImage(channel); } }
+            style={ displayStyle.noButton }
+          >
+            <img
+              alt={ altText }
+              src={ image }
+              style={ {
+                cursor: 'zoom-in',
+                display: 'block',
+                maxHeight: 300,
+                maxWidth: 300,
+              } }
+            />
+          </button>
+          <div
+            style={ {
+              alignItems: 'center',
+              display: 'grid',
+              gridTemplateColumns: '20px auto 40px',
+              gridTemplateRows: '40px 40px',
+              justifyItems: 'center',
+              width: '100%',
+            } }
+          >
+            <div
+              style={ {
+                justifySelf: 'start',
+                gridColumn: 1,
+                gridRow: 1,
+                marginTop: 3,
+              } }
+            >
+              B:
+            </div>
+            <div
+              style={ {
+                gridColumn: 2,
+                gridRow: 1,
+                justifySelf: 'stretch',
+              } }
+            >
+              <Slider
+                defaultValue={ 0 }
+                max={ 1 }
+                min={ -1 }
+                onChange={ (e, value) => { this.props.changeBrightness(channel, value); } }
+                sliderStyle={ {
+                  margin: '10px 0 5px 0',
+                } }
+                value={ this.props.brightness[channel] }
+              />
+            </div>
+            <div
+              style={ {
+                justifySelf: 'start',
+                gridColumn: 1,
+                gridRow: 2,
+                marginTop: 3,
+              } }
+            >
+              C:
+            </div>
+            <div
+              style={ {
+                gridColumn: 2,
+                gridRow: 2,
+                justifySelf: 'stretch',
+              } }
+            >
+              <Slider
+                defaultValue={ 0 }
+                max={ 1 }
+                min={ -1 }
+                onChange={ (e, value) => { this.props.changeContrast(channel, value); } }
+                sliderStyle={ {
+                  margin: '10px 0 5px 0',
+                } }
+                value={ this.props.contrast[channel] }
+              />
+            </div>
+            <div
+              style={ {
+                gridColumn: 3,
+                gridRow: '1 / 3',
+              } }
+            >
+              <IconButton
+                onTouchTap={ () => { this.props.updateBrightContrast(channel); } }
+                tooltip="Update brightness and contrast"
+                tooltipPosition="top-center"
+              >
+                <UpdateIcon />
+              </IconButton>
+            </div>
+          </div>
+        </div>
+      );
+    } else {
+      content = ([
+        <FloatingActionButton
+          data-for={ `channel${channel}Button` }
+          data-tip={ true }
+          key="channelFab"
+          mini={ true }
+          onTouchTap={ () => { this.props.getChannelImage(channel); } }
+        >
+          <ContentAdd />
+        </FloatingActionButton>,
+        <ReactTooltip
+          effect="solid"
+          id={ `channel${channel}Button` }
+          key="channelTooltip"
+        >
+          { `Split ${channel} channel` }
+        </ReactTooltip>,
+      ]);
+    }
+    return (
+      <div
+        style={ {
+          alignItems: 'center',
+          display: 'flex',
+          flexDirection: 'column',
+          margin: 5,
+        } }
+      >
+        { this.imagePanelHeader(altText) }
+        <div
+          style={ {
+            alignItems: 'center',
+            backgroundColor: '#e0e0e0',
+            display: 'flex',
+            height: 'auto',
+            justifyContent: 'center',
+            minHeight: 304,
+            padding: 5,
+            width: 310,
+          } }
+        >
+          { content }
+        </div>
+      </div>
+    );
+  }
+  showMerge = (image, loading) => {
+    let content;
+    if (loading) {
+      content = <CircularProgress />;
     } else if (image) {
       content = (
         <button
-          onClick={ () => { this.props.showImage(channel); } }
+          onClick={ () => { this.props.showImage('merge'); } }
           style={ displayStyle.noButton }
         >
           <img
-            alt={ altText }
+            alt="Merge"
             src={ image }
             style={ {
               cursor: 'zoom-in',
@@ -291,31 +674,11 @@ class DisplayMicroscopySample extends React.Component {
       );
     } else {
       content = (
-        <FloatingActionButton
-          mini={ true }
-          onTouchTap={ () => { this.props.getChannelImage(channel); } }
-        >
-          <ContentAdd />
-        </FloatingActionButton>
-      );
-    }
-    const header = (text) => {
-      return (
-        <div
-          key={ `${text}-header` }
-          style={ Object.assign(
-            {},
-            displayStyle.gridHeader,
-            {
-              backgroundColor: this.props.muiTheme.palette.keyColor,
-              marginBottom: 10,
-            }
-          ) }
-        >
-          { text }
+        <div>
+          Merge
         </div>
       );
-    };
+    }
     return (
       <div
         style={ {
@@ -325,7 +688,7 @@ class DisplayMicroscopySample extends React.Component {
           margin: 5,
         } }
       >
-        { header(altText) }
+        { this.imagePanelHeader('Merge') }
         <div
           style={ {
             alignItems: 'center',
@@ -417,6 +780,8 @@ class DisplayMicroscopySample extends React.Component {
                 { this.showImage('Blue', 'blue', this.props.images.blue, this.props.loading.blue) }
                 { this.showImage('Green', 'green', this.props.images.green, this.props.loading.green) }
                 { this.showImage('Red', 'red', this.props.images.red, this.props.loading.red) }
+                { this.showMerge(this.props.images.merge, this.props.loading.merge) }
+                { this.imageOptions() }
               </div>
             }
             <div
@@ -566,6 +931,19 @@ class DisplayMicroscopySample extends React.Component {
           This action will permanently delete the sample. Press confirm to proceed.
         </Dialog>
         <Dialog
+          actions={ [
+            this.confirmClear(),
+            this.dialogClose(),
+          ] }
+          modal={ false }
+          onRequestClose={ this.props.dialog.close }
+          open={ this.props.dialog.clear }
+          title="Confirmation"
+        >
+          This action will permanently remove images in the red, green, blue and
+          merged channels from the database and all settings will be returned to defaults.
+        </Dialog>
+        <Dialog
           actions={ this.dialogClose() }
           modal={ false }
           onRequestClose={ this.props.dialog.close }
@@ -599,16 +977,38 @@ class DisplayMicroscopySample extends React.Component {
             )
           }
         </Dialog>
+        <Snackbar
+          autoHideDuration={ this.props.snackbar.duration }
+          message={ this.props.snackbar.message }
+          open={ this.props.snackbar.open }
+          onRequestClose={ this.props.snackbar.close }
+        />
       </div>
     );
   }
 }
 
 DisplayMicroscopySample.propTypes = {
+  brightness: PropTypes.shape({
+    blue: PropTypes.number,
+    green: PropTypes.number,
+    merge: PropTypes.number,
+    red: PropTypes.number,
+  }).isRequired,
   canEdit: PropTypes.bool.isRequired,
+  changeBrightness: PropTypes.func.isRequired,
   changeCarouselIndex: PropTypes.func.isRequired,
+  changeContrast: PropTypes.func.isRequired,
+  clearImages: PropTypes.func.isRequired,
+  contrast: PropTypes.shape({
+    blue: PropTypes.number,
+    green: PropTypes.number,
+    merge: PropTypes.number,
+    red: PropTypes.number,
+  }).isRequired,
   deleteSample: PropTypes.func.isRequired,
   dialog: PropTypes.shape({
+    clear: PropTypes.bool,
     close: PropTypes.func,
     delete: PropTypes.bool,
     help: PropTypes.bool,
@@ -643,13 +1043,23 @@ DisplayMicroscopySample.propTypes = {
     blue: PropTypes.string,
     fullColor: PropTypes.string,
     green: PropTypes.string,
+    merge: PropTypes.string,
     red: PropTypes.string,
   }).isRequired,
   inputChange: PropTypes.func.isRequired,
   inputWidth: PropTypes.number.isRequired,
+  isClearing: PropTypes.bool.isRequired,
+  isSaving: PropTypes.bool.isRequired,
   loading: PropTypes.shape({
     blue: PropTypes.bool,
     fullColor: PropTypes.bool,
+    green: PropTypes.bool,
+    merge: PropTypes.bool,
+    red: PropTypes.bool,
+  }).isRequired,
+  mergeChannels: PropTypes.func.isRequired,
+  mergeOptions: PropTypes.shape({
+    blue: PropTypes.bool,
     green: PropTypes.bool,
     red: PropTypes.bool,
   }).isRequired,
@@ -689,7 +1099,17 @@ DisplayMicroscopySample.propTypes = {
     creationDate: PropTypes.string,
     updateDate: PropTypes.string,
   }).isRequired,
+  saveImages: PropTypes.func.isRequired,
   showImage: PropTypes.func.isRequired,
+  snackbar: PropTypes.shape({
+    close: PropTypes.func,
+    duration: PropTypes.number,
+    message: PropTypes.string,
+    open: PropTypes.bool,
+  }).isRequired,
+  splitAll: PropTypes.func.isRequired,
+  toggleMerge: PropTypes.func.isRequired,
+  updateBrightContrast: PropTypes.func.isRequired,
 };
 
 export default muiThemeable()(DisplayMicroscopySample);
