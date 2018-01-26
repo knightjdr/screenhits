@@ -27,13 +27,11 @@ class DisplayMicroscopySampleContainer extends React.Component {
       brightness: {
         blue: 0,
         green: 0,
-        merge: 0,
         red: 0,
       },
       contrast: {
         blue: 0,
         green: 0,
-        merge: 0,
         red: 0,
       },
       dialog: {
@@ -75,6 +73,7 @@ class DisplayMicroscopySampleContainer extends React.Component {
         green: false,
         red: false,
       },
+      mergeOutOfDate: false,
       snackbar: Object.assign({}, reset.snackbar),
       warning: null,
     };
@@ -113,10 +112,10 @@ class DisplayMicroscopySampleContainer extends React.Component {
       };
     });
     DownloadImage(`channel/${this.props.item.files_id}/${channel}`, this.props.token)
-      .then((image) => {
+      .then((data) => {
         this.setState(({ images, loading, mergeOptions }) => {
           const channelImageObj = {};
-          channelImageObj[channel] = image;
+          channelImageObj[channel] = data.image;
           channelLoadObj[channel] = false;
           const newMergeOptions = Object.assign({}, mergeOptions);
           newMergeOptions[channel] = true;
@@ -149,17 +148,27 @@ class DisplayMicroscopySampleContainer extends React.Component {
   getFullColorImage = () => {
     if (this.props.item.files_id) {
       DownloadImage(`image/${this.props.item.files_id}`, this.props.token)
-        .then((retrievedImages) => {
-          this.setState(({ images, mergeOptions }) => {
+        .then((retrievedData) => {
+          this.setState(({ brightness, contrast, images, mergeOptions }) => {
             const newMergeOptions = Object.assign({}, mergeOptions);
-            newMergeOptions.blue = Boolean(retrievedImages.blue);
-            newMergeOptions.green = Boolean(retrievedImages.green);
-            newMergeOptions.red = Boolean(retrievedImages.red);
+            newMergeOptions.blue = Boolean(retrievedData.image.blue);
+            newMergeOptions.green = Boolean(retrievedData.image.green);
+            newMergeOptions.red = Boolean(retrievedData.image.red);
             return {
+              brightness: Object.assign(
+                {},
+                brightness,
+                retrievedData.metadata.brightness,
+              ),
+              contrast: Object.assign(
+                {},
+                contrast,
+                retrievedData.metadata.contrast,
+              ),
               images: Object.assign(
                 {},
                 images,
-                retrievedImages
+                retrievedData.image
               ),
               loading: {
                 blue: false,
@@ -359,7 +368,11 @@ class DisplayMicroscopySampleContainer extends React.Component {
       });
       DownloadImagePost(
         `merge/${this.props.item.files_id}`,
-        this.state.mergeOptions,
+        {
+          brightness: this.state.brightness,
+          contrast: this.state.contrast,
+          toMerge: this.state.mergeOptions,
+        },
         this.props.token
       )
         .then((image) => {
@@ -379,6 +392,7 @@ class DisplayMicroscopySampleContainer extends React.Component {
                   merge: false,
                 }
               ),
+              mergeOutOfDate: false,
             };
           });
         })
@@ -405,12 +419,14 @@ class DisplayMicroscopySampleContainer extends React.Component {
         isSaving: true,
       });
       const body = {
+        brightness: this.state.brightness,
         channels: {
           blue: this.state.images.blue,
           green: this.state.images.green,
           merge: this.state.images.merge,
           red: this.state.images.red,
         },
+        contrast: this.state.contrast,
       };
       SaveImages(`image/${this.props.item.files_id}`, body, this.props.token)
         .then(() => {
@@ -489,10 +505,20 @@ class DisplayMicroscopySampleContainer extends React.Component {
       .then((splitImages) => {
         this.setState(({ images }) => {
           return {
+            brightness: {
+              blue: 0,
+              green: 0,
+              red: 0,
+            },
+            contrast: {
+              blue: 0,
+              green: 0,
+              red: 0,
+            },
             images: Object.assign(
               {},
               images,
-              splitImages
+              splitImages.image
             ),
             loading: {
               blue: false,
@@ -529,11 +555,22 @@ class DisplayMicroscopySampleContainer extends React.Component {
       };
     });
   }
-  updateBrightContrast = (channel) => {
+  resetBrightnessContrast = (channel) => {
+    this.changeBrightness(channel, 0);
+    this.changeContrast(channel, 0);
+    this.updateBrightContrast(channel, 0, 0);
+  }
+  updateBrightContrast = (channel, brightness = null, contrast = null) => {
+    const validBV = (value) => {
+      return value === 0 ||
+        (value > 0 && value <= 1) ||
+        (value < 0 && value >= -1)
+      ;
+    };
     const body = {
-      brightness: this.state.brightness[channel],
+      brightness: validBV(brightness) ? brightness : this.state.brightness[channel],
       channel,
-      contrast: this.state.contrast[channel],
+      contrast: validBV(contrast) ? contrast : this.state.contrast[channel],
       fileID: this.props.item.files_id,
     };
     this.setState(({ loading }) => {
@@ -553,6 +590,7 @@ class DisplayMicroscopySampleContainer extends React.Component {
           return {
             images: newImages,
             loading: newLoading,
+            mergeOutOfDate: true,
           };
         });
       })
@@ -616,8 +654,10 @@ class DisplayMicroscopySampleContainer extends React.Component {
           isClearing={ this.state.isClearing }
           isSaving={ this.state.isSaving }
           loading={ this.state.loading }
-          mergeOptions={ this.state.mergeOptions }
           mergeChannels={ this.mergeChannels }
+          mergeOptions={ this.state.mergeOptions }
+          mergeOutOfDate={ this.state.mergeOutOfDate }
+          resetBrightnessContrast={ this.resetBrightnessContrast }
           sample={ this.state.item }
           saveImages={ this.saveImages }
           showImage={ this.showImage }

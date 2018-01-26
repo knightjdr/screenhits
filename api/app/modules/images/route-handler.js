@@ -9,26 +9,58 @@ const query = require('../query/query');
 const store = require('./store-image');
 
 const RouteHandler = {
+  checkAccess: {
+    edit: (imageInfo, user) => {
+      return new Promise((resolveAccess, rejectAccess) => {
+        if (
+          !imageInfo ||
+          !imageInfo.metadata ||
+          !imageInfo.metadata.project
+        ) {
+          rejectAccess('Image cannot be found');
+        }
+        permission.canEdit.project([imageInfo.metadata.project], user)
+          .then(() => {
+            resolveAccess();
+          })
+          .catch(() => {
+            rejectAccess('User does not have permission to edit this image');
+          })
+        ;
+      });
+    },
+    view: (imageInfo, user) => {
+      return new Promise((resolveAccess, rejectAccess) => {
+        if (
+          !imageInfo ||
+          !imageInfo.metadata ||
+          !imageInfo.metadata.project
+        ) {
+          rejectAccess('Image cannot be found');
+        }
+        permission.canView.project([imageInfo.metadata.project], user)
+          .then(() => {
+            resolveAccess();
+          })
+          .catch(() => {
+            rejectAccess('User does not have permission to access this image');
+          })
+        ;
+      });
+    },
+  },
   get: (fileID, user) => {
     return new Promise((resolve) => {
-      const checkAccess = (imageInfo) => {
-        return new Promise((resolveAccess, rejectAccess) => {
-          if (
-            !imageInfo ||
-            !imageInfo.metadata ||
-            !imageInfo.metadata.project
-          ) {
-            rejectAccess('Image cannot be found');
-          }
-          permission.canView.project([imageInfo.metadata.project], user)
-            .then(() => {
-              resolveAccess();
-            })
-            .catch(() => {
-              rejectAccess('User does not have permission to access this image');
-            })
-          ;
+      const getChannelMetadata = (channelImages) => {
+        const metadata = {
+          brightness: {},
+          contrast: {},
+        };
+        channelImages.forEach((image) => {
+          metadata.brightness[image.metadata.channel] = image.metadata.brightness;
+          metadata.contrast[image.metadata.channel] = image.metadata.contrast;
         });
+        return metadata;
       };
       const getImageArr = (channelItems, _id) => {
         const imageIDs = [
@@ -46,17 +78,20 @@ const RouteHandler = {
         return imageIDs;
       };
       const _id = new ObjectId(fileID);
+      let metadata;
       query.get('imagefs.files', { _id }, { metadata: 1 }, 'findOne')
         .then((imageInfo) => {
           // confirm project access and see if channel images exist
           return Promise.all([
-            checkAccess(imageInfo),
-            query.get('imagefs.files', { 'metadata.parentID': _id }, { _id: 1, 'metadata.channel': 1 }),
+            RouteHandler.checkAccess.view(imageInfo, user),
+            query.get('imagefs.files', { 'metadata.parentID': _id }, { _id: 1, metadata: 1 }),
           ]);
         })
         .then((values) => {
+          const channelImages = values[1];
+          metadata = getChannelMetadata(channelImages);
           // get channel images
-          const imageIDs = getImageArr(values[1], _id);
+          const imageIDs = getImageArr(channelImages, _id);
           return getImage.uriArr(imageIDs);
         })
         .then((images) => {
@@ -65,6 +100,7 @@ const RouteHandler = {
             clientResponse: {
               status: 200,
               image: images,
+              metadata,
               message: 'Image retrieved',
             },
           });
@@ -83,30 +119,11 @@ const RouteHandler = {
   },
   getChannel: (fileID, channel, user) => {
     return new Promise((resolve) => {
-      const checkAccess = (imageInfo) => {
-        return new Promise((resolveAccess, rejectAccess) => {
-          if (
-            !imageInfo ||
-            !imageInfo.metadata ||
-            !imageInfo.metadata.project
-          ) {
-            rejectAccess('Image cannot be found');
-          }
-          permission.canView.project([imageInfo.metadata.project], user)
-            .then(() => {
-              resolveAccess();
-            })
-            .catch(() => {
-              rejectAccess('User does not have permission to access this image');
-            })
-          ;
-        });
-      };
       const _id = new ObjectId(fileID);
       query.get('imagefs.files', { _id }, { metadata: 1 }, 'findOne')
         .then((imageInfo) => {
           return Promise.all([
-            checkAccess(imageInfo),
+            RouteHandler.checkAccess.view(imageInfo, user),
             getImage.buffer(fileID),
           ]);
         })
@@ -137,45 +154,53 @@ const RouteHandler = {
   },
   getMerge: (fileID, options, user) => {
     return new Promise((resolve) => {
-      const channelsArr = (channelsObj) => {
-        const channels = [];
-        Object.entries(channelsObj).forEach(([channel, show]) => {
-          if (show) {
-            channels.push(channel);
-          }
-        });
-        return channels;
-      };
-      const checkAccess = (imageInfo) => {
-        return new Promise((resolveAccess, rejectAccess) => {
-          if (
-            !imageInfo ||
-            !imageInfo.metadata ||
-            !imageInfo.metadata.project
-          ) {
-            rejectAccess('Image cannot be found');
-          }
-          permission.canView.project([imageInfo.metadata.project], user)
-            .then(() => {
-              resolveAccess();
-            })
-            .catch(() => {
-              rejectAccess('User does not have permission to access this image');
-            })
-          ;
-        });
-      };
       const _id = new ObjectId(fileID);
-      const channels = channelsArr(options);
       query.get('imagefs.files', { _id }, { metadata: 1 }, 'findOne')
         .then((imageInfo) => {
           return Promise.all([
-            checkAccess(imageInfo),
+            RouteHandler.checkAccess.view(imageInfo, user),
             getImage.buffer(fileID),
           ]);
         })
         .then((values) => {
-          return Channels.getURI(values[1], channels);
+          return Channels.splitAllBuffer(values[1]);
+        })
+        .then((channelBuffers) => {
+          return Promise.all([
+            options.toMerge.red ?
+              Adjustments.brightContrast(
+                channelBuffers.red,
+                'red',
+                options.brightness.red,
+                options.contrast.red
+              )
+              :
+              Promise.resolve(),
+            options.toMerge.green ?
+              Adjustments.brightContrast(
+                channelBuffers.green,
+                'green',
+                options.brightness.green,
+                options.contrast.green
+              )
+              :
+              Promise.resolve(),
+            options.toMerge.blue ?
+              Adjustments.brightContrast(
+                channelBuffers.blue,
+                'blue',
+                options.brightness.blue,
+                options.contrast.blue
+              )
+              :
+              Promise.resolve(),
+          ]);
+        })
+        .then((images) => {
+          return Channels.merge(images);
+        })
+        .then((buffer) => {
+          return imageConvert.bufferToUri(buffer);
         })
         .then((image) => {
           resolve({
@@ -201,30 +226,11 @@ const RouteHandler = {
   },
   delete: (fileID, user) => {
     return new Promise((resolve) => {
-      const checkAccess = (imageInfo) => {
-        return new Promise((resolveAccess, rejectAccess) => {
-          if (
-            !imageInfo ||
-            !imageInfo.metadata ||
-            !imageInfo.metadata.project
-          ) {
-            rejectAccess('Image cannot be found');
-          }
-          permission.canEdit.project([imageInfo.metadata.project], user)
-            .then(() => {
-              resolveAccess();
-            })
-            .catch(() => {
-              rejectAccess('User does not have permission to edit this image');
-            })
-          ;
-        });
-      };
       const _id = new ObjectId(fileID);
       query.get('imagefs.files', { _id }, { metadata: 1 }, 'findOne')
         .then((imageInfo) => {
           return Promise.all([
-            checkAccess(imageInfo),
+            RouteHandler.checkAccess.edit(imageInfo, user),
             query.get('imagefs.files', { 'metadata.parentID': _id }, { _id: 1 }),
           ]);
         })
@@ -255,30 +261,13 @@ const RouteHandler = {
   },
   save: (fileID, body, user) => {
     return new Promise((resolve) => {
-      const checkAccess = (imageInfo) => {
-        return new Promise((resolveAccess, rejectAccess) => {
-          if (
-            !imageInfo ||
-            !imageInfo.metadata ||
-            !imageInfo.metadata.project
-          ) {
-            rejectAccess('Image cannot be found');
-          }
-          permission.canEdit.project([imageInfo.metadata.project], user)
-            .then(() => {
-              resolveAccess();
-            })
-            .catch(() => {
-              rejectAccess('User does not have permission to edit this image');
-            })
-          ;
-        });
-      };
-      const setMetadata = (channels, parentID) => {
+      const setMetadata = (channels, parentID, brightness, contrast) => {
         const metadata = {};
         channels.forEach((channel) => {
           metadata[channel] = {
+            brightness: brightness[channel],
             channel,
+            contrast: contrast[channel],
             parentID,
           };
         });
@@ -288,7 +277,7 @@ const RouteHandler = {
       let convertedImages;
       query.get('imagefs.files', { _id }, { metadata: 1 }, 'findOne')
         .then((imageInfo) => {
-          return checkAccess(imageInfo);
+          return RouteHandler.checkAccess.edit(imageInfo, user);
         })
         .then(() => {
           return Promise.all([
@@ -303,7 +292,10 @@ const RouteHandler = {
         })
         .then(() => {
           const storeChannels = Object.keys(convertedImages);
-          return store.images(convertedImages, setMetadata(storeChannels, _id));
+          return store.images(
+            convertedImages,
+            setMetadata(storeChannels, _id, body.brightness, body.contrast)
+          );
         })
         .then(() => {
           resolve({
@@ -328,35 +320,16 @@ const RouteHandler = {
   },
   splitImage: (fileID, user) => {
     return new Promise((resolve) => {
-      const checkAccess = (imageInfo) => {
-        return new Promise((resolveAccess, rejectAccess) => {
-          if (
-            !imageInfo ||
-            !imageInfo.metadata ||
-            !imageInfo.metadata.project
-          ) {
-            rejectAccess('Image cannot be found');
-          }
-          permission.canView.project([imageInfo.metadata.project], user)
-            .then(() => {
-              resolveAccess();
-            })
-            .catch(() => {
-              rejectAccess('User does not have permission to access this image');
-            })
-          ;
-        });
-      };
       const _id = new ObjectId(fileID);
       query.get('imagefs.files', { _id }, { metadata: 1 }, 'findOne')
         .then((imageInfo) => {
           return Promise.all([
-            checkAccess(imageInfo),
+            RouteHandler.checkAccess.view(imageInfo, user),
             getImage.buffer(fileID),
           ]);
         })
         .then((values) => {
-          return Channels.splitAll(values[1]);
+          return Channels.splitAllUri(values[1]);
         })
         .then((images) => {
           resolve({
@@ -382,30 +355,11 @@ const RouteHandler = {
   },
   update: (body, user) => {
     return new Promise((resolve) => {
-      const checkAccess = (imageInfo) => {
-        return new Promise((resolveAccess, rejectAccess) => {
-          if (
-            !imageInfo ||
-            !imageInfo.metadata ||
-            !imageInfo.metadata.project
-          ) {
-            rejectAccess('Image cannot be found');
-          }
-          permission.canView.project([imageInfo.metadata.project], user)
-            .then(() => {
-              resolveAccess();
-            })
-            .catch(() => {
-              rejectAccess('User does not have permission to access this image');
-            })
-          ;
-        });
-      };
       const _id = new ObjectId(body.fileID);
       query.get('imagefs.files', { _id }, { metadata: 1 }, 'findOne')
         .then((imageInfo) => {
           return Promise.all([
-            checkAccess(imageInfo),
+            RouteHandler.checkAccess.view(imageInfo, user),
             getImage.buffer(body.fileID),
           ]);
         })
@@ -414,7 +368,7 @@ const RouteHandler = {
           return Channels.getBuffer(image, [body.channel]);
         })
         .then((buffer) => {
-          return Adjustments.brightContrast(buffer, body.brightness, body.contrast);
+          return Adjustments.brightContrast(buffer, body.channel, body.brightness, body.contrast);
         })
         .then((buffer) => {
           return imageConvert.bufferToUri(buffer);

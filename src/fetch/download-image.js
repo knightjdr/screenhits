@@ -20,7 +20,10 @@ const Download = (route, authToken) => {
     })
     .then((json) => {
       if (json.status === 200) {
-        resolve(json.image);
+        resolve({
+          image: json.image,
+          metadata: json.metadata,
+        });
       } else {
         reject({
           title: 'Error',

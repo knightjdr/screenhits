@@ -6,6 +6,7 @@ import DeleteForever from 'material-ui/svg-icons/action/delete-forever';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import FloatingActionButton from 'material-ui/FloatingActionButton';
+import FontAwesome from 'react-fontawesome';
 import IconButton from 'material-ui/IconButton';
 import HelpIcon from 'material-ui/svg-icons/action/help';
 import muiThemeable from 'material-ui/styles/muiThemeable';
@@ -14,6 +15,7 @@ import Slider from 'material-ui/Slider';
 import Snackbar from 'material-ui/Snackbar';
 import React from 'react';
 import ReactTooltip from 'react-tooltip';
+import RestoreIcon from 'material-ui/svg-icons/action/restore';
 import TextField from 'material-ui/TextField';
 import Toggle from 'material-ui/Toggle';
 import UpdateIcon from 'material-ui/svg-icons/action/update';
@@ -469,7 +471,10 @@ class DisplayMicroscopySample extends React.Component {
   }
   showImage = (altText, channel, image, loading) => {
     let content;
-    if (loading) {
+    if (
+      !image &&
+      loading
+    ) {
       content = <CircularProgress />;
     } else if (
       image &&
@@ -508,7 +513,13 @@ class DisplayMicroscopySample extends React.Component {
         >
           <button
             onClick={ () => { this.props.showImage(channel); } }
-            style={ displayStyle.noButton }
+            style={ Object.assign(
+              {},
+              displayStyle.noButton,
+              {
+                position: 'relative',
+              }
+            ) }
           >
             <img
               alt={ altText }
@@ -520,12 +531,25 @@ class DisplayMicroscopySample extends React.Component {
                 maxWidth: 300,
               } }
             />
+            {
+              loading &&
+              <div
+                style={ {
+                  left: '50%',
+                  position: 'absolute',
+                  top: 'calc(50% - 20px)',
+                  transform: 'translate(-50%, calc(50% - 20px))',
+                } }
+              >
+                <CircularProgress />
+              </div>
+            }
           </button>
           <div
             style={ {
               alignItems: 'center',
               display: 'grid',
-              gridTemplateColumns: '20px auto 40px',
+              gridTemplateColumns: '20px auto 55px',
               gridTemplateRows: '40px 40px',
               justifyItems: 'center',
               width: '100%',
@@ -590,7 +614,7 @@ class DisplayMicroscopySample extends React.Component {
             <div
               style={ {
                 gridColumn: 3,
-                gridRow: '1 / 3',
+                gridRow: 1,
               } }
             >
               <IconButton
@@ -599,6 +623,20 @@ class DisplayMicroscopySample extends React.Component {
                 tooltipPosition="top-center"
               >
                 <UpdateIcon />
+              </IconButton>
+            </div>
+            <div
+              style={ {
+                gridColumn: 3,
+                gridRow: 2,
+              } }
+            >
+              <IconButton
+                onTouchTap={ () => { this.props.resetBrightnessContrast(channel); } }
+                tooltip="Reset brightness and contrast"
+                tooltipPosition="bottom-center"
+              >
+                <RestoreIcon />
               </IconButton>
             </div>
           </div>
@@ -657,20 +695,40 @@ class DisplayMicroscopySample extends React.Component {
       content = <CircularProgress />;
     } else if (image) {
       content = (
-        <button
-          onClick={ () => { this.props.showImage('merge'); } }
-          style={ displayStyle.noButton }
+        <div
+          style={ {
+            display: 'flex',
+            flexDirection: 'column',
+          } }
         >
-          <img
-            alt="Merge"
-            src={ image }
-            style={ {
-              cursor: 'zoom-in',
-              maxHeight: 300,
-              maxWidth: 300,
-            } }
-          />
-        </button>
+          <button
+            onClick={ () => { this.props.showImage('merge'); } }
+            style={ displayStyle.noButton }
+          >
+            <img
+              alt="Merge"
+              src={ image }
+              style={ {
+                cursor: 'zoom-in',
+                maxHeight: 300,
+                maxWidth: 300,
+              } }
+            />
+          </button>
+          {
+            this.props.mergeOutOfDate &&
+            <div
+              style={ {
+                color: this.props.muiTheme.palette.warning,
+                fontSize: 12,
+                padding: 5,
+              } }
+            >
+              <FontAwesome name="exclamation-triangle " /> Merge is not in sync
+              with channels. Click merge button under options to update.
+            </div>
+          }
+        </div>
       );
     } else {
       content = (
@@ -694,8 +752,9 @@ class DisplayMicroscopySample extends React.Component {
             alignItems: 'center',
             backgroundColor: '#e0e0e0',
             display: 'flex',
-            height: 310,
+            height: 'auto',
             justifyContent: 'center',
+            minHeight: 304,
             padding: 5,
             width: 310,
           } }
@@ -1063,6 +1122,7 @@ DisplayMicroscopySample.propTypes = {
     green: PropTypes.bool,
     red: PropTypes.bool,
   }).isRequired,
+  mergeOutOfDate: PropTypes.bool.isRequired,
   muiTheme: PropTypes.shape({
     palette: PropTypes.shape({
       buttonColor: PropTypes.string,
@@ -1078,6 +1138,7 @@ DisplayMicroscopySample.propTypes = {
       warningHover: PropTypes.string,
     }),
   }).isRequired,
+  resetBrightnessContrast: PropTypes.func.isRequired,
   sample: PropTypes.shape({
     _id: PropTypes.number,
     channels: PropTypes.shape({
