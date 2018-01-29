@@ -298,6 +298,7 @@ class DisplayMicroscopySample extends React.Component {
         >
           <div
             style={ {
+              alignItems: 'center',
               display: 'grid',
               gridColumnGap: 10,
               gridRowGap: 10,

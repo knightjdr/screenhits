@@ -22,6 +22,13 @@ const reset = {
     maxWidth: 0,
     width: 0,
   },
+  dialog: {
+    clear: false,
+    delete: false,
+    help: false,
+    text: '',
+    title: '',
+  },
   snackbar: {
     duration: 4000,
     message: '',
@@ -44,13 +51,7 @@ class DisplayMicroscopySampleContainer extends React.Component {
         red: 0,
       },
       crop: Object.assign({}, reset.crop),
-      dialog: {
-        clear: false,
-        delete: false,
-        help: false,
-        text: '',
-        title: '',
-      },
+      dialog: Object.assign({}, reset.dialog),
       errorDialog: {
         show: false,
         text: null,
@@ -282,7 +283,63 @@ class DisplayMicroscopySampleContainer extends React.Component {
       });
     }
   }
-  applyCrop = () => {}
+  applyCrop = () => {
+    if (
+      this.state.crop.height &&
+      this.state.crop.width &&
+      (
+        this.state.images.blue ||
+        this.state.images.green ||
+        this.state.images.merge ||
+        this.state.images.red
+      )
+    ) {
+      // get crop parameters
+      const crop = {
+        height: this.state.crop.height,
+        maxHeight: this.state.crop.height,
+        maxWidth: this.state.crop.width,
+        width: this.state.crop.width,
+        x: this.state.crop.anchor.left ?
+          this.state.crop.anchor.left
+          :
+          this.state.crop.maxWidth - this.state.crop.anchor.right - this.state.crop.width,
+        y: this.state.crop.anchor.top ?
+          this.state.crop.anchor.top
+          :
+          this.state.crop.maxHeight - this.state.crop.anchor.bottom - this.state.crop.height,
+      };
+      // get channels to crop
+      const channels = [];
+      Object.entries(this.state.images).forEach(([key, image]) => {
+        if (
+          key !== 'fullColor' &&
+          image
+        ) {
+          channels.push(key);
+        }
+      });
+      // create post body
+      const body = {
+        brightness: this.state.brightness,
+        channels,
+        contrast: this.state.contrast,
+        crop,
+        fileID: this.props.item.files_id,
+      };
+      // toggle loading state
+      this.setState(({ loading }) => {
+        const newLoading = Object.assign({}, loading);
+        channels.forEach((channel) => {
+          newLoading[channel] = true;
+        });
+        return {
+          loading: newLoading,
+        };
+      });
+      console.log(crop, body);
+    }
+  }
   changeBrightness = (channel, value) => {
     this.setState(({ brightness }) => {
       const newBrightness = brightness;
@@ -330,11 +387,8 @@ class DisplayMicroscopySampleContainer extends React.Component {
       this.state.images.red
     ) {
       this.setState({
-        dialog: {
-          clear: false,
-          delete: false,
-          help: false,
-        },
+        crop: Object.assign({}, reset.crop),
+        dialog: Object.assign({}, reset.dialog),
         isClearing: true,
       });
       ClearImages(`image/${this.props.item.files_id}`, this.props.token)
@@ -363,6 +417,11 @@ class DisplayMicroscopySampleContainer extends React.Component {
           });
         })
       ;
+    } else {
+      this.setState({
+        crop: Object.assign({}, reset.crop),
+        dialog: Object.assign({}, reset.dialog),
+      });
     }
   }
   deleteSample = (_id) => {
@@ -379,11 +438,7 @@ class DisplayMicroscopySampleContainer extends React.Component {
   }
   dialogClose = () => {
     this.setState({
-      dialog: {
-        clear: false,
-        delete: false,
-        help: false,
-      },
+      dialog: Object.assign({}, reset.dialog),
     });
   }
   dialogOpen = (type, title = '', text = '') => {
@@ -519,7 +574,13 @@ class DisplayMicroscopySampleContainer extends React.Component {
   }
   resetCrop = () => {
     this.setState({
-      crop: Object.assign({}, reset.crop),
+      crop: Object.assign(
+        {},
+        reset.crop,
+        {
+          active: true,
+        }
+      ),
     });
   }
   saveImages = () => {
