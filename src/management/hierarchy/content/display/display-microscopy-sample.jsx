@@ -288,31 +288,35 @@ class DisplayMicroscopySample extends React.Component {
         { this.imagePanelHeader('Options') }
         <div
           style={ {
-            alignItems: 'center',
-            display: 'flex',
-            flexDirection: 'column',
+            display: 'grid',
+            gridColumnGap: 10,
+            gridRowGap: 10,
+            gridTemplateColumns: 'auto',
+            gridTemplateRows: '40px 100px 40px 40px',
             height: 310,
-            justifyContent: 'center',
             padding: 5,
             width: 310,
           } }
         >
-          <div>
+          <div
+            style={ {
+              gridColumn: 1,
+              gridRow: 1,
+            } }
+          >
             <FlatButton
               backgroundColor={ this.props.muiTheme.palette.buttonColor }
               hoverColor={ this.props.muiTheme.palette.buttonColorHover }
               label="Split all"
               onTouchTap={ () => { this.props.splitAll(); } }
-              style={ {
-                marginBottom: 20,
-              } }
             />
           </div>
           <div
             style={ {
               alignItems: 'center',
               display: 'flex',
-              marginBottom: 20,
+              gridColumn: 1,
+              gridRow: 2,
             } }
           >
             <div
@@ -371,7 +375,8 @@ class DisplayMicroscopySample extends React.Component {
           </div>
           <div
             style={ {
-              marginBottom: 20,
+              gridColumn: 1,
+              gridRow: 3,
             } }
           >
             {
@@ -406,7 +411,12 @@ class DisplayMicroscopySample extends React.Component {
                 ]
             }
           </div>
-          <div>
+          <div
+            style={ {
+              gridColumn: 1,
+              gridRow: 4,
+            } }
+          >
             {
               this.props.isClearing ?
                 <div

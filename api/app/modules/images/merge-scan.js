@@ -39,8 +39,8 @@ const Scan = {
     jimpArr[1].scan(
       0,
       0,
-      jimpArr[0].bitmap.width,
-      jimpArr[0].bitmap.height,
+      jimpArr[1].bitmap.width,
+      jimpArr[1].bitmap.height,
       (x, y, idx) => {
         mergedJimp.bitmap.data[idx + 2] = jimpArr[2].bitmap.data[idx + 2];
       }

@@ -49,9 +49,9 @@ const Channels = {
       scanFunc += images[1] ? 'g' : '';
       scanFunc += images[2] ? 'b' : '';
       Promise.all([
-        Jimp.read(images[0]),
-        Jimp.read(images[1]),
-        Jimp.read(images[2]),
+        images[0] ? Jimp.read(images[0]) : Promise.resolve(),
+        images[1] ? Jimp.read(images[1]) : Promise.resolve(),
+        images[2] ? Jimp.read(images[2]) : Promise.resolve(),
       ])
         .then((jimpArr) => {
           const mergedJimp = MergeScan[scanFunc](jimpArr);
