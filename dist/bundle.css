@@ -3,7 +3,6 @@
 
 .tooltip-enter.tooltip-enter-active {
   opacity: 1;
-  -webkit-transition: opacity 300ms ease-in;
   transition: opacity 300ms ease-in; }
 
 .tooltip-leave {
@@ -11,14 +10,12 @@
 
 .tooltip-leave.tooltip-leave-active {
   opacity: 0.01;
-  -webkit-transition: opacity 200ms ease-in;
   transition: opacity 200ms ease-in; }
 .task-view-enter {
   opacity: 0.01; }
 
 .task-view-enter.task-view-enter-active {
   opacity: 1;
-  -webkit-transition: opacity 400ms ease-in;
   transition: opacity 400ms ease-in; }
 
 .task-view-leave {
@@ -26,7 +23,6 @@
 
 .task-view-leave.task-view-leave-active {
   opacity: 0.01;
-  -webkit-transition: opacity 200ms ease-in;
   transition: opacity 200ms ease-in; }
 /*!
  *  Font Awesome 4.7.0 by @davegandy - http://fontawesome.io - @fontawesome
@@ -2764,14 +2760,12 @@ template {
 
 .logo-transition-appear.logo-transition-appear-active {
   opacity: 1;
-  -webkit-transition: opacity 1500ms ease-in;
   transition: opacity 1500ms ease-in; }
 .notice-message-text-enter {
   opacity: 0.01; }
 
 .notice-message-text-enter.notice-message-text-enter-active {
   opacity: 1;
-  -webkit-transition: opacity 500ms ease-in;
   transition: opacity 500ms ease-in; }
 
 .notice-message-text-leave {
@@ -2779,14 +2773,12 @@ template {
 
 .notice-message-text-leave.notice-message-text-leave-active {
   opacity: 0.01;
-  -webkit-transition: opacity 500ms ease-in;
   transition: opacity 500ms ease-in; }
 .list-view-enter {
   opacity: 0.01; }
 
 .list-view-enter.list-view-enter-active {
   opacity: 1;
-  -webkit-transition: opacity 400ms ease-in;
   transition: opacity 400ms ease-in; }
 
 .list-view-leave {
@@ -2794,5 +2786,4 @@ template {
 
 .list-view-leave.list-view-leave-active {
   opacity: 0.01;
-  -webkit-transition: opacity 200ms ease-in;
   transition: opacity 200ms ease-in; }
