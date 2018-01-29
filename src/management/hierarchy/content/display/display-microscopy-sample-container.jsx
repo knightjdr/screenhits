@@ -13,6 +13,15 @@ import ValidateField from '../../../../modules/validate-field';
 import { objectEmpty } from '../../../../helpers/helpers';
 
 const reset = {
+  crop: {
+    anchor: {},
+    active: false,
+    dragging: false,
+    height: 0,
+    maxHeight: 0,
+    maxWidth: 0,
+    width: 0,
+  },
   snackbar: {
     duration: 4000,
     message: '',
@@ -34,6 +43,7 @@ class DisplayMicroscopySampleContainer extends React.Component {
         green: 0,
         red: 0,
       },
+      crop: Object.assign({}, reset.crop),
       dialog: {
         clear: false,
         delete: false,
@@ -193,6 +203,86 @@ class DisplayMicroscopySampleContainer extends React.Component {
       ;
     }
   }
+  setCrop = () => {
+    this.setState(({ crop }) => {
+      return {
+        crop: Object.assign(
+          {},
+          crop,
+          {
+            dragging: false,
+          }
+        ),
+      };
+    });
+  }
+  adjustCrop = (e) => {
+    if (this.state.crop.dragging) {
+      const rect = e.target.getBoundingClientRect();
+      const currPos = {
+        x: e.clientX - rect.left,
+        y: e.clientY - rect.top,
+      };
+      this.setState(({ crop }) => {
+        const dim = {
+          height: crop.anchor.top ?
+            currPos.y - crop.anchor.top
+            :
+            rect.height - crop.anchor.bottom - currPos.y,
+          width: crop.anchor.left ?
+            currPos.x - crop.anchor.left
+            :
+            rect.width - crop.anchor.right - currPos.x,
+        };
+        const anchor = Object.assign({}, crop.anchor);
+        // change vertical anchor if necessary
+        if (
+          dim.height < 0 &&
+          crop.anchor.top
+        ) {
+          delete anchor.top;
+          anchor.bottom = rect.height - currPos.y;
+          dim.height = Math.abs(dim.height);
+        } else if (
+          dim.height < 0 &&
+          crop.anchor.bottom
+        ) {
+          delete anchor.bottom;
+          anchor.top = currPos.y;
+          dim.height = Math.abs(dim.height);
+        }
+        // change horizontal anchor if necessary
+        if (
+          dim.width < 0 &&
+          crop.anchor.left
+        ) {
+          delete anchor.left;
+          anchor.right = rect.width - currPos.x;
+          dim.width = Math.abs(dim.width);
+        } else if (
+          dim.width < 0 &&
+          crop.anchor.right
+        ) {
+          delete anchor.right;
+          anchor.left = currPos.x;
+          dim.width = Math.abs(dim.width);
+        }
+        const newCrop = {
+          anchor,
+          height: dim.height,
+          width: dim.width,
+        };
+        return {
+          crop: Object.assign(
+            {},
+            crop,
+            newCrop,
+          ),
+        };
+      });
+    }
+  }
+  applyCrop = () => {}
   changeBrightness = (channel, value) => {
     this.setState(({ brightness }) => {
       const newBrightness = brightness;
@@ -325,6 +415,25 @@ class DisplayMicroscopySampleContainer extends React.Component {
       },
     });
   }
+  initializeCrop = (e) => {
+    const rect = e.target.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    this.setState({
+      crop: {
+        active: true,
+        anchor: {
+          left: x,
+          top: y,
+        },
+        dragging: true,
+        height: 0,
+        maxHeight: rect.height,
+        maxWidth: rect.width,
+        width: 0,
+      },
+    });
+  }
   inputChange = (field, value) => {
     // check if field is valid and update errors object
     const errors = Object.assign({}, this.props.errors);
@@ -408,6 +517,11 @@ class DisplayMicroscopySampleContainer extends React.Component {
       ;
     }
   }
+  resetCrop = () => {
+    this.setState({
+      crop: Object.assign({}, reset.crop),
+    });
+  }
   saveImages = () => {
     if (
       this.state.mergeOptions.blue ||
@@ -458,39 +572,45 @@ class DisplayMicroscopySampleContainer extends React.Component {
     }
   }
   showImage = (channel) => {
-    this.setState(({ images, item }) => {
-      let carouselImages = [];
-      Object.keys(images).forEach((key) => {
-        let title;
-        if (key === 'fullColor') {
-          title = 'original image';
-        } else if (key === 'merge') {
-          title = 'merge';
-        } else {
-          title = `${key}: ${item.channels[key].marker}`;
-        }
-        if (images[key]) {
-          carouselImages.push({
-            channel: key,
-            image: images[key],
-            title,
-          });
-        }
+    // don't show full color image when crop is active
+    if (
+      channel !== 'fullColor' ||
+      !this.state.crop.active
+    ) {
+      this.setState(({ images, item }) => {
+        let carouselImages = [];
+        Object.keys(images).forEach((key) => {
+          let title;
+          if (key === 'fullColor') {
+            title = 'original image';
+          } else if (key === 'merge') {
+            title = 'merge';
+          } else {
+            title = `${key}: ${item.channels[key].marker}`;
+          }
+          if (images[key]) {
+            carouselImages.push({
+              channel: key,
+              image: images[key],
+              title,
+            });
+          }
+        });
+        // reorder carousel
+        const channelIndex = carouselImages.findIndex((image) => {
+          return image.channel === channel;
+        });
+        const toMove = carouselImages.splice(0, channelIndex);
+        carouselImages = carouselImages.concat(toMove);
+        return {
+          imageDialog: {
+            images: carouselImages,
+            index: 0,
+            show: true,
+          },
+        };
       });
-      // reorder carousel
-      const channelIndex = carouselImages.findIndex((image) => {
-        return image.channel === channel;
-      });
-      const toMove = carouselImages.splice(0, channelIndex);
-      carouselImages = carouselImages.concat(toMove);
-      return {
-        imageDialog: {
-          images: carouselImages,
-          index: 0,
-          show: true,
-        },
-      };
-    });
+    }
   }
   splitAll = () => {
     this.setState({
@@ -545,6 +665,19 @@ class DisplayMicroscopySampleContainer extends React.Component {
         });
       })
     ;
+  }
+  toggleCrop = () => {
+    this.setState(({ crop }) => {
+      return {
+        crop: Object.assign(
+          {},
+          crop,
+          {
+            active: !crop.active,
+          }
+        ),
+      };
+    });
   }
   toggleMerge = (channel) => {
     this.setState(({ mergeOptions }) => {
@@ -614,6 +747,8 @@ class DisplayMicroscopySampleContainer extends React.Component {
     return (
       <div>
         <DisplayMicroscopySample
+          adjustCrop={ this.adjustCrop }
+          applyCrop={ this.applyCrop }
           brightness={ this.state.brightness }
           canEdit={ this.props.canEdit }
           changeBrightness={ this.changeBrightness }
@@ -621,6 +756,7 @@ class DisplayMicroscopySampleContainer extends React.Component {
           changeContrast={ this.changeContrast }
           clearImages={ this.clearImages }
           contrast={ this.state.contrast }
+          crop={ this.state.crop }
           deleteSample={ this.deleteSample }
           dialog={ {
             clear: this.state.dialog.clear,
@@ -649,6 +785,7 @@ class DisplayMicroscopySampleContainer extends React.Component {
             }
           ) }
           images={ this.state.images }
+          initializeCrop={ this.initializeCrop }
           inputChange={ this.inputChange }
           inputWidth={ this.props.inputWidth }
           isClearing={ this.state.isClearing }
@@ -658,11 +795,14 @@ class DisplayMicroscopySampleContainer extends React.Component {
           mergeOptions={ this.state.mergeOptions }
           mergeOutOfDate={ this.state.mergeOutOfDate }
           resetBrightnessContrast={ this.resetBrightnessContrast }
+          resetCrop={ this.resetCrop }
           sample={ this.state.item }
           saveImages={ this.saveImages }
+          setCrop={ this.setCrop }
           showImage={ this.showImage }
           snackbar={ this.state.snackbar }
           splitAll={ this.splitAll }
+          toggleCrop={ this.toggleCrop }
           toggleMerge={ this.toggleMerge }
           updateBrightContrast={ this.updateBrightContrast }
         />

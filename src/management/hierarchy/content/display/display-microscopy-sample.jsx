@@ -288,158 +288,253 @@ class DisplayMicroscopySample extends React.Component {
         { this.imagePanelHeader('Options') }
         <div
           style={ {
-            display: 'grid',
-            gridColumnGap: 10,
-            gridRowGap: 10,
-            gridTemplateColumns: 'auto',
-            gridTemplateRows: '40px 100px 40px 40px',
+            alignItems: 'center',
+            display: 'flex',
             height: 310,
+            justifyContent: 'center',
             padding: 5,
             width: 310,
           } }
         >
           <div
             style={ {
-              gridColumn: 1,
-              gridRow: 1,
-            } }
-          >
-            <FlatButton
-              backgroundColor={ this.props.muiTheme.palette.buttonColor }
-              hoverColor={ this.props.muiTheme.palette.buttonColorHover }
-              label="Split all"
-              onTouchTap={ () => { this.props.splitAll(); } }
-            />
-          </div>
-          <div
-            style={ {
-              alignItems: 'center',
-              display: 'flex',
-              gridColumn: 1,
-              gridRow: 2,
+              display: 'grid',
+              gridColumnGap: 10,
+              gridRowGap: 10,
+              gridTemplateColumns: 'auto',
+              gridTemplateRows: '20px 50px 90px 20px 40px',
+              justifyItems: 'center',
             } }
           >
             <div
+              style={ Object.assign(
+                {},
+                displayStyle.gridHeader,
+                {
+                  gridColumn: 1,
+                  gridRow: 1,
+                  textDecoration: 'underline',
+                }
+              ) }
+            >
+              Channels
+            </div>
+            <div
               style={ {
+                gridColumn: 1,
+                gridRow: 2,
+              } }
+            >
+              <FlatButton
+                backgroundColor={ this.props.muiTheme.palette.buttonColor }
+                hoverColor={ this.props.muiTheme.palette.buttonColorHover }
+                label="Split all"
+                onTouchTap={ () => { this.props.splitAll(); } }
+              />
+            </div>
+            <div
+              style={ {
+                alignItems: 'center',
                 display: 'flex',
-                flexDirection: 'column',
-                marginRight: 10,
+                gridColumn: 1,
+                gridRow: 3,
+              } }
+            >
+              <div
+                style={ {
+                  display: 'flex',
+                  flexDirection: 'column',
+                  marginRight: 10,
+                } }
+              >
+                <Toggle
+                  label="B"
+                  onToggle={ () => { this.props.toggleMerge('blue'); } }
+                  thumbStyle={ toggleStyle.thumbOff }
+                  thumbSwitchedStyle={ {
+                    backgroundColor: this.props.muiTheme.palette.buttonColor,
+                  } }
+                  toggled={ this.props.mergeOptions.blue }
+                  trackStyle={ toggleStyle.trackOff }
+                  trackSwitchedStyle={ {
+                    backgroundColor: this.props.muiTheme.palette.buttonColorHover,
+                  } }
+                />
+                <Toggle
+                  label="G"
+                  onToggle={ () => { this.props.toggleMerge('green'); } }
+                  thumbStyle={ toggleStyle.thumbOff }
+                  thumbSwitchedStyle={ {
+                    backgroundColor: this.props.muiTheme.palette.success,
+                  } }
+                  toggled={ this.props.mergeOptions.green }
+                  trackStyle={ toggleStyle.trackOff }
+                  trackSwitchedStyle={ {
+                    backgroundColor: this.props.muiTheme.palette.successHover,
+                  } }
+                />
+                <Toggle
+                  label="R"
+                  onToggle={ () => { this.props.toggleMerge('red'); } }
+                  thumbStyle={ toggleStyle.thumbOff }
+                  thumbSwitchedStyle={ {
+                    backgroundColor: this.props.muiTheme.palette.warning,
+                  } }
+                  toggled={ this.props.mergeOptions.red }
+                  trackStyle={ toggleStyle.trackOff }
+                  trackSwitchedStyle={ {
+                    backgroundColor: this.props.muiTheme.palette.warningHover,
+                  } }
+                />
+              </div>
+              <FlatButton
+                backgroundColor={ this.props.muiTheme.palette.buttonColor }
+                hoverColor={ this.props.muiTheme.palette.buttonColorHover }
+                label="Merge"
+                onTouchTap={ () => { this.props.mergeChannels(); } }
+              />
+            </div>
+            <div
+              style={ Object.assign(
+                {},
+                displayStyle.gridHeader,
+                {
+                  gridColumn: 2,
+                  gridRow: 1,
+                  textDecoration: 'underline',
+                }
+              ) }
+            >
+              Cropping
+            </div>
+            <div
+              style={ {
+                gridColumn: 2,
+                gridRow: 2,
               } }
             >
               <Toggle
-                label="B"
-                onToggle={ () => { this.props.toggleMerge('blue'); } }
+                label="Crop tool"
+                onToggle={ this.props.toggleCrop }
                 thumbStyle={ toggleStyle.thumbOff }
                 thumbSwitchedStyle={ {
-                  backgroundColor: this.props.muiTheme.palette.buttonColor,
+                  backgroundColor: this.props.muiTheme.palette.alternativeButtonColor,
                 } }
-                toggled={ this.props.mergeOptions.blue }
+                toggled={ this.props.crop.active }
                 trackStyle={ toggleStyle.trackOff }
                 trackSwitchedStyle={ {
-                  backgroundColor: this.props.muiTheme.palette.buttonColorHover,
-                } }
-              />
-              <Toggle
-                label="G"
-                onToggle={ () => { this.props.toggleMerge('green'); } }
-                thumbStyle={ toggleStyle.thumbOff }
-                thumbSwitchedStyle={ {
-                  backgroundColor: this.props.muiTheme.palette.success,
-                } }
-                toggled={ this.props.mergeOptions.green }
-                trackStyle={ toggleStyle.trackOff }
-                trackSwitchedStyle={ {
-                  backgroundColor: this.props.muiTheme.palette.successHover,
-                } }
-              />
-              <Toggle
-                label="R"
-                onToggle={ () => { this.props.toggleMerge('red'); } }
-                thumbStyle={ toggleStyle.thumbOff }
-                thumbSwitchedStyle={ {
-                  backgroundColor: this.props.muiTheme.palette.warning,
-                } }
-                toggled={ this.props.mergeOptions.red }
-                trackStyle={ toggleStyle.trackOff }
-                trackSwitchedStyle={ {
-                  backgroundColor: this.props.muiTheme.palette.warningHover,
+                  backgroundColor: this.props.muiTheme.palette.alternativeButtonColorHover,
                 } }
               />
             </div>
-            <FlatButton
-              backgroundColor={ this.props.muiTheme.palette.buttonColor }
-              hoverColor={ this.props.muiTheme.palette.buttonColorHover }
-              label="Merge"
-              onTouchTap={ () => { this.props.mergeChannels(); } }
-            />
-          </div>
-          <div
-            style={ {
-              gridColumn: 1,
-              gridRow: 3,
-            } }
-          >
-            {
-              this.props.isSaving ?
-                <div
-                  style={ {
-                    height: 36,
-                  } }
-                >
-                  <CircularProgress
-                    size={ 30 }
-                    thickness={ 3 }
-                  />
-                </div>
-                : [
-                  <FlatButton
-                    backgroundColor={ this.props.muiTheme.palette.success }
-                    data-tip={ true }
-                    data-for="saveImages"
-                    hoverColor={ this.props.muiTheme.palette.successHover }
-                    label="Save"
-                    key="SaveButton"
-                    onTouchTap={ () => { this.props.saveImages(); } }
-                  />,
-                  <ReactTooltip
-                    effect="solid"
-                    id="saveImages"
-                    key="SaveButtonTooltip"
-                  >
-                    Save all images and settings
-                  </ReactTooltip>,
-                ]
-            }
-          </div>
-          <div
-            style={ {
-              gridColumn: 1,
-              gridRow: 4,
-            } }
-          >
-            {
-              this.props.isClearing ?
-                <div
-                  style={ {
-                    height: 36,
-                  } }
-                >
-                  <CircularProgress
-                    size={ 30 }
-                    thickness={ 3 }
-                  />
-                </div>
-                :
+            <div
+              style={ {
+                gridColumn: 2,
+                gridRow: 3,
+              } }
+            >
+              <div
+                style={ {
+                  alignItems: 'center',
+                  display: 'flex',
+                  flexDirection: 'column',
+                } }
+              >
                 <FlatButton
-                  backgroundColor={ this.props.muiTheme.palette.warning }
-                  hoverColor={ this.props.muiTheme.palette.warning }
-                  label="Clear"
-                  onTouchTap={ () => { this.props.dialog.open('clear'); } }
+                  backgroundColor={ this.props.muiTheme.palette.success }
+                  hoverColor={ this.props.muiTheme.palette.successHover }
+                  label="Apply"
+                  onTouchTap={ this.props.applyCrop }
                   style={ {
-                    marginBottom: 20,
+                    marginBottom: 10,
                   } }
                 />
-            }
+                <FlatButton
+                  backgroundColor={ this.props.muiTheme.palette.warning }
+                  hoverColor={ this.props.muiTheme.palette.warningHover }
+                  label="Reset"
+                  onTouchTap={ this.props.resetCrop }
+                />
+              </div>
+            </div>
+            <div
+              style={ Object.assign(
+                {},
+                displayStyle.gridHeader,
+                {
+                  textDecoration: 'underline',
+                  gridColumn: '1 / 3',
+                  gridRow: 4,
+                }
+              ) }
+            >
+              Images
+            </div>
+            <div
+              style={ {
+                gridColumn: 1,
+                gridRow: 5,
+              } }
+            >
+              {
+                this.props.isSaving ?
+                  <div
+                    style={ {
+                      height: 36,
+                    } }
+                  >
+                    <CircularProgress
+                      size={ 30 }
+                      thickness={ 3 }
+                    />
+                  </div>
+                  : [
+                    <FlatButton
+                      backgroundColor={ this.props.muiTheme.palette.success }
+                      data-tip={ true }
+                      data-for="saveImages"
+                      hoverColor={ this.props.muiTheme.palette.successHover }
+                      label="Save"
+                      key="SaveButton"
+                      onTouchTap={ () => { this.props.saveImages(); } }
+                    />,
+                    <ReactTooltip
+                      effect="solid"
+                      id="saveImages"
+                      key="SaveButtonTooltip"
+                    >
+                      Save all images and settings
+                    </ReactTooltip>,
+                  ]
+              }
+            </div>
+            <div
+              style={ {
+                gridColumn: 2,
+                gridRow: 5,
+              } }
+            >
+              {
+                this.props.isClearing ?
+                  <div
+                    style={ {
+                      height: 36,
+                    } }
+                  >
+                    <CircularProgress
+                      size={ 30 }
+                      thickness={ 3 }
+                    />
+                  </div>
+                  :
+                  <FlatButton
+                    backgroundColor={ this.props.muiTheme.palette.warning }
+                    hoverColor={ this.props.muiTheme.palette.warningHover }
+                    label="Clear"
+                    onTouchTap={ () => { this.props.dialog.open('clear'); } }
+                  />
+              }
+            </div>
           </div>
         </div>
       </div>
@@ -494,6 +589,8 @@ class DisplayMicroscopySample extends React.Component {
         <div
           style={ {
             alignSelf: 'flex-start',
+            maxHeight: 300,
+            position: 'relative',
           } }
         >
           <button
@@ -502,6 +599,7 @@ class DisplayMicroscopySample extends React.Component {
           >
             <img
               alt={ altText }
+              draggable={ false }
               src={ image }
               style={ {
                 cursor: 'zoom-in',
@@ -511,6 +609,42 @@ class DisplayMicroscopySample extends React.Component {
               } }
             />
           </button>
+          {
+            this.props.crop.active &&
+            <button
+              onMouseDown={ this.props.initializeCrop }
+              onMouseMove={ this.props.adjustCrop }
+              onMouseUp={ this.props.setCrop }
+              style={ Object.assign(
+                {},
+                displayStyle.noButton,
+                {
+                  backgroundColor: 'transparent',
+                  cursor: 'crosshair',
+                  height: '100%',
+                  left: 0,
+                  position: 'absolute',
+                  top: 0,
+                  width: '100%',
+                }
+              ) }
+            >
+              <div
+                style={ Object.assign(
+                  {},
+                  this.props.crop.anchor,
+                  {
+                    backgroundColor: 'transparent',
+                    border: this.props.crop.height ? '1px dotted white' : 'none',
+                    height: this.props.crop.height,
+                    pointerEvents: 'none',
+                    position: 'absolute',
+                    width: this.props.crop.width,
+                  }
+                ) }
+              />
+            </button>
+          }
         </div>
       );
     } else if (image) {
@@ -1058,6 +1192,8 @@ class DisplayMicroscopySample extends React.Component {
 }
 
 DisplayMicroscopySample.propTypes = {
+  adjustCrop: PropTypes.func.isRequired,
+  applyCrop: PropTypes.func.isRequired,
   brightness: PropTypes.shape({
     blue: PropTypes.number,
     green: PropTypes.number,
@@ -1074,6 +1210,12 @@ DisplayMicroscopySample.propTypes = {
     green: PropTypes.number,
     merge: PropTypes.number,
     red: PropTypes.number,
+  }).isRequired,
+  crop: PropTypes.shape({
+    active: PropTypes.bool,
+    anchor: PropTypes.shape({}),
+    height: PropTypes.number,
+    width: PropTypes.number,
   }).isRequired,
   deleteSample: PropTypes.func.isRequired,
   dialog: PropTypes.shape({
@@ -1115,6 +1257,7 @@ DisplayMicroscopySample.propTypes = {
     merge: PropTypes.string,
     red: PropTypes.string,
   }).isRequired,
+  initializeCrop: PropTypes.func.isRequired,
   inputChange: PropTypes.func.isRequired,
   inputWidth: PropTypes.number.isRequired,
   isClearing: PropTypes.bool.isRequired,
@@ -1135,6 +1278,9 @@ DisplayMicroscopySample.propTypes = {
   mergeOutOfDate: PropTypes.bool.isRequired,
   muiTheme: PropTypes.shape({
     palette: PropTypes.shape({
+      accent4Color: PropTypes.string,
+      alternativeButtonColor: PropTypes.string,
+      alternativeButtonColorHover: PropTypes.string,
       buttonColor: PropTypes.string,
       buttonColorHover: PropTypes.string,
       keyColor: PropTypes.string,
@@ -1149,6 +1295,7 @@ DisplayMicroscopySample.propTypes = {
     }),
   }).isRequired,
   resetBrightnessContrast: PropTypes.func.isRequired,
+  resetCrop: PropTypes.func.isRequired,
   sample: PropTypes.shape({
     _id: PropTypes.number,
     channels: PropTypes.shape({
@@ -1171,6 +1318,7 @@ DisplayMicroscopySample.propTypes = {
     updateDate: PropTypes.string,
   }).isRequired,
   saveImages: PropTypes.func.isRequired,
+  setCrop: PropTypes.func.isRequired,
   showImage: PropTypes.func.isRequired,
   snackbar: PropTypes.shape({
     close: PropTypes.func,
@@ -1179,6 +1327,7 @@ DisplayMicroscopySample.propTypes = {
     open: PropTypes.bool,
   }).isRequired,
   splitAll: PropTypes.func.isRequired,
+  toggleCrop: PropTypes.func.isRequired,
   toggleMerge: PropTypes.func.isRequired,
   updateBrightContrast: PropTypes.func.isRequired,
 };
