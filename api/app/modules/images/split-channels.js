@@ -60,7 +60,6 @@ const Channels = {
           });
         })
         .catch((error) => {
-          console.log(error);
           reject(`There was an error merging the channels: ${error}`);
         })
       ;

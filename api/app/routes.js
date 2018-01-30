@@ -74,7 +74,7 @@ const routes = {
         })
       ;
     });
-    app.get('/channel/:fileID/:channel', auth.validate, (req, res) => {
+    app.get('/image/channel/:fileID/:channel', auth.validate, (req, res) => {
       image.getChannel(req.params.fileID, req.params.channel, res.locals.user)
         .then((response) => {
           routes.response(res, response);
@@ -136,7 +136,7 @@ const routes = {
         })
       ;
     });
-    app.get('/split/:fileID', auth.validate, (req, res) => {
+    app.get('/image/split/:fileID', auth.validate, (req, res) => {
       image.splitImage(req.params.fileID, res.locals.user)
         .then((response) => {
           routes.response(res, response);
@@ -205,6 +205,14 @@ const routes = {
         })
       ;
     });
+    // crop image(s)
+    app.post('/image/crop/:fileID', auth.validate, (req, res) => {
+      image.crop(req.params.fileID, req.body, res.locals.user)
+        .then((response) => {
+          routes.response(res, response);
+        })
+      ;
+    });
     // save image(s)
     app.post('/image/:fileID', auth.validate, (req, res) => {
       image.save(req.params.fileID, req.body, res.locals.user)
@@ -222,7 +230,7 @@ const routes = {
       ;
     });
     // get merged image
-    app.post('/merge/:fileID', auth.validate, (req, res) => {
+    app.post('/image/merge/:fileID', auth.validate, (req, res) => {
       image.getMerge(req.params.fileID, req.body, res.locals.user)
         .then((response) => {
           routes.response(res, response);

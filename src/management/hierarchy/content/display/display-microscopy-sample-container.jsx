@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 
 import DisplayMicroscopySample from './display-microscopy-sample';
 import ClearImages from '../../../../fetch/clear-images';
+import CropImages from '../../../../fetch/crop-images';
 import DownloadImage from '../../../../fetch/download-image';
 import DownloadImagePost from '../../../../fetch/download-image-post';
 import SaveImages from '../../../../fetch/save-images';
@@ -122,7 +123,7 @@ class DisplayMicroscopySampleContainer extends React.Component {
         ),
       };
     });
-    DownloadImage(`channel/${this.props.item.files_id}/${channel}`, this.props.token)
+    DownloadImage(`image/channel/${this.props.item.files_id}/${channel}`, this.props.token)
       .then((data) => {
         this.setState(({ images, loading, mergeOptions }) => {
           const channelImageObj = {};
@@ -219,6 +220,7 @@ class DisplayMicroscopySampleContainer extends React.Component {
   }
   adjustCrop = (e) => {
     if (this.state.crop.dragging) {
+      const isShiftPressed = e.shiftKey;
       const rect = e.target.getBoundingClientRect();
       const currPos = {
         x: e.clientX - rect.left,
@@ -270,8 +272,8 @@ class DisplayMicroscopySampleContainer extends React.Component {
         }
         const newCrop = {
           anchor,
-          height: dim.height,
-          width: dim.width,
+          height: isShiftPressed ? Math.max(dim.height, dim.width) : dim.height,
+          width: isShiftPressed ? Math.max(dim.height, dim.width) : dim.width,
         };
         return {
           crop: Object.assign(
@@ -297,8 +299,8 @@ class DisplayMicroscopySampleContainer extends React.Component {
       // get crop parameters
       const crop = {
         height: this.state.crop.height,
-        maxHeight: this.state.crop.height,
-        maxWidth: this.state.crop.width,
+        maxHeight: this.state.crop.maxHeight,
+        maxWidth: this.state.crop.maxWidth,
         width: this.state.crop.width,
         x: this.state.crop.anchor.left ?
           this.state.crop.anchor.left
@@ -310,13 +312,13 @@ class DisplayMicroscopySampleContainer extends React.Component {
           this.state.crop.maxHeight - this.state.crop.anchor.bottom - this.state.crop.height,
       };
       // get channels to crop
-      const channels = [];
+      const channels = {};
       Object.entries(this.state.images).forEach(([key, image]) => {
         if (
           key !== 'fullColor' &&
           image
         ) {
-          channels.push(key);
+          channels[key] = true;
         }
       });
       // create post body
@@ -330,14 +332,45 @@ class DisplayMicroscopySampleContainer extends React.Component {
       // toggle loading state
       this.setState(({ loading }) => {
         const newLoading = Object.assign({}, loading);
-        channels.forEach((channel) => {
+        Object.keys(channels).forEach((channel) => {
           newLoading[channel] = true;
         });
         return {
           loading: newLoading,
         };
       });
-      console.log(crop, body);
+      CropImages(
+        `image/crop/${this.props.item.files_id}`,
+        body,
+        this.props.token
+      )
+        .then((image) => {
+          this.setState(({ images, loading }) => {
+            const newLoading = Object.assign({}, loading);
+            Object.keys(channels).forEach((channel) => {
+              newLoading[channel] = false;
+            });
+            return {
+              images: Object.assign(
+                {},
+                images,
+                image
+              ),
+              loading: newLoading,
+              mergeOutOfDate: false,
+            };
+          });
+        })
+        .catch((error) => {
+          this.setState({
+            errorDialog: {
+              show: true,
+              text: error.text,
+              title: error.title,
+            },
+          });
+        })
+      ;
     }
   }
   changeBrightness = (channel, value) => {
@@ -461,6 +494,7 @@ class DisplayMicroscopySampleContainer extends React.Component {
       },
     });
   }
+  exportImages = () => {}
   imageDialogClose = () => {
     this.setState({
       imageDialog: {
@@ -531,7 +565,7 @@ class DisplayMicroscopySampleContainer extends React.Component {
         };
       });
       DownloadImagePost(
-        `merge/${this.props.item.files_id}`,
+        `image/merge/${this.props.item.files_id}`,
         {
           brightness: this.state.brightness,
           contrast: this.state.contrast,
@@ -682,7 +716,7 @@ class DisplayMicroscopySampleContainer extends React.Component {
         red: true,
       },
     });
-    DownloadImage(`split/${this.props.item.files_id}`, this.props.token)
+    DownloadImage(`image/split/${this.props.item.files_id}`, this.props.token)
       .then((splitImages) => {
         this.setState(({ images }) => {
           return {
@@ -837,6 +871,7 @@ class DisplayMicroscopySampleContainer extends React.Component {
               close: this.errorDialogClose,
             }
           ) }
+          exportImages={ this.exportImages }
           getChannelImage={ this.getChannelImage }
           imageDialog={ Object.assign(
             {},

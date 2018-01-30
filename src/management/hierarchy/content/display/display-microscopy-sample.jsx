@@ -473,68 +473,90 @@ class DisplayMicroscopySample extends React.Component {
             </div>
             <div
               style={ {
-                gridColumn: 1,
+                display: 'flex',
+                gridColumn: '1 / 3',
                 gridRow: 5,
+                justifyContent: 'center',
               } }
             >
-              {
-                this.props.isSaving ?
-                  <div
-                    style={ {
-                      height: 36,
-                    } }
-                  >
-                    <CircularProgress
-                      size={ 30 }
-                      thickness={ 3 }
-                    />
-                  </div>
-                  : [
-                    <FlatButton
-                      backgroundColor={ this.props.muiTheme.palette.success }
-                      data-tip={ true }
-                      data-for="saveImages"
-                      hoverColor={ this.props.muiTheme.palette.successHover }
-                      label="Save"
-                      key="SaveButton"
-                      onTouchTap={ () => { this.props.saveImages(); } }
-                    />,
-                    <ReactTooltip
-                      effect="solid"
-                      id="saveImages"
-                      key="SaveButtonTooltip"
+              <div
+                style={ {
+                  textAlign: 'center',
+                  width: 100,
+                } }
+              >
+                {
+                  this.props.isSaving ?
+                    <div
+                      style={ {
+                        height: 36,
+                      } }
                     >
-                      Save all images and settings
-                    </ReactTooltip>,
-                  ]
-              }
-            </div>
-            <div
-              style={ {
-                gridColumn: 2,
-                gridRow: 5,
-              } }
-            >
-              {
-                this.props.isClearing ?
-                  <div
-                    style={ {
-                      height: 36,
-                    } }
-                  >
-                    <CircularProgress
-                      size={ 30 }
-                      thickness={ 3 }
+                      <CircularProgress
+                        size={ 30 }
+                        thickness={ 3 }
+                      />
+                    </div>
+                    : [
+                      <FlatButton
+                        backgroundColor={ this.props.muiTheme.palette.success }
+                        data-tip={ true }
+                        data-for="saveImages"
+                        hoverColor={ this.props.muiTheme.palette.successHover }
+                        label="Save"
+                        key="SaveButton"
+                        onTouchTap={ () => { this.props.saveImages(); } }
+                      />,
+                      <ReactTooltip
+                        effect="solid"
+                        id="saveImages"
+                        key="SaveButtonTooltip"
+                      >
+                        Save all images and settings
+                      </ReactTooltip>,
+                    ]
+                }
+              </div>
+              <div
+                style={ {
+                  textAlign: 'center',
+                  width: 100,
+                } }
+              >
+                {
+                  this.props.isClearing ?
+                    <div
+                      style={ {
+                        height: 36,
+                      } }
+                    >
+                      <CircularProgress
+                        size={ 30 }
+                        thickness={ 3 }
+                      />
+                    </div>
+                    :
+                    <FlatButton
+                      backgroundColor={ this.props.muiTheme.palette.warning }
+                      hoverColor={ this.props.muiTheme.palette.warningHover }
+                      label="Clear"
+                      onTouchTap={ () => { this.props.dialog.open('clear'); } }
                     />
-                  </div>
-                  :
-                  <FlatButton
-                    backgroundColor={ this.props.muiTheme.palette.warning }
-                    hoverColor={ this.props.muiTheme.palette.warningHover }
-                    label="Clear"
-                    onTouchTap={ () => { this.props.dialog.open('clear'); } }
-                  />
-              }
+                }
+              </div>
+              <div
+                style={ {
+                  textAlign: 'center',
+                  width: 100,
+                } }
+              >
+                <FlatButton
+                  backgroundColor={ this.props.muiTheme.palette.buttonColor }
+                  hoverColor={ this.props.muiTheme.palette.buttonColorHover }
+                  label="Export"
+                  onTouchTap={ this.props.exportImages }
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -1239,6 +1261,7 @@ DisplayMicroscopySample.propTypes = {
     name: PropTypes.string,
     replicate: PropTypes.string,
   }).isRequired,
+  exportImages: PropTypes.func.isRequired,
   getChannelImage: PropTypes.func.isRequired,
   imageDialog: PropTypes.shape({
     close: PropTypes.func,

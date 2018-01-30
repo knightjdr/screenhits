@@ -5,14 +5,11 @@ const sharp = require('sharp');
 
 const Convert = {
   bufferToUri: (image) => {
-    return new Promise((resolve, reject) => {
-      if (Buffer.isBuffer(image)) {
-        const imageURI = `data:image/png;base64,${image.toString('base64')}`;
-        resolve(imageURI);
-      } else {
-        reject();
-      }
-    });
+    if (Buffer.isBuffer(image)) {
+      const imageURI = `data:image/png;base64,${image.toString('base64')}`;
+      return imageURI;
+    }
+    return null;
   },
   toPNG: (image) => {
     return new Promise((resolve, reject) => {

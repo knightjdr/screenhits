@@ -1,5 +1,6 @@
 const Adjustments = require('./adjustments');
 const Channels = require('./split-channels');
+const Crop = require('./crop-image');
 const DeleteImages = require('./delete');
 const getImage = require('./get-image');
 const imageConvert = require('./convert');
@@ -48,6 +49,88 @@ const RouteHandler = {
         ;
       });
     },
+  },
+  crop: (fileID, body, user) => {
+    return new Promise((resolve) => {
+      const _id = new ObjectId(fileID);
+      const croppedImages = {
+        blue: null,
+        green: null,
+        merge: null,
+        red: null,
+      };
+      query.get('imagefs.files', { _id }, { metadata: 1 }, 'findOne')
+        .then((imageInfo) => {
+          return Promise.all([
+            RouteHandler.checkAccess.edit(imageInfo, user),
+            getImage.buffer(fileID),
+          ]);
+        })
+        .then((values) => {
+          return Channels.splitAllBuffer(values[1]);
+        })
+        .then((channelBuffers) => {
+          return Promise.all([
+            body.channels.red ?
+              Adjustments.brightContrast(
+                channelBuffers.red,
+                'red',
+                body.brightness.red,
+                body.contrast.red
+              )
+              :
+              Promise.resolve(),
+            body.channels.green ?
+              Adjustments.brightContrast(
+                channelBuffers.green,
+                'green',
+                body.brightness.green,
+                body.contrast.green
+              )
+              :
+              Promise.resolve(),
+            body.channels.blue ?
+              Adjustments.brightContrast(
+                channelBuffers.blue,
+                'blue',
+                body.brightness.blue,
+                body.contrast.blue
+              )
+              :
+              Promise.resolve(),
+          ]);
+        })
+        .then((adjusted) => {
+          return Crop.all(adjusted, body.crop);
+        })
+        .then((cropped) => {
+          croppedImages.blue = imageConvert.bufferToUri(cropped[2]);
+          croppedImages.green = imageConvert.bufferToUri(cropped[1]);
+          croppedImages.red = imageConvert.bufferToUri(cropped[0]);
+          return body.channels.merge ? Channels.merge(cropped) : Promise.resolve();
+        })
+        .then((merge) => {
+          croppedImages.merge = imageConvert.bufferToUri(merge);
+          resolve({
+            status: 200,
+            clientResponse: {
+              status: 200,
+              image: croppedImages,
+              message: 'Crop completed',
+            },
+          });
+        })
+        .catch((error) => {
+          resolve({
+            status: 500,
+            clientResponse: {
+              status: 500,
+              message: `There was an error cropping the image: ${error}`,
+            },
+          });
+        })
+      ;
+    });
   },
   get: (fileID, user) => {
     return new Promise((resolve) => {
@@ -200,14 +283,11 @@ const RouteHandler = {
           return Channels.merge(images);
         })
         .then((buffer) => {
-          return imageConvert.bufferToUri(buffer);
-        })
-        .then((image) => {
           resolve({
             status: 200,
             clientResponse: {
               status: 200,
-              image,
+              image: imageConvert.bufferToUri(buffer),
               message: 'Image retrieved',
             },
           });
@@ -371,14 +451,11 @@ const RouteHandler = {
           return Adjustments.brightContrast(buffer, body.channel, body.brightness, body.contrast);
         })
         .then((buffer) => {
-          return imageConvert.bufferToUri(buffer);
-        })
-        .then((newImage) => {
           resolve({
             status: 200,
             clientResponse: {
               status: 200,
-              image: newImage,
+              image: imageConvert.bufferToUri(buffer),
               message: 'Image retrieved',
             },
           });
