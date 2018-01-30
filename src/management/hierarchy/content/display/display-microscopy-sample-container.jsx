@@ -8,12 +8,23 @@ import ClearImages from '../../../../fetch/clear-images';
 import CropImages from '../../../../fetch/crop-images';
 import DownloadImage from '../../../../fetch/download-image';
 import DownloadImagePost from '../../../../fetch/download-image-post';
+import ExportImage from '../../../../fetch/export-image';
 import SaveImages from '../../../../fetch/save-images';
 import UpdateImage from '../../../../fetch/update-image';
 import ValidateField from '../../../../modules/validate-field';
 import { objectEmpty } from '../../../../helpers/helpers';
 
 const reset = {
+  brightness: {
+    blue: 0,
+    green: 0,
+    red: 0,
+  },
+  contrast: {
+    blue: 0,
+    green: 0,
+    red: 0,
+  },
   crop: {
     anchor: {},
     active: false,
@@ -22,13 +33,32 @@ const reset = {
     maxHeight: 0,
     maxWidth: 0,
     width: 0,
+    x: 0,
+    y: 0,
   },
   dialog: {
     clear: false,
     delete: false,
+    export: false,
     help: false,
     text: '',
     title: '',
+  },
+  exportOptions: {
+    channels: {
+      original: false,
+      blue: false,
+      green: false,
+      merge: false,
+      red: false,
+    },
+    greyscale: {
+      original: false,
+      blue: false,
+      green: false,
+      merge: false,
+      red: false,
+    },
   },
   snackbar: {
     duration: 4000,
@@ -41,16 +71,8 @@ class DisplayMicroscopySampleContainer extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      brightness: {
-        blue: 0,
-        green: 0,
-        red: 0,
-      },
-      contrast: {
-        blue: 0,
-        green: 0,
-        red: 0,
-      },
+      brightness: Object.assign({}, reset.brightness),
+      contrast: Object.assign({}, reset.contrast),
       crop: Object.assign({}, reset.crop),
       dialog: Object.assign({}, reset.dialog),
       errorDialog: {
@@ -58,24 +80,26 @@ class DisplayMicroscopySampleContainer extends React.Component {
         text: null,
         title: null,
       },
+      exportOptions: Object.assign({}, reset.exportOptions),
       imageDialog: {
         images: [],
         index: 0,
         show: false,
       },
       images: {
-        fullColor: null,
+        original: null,
         blue: null,
         green: null,
         red: null,
         merge: null,
       },
       isClearing: false,
+      isExporting: false,
       isSaving: false,
       item: Object.assign({}, this.props.item),
       loading: {
         blue: true,
-        fullColor: true,
+        original: true,
         green: true,
         merge: true,
         red: true,
@@ -123,11 +147,14 @@ class DisplayMicroscopySampleContainer extends React.Component {
         ),
       };
     });
-    DownloadImage(`image/channel/${this.props.item.files_id}/${channel}`, this.props.token)
-      .then((data) => {
+    const body = {
+      crop: this.getCropParams(),
+    };
+    DownloadImagePost(`image/channel/${this.props.item.files_id}/${channel}`, body, this.props.token)
+      .then((image) => {
         this.setState(({ images, loading, mergeOptions }) => {
           const channelImageObj = {};
-          channelImageObj[channel] = data.image;
+          channelImageObj[channel] = image;
           channelLoadObj[channel] = false;
           const newMergeOptions = Object.assign({}, mergeOptions);
           newMergeOptions[channel] = true;
@@ -157,15 +184,42 @@ class DisplayMicroscopySampleContainer extends React.Component {
       })
     ;
   }
+  getCropParams = () => {
+    return this.state.crop.height > 0 && this.state.crop.width > 0 ? {
+      anchor: this.state.crop.anchor,
+      height: this.state.crop.height,
+      maxHeight: this.state.crop.maxHeight,
+      maxWidth: this.state.crop.maxWidth,
+      width: this.state.crop.width,
+      x: this.state.crop.anchor.left ?
+        this.state.crop.anchor.left
+        :
+        this.state.crop.maxWidth - this.state.crop.anchor.right - this.state.crop.width,
+      y: this.state.crop.anchor.top ?
+        this.state.crop.anchor.top
+        :
+        this.state.crop.maxHeight - this.state.crop.anchor.bottom - this.state.crop.height,
+    }
+    :
+    {};
+  }
   getFullColorImage = () => {
     if (this.props.item.files_id) {
       DownloadImage(`image/${this.props.item.files_id}`, this.props.token)
         .then((retrievedData) => {
           this.setState(({ brightness, contrast, images, mergeOptions }) => {
-            const newMergeOptions = Object.assign({}, mergeOptions);
-            newMergeOptions.blue = Boolean(retrievedData.image.blue);
-            newMergeOptions.green = Boolean(retrievedData.image.green);
-            newMergeOptions.red = Boolean(retrievedData.image.red);
+            // set merge options
+            let newMergeOptions = Object.assign({}, mergeOptions);
+            if (retrievedData.metadata.mergeOptions) {
+              newMergeOptions = Object.assign({}, retrievedData.metadata.mergeOptions);
+            } else {
+              newMergeOptions.blue = Boolean(retrievedData.image.blue);
+              newMergeOptions.green = Boolean(retrievedData.image.green);
+              newMergeOptions.red = Boolean(retrievedData.image.red);
+            }
+            // set crop object
+            const crop = this.storedCrop(retrievedData.metadata) ||
+              Object.assign({}, reset.crop);
             return {
               brightness: Object.assign(
                 {},
@@ -177,6 +231,7 @@ class DisplayMicroscopySampleContainer extends React.Component {
                 contrast,
                 retrievedData.metadata.contrast,
               ),
+              crop,
               images: Object.assign(
                 {},
                 images,
@@ -184,7 +239,7 @@ class DisplayMicroscopySampleContainer extends React.Component {
               ),
               loading: {
                 blue: false,
-                fullColor: false,
+                original: false,
                 green: false,
                 merge: false,
                 red: false,
@@ -285,7 +340,7 @@ class DisplayMicroscopySampleContainer extends React.Component {
       });
     }
   }
-  applyCrop = () => {
+  applyCrop = (e, crop = null) => {
     if (
       this.state.crop.height &&
       this.state.crop.width &&
@@ -296,26 +351,11 @@ class DisplayMicroscopySampleContainer extends React.Component {
         this.state.images.red
       )
     ) {
-      // get crop parameters
-      const crop = {
-        height: this.state.crop.height,
-        maxHeight: this.state.crop.maxHeight,
-        maxWidth: this.state.crop.maxWidth,
-        width: this.state.crop.width,
-        x: this.state.crop.anchor.left ?
-          this.state.crop.anchor.left
-          :
-          this.state.crop.maxWidth - this.state.crop.anchor.right - this.state.crop.width,
-        y: this.state.crop.anchor.top ?
-          this.state.crop.anchor.top
-          :
-          this.state.crop.maxHeight - this.state.crop.anchor.bottom - this.state.crop.height,
-      };
       // get channels to crop
       const channels = {};
       Object.entries(this.state.images).forEach(([key, image]) => {
         if (
-          key !== 'fullColor' &&
+          key !== 'original' &&
           image
         ) {
           channels[key] = true;
@@ -326,8 +366,9 @@ class DisplayMicroscopySampleContainer extends React.Component {
         brightness: this.state.brightness,
         channels,
         contrast: this.state.contrast,
-        crop,
+        crop: crop || this.getCropParams(),
         fileID: this.props.item.files_id,
+        toMerge: this.state.mergeOptions,
       };
       // toggle loading state
       this.setState(({ loading }) => {
@@ -428,8 +469,11 @@ class DisplayMicroscopySampleContainer extends React.Component {
         .then(() => {
           this.setState(({ images }) => {
             return {
+              brightness: Object.assign({}, reset.brightness),
+              contrast: Object.assign({}, reset.contrast),
+              crop: Object.assign({}, reset.crop),
               images: {
-                fullColor: images.fullColor,
+                original: images.original,
                 blue: null,
                 green: null,
                 red: null,
@@ -494,7 +538,73 @@ class DisplayMicroscopySampleContainer extends React.Component {
       },
     });
   }
-  exportImages = () => {}
+  exportDialogOpen = () => {
+    this.setState(({ dialog, exportOptions, images }) => {
+      const newDialog = Object.assign({}, dialog);
+      newDialog.export = true;
+      newDialog.text = null;
+      newDialog.title = 'Export';
+      const newExportOptions = {
+        channels: {
+          blue: images.blue !== null,
+          original: images.original !== null,
+          green: images.green !== null,
+          merge: images.merge !== null,
+          red: images.red !== null,
+        },
+        greyscale: Object.assign({}, exportOptions.greyscale),
+      };
+      return {
+        dialog: newDialog,
+        exportOptions: newExportOptions,
+      };
+    });
+  }
+  exportImages = () => {
+    this.setState({
+      isExporting: true,
+    });
+    // get channels to export
+    const channels = {};
+    Object.entries(this.state.images).forEach(([key, image]) => {
+      if (
+        key !== 'original' &&
+        image
+      ) {
+        channels[key] = true;
+      }
+    });
+    // create post body
+    const body = {
+      brightness: this.state.brightness,
+      channels,
+      contrast: this.state.contrast,
+      crop: this.getCropParams(),
+      fileID: this.props.item.files_id,
+      filename: `images_${this.props.item.name}`,
+      greyscale: this.state.exportOptions.greyscale,
+      toExport: this.state.exportOptions.channels,
+      toMerge: this.state.mergeOptions,
+    };
+    ExportImage(`images_${this.props.item.name}`, body, this.props.token)
+      .then(() => {
+        this.setState({
+          isExporting: false,
+          dialog: Object.assign({}, reset.dialog),
+        });
+      })
+      .catch((error) => {
+        this.setState({
+          errorDialog: {
+            show: true,
+            text: error.text,
+            title: error.title,
+          },
+          isExporting: false,
+        });
+      })
+    ;
+  }
   imageDialogClose = () => {
     this.setState({
       imageDialog: {
@@ -569,6 +679,7 @@ class DisplayMicroscopySampleContainer extends React.Component {
         {
           brightness: this.state.brightness,
           contrast: this.state.contrast,
+          crop: this.getCropParams(),
           toMerge: this.state.mergeOptions,
         },
         this.props.token
@@ -616,12 +727,12 @@ class DisplayMicroscopySampleContainer extends React.Component {
         }
       ),
     });
+    this.applyCrop(null, {});
   }
   saveImages = () => {
     if (
       this.state.mergeOptions.blue ||
       this.state.mergeOptions.green ||
-      this.state.mergeOptions.merge ||
       this.state.mergeOptions.red
     ) {
       this.setState({
@@ -636,6 +747,8 @@ class DisplayMicroscopySampleContainer extends React.Component {
           red: this.state.images.red,
         },
         contrast: this.state.contrast,
+        crop: this.getCropParams(),
+        mergeOptions: this.state.mergeOptions,
       };
       SaveImages(`image/${this.props.item.files_id}`, body, this.props.token)
         .then(() => {
@@ -669,14 +782,14 @@ class DisplayMicroscopySampleContainer extends React.Component {
   showImage = (channel) => {
     // don't show full color image when crop is active
     if (
-      channel !== 'fullColor' ||
+      channel !== 'original' ||
       !this.state.crop.active
     ) {
       this.setState(({ images, item }) => {
         let carouselImages = [];
         Object.keys(images).forEach((key) => {
           let title;
-          if (key === 'fullColor') {
+          if (key === 'original') {
             title = 'original image';
           } else if (key === 'merge') {
             title = 'merge';
@@ -716,28 +829,23 @@ class DisplayMicroscopySampleContainer extends React.Component {
         red: true,
       },
     });
-    DownloadImage(`image/split/${this.props.item.files_id}`, this.props.token)
+    const body = {
+      crop: this.getCropParams(),
+    };
+    DownloadImagePost(`image/split/${this.props.item.files_id}`, body, this.props.token)
       .then((splitImages) => {
         this.setState(({ images }) => {
           return {
-            brightness: {
-              blue: 0,
-              green: 0,
-              red: 0,
-            },
-            contrast: {
-              blue: 0,
-              green: 0,
-              red: 0,
-            },
+            brightness: Object.assign({}, reset.brightness),
+            contrast: Object.assign({}, reset.contrast),
             images: Object.assign(
               {},
               images,
-              splitImages.image
+              splitImages
             ),
             loading: {
               blue: false,
-              fullColor: false,
+              original: false,
               green: false,
               merge: false,
               red: false,
@@ -761,6 +869,37 @@ class DisplayMicroscopySampleContainer extends React.Component {
       })
     ;
   }
+  storedCrop = (metadata) => {
+    // Check if channel images have crop object in metadata
+    // They should all have the same, so just use the first
+    if (
+      metadata.crop &&
+      !objectEmpty(metadata.crop)
+    ) {
+      const channels = Object.keys(metadata.crop);
+      return Object.assign(
+        {},
+        metadata.crop[channels[0]],
+        {
+          active: true,
+          dragging: false,
+        }
+      );
+    }
+    return false;
+  }
+  toggleChannelExport = (channel) => {
+    this.setState(({ exportOptions }) => {
+      const newChannelOptions = Object.assign({}, exportOptions.channels);
+      newChannelOptions[channel] = !newChannelOptions[channel];
+      return {
+        exportOptions: {
+          channels: newChannelOptions,
+          greyscale: exportOptions.greyscale,
+        },
+      };
+    });
+  }
   toggleCrop = () => {
     this.setState(({ crop }) => {
       return {
@@ -771,6 +910,18 @@ class DisplayMicroscopySampleContainer extends React.Component {
             active: !crop.active,
           }
         ),
+      };
+    });
+  }
+  toggleGreyscaleExport = (channel) => {
+    this.setState(({ exportOptions }) => {
+      const newGreyscaleOptions = Object.assign({}, exportOptions.greyscale);
+      newGreyscaleOptions[channel] = !newGreyscaleOptions[channel];
+      return {
+        exportOptions: {
+          channels: exportOptions.channels,
+          greyscale: newGreyscaleOptions,
+        },
       };
     });
   }
@@ -857,6 +1008,7 @@ class DisplayMicroscopySampleContainer extends React.Component {
             clear: this.state.dialog.clear,
             close: this.dialogClose,
             delete: this.state.dialog.delete,
+            export: this.state.dialog.export,
             help: this.state.dialog.help,
             open: this.dialogOpen,
             text: this.state.dialog.text,
@@ -871,7 +1023,9 @@ class DisplayMicroscopySampleContainer extends React.Component {
               close: this.errorDialogClose,
             }
           ) }
+          exportDialogOpen={ this.exportDialogOpen }
           exportImages={ this.exportImages }
+          exportOptions={ this.state.exportOptions }
           getChannelImage={ this.getChannelImage }
           imageDialog={ Object.assign(
             {},
@@ -885,6 +1039,7 @@ class DisplayMicroscopySampleContainer extends React.Component {
           inputChange={ this.inputChange }
           inputWidth={ this.props.inputWidth }
           isClearing={ this.state.isClearing }
+          isExporting={ this.state.isExporting }
           isSaving={ this.state.isSaving }
           loading={ this.state.loading }
           mergeChannels={ this.mergeChannels }
@@ -898,7 +1053,9 @@ class DisplayMicroscopySampleContainer extends React.Component {
           showImage={ this.showImage }
           snackbar={ this.state.snackbar }
           splitAll={ this.splitAll }
+          toggleChannelExport={ this.toggleChannelExport }
           toggleCrop={ this.toggleCrop }
+          toggleGreyscaleExport={ this.toggleGreyscaleExport }
           toggleMerge={ this.toggleMerge }
           updateBrightContrast={ this.updateBrightContrast }
         />

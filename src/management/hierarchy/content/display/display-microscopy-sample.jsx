@@ -1,3 +1,4 @@
+import Checkbox from 'material-ui/Checkbox';
 import ChevronLeft from 'material-ui/svg-icons/navigation/chevron-left';
 import ChevronRight from 'material-ui/svg-icons/navigation/chevron-right';
 import CircularProgress from 'material-ui/CircularProgress';
@@ -81,14 +82,14 @@ class DisplayMicroscopySample extends React.Component {
       />,
     ]);
   }
-  dialogClose = () => {
+  dialogClose = (label, closeFunc) => {
     return (
     [
       <FlatButton
         backgroundColor={ this.props.muiTheme.palette.warning }
         hoverColor={ this.props.muiTheme.palette.warningHover }
-        label="Close"
-        onTouchTap={ this.props.dialog.close }
+        label={ label }
+        onTouchTap={ closeFunc }
         style={ {
           marginLeft: 10,
         } }
@@ -124,16 +125,120 @@ class DisplayMicroscopySample extends React.Component {
       null
     ;
   }
-  errorDialogClose = () => {
+  exportImages = () => {
     return (
     [
       <FlatButton
-        backgroundColor={ this.props.muiTheme.palette.warning }
-        hoverColor={ this.props.muiTheme.palette.warningHover }
-        label="Close"
-        onTouchTap={ this.props.errorDialog.close }
+        backgroundColor={ this.props.muiTheme.palette.success }
+        hoverColor={ this.props.muiTheme.palette.successHover }
+        label="Export"
+        onTouchTap={ () => { this.props.exportImages(); } }
       />,
     ]);
+  }
+  exportImagesContent = (images, options) => {
+    let currRow = 1;
+    const imageOrder = ['original', 'blue', 'green', 'red', 'merge'];
+    const headerStyle = Object.assign(
+      {},
+      displayStyle.gridHeader,
+      {
+        backgroundColor: this.props.muiTheme.palette.keyColor,
+      }
+    );
+    return (
+      <div
+        style={ {
+          display: 'grid',
+          color: this.props.muiTheme.palette.textColor,
+          gridColumnGap: 10,
+          gridRowGap: 10,
+          gridTemplateColumns: 'auto',
+          gridTemplateRows: 'auto',
+          justifyItems: 'center',
+        } }
+      >
+        <div
+          style={ Object.assign(
+            {},
+            headerStyle,
+            {
+              gridColumn: 1,
+              gridRow: 1,
+            }
+          ) }
+        >
+          Channel
+        </div>
+        <div
+          style={ Object.assign(
+            {},
+            headerStyle,
+            {
+              gridColumn: 2,
+              gridRow: 1,
+            }
+          ) }
+        >
+          Greyscale
+        </div>
+        <div
+          style={ Object.assign(
+            {},
+            headerStyle,
+            {
+              gridColumn: 3,
+              gridRow: 1,
+            }
+          ) }
+        >
+          Export
+        </div>
+        {
+          imageOrder.map((channel) => {
+            if (images[channel]) {
+              currRow += 1;
+              return ([
+                <div
+                  key={ `channel-column-${channel}` }
+                  style={ {
+                    gridColumn: 1,
+                    gridRow: currRow,
+                  } }
+                >
+                  { channel }
+                </div>,
+                <div
+                  key={ `greyscale-column-${channel}` }
+                  style={ {
+                    gridColumn: 2,
+                    gridRow: currRow,
+                  } }
+                >
+                  <Checkbox
+                    checked={ options.greyscale[channel] }
+                    onCheck={ () => { this.props.toggleGreyscaleExport(channel); } }
+                  />
+                </div>,
+                <div
+                  key={ `export-column-${channel}` }
+                  style={ {
+                    gridColumn: 3,
+                    gridRow: currRow,
+                  } }
+                >
+                  <Checkbox
+                    checked={ options.channels[channel] }
+                    onCheck={ () => { this.props.toggleChannelExport(channel); } }
+                  />
+                </div>,
+              ]);
+            }
+            return null;
+          })
+        }
+      </div>
+    );
   }
   fillChannel = (color, channel, row) => {
     return [
@@ -550,12 +655,26 @@ class DisplayMicroscopySample extends React.Component {
                   width: 100,
                 } }
               >
-                <FlatButton
-                  backgroundColor={ this.props.muiTheme.palette.buttonColor }
-                  hoverColor={ this.props.muiTheme.palette.buttonColorHover }
-                  label="Export"
-                  onTouchTap={ this.props.exportImages }
-                />
+                {
+                  this.props.isExporting ?
+                    <div
+                      style={ {
+                        height: 36,
+                      } }
+                    >
+                      <CircularProgress
+                        size={ 30 }
+                        thickness={ 3 }
+                      />
+                    </div>
+                    :
+                    <FlatButton
+                      backgroundColor={ this.props.muiTheme.palette.buttonColor }
+                      hoverColor={ this.props.muiTheme.palette.buttonColorHover }
+                      label="Export"
+                      onTouchTap={ this.props.exportDialogOpen }
+                    />
+                }
               </div>
             </div>
           </div>
@@ -606,7 +725,7 @@ class DisplayMicroscopySample extends React.Component {
       content = <CircularProgress />;
     } else if (
       image &&
-      channel === 'fullColor'
+      channel === 'original'
     ) {
       content = (
         <div
@@ -678,40 +797,50 @@ class DisplayMicroscopySample extends React.Component {
             flexDirection: 'column',
           } }
         >
-          <button
-            onClick={ () => { this.props.showImage(channel); } }
-            style={ Object.assign(
-              {},
-              displayStyle.noButton,
-              {
-                position: 'relative',
-              }
-            ) }
+          <div
+            style={ {
+              alignItems: 'center',
+              display: 'flex',
+              justifyContent: 'center',
+              minHeight: 300,
+              minWidth: 300,
+            } }
           >
-            <img
-              alt={ altText }
-              src={ image }
-              style={ {
-                cursor: 'zoom-in',
-                display: 'block',
-                maxHeight: 300,
-                maxWidth: 300,
-              } }
-            />
-            {
-              loading &&
-              <div
+            <button
+              onClick={ () => { this.props.showImage(channel); } }
+              style={ Object.assign(
+                {},
+                displayStyle.noButton,
+                {
+                  position: 'relative',
+                }
+              ) }
+            >
+              <img
+                alt={ altText }
+                src={ image }
                 style={ {
-                  left: '50%',
-                  position: 'absolute',
-                  top: 'calc(50% - 20px)',
-                  transform: 'translate(-50%, calc(50% - 20px))',
+                  cursor: 'zoom-in',
+                  display: 'block',
+                  maxHeight: 300,
+                  maxWidth: 300,
                 } }
-              >
-                <CircularProgress />
-              </div>
-            }
-          </button>
+              />
+              {
+                loading &&
+                <div
+                  style={ {
+                    left: '50%',
+                    position: 'absolute',
+                    top: 'calc(50% - 20px)',
+                    transform: 'translate(-50%, calc(50% - 20px))',
+                  } }
+                >
+                  <CircularProgress />
+                </div>
+              }
+            </button>
+          </div>
           <div
             style={ {
               alignItems: 'center',
@@ -989,7 +1118,7 @@ class DisplayMicroscopySample extends React.Component {
               </div>
             }
             {
-              this.props.images.fullColor &&
+              this.props.images.original &&
               <div
                 style={ {
                   display: 'flex',
@@ -998,10 +1127,10 @@ class DisplayMicroscopySample extends React.Component {
                 } }
               >
                 { this.showImage(
-                  'Full color',
-                  'fullColor',
-                  this.props.images.fullColor,
-                  this.props.loading.fullColor
+                  'Original',
+                  'original',
+                  this.props.images.original,
+                  this.props.loading.original
                 ) }
                 { this.showImage('Blue', 'blue', this.props.images.blue, this.props.loading.blue) }
                 { this.showImage('Green', 'green', this.props.images.green, this.props.loading.green) }
@@ -1147,7 +1276,7 @@ class DisplayMicroscopySample extends React.Component {
         <Dialog
           actions={ [
             this.confirmDeletion(),
-            this.dialogClose(),
+            this.dialogClose('Close', this.props.dialog.close),
           ] }
           modal={ false }
           onRequestClose={ this.props.dialog.close }
@@ -1159,7 +1288,7 @@ class DisplayMicroscopySample extends React.Component {
         <Dialog
           actions={ [
             this.confirmClear(),
-            this.dialogClose(),
+            this.dialogClose('Close', this.props.dialog.close),
           ] }
           modal={ false }
           onRequestClose={ this.props.dialog.close }
@@ -1170,7 +1299,7 @@ class DisplayMicroscopySample extends React.Component {
           merged channels from the database and all settings will be returned to defaults.
         </Dialog>
         <Dialog
-          actions={ this.dialogClose() }
+          actions={ this.dialogClose('Close', this.props.dialog.close) }
           modal={ false }
           onRequestClose={ this.props.dialog.close }
           open={ this.props.dialog.help }
@@ -1179,7 +1308,7 @@ class DisplayMicroscopySample extends React.Component {
           { this.props.dialog.text }
         </Dialog>
         <Dialog
-          actions={ this.errorDialogClose() }
+          actions={ this.dialogClose('Close', this.props.errorDialog.close) }
           modal={ false }
           onRequestClose={ this.props.errorDialog.close }
           open={ this.props.errorDialog.show }
@@ -1188,7 +1317,7 @@ class DisplayMicroscopySample extends React.Component {
           { this.props.errorDialog.text }
         </Dialog>
         <Dialog
-          actions={ this.imageDialogClose() }
+          actions={ this.imageDialogClose(null, this.props.imageDialog.close) }
           contentStyle={ {
             width: 'auto',
           } }
@@ -1202,6 +1331,21 @@ class DisplayMicroscopySample extends React.Component {
               this.props.imageDialog.index
             )
           }
+        </Dialog>
+        <Dialog
+          actions={ [
+            this.exportImages(),
+            this.dialogClose('Cancel', this.props.dialog.close),
+          ] }
+          contentStyle={ {
+            width: 'auto',
+          } }
+          modal={ false }
+          onRequestClose={ this.props.dialog.close }
+          open={ this.props.dialog.export }
+          title={ this.props.dialog.title }
+        >
+          { this.exportImagesContent(this.props.images, this.props.exportOptions) }
         </Dialog>
         <Snackbar
           autoHideDuration={ this.props.snackbar.duration }
@@ -1245,6 +1389,7 @@ DisplayMicroscopySample.propTypes = {
     clear: PropTypes.bool,
     close: PropTypes.func,
     delete: PropTypes.bool,
+    export: PropTypes.bool,
     help: PropTypes.bool,
     open: PropTypes.func,
     text: PropTypes.string,
@@ -1256,6 +1401,23 @@ DisplayMicroscopySample.propTypes = {
     show: PropTypes.bool,
     text: PropTypes.string,
     title: PropTypes.string,
+  }).isRequired,
+  exportDialogOpen: PropTypes.func.isRequired,
+  exportOptions: PropTypes.shape({
+    channels: PropTypes.shape({
+      original: PropTypes.bool,
+      blue: PropTypes.bool,
+      green: PropTypes.bool,
+      merge: PropTypes.bool,
+      red: PropTypes.bool,
+    }),
+    greyscale: PropTypes.shape({
+      original: PropTypes.bool,
+      blue: PropTypes.bool,
+      green: PropTypes.bool,
+      merge: PropTypes.bool,
+      red: PropTypes.bool,
+    }),
   }).isRequired,
   errors: PropTypes.shape({
     name: PropTypes.string,
@@ -1276,7 +1438,7 @@ DisplayMicroscopySample.propTypes = {
   }).isRequired,
   images: PropTypes.shape({
     blue: PropTypes.string,
-    fullColor: PropTypes.string,
+    original: PropTypes.string,
     green: PropTypes.string,
     merge: PropTypes.string,
     red: PropTypes.string,
@@ -1285,10 +1447,11 @@ DisplayMicroscopySample.propTypes = {
   inputChange: PropTypes.func.isRequired,
   inputWidth: PropTypes.number.isRequired,
   isClearing: PropTypes.bool.isRequired,
+  isExporting: PropTypes.bool.isRequired,
   isSaving: PropTypes.bool.isRequired,
   loading: PropTypes.shape({
     blue: PropTypes.bool,
-    fullColor: PropTypes.bool,
+    original: PropTypes.bool,
     green: PropTypes.bool,
     merge: PropTypes.bool,
     red: PropTypes.bool,
@@ -1314,6 +1477,7 @@ DisplayMicroscopySample.propTypes = {
       primary4Color: PropTypes.string,
       success: PropTypes.string,
       successHover: PropTypes.string,
+      textColor: PropTypes.string,
       warning: PropTypes.string,
       warningHover: PropTypes.string,
     }),
@@ -1351,7 +1515,9 @@ DisplayMicroscopySample.propTypes = {
     open: PropTypes.bool,
   }).isRequired,
   splitAll: PropTypes.func.isRequired,
+  toggleChannelExport: PropTypes.func.isRequired,
   toggleCrop: PropTypes.func.isRequired,
+  toggleGreyscaleExport: PropTypes.func.isRequired,
   toggleMerge: PropTypes.func.isRequired,
   updateBrightContrast: PropTypes.func.isRequired,
 };

@@ -74,13 +74,6 @@ const routes = {
         })
       ;
     });
-    app.get('/image/channel/:fileID/:channel', auth.validate, (req, res) => {
-      image.getChannel(req.params.fileID, req.params.channel, res.locals.user)
-        .then((response) => {
-          routes.response(res, response);
-        })
-      ;
-    });
     app.get('/image/:fileID', auth.validate, (req, res) => {
       image.get(req.params.fileID, res.locals.user)
         .then((response) => {
@@ -131,13 +124,6 @@ const routes = {
     // returns available projects, screens, etc, based on user
     app.get('/queue', auth.validate, (req, res) => {
       queue.get(req.query.target)
-        .then((response) => {
-          routes.response(res, response);
-        })
-      ;
-    });
-    app.get('/image/split/:fileID', auth.validate, (req, res) => {
-      image.splitImage(req.params.fileID, res.locals.user)
         .then((response) => {
           routes.response(res, response);
         })
@@ -205,9 +191,33 @@ const routes = {
         })
       ;
     });
+    // get specific image channel
+    app.post('/image/channel/:fileID/:channel', auth.validate, (req, res) => {
+      image.getChannel(req.params.fileID, req.params.channel, req.body, res.locals.user)
+        .then((response) => {
+          routes.response(res, response);
+        })
+      ;
+    });
     // crop image(s)
     app.post('/image/crop/:fileID', auth.validate, (req, res) => {
       image.crop(req.params.fileID, req.body, res.locals.user)
+        .then((response) => {
+          routes.response(res, response);
+        })
+      ;
+    });
+    // export image(s)
+    app.post('/image/export', auth.validate, (req, res) => {
+      image.export(req.body, res.locals.user)
+        .then((response) => {
+          routes.response(res, response);
+        })
+      ;
+    });
+    // split an image to separate channels
+    app.post('/image/split/:fileID', auth.validate, (req, res) => {
+      image.splitImage(req.params.fileID, req.body, res.locals.user)
         .then((response) => {
           routes.response(res, response);
         })

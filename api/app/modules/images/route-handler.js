@@ -3,11 +3,13 @@ const Channels = require('./split-channels');
 const Crop = require('./crop-image');
 const DeleteImages = require('./delete');
 const getImage = require('./get-image');
+const Greyscale = require('./greyscale');
 const imageConvert = require('./convert');
 const ObjectId = require('mongodb').ObjectId;
 const permission = require('../permission/permission');
 const query = require('../query/query');
 const store = require('./store-image');
+const Zip = require('./zip-image');
 
 const RouteHandler = {
   checkAccess: {
@@ -107,7 +109,12 @@ const RouteHandler = {
           croppedImages.blue = imageConvert.bufferToUri(cropped[2]);
           croppedImages.green = imageConvert.bufferToUri(cropped[1]);
           croppedImages.red = imageConvert.bufferToUri(cropped[0]);
-          return body.channels.merge ? Channels.merge(cropped) : Promise.resolve();
+          const toMerge = [
+            body.toMerge.red ? cropped[0] : null,
+            body.toMerge.green ? cropped[1] : null,
+            body.toMerge.blue ? cropped[2] : null,
+          ];
+          return body.channels.merge ? Channels.merge(toMerge) : Promise.resolve();
         })
         .then((merge) => {
           croppedImages.merge = imageConvert.bufferToUri(merge);
@@ -132,16 +139,121 @@ const RouteHandler = {
       ;
     });
   },
+  export: (body, user) => {
+    return new Promise((resolve) => {
+      const _id = new ObjectId(body.fileID);
+      const images = {
+        blue: null,
+        green: null,
+        merge: null,
+        original: null,
+        red: null,
+      };
+      query.get('imagefs.files', { _id }, { metadata: 1 }, 'findOne')
+        .then((imageInfo) => {
+          return Promise.all([
+            RouteHandler.checkAccess.edit(imageInfo, user),
+            getImage.buffer(body.fileID),
+          ]);
+        })
+        .then((values) => {
+          images.original = body.toExport.original ? values[1] : null;
+          return Channels.splitAllBuffer(values[1]);
+        })
+        .then((channelBuffers) => {
+          return Promise.all([
+            body.channels.red && body.toExport.red ?
+              Adjustments.brightContrast(
+                channelBuffers.red,
+                'red',
+                body.brightness.red,
+                body.contrast.red
+              )
+              :
+              Promise.resolve(),
+            body.channels.green && body.toExport.green ?
+              Adjustments.brightContrast(
+                channelBuffers.green,
+                'green',
+                body.brightness.green,
+                body.contrast.green
+              )
+              :
+              Promise.resolve(),
+            body.channels.blue && body.toExport.blue ?
+              Adjustments.brightContrast(
+                channelBuffers.blue,
+                'blue',
+                body.brightness.blue,
+                body.contrast.blue
+              )
+              :
+              Promise.resolve(),
+          ]);
+        })
+        .then((adjusted) => {
+          return Crop.all(adjusted, body.crop);
+        })
+        .then((cropped) => {
+          images.blue = cropped[2];
+          images.green = cropped[1];
+          images.red = cropped[0];
+          const toMerge = [
+            body.toMerge.red ? cropped[0] : null,
+            body.toMerge.green ? cropped[1] : null,
+            body.toMerge.blue ? cropped[2] : null,
+          ];
+          return body.channels.merge && body.toExport.merge ?
+            Channels.merge(toMerge)
+            :
+            Promise.resolve()
+          ;
+        })
+        .then((merge) => {
+          images.merge = merge;
+          return Greyscale.convert(images, body.greyscale);
+        })
+        .then((greyscale) => {
+          return Zip.images(greyscale, body.filename);
+        })
+        .then((zipped) => {
+          resolve({
+            status: 200,
+            clientResponse: {
+              status: 200,
+              message: 'Crop completed',
+              uri: zipped,
+            },
+          });
+        })
+        .catch((error) => {
+          resolve({
+            status: 500,
+            clientResponse: {
+              status: 500,
+              message: `There was an error cropping the image: ${error}`,
+            },
+          });
+        })
+      ;
+    });
+  },
   get: (fileID, user) => {
     return new Promise((resolve) => {
       const getChannelMetadata = (channelImages) => {
         const metadata = {
           brightness: {},
           contrast: {},
+          crop: {},
+          mergeOptions: null,
         };
         channelImages.forEach((image) => {
           metadata.brightness[image.metadata.channel] = image.metadata.brightness;
           metadata.contrast[image.metadata.channel] = image.metadata.contrast;
+          metadata.crop[image.metadata.channel] = image.metadata.crop;
+          if (image.metadata.channel === 'merge') {
+            metadata.mergeOptions = image.metadata.mergeOptions;
+          }
         });
         return metadata;
       };
@@ -149,7 +261,7 @@ const RouteHandler = {
         const imageIDs = [
           {
             _id,
-            channel: 'fullColor',
+            channel: 'original',
           },
         ];
         channelItems.forEach((item) => {
@@ -200,7 +312,7 @@ const RouteHandler = {
       ;
     });
   },
-  getChannel: (fileID, channel, user) => {
+  getChannel: (fileID, channel, body, user) => {
     return new Promise((resolve) => {
       const _id = new ObjectId(fileID);
       query.get('imagefs.files', { _id }, { metadata: 1 }, 'findOne')
@@ -211,14 +323,17 @@ const RouteHandler = {
           ]);
         })
         .then((values) => {
-          return Channels.getURI(values[1], [channel]);
+          return Channels.getBuffer(values[1], [channel]);
         })
-        .then((image) => {
+        .then((channelImage) => {
+          return Crop.image(channelImage, body.crop);
+        })
+        .then((cropped) => {
           resolve({
             status: 200,
             clientResponse: {
               status: 200,
-              image,
+              image: imageConvert.bufferToUri(cropped),
               message: 'Image retrieved',
             },
           });
@@ -279,15 +394,18 @@ const RouteHandler = {
               Promise.resolve(),
           ]);
         })
-        .then((images) => {
-          return Channels.merge(images);
+        .then((adjusted) => {
+          return Crop.all(adjusted, options.crop);
         })
-        .then((buffer) => {
+        .then((cropped) => {
+          return Channels.merge(cropped);
+        })
+        .then((merge) => {
           resolve({
             status: 200,
             clientResponse: {
               status: 200,
-              image: imageConvert.bufferToUri(buffer),
+              image: imageConvert.bufferToUri(merge),
               message: 'Image retrieved',
             },
           });
@@ -341,15 +459,19 @@ const RouteHandler = {
   },
   save: (fileID, body, user) => {
     return new Promise((resolve) => {
-      const setMetadata = (channels, parentID, brightness, contrast) => {
+      const setMetadata = (channels, parentID, brightness, contrast, crop) => {
         const metadata = {};
         channels.forEach((channel) => {
           metadata[channel] = {
             brightness: brightness[channel],
             channel,
             contrast: contrast[channel],
+            crop,
             parentID,
           };
+          if (channel === 'merge') {
+            metadata[channel].mergeOptions = body.mergeOptions || {};
+          }
         });
         return metadata;
       };
@@ -374,7 +496,7 @@ const RouteHandler = {
           const storeChannels = Object.keys(convertedImages);
           return store.images(
             convertedImages,
-            setMetadata(storeChannels, _id, body.brightness, body.contrast)
+            setMetadata(storeChannels, _id, body.brightness, body.contrast, body.crop)
           );
         })
         .then(() => {
@@ -398,7 +520,7 @@ const RouteHandler = {
       ;
     });
   },
-  splitImage: (fileID, user) => {
+  splitImage: (fileID, body, user) => {
     return new Promise((resolve) => {
       const _id = new ObjectId(fileID);
       query.get('imagefs.files', { _id }, { metadata: 1 }, 'findOne')
@@ -409,14 +531,21 @@ const RouteHandler = {
           ]);
         })
         .then((values) => {
-          return Channels.splitAllUri(values[1]);
+          return Channels.splitAllBuffer(values[1]);
         })
-        .then((images) => {
+        .then((splitImages) => {
+          return Crop.all([splitImages.red, splitImages.green, splitImages.blue], body.crop);
+        })
+        .then((cropped) => {
           resolve({
             status: 200,
             clientResponse: {
               status: 200,
-              image: images,
+              image: {
+                blue: imageConvert.bufferToUri(cropped[2]),
+                green: imageConvert.bufferToUri(cropped[1]),
+                red: imageConvert.bufferToUri(cropped[0]),
+              },
               message: 'Image retrieved',
             },
           });
