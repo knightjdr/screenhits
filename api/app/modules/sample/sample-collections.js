@@ -3,5 +3,6 @@ const SampleCollections = {
     'CRISPRgene',
     'CRISPRguide',
   ],
+  Microscopy: [],
 };
 module.exports = SampleCollections;

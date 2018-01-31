@@ -325,10 +325,19 @@ class DisplayMicroscopySample extends React.Component {
   imageDialogContent = (images, index = 0) => {
     const imageContent = images.length > 0 ?
       (
-        <img
-          alt={ images[index].title }
-          src={ images[index].image }
-        />
+        <div
+          style={ {
+            maxHeight: 'calc(100vh - 180px)',
+            maxWidth: 'calc(100vw - 150px)',
+            overflowX: 'auto',
+            overflowY: 'auto',
+          } }
+        >
+          <img
+            alt={ images[index].title }
+            src={ images[index].image }
+          />
+        </div>
       )
       :
       null
@@ -360,7 +369,7 @@ class DisplayMicroscopySample extends React.Component {
               mini={ true }
               onTouchTap={ () => { this.props.changeCarouselIndex(-1); } }
               style={ {
-                margin: 20,
+                margin: '0 10px',
               } }
             >
               <ChevronLeft />
@@ -373,7 +382,7 @@ class DisplayMicroscopySample extends React.Component {
               mini={ true }
               onTouchTap={ () => { this.props.changeCarouselIndex(1); } }
               style={ {
-                margin: 20,
+                margin: '0 10px',
               } }
             >
               <ChevronRight />
@@ -1318,12 +1327,25 @@ class DisplayMicroscopySample extends React.Component {
         </Dialog>
         <Dialog
           actions={ this.imageDialogClose(null, this.props.imageDialog.close) }
+          autoDetectWindowHeight={ false }
           contentStyle={ {
+            maxWidth: 'calc(100vw - 20px)',
+            transform: 'translateY(20)',
             width: 'auto',
           } }
           modal={ false }
           onRequestClose={ this.props.imageDialog.close }
           open={ this.props.imageDialog.show }
+          overlayStyle={ {
+            backgroundColor: 'none',
+          } }
+          style={ {
+            height: 'calc(100vh-20px)',
+            left: '50%',
+            paddingTop: 0,
+            transform: 'translateX(-50%)',
+            width: 'auto',
+          } }
         >
           {
             this.imageDialogContent(

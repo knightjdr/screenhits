@@ -97,6 +97,7 @@ const Delete = {
   },
   sample: (filter) => {
     return new Promise((resolve, reject) => {
+      // get screen specific collections to remove from
       const getCollections = (samples) => {
         let currSampleTypes = samples.map((sample) => {
           return sample.type;
@@ -108,25 +109,48 @@ const Delete = {
         });
         return collections;
       };
-      query.get('sample', filter, { _id: 1, type: 1 })
+      // get sample information
+      query.get('sample', filter, { _id: 1, type: 1, files_id: 1 })
         .then((samples) => {
+          // get specific collections to query and delete from for this screen type
           const collections = getCollections(samples);
+          // get any associated image file IDs
+          const fileIDs = samples
+            .filter((sample) => { return sample.files_id; })
+            .map((filterSample) => { return filterSample.files_id; })
+          ;
           const sampleIds = samples.map((sample) => { return sample._id; });
           return Promise.all(
-            collections.map((collection) => {
+            [
+              query.get('imagefs.files', { 'metadata.parentID': { $in: fileIDs } }, { _id: 1 }), // see if the image has been split
+              deleteQuery.item('sample', { _id: { $in: sampleIds } }), // delete sample
+              deleteQuery.item('imagefs.files', { _id: { $in: fileIDs } }), // delete input images
+              deleteQuery.item('imagefs.chunks', { files_id: { $in: fileIDs } }), // delete input chunks
+            ].concat(collections.map((collection) => {
               return update.subField(
                 collection,
                 {},
                 { $pull: { records: { sample: { $in: sampleIds } } } },
                 { multi: true }
               );
-            }).concat([
-              deleteQuery.item('sample', { _id: { $in: sampleIds } }),
-            ])
+            }))
           );
+        })
+        .then((values) => {
+          // if there are any images that were split from the main file, delete them
+          const splitImages = values[0].map((splitImage) => { return splitImage._id; });
+          return splitImages.length > 0 ?
+            Promise.all([
+              deleteQuery.item('imagefs.files', { _id: { $in: splitImages } }), // delete split images
+              deleteQuery.item('imagefs.chunks', { files_id: { $in: splitImages } }), // delete split chunks
+            ])
+            :
+            Promise.resolve()
+          ;
         })
         .then(resolve())
         .catch((error) => {
+          console.log(error);
           reject(error);
         })
       ;
