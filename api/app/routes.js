@@ -74,6 +74,14 @@ const routes = {
         })
       ;
     });
+    // get list of available cells
+    app.get('/cells', auth.validate, (req, res) => {
+      dataSource.cells(req.query.text)
+        .then((response) => {
+          routes.response(res, response);
+        })
+      ;
+    });
     app.get('/image/:fileID', auth.validate, (req, res) => {
       image.get(req.params.fileID, res.locals.user)
         .then((response) => {

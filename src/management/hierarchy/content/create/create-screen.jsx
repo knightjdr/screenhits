@@ -13,7 +13,6 @@ import TextField from 'material-ui/TextField';
 
 import createStyle from './create-style';
 import Fields from '../../../../modules/fields';
-import CellsDataSource from '../../../../assets/data/cells';
 import { uppercaseFirst } from '../../../../helpers/helpers';
 
 class CreateScreen extends React.Component {
@@ -32,6 +31,7 @@ class CreateScreen extends React.Component {
     ]);
   }
   inputChangeCell = (value) => {
+    this.props.downloadDataSource('cells', value);
     this.props.inputChange('cell', value);
   }
   inputChangeCellID = (e) => {
@@ -150,12 +150,15 @@ class CreateScreen extends React.Component {
             ) }
           >
             <AutoComplete
-              dataSource={ CellsDataSource }
+              dataSource={ this.props.dataSource.cells.map((entry) => { return entry.name; }) }
               errorText={ this.props.errors.cell }
               filter={ this.autoCompleteFilter }
               floatingLabelText="Cell type"
               fullWidth={ true }
               maxSearchResults={ 15 }
+              menuStyle={ {
+                width: 600,
+              } }
               multiLine={ false }
               onUpdateInput={ this.inputChangeCell }
               searchText={ this.props.formData.cell }
@@ -350,6 +353,7 @@ class CreateScreen extends React.Component {
 
 CreateScreen.propTypes = {
   dataSource: PropTypes.shape({
+    cells: PropTypes.array,
     species: PropTypes.array,
   }).isRequired,
   dialog: PropTypes.shape({

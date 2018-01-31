@@ -32,6 +32,7 @@ class CreateContentContainer extends React.Component {
         },
         inputWidth: window.innerWidth >= 555 ? 500 : window.innerWidth - 55,
         dataSource: {
+          cells: [],
           species: [],
         },
         screenType,
@@ -51,8 +52,8 @@ class CreateContentContainer extends React.Component {
   }
   onCreate = (activeLevel, nextPostState, currPostState) => {
     const success = currPostState[activeLevel].isSubmitted &&
-      !currPostState[activeLevel].isSubmitted &&
-      !currPostState[activeLevel].didSubmitFail
+      !nextPostState[activeLevel].isSubmitted &&
+      !nextPostState[activeLevel].didSubmitFail
     ;
     if (
       success &&
@@ -150,6 +151,17 @@ class CreateContentContainer extends React.Component {
           });
           if (speciesIndex > -1) {
             newFormData.taxonID = dataSource.species[speciesIndex]._id;
+          }
+        } else if (
+          field === 'cell' &&
+          dataSource.cells.length > 0
+        ) {
+          newFormData[field] = value;
+          const cellsIndex = dataSource.cells.findIndex((entry) => {
+            return entry.name === value;
+          });
+          if (cellsIndex > -1) {
+            newFormData.cellID = dataSource.cells[cellsIndex]._id;
           }
         } else {
           newFormData[field] = value;
