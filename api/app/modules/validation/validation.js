@@ -457,46 +457,54 @@ const validate = {
         if (!validateObj.name) {
           reject('missing sample name');
         }
-        let fileType;
-        let header;
-        let parser;
-        if (validateObj.fileType) {
-          fileType = validateObj.fileType;
-          delete validateObj.fileType;
-        }
-        if (validateObj.header) {
-          header = JSON.parse(validateObj.header);
-          validateObj.properties = header.map((column) => {
-            return {
-              layName: column.layName,
-              name: column.name,
-              type: column.type,
-            };
-          });
-          delete validateObj.header;
-        }
-        if (validateObj.parser) {
-          parser = JSON.parse(validateObj.parser);
-          delete validateObj.parser;
-        }
-        delete validateObj.experiment;
-        delete validateObj.project;
-        delete validateObj.screen;
-        if (validateObj.target) {
-          delete validateObj.target;
+        if (!validateObj.replicate) {
+          reject('missing sample name');
         }
         validateObj[dateType] = moment().format('MMMM Do YYYY, h:mm a');
-        resolve(Object.assign(
-          {},
-          {
-            data: validateObj,
-          },
-          {
-            fileType,
-            header,
-            parser,
+        if (validateObj.type !== 'Microscopy') {
+          let fileType;
+          let header;
+          let parser;
+          if (validateObj.fileType) {
+            fileType = validateObj.fileType;
+            delete validateObj.fileType;
           }
-        ));
+          if (validateObj.header) {
+            header = JSON.parse(validateObj.header);
+            validateObj.properties = header.map((column) => {
+              return {
+                layName: column.layName,
+                name: column.name,
+                type: column.type,
+              };
+            });
+            delete validateObj.header;
+          }
+          if (validateObj.parser) {
+            parser = JSON.parse(validateObj.parser);
+            delete validateObj.parser;
+          }
+          delete validateObj.experiment;
+          delete validateObj.project;
+          delete validateObj.screen;
+          if (validateObj.target) {
+            delete validateObj.target;
+          }
+          resolve(Object.assign(
+            {},
+            {
+              data: validateObj,
+            },
+            {
+              fileType,
+              header,
+              parser,
+            }
+          ));
+        } else {
+          validateObj.channels = validateObj.channels;
+          resolve(validateObj);
+        }
       });
     },
     screen: (obj, dateType) => {

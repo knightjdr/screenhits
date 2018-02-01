@@ -242,7 +242,10 @@ class DisplayContentContainer extends React.Component {
     return canEdit;
   }
   updateScreenType = (screenID, screens) => {
-    if (screenID) {
+    if (
+      screenID &&
+      screens.length > 0
+    ) {
       const screenIndex = screens.findIndex((screen) => {
         return screen._id === screenID;
       });

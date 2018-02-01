@@ -11,7 +11,6 @@ import React from 'react';
 import SelectField from 'material-ui/SelectField';
 import TextField from 'material-ui/TextField';
 
-import CellsDataSource from '../../../../assets/data/cells';
 import displayStyle from './display-style';
 import Ellipsis from '../../../../ellipsis/ellipsis-container';
 import Fields from '../../../../modules/fields';
@@ -47,6 +46,7 @@ class DisplayScreen extends React.Component {
     ]);
   }
   inputChangeCell = (value) => {
+    this.props.downloadDataSource('cells', value);
     this.props.inputChange('cell', value);
   }
   inputChangeSpecies = (value) => {
@@ -58,6 +58,27 @@ class DisplayScreen extends React.Component {
     if (!isNaN(value)) {
       this.props.inputChange('taxonID', Number(value));
     }
+  }
+  deleteButton = (canEdit, palette) => {
+    return (
+      canEdit ?
+        <div
+          style={ displayStyle.deleteContainer }
+        >
+          <IconButton
+            iconStyle={ {
+              color: palette.warning,
+            } }
+            onTouchTap={ () => { this.props.dialog.open('delete'); } }
+            tooltip="Delete screen"
+            tooltipPosition="bottom-left"
+          >
+            <DeleteForever />
+          </IconButton>
+        </div>
+        :
+        null
+    );
   }
   dialogClose = () => {
     return (
@@ -73,392 +94,223 @@ class DisplayScreen extends React.Component {
       />,
     ]);
   }
+  drugField = (drugs, palette) => {
+    return (
+      drugs &&
+      drugs.length > 0 ?
+        <div
+          style={ Object.assign(
+            {},
+            displayStyle.elementContainer,
+            {
+              display: 'flex',
+            },
+          ) }
+        >
+          <div
+            style={ Object.assign(
+              {},
+              displayStyle.elementKey,
+              {
+                backgroundColor: palette.keyColor,
+                border: `1px solid ${palette.keyColorBorder}`,
+              },
+            ) }
+          >
+            <span>
+              Drugs:
+            </span>
+          </div>
+          <div
+            style={ Object.assign(
+              {},
+              displayStyle.elementValue,
+              {
+                display: 'grid',
+                gridColumnGap: 10,
+                gridRowGap: 10,
+                gridTemplateColumns: 'auto 1fr',
+              }
+            ) }
+          >
+            <div
+              style={ Object.assign(
+                {},
+                drugGridHeader,
+                {
+                  backgroundColor: palette.keyColor,
+                  gridColumn: 1,
+                }
+              ) }
+            >
+              PubChem ID
+            </div>
+            <div
+              style={ Object.assign(
+                {},
+                drugGridHeader,
+                {
+                  backgroundColor: palette.keyColor,
+                  gridColumn: 2,
+                }
+              ) }
+            >
+              Names
+            </div>
+            {
+              drugs.map((drug, row) => {
+                return ([
+                  <div
+                    key={ `drugID-container-${drug._id}` }
+                    style={ {
+                      gridColumn: 1,
+                      gridRow: row + 2,
+                      justifySelf: 'end',
+                    } }
+                  >
+                    <a
+                      href={ `https://pubchem.ncbi.nlm.nih.gov/compound/${drug._id}` }
+                      key={ `drugID-link-${drug._id}` }
+                      rel="noopener noreferrer"
+                      target="_blank"
+                    >
+                      { drug._id }
+                    </a>
+                  </div>,
+                  <div
+                    key={ `drugID-names-${drug._id}` }
+                    style={ {
+                      gridColumn: 2,
+                      gridRow: row + 2,
+                      justifySelf: 'start',
+                      width: '100%',
+                    } }
+                  >
+                    <Ellipsis
+                      key={ `drugID-ellipsis-${drug._id}` }
+                      text={ drug.names.join('; ') }
+                    />
+                  </div>,
+                ]);
+              })
+            }
+          </div>
+        </div>
+        :
+        null
+    );
+  }
+  field = (key, value, palette) => {
+    return (
+      value ?
+        <div
+          style={ displayStyle.elementContainer }
+        >
+          <div
+            style={ Object.assign(
+              {},
+              displayStyle.elementKey,
+              {
+                backgroundColor: palette.keyColor,
+                border: `1px solid ${palette.keyColorBorder}`,
+              },
+            ) }
+          >
+            <span>
+              { key }:
+            </span>
+          </div>
+          <div
+            style={ displayStyle.elementValue }
+          >
+            { value }
+          </div>
+        </div>
+      :
+      null
+    );
+  }
+  helpIconButton = (title, text) => {
+    return (
+      <IconButton
+        onTouchTap={ () => {
+          this.props.dialog.open(
+            'help',
+            `Help for the "${title}" field`,
+            text
+          );
+        } }
+        tooltip="Help"
+        tooltipPosition="top-center"
+      >
+        <HelpIcon />
+      </IconButton>
+    );
+  }
+  otherFields = (fields, palette) => {
+    return (
+      fields &&
+      !objectEmpty(fields) ?
+        Object.keys(fields).sort().map((key) => {
+          return (
+            <div
+              key={ `${key}-container` }
+              style={ displayStyle.elementContainer }
+            >
+              <div
+                key={ `${key}-header` }
+                style={ Object.assign(
+                  {},
+                  displayStyle.elementKey,
+                  {
+                    backgroundColor: palette.keyColor,
+                    border: `1px solid ${palette.keyColorBorder}`,
+                  },
+                ) }
+              >
+                <span
+                  key={ `${key}-span` }
+                >
+                  { uppercaseFirst(key) }:
+                </span>
+              </div>
+              <div
+                key={ `${key}-value` }
+                style={ displayStyle.elementValue }
+              >
+                { fields[key] }
+              </div>
+            </div>
+          );
+        })
+        :
+        null
+    );
+  }
   render() {
+    let speciesValue = this.props.screen.taxonID;
+    speciesValue += this.props.screen.species ? `: ${this.props.screen.species}` : null;
+    const cellMods = this.props.screen.cellMods ?
+      this.arrToString(this.props.screen.cellMods)
+      : null
+    ;
     return (
       <div>
         { !this.props.edit &&
           <div>
-            <div
-              style={ displayStyle.elementContainer }
-            >
-              <div
-                style={ Object.assign(
-                  {},
-                  displayStyle.elementKey,
-                  {
-                    backgroundColor: this.props.muiTheme.palette.keyColor,
-                    border: `1px solid ${this.props.muiTheme.palette.keyColorBorder}`,
-                  },
-                ) }
-              >
-                <span>
-                  Name:
-                </span>
-              </div>
-              <div
-                style={ displayStyle.elementValue }
-              >
-                { this.props.screen.name }
-              </div>
-            </div>
-            <div
-              style={ displayStyle.elementContainer }
-            >
-              <div
-                style={ Object.assign(
-                  {},
-                  displayStyle.elementKey,
-                  {
-                    backgroundColor: this.props.muiTheme.palette.keyColor,
-                    border: `1px solid ${this.props.muiTheme.palette.keyColorBorder}`,
-                  },
-                ) }
-              >
-                <span>
-                  Screen type:
-                </span>
-              </div>
-              <div
-                style={ displayStyle.elementValue }
-              >
-                { this.props.screen.type }
-              </div>
-            </div>
-            <div
-              style={ displayStyle.elementContainer }
-            >
-              <div
-                style={ Object.assign(
-                  {},
-                  displayStyle.elementKey,
-                  {
-                    backgroundColor: this.props.muiTheme.palette.keyColor,
-                    border: `1px solid ${this.props.muiTheme.palette.keyColorBorder}`,
-                  },
-                ) }
-              >
-                <span>
-                  Species:
-                </span>
-              </div>
-              <div
-                style={ displayStyle.elementValue }
-              >
-                { this.props.screen.taxonID }
-                { this.props.screen.species ? `: ${this.props.screen.species}` : null }
-              </div>
-            </div>
-            <div
-              style={ displayStyle.elementContainer }
-            >
-              <div
-                style={ Object.assign(
-                  {},
-                  displayStyle.elementKey,
-                  {
-                    backgroundColor: this.props.muiTheme.palette.keyColor,
-                    border: `1px solid ${this.props.muiTheme.palette.keyColorBorder}`,
-                  },
-                ) }
-              >
-                <span>
-                  Cell type:
-                </span>
-              </div>
-              <div
-                style={ displayStyle.elementValue }
-              >
-                { this.props.screen.cell }
-              </div>
-            </div>
-            {
-              this.props.screen.cellMods &&
-              <div
-                style={ Object.assign(
-                  {},
-                  displayStyle.elementContainer,
-                  {
-                    display: 'flex',
-                  },
-                ) }
-              >
-                <div
-                  style={ Object.assign(
-                    {},
-                    displayStyle.elementKey,
-                    {
-                      backgroundColor: this.props.muiTheme.palette.keyColor,
-                      border: `1px solid ${this.props.muiTheme.palette.keyColorBorder}`,
-                    },
-                  ) }
-                >
-                  <span>
-                    Cell modifications:
-                  </span>
-                </div>
-                <div
-                  style={ displayStyle.elementValue }
-                >
-                  { this.arrToString(this.props.screen.cellMods) }
-                </div>
-              </div>
-            }
-            {
-              this.props.screen.drugNames &&
-              this.props.screen.drugNames.length > 0 &&
-              <div
-                style={ Object.assign(
-                  {},
-                  displayStyle.elementContainer,
-                  {
-                    display: 'flex',
-                  },
-                ) }
-              >
-                <div
-                  style={ Object.assign(
-                    {},
-                    displayStyle.elementKey,
-                    {
-                      backgroundColor: this.props.muiTheme.palette.keyColor,
-                      border: `1px solid ${this.props.muiTheme.palette.keyColorBorder}`,
-                    },
-                  ) }
-                >
-                  <span>
-                    Drugs:
-                  </span>
-                </div>
-                <div
-                  style={ Object.assign(
-                    {},
-                    displayStyle.elementValue,
-                    {
-                      display: 'grid',
-                      gridColumnGap: 10,
-                      gridRowGap: 10,
-                      gridTemplateColumns: 'auto 1fr',
-                    }
-                  ) }
-                >
-                  <div
-                    style={ Object.assign(
-                      {},
-                      drugGridHeader,
-                      {
-                        backgroundColor: this.props.muiTheme.palette.keyColor,
-                        gridColumn: 1,
-                      }
-                    ) }
-                  >
-                    PubChem ID
-                  </div>
-                  <div
-                    style={ Object.assign(
-                      {},
-                      drugGridHeader,
-                      {
-                        backgroundColor: this.props.muiTheme.palette.keyColor,
-                        gridColumn: 2,
-                      }
-                    ) }
-                  >
-                    Names
-                  </div>
-                  {
-                    this.props.screen.drugNames.map((drug, row) => {
-                      return ([
-                        <div
-                          key={ `drugID-container-${drug._id}` }
-                          style={ {
-                            gridColumn: 1,
-                            gridRow: row + 2,
-                            justifySelf: 'end',
-                          } }
-                        >
-                          <a
-                            href={ `https://pubchem.ncbi.nlm.nih.gov/compound/${drug._id}` }
-                            key={ `drugID-link-${drug._id}` }
-                            rel="noopener noreferrer"
-                            target="_blank"
-                          >
-                            { drug._id }
-                          </a>
-                        </div>,
-                        <div
-                          key={ `drugID-names-${drug._id}` }
-                          style={ {
-                            gridColumn: 2,
-                            gridRow: row + 2,
-                            justifySelf: 'start',
-                            width: '100%',
-                          } }
-                        >
-                          <Ellipsis
-                            key={ `drugID-ellipsis-${drug._id}` }
-                            text={ drug.names.join('; ') }
-                          />
-                        </div>,
-                      ]);
-                    })
-                  }
-                </div>
-              </div>
-            }
-            <div
-              style={ Object.assign(
-                {},
-                displayStyle.elementContainer,
-                {
-                  display: this.props.screen.condition ? 'flex' : 'none',
-                },
-              ) }
-            >
-              <div
-                style={ Object.assign(
-                  {},
-                  displayStyle.elementKey,
-                  {
-                    backgroundColor: this.props.muiTheme.palette.keyColor,
-                    border: `1px solid ${this.props.muiTheme.palette.keyColorBorder}`,
-                  },
-                ) }
-              >
-                <span>
-                  Condition:
-                </span>
-              </div>
-              <div
-                style={ displayStyle.elementValue }
-              >
-                { this.props.screen.condition }
-              </div>
-            </div>
-            {
-              this.props.screen.other &&
-              !objectEmpty(this.props.screen.other) &&
-              Object.keys(this.props.screen.other).sort().map((key) => {
-                return (
-                  <div
-                    key={ `${key}-container` }
-                    style={ displayStyle.elementContainer }
-                  >
-                    <div
-                      key={ `${key}-header` }
-                      style={ Object.assign(
-                        {},
-                        displayStyle.elementKey,
-                        {
-                          backgroundColor: this.props.muiTheme.palette.keyColor,
-                          border: `1px solid ${this.props.muiTheme.palette.keyColorBorder}`,
-                        },
-                      ) }
-                    >
-                      <span
-                        key={ `${key}-span` }
-                      >
-                        { uppercaseFirst(key) }:
-                      </span>
-                    </div>
-                    <div
-                      key={ `${key}-value` }
-                      style={ displayStyle.elementValue }
-                    >
-                      { this.props.screen.other[key] }
-                    </div>
-                  </div>
-                );
-              })
-            }
-            {
-              this.props.screen.comment &&
-              <div
-                style={ displayStyle.elementContainer }
-              >
-                <div
-                  style={ Object.assign(
-                    {},
-                    displayStyle.elementKey,
-                    {
-                      backgroundColor: this.props.muiTheme.palette.keyColor,
-                      border: `1px solid ${this.props.muiTheme.palette.keyColorBorder}`,
-                    },
-                  ) }
-                >
-                  <span>
-                    Comments:
-                  </span>
-                </div>
-                <div
-                  style={ displayStyle.elementValue }
-                >
-                  { this.props.screen.comment }
-                </div>
-              </div>
-            }
-            <div
-              style={ displayStyle.elementContainer }
-            >
-              <div
-                style={ Object.assign(
-                  {},
-                  displayStyle.elementKey,
-                  {
-                    backgroundColor: this.props.muiTheme.palette.keyColor,
-                    border: `1px solid ${this.props.muiTheme.palette.keyColorBorder}`,
-                  },
-                ) }
-              >
-                <span>
-                  Creator:
-                </span>
-              </div>
-              <div
-                style={ displayStyle.elementValue }
-              >
-                { this.props.screen.creatorName }
-              </div>
-            </div>
-            <div
-              style={ displayStyle.elementContainer }
-            >
-              <div
-                style={ Object.assign(
-                  {},
-                  displayStyle.elementKey,
-                  {
-                    backgroundColor: this.props.muiTheme.palette.keyColor,
-                    border: `1px solid ${this.props.muiTheme.palette.keyColorBorder}`,
-                  },
-                ) }
-              >
-                <span>
-                  Creation Date:
-                </span>
-              </div>
-              <div
-                style={ displayStyle.elementValue }
-              >
-                { this.props.screen.creationDate}
-              </div>
-            </div>
-            {
-              this.props.canEdit &&
-              <div
-                style={ displayStyle.deleteContainer }
-              >
-                <IconButton
-                  iconStyle={ {
-                    color: this.props.muiTheme.palette.warning,
-                  } }
-                  onTouchTap={ () => { this.props.dialog.open('delete'); } }
-                  tooltip="Delete screen"
-                  tooltipPosition="bottom-left"
-                >
-                  <DeleteForever />
-                </IconButton>
-              </div>
-            }
+            { this.field('Name', this.props.screen.name, this.props.muiTheme.palette) }
+            { this.field('Screen type', this.props.screen.type, this.props.muiTheme.palette) }
+            { this.field('Species', speciesValue, this.props.muiTheme.palette) }
+            { this.field('Cell type', this.props.screen.cell, this.props.muiTheme.palette) }
+            { this.field('Cell ID', this.props.screen.cellID, this.props.muiTheme.palette) }
+            { this.field('Cell modifications', cellMods, this.props.muiTheme.palette) }
+            { this.drugField(this.props.screen.drugNames, this.props.muiTheme.palette) }
+            { this.field('Condition', this.props.screen.condition, this.props.muiTheme.palette) }
+            { this.otherFields(this.props.screen.other, this.props.muiTheme.palette) }
+            { this.field('Comments', this.props.screen.comment, this.props.muiTheme.palette) }
+            { this.field('Creator', this.props.screen.creatorName, this.props.muiTheme.palette) }
+            { this.field('Creation Date', this.props.screen.creationDate, this.props.muiTheme.palette) }
+            { this.deleteButton(this.props.canEdit, this.props.muiTheme.palette) }
           </div>
         }
         { this.props.edit &&
@@ -524,17 +376,39 @@ class DisplayScreen extends React.Component {
               value={ this.props.screen.taxonID || '' }
             />
             <AutoComplete
-              dataSource={ CellsDataSource }
-              errorText={ this.props.errors.cell }
+              dataSource={ this.props.dataSource.cells.map((entry) => { return entry.name; }) }
               filter={ this.autoCompleteFilter }
               floatingLabelText="Cell type"
               fullWidth={ true }
               maxSearchResults={ 15 }
+              menuStyle={ {
+                width: 600,
+              } }
               multiLine={ false }
               onUpdateInput={ this.inputChangeCell }
               searchText={ this.props.screen.cell }
               style={ displayStyle.input }
             />
+            <div
+              style={ Object.assign(
+                {},
+                displayStyle.inputWithHelp,
+                {
+                  width: this.props.inputWidth,
+                },
+              ) }
+            >
+              <TextField
+                floatingLabelText="Cell ID"
+                fullWidth={ true }
+                multiLine={ true }
+                onChange={ (e) => { this.props.inputChange('cellID', e.target.value); } }
+                rows={ 1 }
+                rowsMax={ 2 }
+                value={ this.props.screen.cellID }
+              />
+              { this.helpIconButton('Cell ID', Fields.screen.cellID.help) }
+            </div>
             <div
               style={ Object.assign(
                 {},
@@ -553,19 +427,7 @@ class DisplayScreen extends React.Component {
                 rowsMax={ 2 }
                 value={ this.arrToString(this.props.screen.cellMods) }
               />
-              <IconButton
-                onTouchTap={ () => {
-                  this.props.dialog.open(
-                    'help',
-                    'Help for the "Cell line modifications" field',
-                    Fields.screen.cellMods.help
-                  );
-                } }
-                tooltip="Help"
-                tooltipPosition="top-center"
-              >
-                <HelpIcon />
-              </IconButton>
+              { this.helpIconButton('Cell line modifications', Fields.screen.cellMods.help) }
             </div>
             <div
               style={ Object.assign(
@@ -585,19 +447,7 @@ class DisplayScreen extends React.Component {
                 rowsMax={ 2 }
                 value={ this.arrToString(this.props.screen.drugs) }
               />
-              <IconButton
-                onTouchTap={ () => {
-                  this.props.dialog.open(
-                    'help',
-                    'Help for the "Drugs" field',
-                    Fields.screen.drugs.help
-                  );
-                } }
-                tooltip="Help"
-                tooltipPosition="top-center"
-              >
-                <HelpIcon />
-              </IconButton>
+              { this.helpIconButton('Drugs', Fields.screen.drugs.help) }
             </div>
             <div
               style={ Object.assign(
@@ -618,15 +468,7 @@ class DisplayScreen extends React.Component {
                 style={ displayStyle.input }
                 value={ this.props.screen.condition }
               />
-              <IconButton
-                onTouchTap={ () => {
-                  this.props.dialog.open('help', 'Help for the "Condition" field', Fields.screen.condition.help);
-                } }
-                tooltip="Help"
-                tooltipPosition="top-center"
-              >
-                <HelpIcon />
-              </IconButton>
+              { this.helpIconButton('Condition', Fields.screen.condition.help) }
             </div>
             {
               Fields.screen.other[this.props.screen.type].map((field) => {
@@ -728,6 +570,7 @@ class DisplayScreen extends React.Component {
 DisplayScreen.propTypes = {
   canEdit: PropTypes.bool.isRequired,
   dataSource: PropTypes.shape({
+    cells: PropTypes.array,
     species: PropTypes.array,
   }).isRequired,
   deleteScreen: PropTypes.func.isRequired,
@@ -754,6 +597,7 @@ DisplayScreen.propTypes = {
   screen: PropTypes.shape({
     _id: PropTypes.number,
     cell: PropTypes.string,
+    cellID: PropTypes.string,
     cellMods: PropTypes.oneOfType([
       PropTypes.array,
       PropTypes.string,

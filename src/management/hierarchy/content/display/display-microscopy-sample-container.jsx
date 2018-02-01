@@ -501,6 +501,10 @@ class DisplayMicroscopySampleContainer extends React.Component {
       });
     }
   }
+  copySampleData = (sample) => {
+    const newSampleData = JSON.parse(JSON.stringify((sample)));
+    return newSampleData;
+  }
   deleteSample = (_id) => {
     this.dialogClose();
     this.props.delete(
@@ -989,6 +993,16 @@ class DisplayMicroscopySampleContainer extends React.Component {
       })
     ;
   }
+  updateChannel = (channel, prop, value) => {
+    this.setState(({ item }) => {
+      const newSampleData = this.copySampleData(item);
+      newSampleData.channels[channel][prop] = value;
+      this.props.updateItem(newSampleData);
+      return {
+        item: newSampleData,
+      };
+    });
+  }
   render() {
     return (
       <div>
@@ -1058,6 +1072,7 @@ class DisplayMicroscopySampleContainer extends React.Component {
           toggleGreyscaleExport={ this.toggleGreyscaleExport }
           toggleMerge={ this.toggleMerge }
           updateBrightContrast={ this.updateBrightContrast }
+          updateChannel={ this.updateChannel }
         />
       </div>
 

@@ -294,6 +294,23 @@ class DisplayMicroscopySample extends React.Component {
       </div>,
     ];
   }
+  helpIconButton = (title, text) => {
+    return (
+      <IconButton
+        onTouchTap={ () => {
+          this.props.dialog.open(
+            'help',
+            `Help for the "${title}" field`,
+            text
+          );
+        } }
+        tooltip="Help"
+        tooltipPosition="top-center"
+      >
+        <HelpIcon />
+      </IconButton>
+    );
+  }
   imagePanelHeader = (text) => {
     return (
       <div
@@ -1202,15 +1219,7 @@ class DisplayMicroscopySample extends React.Component {
                 style={ displayStyle.inputWithHelpInput }
                 value={ this.props.sample.replicate }
               />
-              <IconButton
-                onTouchTap={ () => {
-                  this.props.dialog.open('help', 'Help for the "Replicate" field', Fields.sample.replicate.help);
-                } }
-                tooltip="Help"
-                tooltipPosition="top-center"
-              >
-                <HelpIcon />
-              </IconButton>
+              { this.helpIconButton('Replicate', Fields.sample.replicate.help) }
             </div>
             <div
               style={ Object.assign(
@@ -1222,7 +1231,7 @@ class DisplayMicroscopySample extends React.Component {
               ) }
             >
               <TextField
-                floatingLabelText="Concentration (optional)"
+                floatingLabelText="Concentration"
                 fullWidth={ true }
                 multiLine={ true }
                 onChange={ (e) => { this.props.inputChange('concentration', e.target.value); } }
@@ -1231,15 +1240,7 @@ class DisplayMicroscopySample extends React.Component {
                 style={ displayStyle.inputWithHelpInput }
                 value={ this.props.sample.concentration }
               />
-              <IconButton
-                onTouchTap={ () => {
-                  this.props.dialog.open('help', 'Help for the "Concentration" field', Fields.sample.concentration.help);
-                } }
-                tooltip="Help"
-                tooltipPosition="top-center"
-              >
-                <HelpIcon />
-              </IconButton>
+              { this.helpIconButton('Concentration', Fields.sample.concentration.help) }
             </div>
             <div
               style={ Object.assign(
@@ -1251,7 +1252,7 @@ class DisplayMicroscopySample extends React.Component {
               ) }
             >
               <TextField
-                floatingLabelText="Timepoint (optional)"
+                floatingLabelText="Timepoint"
                 fullWidth={ true }
                 multiLine={ true }
                 onChange={ (e) => { this.props.inputChange('timepoint', e.target.value); } }
@@ -1260,15 +1261,70 @@ class DisplayMicroscopySample extends React.Component {
                 style={ displayStyle.inputWithHelpInput }
                 value={ this.props.sample.timepoint }
               />
-              <IconButton
-                onTouchTap={ () => {
-                  this.props.dialog.open('help', 'Help for the "Time point" field', Fields.sample.timepoint.help);
-                } }
-                tooltip="Help"
-                tooltipPosition="top-center"
-              >
-                <HelpIcon />
-              </IconButton>
+              { this.helpIconButton('Time point', Fields.sample.timepoint.help) }
+            </div>
+            <div
+              style={ Object.assign(
+                {},
+                displayStyle.inputWithHelp,
+                {
+                  width: this.props.inputWidth,
+                },
+              ) }
+            >
+              <TextField
+                floatingLabelText="Microscope"
+                fullWidth={ true }
+                multiLine={ true }
+                onChange={ (e) => { this.props.inputChange('microscope', e.target.value); } }
+                rows={ 1 }
+                rowsMax={ 2 }
+                style={ displayStyle.inputWithHelpInput }
+                value={ this.props.sample.microscope }
+              />
+              { this.helpIconButton('Microscope', Fields.sample.microscope.help) }
+            </div>
+            <div
+              style={ Object.assign(
+                {},
+                displayStyle.inputWithHelp,
+                {
+                  width: this.props.inputWidth,
+                },
+              ) }
+            >
+              <TextField
+                floatingLabelText="Objective"
+                fullWidth={ true }
+                multiLine={ true }
+                onChange={ (e) => { this.props.inputChange('objective', e.target.value); } }
+                rows={ 1 }
+                rowsMax={ 2 }
+                style={ displayStyle.inputWithHelpInput }
+                value={ this.props.sample.objective }
+              />
+              { this.helpIconButton('Objective', Fields.sample.objective.help) }
+            </div>
+            <div
+              style={ Object.assign(
+                {},
+                displayStyle.inputWithHelp,
+                {
+                  width: this.props.inputWidth,
+                },
+              ) }
+            >
+              <TextField
+                floatingLabelText="Digital zoom"
+                fullWidth={ true }
+                multiLine={ true }
+                onChange={ (e) => { this.props.inputChange('digitalZoom', e.target.value); } }
+                rows={ 1 }
+                rowsMax={ 2 }
+                style={ displayStyle.inputWithHelpInput }
+                value={ this.props.sample.digitalZoom }
+              />
+              { this.helpIconButton('Digital zoom', Fields.sample.digitalZoom.help) }
             </div>
             <TextField
               floatingLabelText="Comments (optional)"
@@ -1280,6 +1336,169 @@ class DisplayMicroscopySample extends React.Component {
               style={ displayStyle.input }
               value={ this.props.sample.comment }
             />
+            <div
+              style={ {
+                marginTop: 20,
+              } }
+            >
+              Channels
+              <div
+                style={ {
+                  alignItems: 'center',
+                  display: 'flex',
+                  marginLeft: 10,
+                } }
+              >
+                <div
+                  style={ {
+                    flexBasis: 50,
+                    flexGrow: 0,
+                    flexShrink: 0,
+                    marginRight: 15,
+                    marginTop: 25,
+                    textAlign: 'right',
+                  } }
+                >
+                  Blue:
+                </div>
+                <TextField
+                  floatingLabelText="Wavelength"
+                  fullWidth={ true }
+                  onChange={ (e) => { this.props.updateChannel('blue', 'wavelength', Number(e.target.value)); } }
+                  style={ displayStyle.input }
+                  type="number"
+                  value={ this.props.sample.channels.blue.wavelength || '' }
+                />
+                <TextField
+                  floatingLabelText="Marker"
+                  fullWidth={ true }
+                  onChange={ (e) => { this.props.updateChannel('blue', 'marker', e.target.value); } }
+                  style={ displayStyle.input }
+                  type="text"
+                  value={ this.props.sample.channels.blue.marker || '' }
+                />
+                <TextField
+                  floatingLabelText="Antibody"
+                  fullWidth={ true }
+                  onChange={ (e) => { this.props.updateChannel('blue', 'antibody', e.target.value); } }
+                  style={ displayStyle.input }
+                  type="text"
+                  value={ this.props.sample.channels.blue.antibody || '' }
+                />
+                <TextField
+                  floatingLabelText="Dilution"
+                  fullWidth={ true }
+                  onChange={ (e) => { this.props.updateChannel('blue', 'dilution', e.target.value); } }
+                  style={ displayStyle.input }
+                  type="text"
+                  value={ this.props.sample.channels.blue.dilution || '' }
+                />
+              </div>
+              <div
+                style={ {
+                  alignItems: 'center',
+                  display: 'flex',
+                  marginLeft: 10,
+                } }
+              >
+                <div
+                  style={ {
+                    flexBasis: 50,
+                    flexGrow: 0,
+                    flexShrink: 0,
+                    marginRight: 15,
+                    marginTop: 25,
+                    textAlign: 'right',
+                  } }
+                >
+                  Green:
+                </div>
+                <TextField
+                  floatingLabelText="Wavelength"
+                  fullWidth={ true }
+                  onChange={ (e) => { this.props.updateChannel('green', 'wavelength', Number(e.target.value)); } }
+                  style={ displayStyle.input }
+                  type="number"
+                  value={ this.props.sample.channels.green.wavelength || '' }
+                />
+                <TextField
+                  floatingLabelText="Marker"
+                  fullWidth={ true }
+                  onChange={ (e) => { this.props.updateChannel('green', 'marker', e.target.value); } }
+                  style={ displayStyle.input }
+                  type="text"
+                  value={ this.props.sample.channels.green.marker || '' }
+                />
+                <TextField
+                  floatingLabelText="Antibody"
+                  fullWidth={ true }
+                  onChange={ (e) => { this.props.updateChannel('green', 'antibody', e.target.value); } }
+                  style={ displayStyle.input }
+                  type="text"
+                  value={ this.props.sample.channels.green.antibody || '' }
+                />
+                <TextField
+                  floatingLabelText="Dilution"
+                  fullWidth={ true }
+                  onChange={ (e) => { this.props.updateChannel('green', 'dilution', e.target.value); } }
+                  style={ displayStyle.input }
+                  type="text"
+                  value={ this.props.sample.channels.green.dilution || '' }
+                />
+              </div>
+              <div
+                style={ {
+                  alignItems: 'center',
+                  display: 'flex',
+                  marginLeft: 10,
+                } }
+              >
+                <div
+                  style={ {
+                    flexBasis: 50,
+                    flexGrow: 0,
+                    flexShrink: 0,
+                    marginRight: 15,
+                    marginTop: 25,
+                    textAlign: 'right',
+                  } }
+                >
+                  Red:
+                </div>
+                <TextField
+                  floatingLabelText="Wavelength"
+                  fullWidth={ true }
+                  onChange={ (e) => { this.props.updateChannel('red', 'wavelength', Number(e.target.value)); } }
+                  style={ displayStyle.input }
+                  type="number"
+                  value={ this.props.sample.channels.red.wavelength || '' }
+                />
+                <TextField
+                  floatingLabelText="Marker"
+                  fullWidth={ true }
+                  onChange={ (e) => { this.props.updateChannel('red', 'marker', e.target.value); } }
+                  style={ displayStyle.input }
+                  type="text"
+                  value={ this.props.sample.channels.red.marker || '' }
+                />
+                <TextField
+                  floatingLabelText="Antibody"
+                  fullWidth={ true }
+                  onChange={ (e) => { this.props.updateChannel('red', 'antibody', e.target.value); } }
+                  style={ displayStyle.input }
+                  type="text"
+                  value={ this.props.sample.channels.red.antibody || '' }
+                />
+                <TextField
+                  floatingLabelText="Dilution"
+                  fullWidth={ true }
+                  onChange={ (e) => { this.props.updateChannel('red', 'dilution', e.target.value); } }
+                  style={ displayStyle.input }
+                  type="text"
+                  value={ this.props.sample.channels.red.dilution || '' }
+                />
+              </div>
+            </div>
           </div>
         }
         <Dialog
@@ -1509,9 +1728,24 @@ DisplayMicroscopySample.propTypes = {
   sample: PropTypes.shape({
     _id: PropTypes.number,
     channels: PropTypes.shape({
-      blue: PropTypes.shape({}),
-      green: PropTypes.shape({}),
-      red: PropTypes.shape({}),
+      blue: PropTypes.shape({
+        antibody: PropTypes.string,
+        dilution: PropTypes.string,
+        marker: PropTypes.string,
+        wavelength: PropTypes.number,
+      }),
+      green: PropTypes.shape({
+        antibody: PropTypes.string,
+        dilution: PropTypes.string,
+        marker: PropTypes.string,
+        wavelength: PropTypes.number,
+      }),
+      red: PropTypes.shape({
+        antibody: PropTypes.string,
+        dilution: PropTypes.string,
+        marker: PropTypes.string,
+        wavelength: PropTypes.number,
+      }),
     }),
     comment: PropTypes.string,
     concentration: PropTypes.string,
@@ -1542,6 +1776,7 @@ DisplayMicroscopySample.propTypes = {
   toggleGreyscaleExport: PropTypes.func.isRequired,
   toggleMerge: PropTypes.func.isRequired,
   updateBrightContrast: PropTypes.func.isRequired,
+  updateChannel: PropTypes.func.isRequired,
 };
 
 export default muiThemeable()(DisplayMicroscopySample);

@@ -47,6 +47,56 @@ const listHeaders = {
       type: 'selectAndView',
     },
   ],
+  microscopy: [
+    {
+      name: 'ID',
+      sort: true,
+      type: '_id',
+    },
+    {
+      name: 'Name',
+      sort: true,
+      type: 'name',
+    },
+    {
+      name: 'Replicate',
+      sort: true,
+      type: 'replicate',
+    },
+    {
+      name: 'Microscope',
+      sort: true,
+      type: 'microscope',
+    },
+    {
+      kind: 'magnification',
+      name: 'Mag.',
+      sort: false,
+      type: 'magnification',
+    },
+    {
+      kind: 'channels',
+      name: 'Channels',
+      sort: false,
+      type: 'channels',
+    },
+    {
+      name: 'Creator',
+      sort: true,
+      type: 'creatorName',
+    },
+    {
+      kind: 'date',
+      name: 'Created',
+      sort: true,
+      type: 'creationDate',
+    },
+    {
+      name: 'View',
+      sort: false,
+      type: 'selectAndView',
+    },
+  ],
   project: [
     {
       name: 'ID',

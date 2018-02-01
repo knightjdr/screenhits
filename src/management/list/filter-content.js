@@ -39,6 +39,70 @@ const Filters = {
       value: 'endDate',
     },
   ],
+  microscopy: [
+    {
+      expectedName: 'creatorName',
+      hint: 'User name',
+      type: 'text',
+      value: 'user',
+    },
+    {
+      expectedName: 'name',
+      hint: 'Sample name',
+      type: 'text',
+      value: 'name',
+    },
+    {
+      expectedName: 'type',
+      hint: 'Screen type',
+      type: 'text',
+      value: 'type',
+    },
+    {
+      expectedName: 'replicate',
+      hint: 'Replicate',
+      type: 'text',
+      value: 'replicate',
+    },
+    {
+      expectedName: 'concentration',
+      hint: 'Concentration',
+      type: 'text',
+      value: 'concentration',
+    },
+    {
+      expectedName: 'timepoint',
+      hint: 'Time Point',
+      type: 'text',
+      value: 'timepoint',
+    },
+    {
+      expectedName: 'microscope',
+      hint: 'Microscope',
+      type: 'text',
+      value: 'microscope',
+    },
+    {
+      expectedName: 'channels',
+      hint: 'Marker/antibody',
+      type: 'object',
+      value: 'channels',
+    },
+    {
+      expectedName: 'creationDate',
+      hint: 'Start date',
+      place: 'start',
+      type: 'date',
+      value: 'startDate',
+    },
+    {
+      expectedName: 'creationDate',
+      hint: 'End date',
+      place: 'end',
+      type: 'date',
+      value: 'endDate',
+    },
+  ],
   project: [
     {
       expectedName: 'creatorName',

@@ -16,6 +16,7 @@ class DisplayScreenContainer extends React.Component {
     super(props);
     this.state = {
       dataSource: {
+        cells: [],
         species: [],
       },
       dialog: {
@@ -115,6 +116,25 @@ class DisplayScreenContainer extends React.Component {
           });
           if (speciesIndex > -1) {
             updateObject.taxonID = dataSource.species[speciesIndex]._id;
+          }
+        }
+      } else if (field === 'cell') {
+        const validate = ValidateField.screen.checkFields.indexOf(field) > 0 ?
+          ValidateField.screen[field](value)
+        :
+        {
+          error: false,
+          message: null,
+        };
+        errors[field] = validate.error ? validate.message : null;
+        updateObject[field] = value;
+        // get cell ID
+        if (dataSource.cells.length > 0) {
+          const cellsIndex = dataSource.cells.findIndex((entry) => {
+            return entry.name === value;
+          });
+          if (cellsIndex > -1) {
+            updateObject.cellID = dataSource.cells[cellsIndex]._id;
           }
         }
       } else if (!other) {

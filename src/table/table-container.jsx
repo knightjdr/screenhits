@@ -23,68 +23,15 @@ class TableContainer extends React.Component {
       sortIndex: -1,
     };
   }
-  componentWillReceiveProps(nextProps) {
+  componentWillReceiveProps = (nextProps) => {
     if (nextProps.reset !== this.props.reset) {
-      const pageLength = this.getPageLength(nextProps.height);
-      this.setState({
-        page: 0,
-        pageData: this.getPageData(
-          0,
-          pageLength,
-          nextProps.data.list,
-        ),
-        pageLength,
-        pageTotal: this.getPageTotal(pageLength, nextProps.data.list),
-        sortCursor: nextProps.data.header.map((column) => {
-          return column.sort ? 'n-resize' : 'default';
-        }),
-        sortDirection: nextProps.data.header.map(() => {
-          return 'desc';
-        }),
-        sortIndex: -1,
-      });
+      this.resetTable(nextProps);
+    } else if (!deepEqual(nextProps.data.header, this.props.data.header)) {
+      this.updateHeader(nextProps);
     } else if (!deepEqual(nextProps.data.list, this.props.data.list)) {
-      const pageLength = this.getPageLength(nextProps.height);
-      this.setState((prevState) => {
-        return {
-          page: prevState.page,
-          pageData: this.getPageData(
-            prevState.page,
-            pageLength,
-            this.sortInputData(
-              nextProps.data.list,
-              prevState.sortIndex,
-              prevState.sortIndex > -1 ? prevState.sortDirection[prevState.sortIndex] : null,
-            ),
-          ),
-          pageLength,
-          pageTotal: this.getPageTotal(pageLength, nextProps.data.list),
-        };
-      });
+      this.updateList(nextProps);
     } else if (nextProps.height !== this.props.height) {
-      const pageLength = this.getPageLength(this.props.height);
-      if (pageLength !== this.state.pageLength) {
-        let page = this.state.page;
-        if ((page * pageLength) >= nextProps.data.list.length) {
-          page -= 1;
-        }
-        this.setState((prevState) => {
-          return {
-            page,
-            pageData: this.getPageData(
-              page,
-              pageLength,
-              this.sortInputData(
-                nextProps.data.list,
-                prevState.sortIndex,
-                prevState.sortIndex > -1 ? prevState.sortDirection[prevState.sortIndex] : null,
-              ),
-            ),
-            pageLength,
-            pageTotal: this.getPageTotal(pageLength, nextProps.data.list),
-          };
-        });
-      }
+      this.changeHeight(nextProps);
     }
   }
   getPageData = (page, pageLength, list) => {
@@ -96,6 +43,31 @@ class TableContainer extends React.Component {
   }
   getPageTotal = (pageLength, list) => {
     return Math.ceil(list.length / pageLength) - 1;
+  }
+  changeHeight = (nextProps) => {
+    const pageLength = this.getPageLength(this.props.height);
+    if (pageLength !== this.state.pageLength) {
+      let page = this.state.page;
+      if ((page * pageLength) >= nextProps.data.list.length) {
+        page -= 1;
+      }
+      this.setState((prevState) => {
+        return {
+          page,
+          pageData: this.getPageData(
+            page,
+            pageLength,
+            this.sortInputData(
+              nextProps.data.list,
+              prevState.sortIndex,
+              prevState.sortIndex > -1 ? prevState.sortDirection[prevState.sortIndex] : null,
+            ),
+          ),
+          pageLength,
+          pageTotal: this.getPageTotal(pageLength, nextProps.data.list),
+        };
+      });
+    }
   }
   changePage = (direction) => {
     this.setState((prevState) => {
@@ -111,6 +83,26 @@ class TableContainer extends React.Component {
           (newPage * prevState.pageLength) + prevState.pageLength,
         ),
       };
+    });
+  }
+  resetTable = (nextProps) => {
+    const pageLength = this.getPageLength(nextProps.height);
+    this.setState({
+      page: 0,
+      pageData: this.getPageData(
+        0,
+        pageLength,
+        nextProps.data.list,
+      ),
+      pageLength,
+      pageTotal: this.getPageTotal(pageLength, nextProps.data.list),
+      sortCursor: nextProps.data.header.map((column) => {
+        return column.sort ? 'n-resize' : 'default';
+      }),
+      sortDirection: nextProps.data.header.map(() => {
+        return 'desc';
+      }),
+      sortIndex: -1,
     });
   }
   sortInputData = (arr, index, direction, isDate) => {
@@ -168,6 +160,44 @@ class TableContainer extends React.Component {
         sortCursor,
         sortDirection,
         sortIndex: index,
+      };
+    });
+  }
+  updateHeader = (nextProps) => {
+    const pageLength = this.getPageLength(nextProps.height);
+    this.setState((prevState) => {
+      return {
+        pageData: this.getPageData(
+          prevState.page,
+          pageLength,
+          nextProps.data.list,
+        ),
+        sortCursor: nextProps.data.header.map((column) => {
+          return column.sort ? 'n-resize' : 'default';
+        }),
+        sortDirection: nextProps.data.header.map(() => {
+          return 'desc';
+        }),
+        sortIndex: -1,
+      };
+    });
+  }
+  updateList = (nextProps) => {
+    const pageLength = this.getPageLength(nextProps.height);
+    this.setState((prevState) => {
+      return {
+        page: prevState.page,
+        pageData: this.getPageData(
+          prevState.page,
+          pageLength,
+          this.sortInputData(
+            nextProps.data.list,
+            prevState.sortIndex,
+            prevState.sortIndex > -1 ? prevState.sortDirection[prevState.sortIndex] : null,
+          ),
+        ),
+        pageLength,
+        pageTotal: this.getPageTotal(pageLength, nextProps.data.list),
       };
     });
   }

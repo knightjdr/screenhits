@@ -22,6 +22,7 @@ import ActionMenu from '../menu/action-menu-container';
 import CustomTable from '../../table/table-container';
 import Filter from '../../filter/filter';
 import FilterFields from './filter-content';
+import { objectEmpty } from '../../helpers/helpers';
 
 import ListStyle from './management-list-style';
 import './list-view.scss';
@@ -39,7 +40,7 @@ class ManagementList extends React.Component {
   changeScreenLevel = () => {
     this.props.changeLevel('screen');
   }
-  filterDialogContent = (filters, level) => {
+  filterDialogContent = (filters, filterType) => {
     return (
       <div
         style={ {
@@ -49,7 +50,7 @@ class ManagementList extends React.Component {
         } }
       >
         {
-          FilterFields[level].map((field, index) => {
+          FilterFields[filterType].map((field, index) => {
             const key = `indexKey-${field.value || index + 1}`;
             return this.filterFieldElement(field, filters, key);
           })
@@ -109,6 +110,18 @@ class ManagementList extends React.Component {
             value={ filters[field.value] || '' }
           />
         );
+      case 'object':
+        return (
+          <TextField
+            floatingLabelText={ field.hint }
+            hintText={ field.hint }
+            key={ key }
+            onChange={ (e) => { this.props.filterChange(field.value, e.target.value); } }
+            style={ ListStyle.filterField }
+            type="text"
+            value={ filters[field.value] || '' }
+          />
+        );
       case 'select':
         return (
           <SelectField
@@ -155,6 +168,46 @@ class ManagementList extends React.Component {
     switch (kind) {
       case 'cell':
         return item.cell ? item.cell : item.cellID;
+      case 'channels':
+        returnValue = [];
+        if (
+          item.channels &&
+          !objectEmpty(item.channels.blue)
+        ) {
+          const channelText = `${item.channels.blue.marker || '-'}/${item.channels.blue.antibody || '-'}`;
+          returnValue.push(
+            <div key="channel-blue">
+              blue: { channelText }
+            </div>
+          );
+        }
+        if (
+          item.channels &&
+          !objectEmpty(item.channels.green)
+        ) {
+          const channelText = `${item.channels.green.marker || '-'}/${item.channels.green.antibody || '-'}`;
+          returnValue.push(
+            <div key="channel-green">
+              green: { channelText }
+            </div>
+          );
+        }
+        if (
+          item.channels &&
+          !objectEmpty(item.channels.red)
+        ) {
+          const channelText = `${item.channels.red.marker || '-'}/${item.channels.red.antibody || '-'}`;
+          returnValue.push(
+            <div key="channel-red">
+              red: { channelText }
+            </div>
+          );
+        }
+        return (
+          <span>
+            { returnValue.length > 0 ? returnValue : '-' }
+          </span>
+        );
       case 'condition':
         returnValue = [];
         if (item.cellMods) {
@@ -185,6 +238,27 @@ class ManagementList extends React.Component {
         );
       case 'date':
         return Moment(item[type], 'MMMM Do YYYY, h:mm a').format('L');
+      case 'magnification':
+        returnValue = [];
+        if (item.objective) {
+          returnValue.push(
+            <div key="objective">
+              objective: { item.objective || '-' }
+            </div>
+          );
+        }
+        if (item.digitalZoom) {
+          returnValue.push(
+            <div key="digitalZoom">
+              Dig. zoom: { item.digitalZoom || '-' }
+            </div>
+          );
+        }
+        return (
+          <span>
+            { returnValue.length > 0 ? returnValue : '-' }
+          </span>
+        );
       case 'species':
         return item.species ? item.species : item.taxonID;
       default:
@@ -323,8 +397,49 @@ class ManagementList extends React.Component {
             </Popover>
           </div>
           <div
-            style={ { marginLeft: 'auto' } }
+            style={ {
+              alignItems: 'start',
+              display: 'flex',
+              marginLeft: 'auto',
+            } }
           >
+            {
+              this.props.activeLevel === 'sample' &&
+              <SelectField
+                floatingLabelStyle={ {
+                  marginTop: -10,
+                } }
+                menuStyle={ {
+                  marginTop: 0,
+                } }
+                floatingLabelText="Table fields"
+                listStyle={ ListStyle.selectList }
+                onChange={ this.props.fieldChange }
+                value={ this.props.fieldType }
+                style={ {
+                  height: 40,
+                  maxHeight: 40,
+                  margin: '0 10px',
+                  overflowY: 'none',
+                  width: 150,
+                } }
+                underlineStyle={ {
+                  position: 'relative',
+                  top: 2,
+                } }
+              >
+                <MenuItem
+                  key="default"
+                  value="default"
+                  primaryText="Default"
+                />
+                <MenuItem
+                  key="microscopy"
+                  value="microscopy"
+                  primaryText="Microscopy"
+                />
+              </SelectField>
+            }
             <FloatingActionButton
               data-tip={ true }
               data-for={ 'fab-refresh-level' }
@@ -347,7 +462,7 @@ class ManagementList extends React.Component {
               dialogState={ this.props.filterDialogState }
               filterBody={ this.filterDialogContent(
                 this.props.filters,
-                this.props.activeLevel
+                this.props.filterType
               ) }
               style={ { marginLeft: 5 } }
             />
@@ -453,6 +568,8 @@ ManagementList.propTypes = {
       min: PropTypes.instanceOf(Date),
     }),
   }).isRequired,
+  fieldChange: PropTypes.func.isRequired,
+  fieldType: PropTypes.string.isRequired,
   filterDialogState: PropTypes.shape({
     hideFunc: PropTypes.func,
     show: PropTypes.bool,
@@ -462,6 +579,7 @@ ManagementList.propTypes = {
   filters: PropTypes.shape({
     user: PropTypes.string,
   }).isRequired,
+  filterType: PropTypes.string.isRequired,
   header: PropTypes.arrayOf(
     PropTypes.shape({
       name: PropTypes.string,

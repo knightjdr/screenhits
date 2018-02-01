@@ -24,6 +24,22 @@ class CreateMicroscopySample extends React.Component {
       />,
     ]);
   }
+  helpIconButton = (title, text) => {
+    return (
+      <IconButton
+        onTouchTap={ () => {
+          this.props.dialog.open(
+            `Help for the "${title}" field`,
+            text
+          );
+        } }
+        tooltip="Help"
+        tooltipPosition="top-center"
+      >
+        <HelpIcon />
+      </IconButton>
+    );
+  }
   render() {
     return (
       <div>
@@ -67,15 +83,7 @@ class CreateMicroscopySample extends React.Component {
               rowsMax={ 2 }
               value={ this.props.formData.replicate }
             />
-            <IconButton
-              onTouchTap={ () => {
-                this.props.dialog.open('Help for the "Replicate" field', Fields.sample.replicate.help);
-              } }
-              tooltip="Help"
-              tooltipPosition="top-center"
-            >
-              <HelpIcon />
-            </IconButton>
+            { this.helpIconButton('Replicate', Fields.sample.replicate.help) }
           </div>
           <div
             style={ Object.assign(
@@ -95,15 +103,7 @@ class CreateMicroscopySample extends React.Component {
               rowsMax={ 2 }
               value={ this.props.formData.concentration }
             />
-            <IconButton
-              onTouchTap={ () => {
-                this.props.dialog.open('Help for the "Concentration" field', Fields.sample.concentration.help);
-              } }
-              tooltip="Help"
-              tooltipPosition="top-center"
-            >
-              <HelpIcon />
-            </IconButton>
+            { this.helpIconButton('Concentration', Fields.sample.concentration.help) }
           </div>
           <div
             style={ Object.assign(
@@ -123,15 +123,7 @@ class CreateMicroscopySample extends React.Component {
               rowsMax={ 2 }
               value={ this.props.formData.timepoint }
             />
-            <IconButton
-              onTouchTap={ () => {
-                this.props.dialog.open('Help for the "Time point" field', Fields.sample.timepoint.help);
-              } }
-              tooltip="Help"
-              tooltipPosition="top-center"
-            >
-              <HelpIcon />
-            </IconButton>
+            { this.helpIconButton('Time point', Fields.sample.timepoint.help) }
           </div>
           <div
             style={ Object.assign(
@@ -151,15 +143,7 @@ class CreateMicroscopySample extends React.Component {
               rowsMax={ 2 }
               value={ this.props.formData.microscope }
             />
-            <IconButton
-              onTouchTap={ () => {
-                this.props.dialog.open('Help for the "Microscope" field', Fields.sample.microscope.help);
-              } }
-              tooltip="Help"
-              tooltipPosition="top-center"
-            >
-              <HelpIcon />
-            </IconButton>
+            { this.helpIconButton('Microscope', Fields.sample.microscope.help) }
           </div>
           <div
             style={ Object.assign(
@@ -179,15 +163,7 @@ class CreateMicroscopySample extends React.Component {
               rowsMax={ 2 }
               value={ this.props.formData.objective }
             />
-            <IconButton
-              onTouchTap={ () => {
-                this.props.dialog.open('Help for the "Objective" field', Fields.sample.objective.help);
-              } }
-              tooltip="Help"
-              tooltipPosition="top-center"
-            >
-              <HelpIcon />
-            </IconButton>
+            { this.helpIconButton('Objective', Fields.sample.objective.help) }
           </div>
           <div
             style={ Object.assign(
@@ -207,15 +183,7 @@ class CreateMicroscopySample extends React.Component {
               rowsMax={ 2 }
               value={ this.props.formData.digitalZoom }
             />
-            <IconButton
-              onTouchTap={ () => {
-                this.props.dialog.open('Help for the "Digital zoom" field', Fields.sample.digitalZoom.help);
-              } }
-              tooltip="Help"
-              tooltipPosition="top-center"
-            >
-              <HelpIcon />
-            </IconButton>
+            { this.helpIconButton('Digital zoom', Fields.sample.digitalZoom.help) }
           </div>
           <TextField
             floatingLabelText="Comments"
