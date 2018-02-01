@@ -14,7 +14,21 @@ import ManagementHierachy from '../management/hierarchy/management-container';
 import ManagementList from '../management/list/management-list-container';
 import { store } from '../state/store';
 
+import HelpRoutes from '../help/help-routes';
+
 const history = syncHistoryWithStore(browserHistory, store);
+
+const mapRoute = (route) => {
+  return {
+    path: route.name,
+    component: route.component,
+    children: route.children ?
+      route.children.map((child) => { return mapRoute(child); })
+      :
+      []
+    ,
+  };
+};
 
 const routes = {
   path: '/',
@@ -39,7 +53,11 @@ const routes = {
         { path: 'analysis(/:view)(/:id)', component: Analysis },
       ],
     },
-    { path: 'help', component: Help },
+    {
+      path: 'help',
+      component: Help,
+      childRoutes: HelpRoutes.map((route) => { return mapRoute(route); }),
+    },
     { path: '*', component: NoMatch },
   ],
 };
