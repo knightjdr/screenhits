@@ -7,7 +7,7 @@ import { syncHistoryWithStore } from 'react-router-redux';
 import Analysis from '../analysis/analysis-container';
 import App from '../app';
 import EnsureLoggedIn from '../signin/ensure-login-container';
-import Help from '../help/help';
+import Help from '../help/help-container';
 import Home from '../home/home-container';
 import NoMatch from '../404/no-match';
 import ManagementHierachy from '../management/hierarchy/management-container';
@@ -22,7 +22,7 @@ const mapRoute = (route) => {
   return {
     path: route.name,
     component: route.component,
-    children: route.children ?
+    childRoutes: route.children ?
       route.children.map((child) => { return mapRoute(child); })
       :
       []

@@ -4,7 +4,9 @@ class Permissions extends React.Component {
   render() {
     return (
       <div>
-        Permissions
+        <p>
+          Permissions
+        </p>
       </div>
     );
   }
