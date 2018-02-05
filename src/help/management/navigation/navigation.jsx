@@ -12,13 +12,20 @@ class Navigation extends React.Component {
           this.props.children ||
           <div>
             <p>
-              Navigation
+              There are two different ways of navigating the management section of
+              ScreenHits. The first and default is the hierarchical view, which is
+              where content creation, viewing and editing occurs. The second is a list
+              view that is ideal for quickly searching and filtering items at specifed
+              levels.
+            </p>
+            <p>
+              Theses views can be switched by clicking the toggle view button.
             </p>
             <HelpImage
-              caption="Management home page"
+              caption="Navigation toggle"
               height={ 600 }
               image={ NavigationImg }
-              legend="Legend text"
+              legend="Click 1) to toggle between organizational views"
             />
           </div>
         }
