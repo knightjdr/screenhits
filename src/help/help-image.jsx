@@ -11,12 +11,17 @@ class HelpImage extends React.Component {
     return (
       <div
         style={ {
-          textAlign: 'center',
+          alignItems: 'center',
+          display: 'flex',
+          flexDirection: 'column',
+          padding: '0 20px',
         } }
       >
         <LazyLoad
           height={ this.props.height }
           offset={ 100 }
+          once={ true }
+          overflow={ true }
         >
           <button
             onClick={ this.props.open }
@@ -26,6 +31,7 @@ class HelpImage extends React.Component {
               alt="HelpImage"
               src={ this.props.image }
               style={ {
+                boxShadow: '0 2px 5px 0 rgba(0, 0, 0, 0.26)',
                 cursor: 'pointer',
                 maxWidth: '100%',
               } }
@@ -44,14 +50,17 @@ class HelpImage extends React.Component {
           onClose={ this.props.close }
           showImageCount={ false }
         />
-        <div
-          style={ {
-            padding: '0 30px',
-            textAlign: 'left',
-          } }
-        >
-          { this.props.legend }
-        </div>
+        {
+          this.props.legend &&
+          <div
+            style={ {
+              margin: '5px 0px 10px 0px',
+              maxWidth: 650,
+            } }
+          >
+            { this.props.legend }
+          </div>
+        }
       </div>
     );
   }

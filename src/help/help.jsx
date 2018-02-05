@@ -193,7 +193,7 @@ class Help extends React.Component {
           left: showSideBar ? 175 : 0,
           padding: 0,
           position: 'absolute',
-          top: 64,
+          top: 65,
           width: 32,
         } }
         tooltip={ showSideBar ? 'Hide menu' : 'Show menu' }
@@ -220,39 +220,43 @@ class Help extends React.Component {
           } }
         >
           { this.toggleButton(this.props.showSideBar, this.props.toggleSidePanel) }
+          <div
+            style={ HelpStyle.title }
+          >
+            { this.props.title }
+          </div>
           <Scrollbars
             autoHide={ true }
             autoHideTimeout={ 1000 }
             autoHideDuration={ 200 }
             autoHeight={ true }
-            autoHeightMax={ 'calc(100vh - 80px)' }
+            autoHeightMax={ 'calc(100vh - 120px)' }
           >
             <div
-              style={ HelpStyle.title }
+              style={ HelpStyle.content }
             >
-              { this.props.title }
-            </div>
-            {
               <div
-                style={ HelpStyle.content }
+                style={ HelpStyle.bodyWrapper }
               >
-                <div
-                  style={ HelpStyle.body }
-                >
-                  {
-                    this.props.children ||
-                    this.homeHelpContent()
-                  }
-                </div>
+                {
+                  <div
+                    style={ HelpStyle.body }
+                  >
+                    {
+                      this.props.children ||
+                      this.homeHelpContent()
+                    }
+                  </div>
+                }
+                {
+                  this.footerNavLinks(
+                    this.props.next,
+                    this.props.previous,
+                    this.props.muiTheme.palette
+                  )
+                }
               </div>
-            }
-            {
-              this.footerNavLinks(
-                this.props.next,
-                this.props.previous,
-                this.props.muiTheme.palette
-              )
-            }
+            </div>
           </Scrollbars>
         </div>
       </div>

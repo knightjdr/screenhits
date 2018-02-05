@@ -405,49 +405,53 @@ class ManagementList extends React.Component {
           >
             {
               this.props.activeLevel === 'sample' &&
-              <SelectField
-                floatingLabelStyle={ {
-                  marginTop: -10,
-                } }
-                menuStyle={ {
-                  marginTop: 0,
-                } }
-                floatingLabelText="Table fields"
-                listStyle={ ListStyle.selectList }
-                onChange={ this.props.fieldChange }
-                value={ this.props.fieldType }
-                style={ {
-                  height: 40,
-                  maxHeight: 40,
-                  margin: '0 10px',
-                  overflowY: 'none',
-                  width: 150,
-                } }
-                underlineStyle={ {
-                  position: 'relative',
-                  top: 2,
-                } }
-              >
-                <MenuItem
-                  key="default"
-                  value="default"
-                  primaryText="Default"
-                />
-                <MenuItem
-                  key="microscopy"
-                  value="microscopy"
-                  primaryText="Microscopy"
-                />
-              </SelectField>
+                [
+                  <SelectField
+                    floatingLabelStyle={ {
+                      marginTop: -10,
+                    } }
+                    key="sample-type-dropdown"
+                    menuStyle={ {
+                      marginTop: 0,
+                    } }
+                    floatingLabelText="Table fields"
+                    listStyle={ ListStyle.selectList }
+                    onChange={ this.props.fieldChange }
+                    value={ this.props.fieldType }
+                    style={ {
+                      height: 40,
+                      maxHeight: 40,
+                      margin: '0 10px',
+                      overflowY: 'none',
+                      width: 150,
+                    } }
+                    underlineStyle={ {
+                      position: 'relative',
+                      top: 2,
+                    } }
+                  >
+                    <MenuItem
+                      key="default"
+                      value="default"
+                      primaryText="Default"
+                    />
+                    <MenuItem
+                      key="microscopy"
+                      value="microscopy"
+                      primaryText="Microscopy"
+                    />
+                  </SelectField>,
+                  <FloatingActionButton
+                    data-tip={ true }
+                    data-for={ 'fab-refresh-level' }
+                    key="sample-refresh"
+                    mini={ true }
+                    onTouchTap={ this.props.refreshLevel }
+                  >
+                    <RefreshIcon />
+                  </FloatingActionButton>,
+                ]
             }
-            <FloatingActionButton
-              data-tip={ true }
-              data-for={ 'fab-refresh-level' }
-              mini={ true }
-              onTouchTap={ this.props.refreshLevel }
-            >
-              <RefreshIcon />
-            </FloatingActionButton>
             <ReactTooltip
               id="fab-refresh-level"
               effect="solid"
