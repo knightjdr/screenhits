@@ -1,7 +1,5 @@
 import fetch from 'isomorphic-fetch';
 
-import API_ROOT from '../api-config';
-
 // retrieves queue from server
 const Crop = (route, body, authToken) => {
   return new Promise((resolve, reject) => {
@@ -9,7 +7,7 @@ const Crop = (route, body, authToken) => {
     headers.append('Accept', 'application/json');
     headers.append('Auth-Token', authToken);
     headers.append('Content-Type', 'application/json');
-    const url = `${API_ROOT}/${route}`;
+    const url = `${process.env.API_ROOT}/${route}`;
     fetch(
       url,
       {

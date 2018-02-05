@@ -1,6 +1,5 @@
 import fetch from 'isomorphic-fetch';
 
-import API_ROOT from '../../api-config';
 import { clearToken, updateToken } from '../set/token-actions';
 
 export const REQUEST_SIGNIN = 'REQUEST_SIGNIN';
@@ -72,7 +71,7 @@ const login = (signinToken) => {
     headers.append('Accept', 'application/json');
     headers.append('Content-Type', 'application/json');
     headers.append('Signin-Token', signinToken);
-    return fetch(`${API_ROOT}/login`, {
+    return fetch(`${process.env.API_ROOT}/login`, {
       cache: 'default',
       headers,
       method: 'GET',
@@ -113,7 +112,7 @@ const validateToken = (authToken) => {
     headers.append('Accept', 'application/json');
     headers.append('Content-Type', 'application/json');
     headers.append('Auth-Token', authToken);
-    return fetch(`${API_ROOT}/validate`, {
+    return fetch(`${process.env.API_ROOT}/validate`, {
       cache: 'default',
       headers,
       method: 'GET',

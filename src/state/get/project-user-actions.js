@@ -1,6 +1,5 @@
 import fetch from 'isomorphic-fetch';
 
-import API_ROOT from '../../api-config';
 import { updateToken } from '../set/token-actions';
 
 export const FAIL_GET = 'FAIL_GET';
@@ -47,7 +46,7 @@ const userGet = (_id, lab, permission) => {
     headers.append('Accept', 'application/json');
     headers.append('Auth-Token', getState().token);
     headers.append('Content-Type', 'application/json');
-    return fetch(`${API_ROOT}/project/users?_id=${_id}&lab=${lab}&permission=${permission}`, {
+    return fetch(`${process.env.API_ROOT}/project/users?_id=${_id}&lab=${lab}&permission=${permission}`, {
       cache: 'default',
       headers,
       method: 'GET',

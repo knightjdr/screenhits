@@ -4,10 +4,10 @@
   "description": "LIMS for managing screen data",
   "main": "webpack.config.js",
   "scripts": {
-    "build": "webpack --progress --colors",
+    "build": "webpack --config webpack.config.prod.js --progress --colors",
     "dev": "concurrently --kill-others \"npm run node\" \"npm run start\"",
     "node": "gulp dev",
-    "start": "webpack-dev-server --content-base dist --history-api-fallback",
+    "start": "webpack-dev-server --config webpack.config.dev.js --content-base dist --history-api-fallback",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {

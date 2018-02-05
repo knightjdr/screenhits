@@ -1,14 +1,12 @@
 import fetch from 'isomorphic-fetch';
 
-import API_ROOT from '../../../api-config';
-
 // retrieves queue from server
 const Delete = (_id, authToken) => {
   return new Promise((resolve, reject) => {
     const headers = new Headers();
     headers.append('Accept', 'application/json');
     headers.append('Auth-Token', authToken);
-    const url = `${API_ROOT}/analysis/tasks/${_id}`;
+    const url = `${process.env.API_ROOT}/analysis/tasks/${_id}`;
     fetch(
       url,
       {

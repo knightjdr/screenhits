@@ -1,6 +1,5 @@
 import fetch from 'isomorphic-fetch';
 
-import API_ROOT from '../../api-config';
 import { updateToken } from '../set/token-actions';
 import { userGet } from '../get/project-user-actions';
 
@@ -46,7 +45,7 @@ const addUsersAction = (_id, lab, permission, putObj) => {
     headers.append('Accept', 'application/json');
     headers.append('Auth-Token', getState().token);
     headers.append('Content-Type', 'application/json');
-    return fetch(`${API_ROOT}/users/`, {
+    return fetch(`${process.env.API_ROOT}/users/`, {
       body: JSON.stringify(putObj),
       cache: 'default',
       headers,

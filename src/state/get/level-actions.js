@@ -1,6 +1,5 @@
 import fetch from 'isomorphic-fetch';
 
-import API_ROOT from '../../api-config';
 import { updateToken } from '../set/token-actions';
 
 export const FILL_LEVEL_DATA = 'FILL_LEVEL_DATA';
@@ -38,7 +37,7 @@ const getLevelData = (target) => {
     headers.append('Accept', 'application/json');
     headers.append('Auth-Token', getState().token);
     headers.append('Content-Type', 'application/json');
-    const url = `${API_ROOT}/management/list?target=${target}`;
+    const url = `${process.env.API_ROOT}/management/list?target=${target}`;
     return fetch(url, {
       cache: 'default',
       headers,

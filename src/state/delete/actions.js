@@ -1,6 +1,5 @@
 import fetch from 'isomorphic-fetch';
 
-import API_ROOT from '../../api-config';
 import { updateToken } from '../set/token-actions';
 import { getData } from '../get/data-actions';
 
@@ -51,7 +50,7 @@ const submitDelete = (_id, target, group) => {
     headers.append('Auth-Token', getState().token);
     headers.append('Content-Type', 'application/json');
     const queryString = `target=${target}&_id=${_id}`;
-    return fetch(`${API_ROOT}/management?${queryString}`, {
+    return fetch(`${process.env.API_ROOT}/management?${queryString}`, {
       cache: 'default',
       headers,
       method: 'DELETE',

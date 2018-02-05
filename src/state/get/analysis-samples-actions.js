@@ -1,6 +1,5 @@
 import fetch from 'isomorphic-fetch';
 
-import API_ROOT from '../../api-config';
 import { updateToken } from '../set/token-actions';
 
 export const FAILED_GET_ANALYSIS_SAMPLES = 'FAILED_GET_ANALYSIS_SAMPLES';
@@ -36,7 +35,7 @@ const getAnalysisSamples = (screenType) => {
     headers.append('Accept', 'application/json');
     headers.append('Auth-Token', getState().token);
     headers.append('Content-Type', 'application/json');
-    return fetch(`${API_ROOT}/analysis/samples?screenType=${screenType}`, {
+    return fetch(`${process.env.API_ROOT}/analysis/samples?screenType=${screenType}`, {
       cache: 'default',
       headers,
       mode: 'cors',

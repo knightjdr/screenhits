@@ -1,8 +1,8 @@
-// const CompressionPlugin = require('compression-webpack-plugin');
+const CompressionPlugin = require('compression-webpack-plugin');
 const eslintFormatter = require('eslint-friendly-formatter');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const path = require('path');
-// const webpack = require('webpack');
+const webpack = require('webpack');
 
 const buildPath = path.join(__dirname, 'dist');
 const srcPath = path.join(__dirname, 'src');
@@ -73,9 +73,10 @@ module.exports = {
   },
   plugins: [
     new ExtractTextPlugin({ filename: 'bundle.css', allChunks: true }),
-    /* new webpack.DefinePlugin({ // <-- key to reducing React's size
+    new webpack.DefinePlugin({
       'process.env': {
         NODE_ENV: JSON.stringify('production'),
+        API_ROOT: JSON.stringify('https://screenhits.org:8003/api'),
       },
     }),
     new webpack.optimize.UglifyJsPlugin(), // minify everything
@@ -86,7 +87,7 @@ module.exports = {
       test: /\.js$|\.css$|\.html$/,
       threshold: 10240,
       minRatio: 0.8,
-    }),*/
+    }),
   ],
   resolve: {
     extensions: ['.js', '.jsx'],

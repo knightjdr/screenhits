@@ -1,6 +1,5 @@
 import fetch from 'isomorphic-fetch';
 
-import API_ROOT from '../../api-config';
 import { updateToken } from '../set/token-actions';
 
 export const FAIL_COMPARISON_POST = 'FAIL_COMPARISON_POST';
@@ -43,7 +42,7 @@ const submitComparison = (form) => {
     headers.append('Accept', 'application/json');
     headers.append('Auth-Token', getState().token);
     headers.append('Content-Type', 'application/json');
-    return fetch(`${API_ROOT}/analysis/comparison`, {
+    return fetch(`${process.env.API_ROOT}/analysis/comparison`, {
       body: JSON.stringify(form),
       cache: 'default',
       headers,

@@ -1,7 +1,5 @@
 import fetch from 'isomorphic-fetch';
 
-import API_ROOT from '../../../../../api-config';
-
 // retrieves queue from server
 const View = (_id, name, format, authToken) => {
   // determine window width
@@ -21,7 +19,7 @@ const View = (_id, name, format, authToken) => {
   const headers = new Headers();
   headers.append('Accept', 'application/json');
   headers.append('Auth-Token', authToken);
-  const url = `${API_ROOT}/sample?target=${_id}&format=${format}`;
+  const url = `${process.env.API_ROOT}/sample?target=${_id}&format=${format}`;
   fetch(
     url,
     {

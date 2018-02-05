@@ -1,6 +1,5 @@
 import fetch from 'isomorphic-fetch';
 
-import API_ROOT from '../../api-config';
 import { updateToken } from '../set/token-actions';
 import { getData } from '../get/data-actions';
 
@@ -52,7 +51,7 @@ const submitPut = (_id, obj, target) => {
     headers.append('Content-Type', 'application/json');
     const submitObj = Object.assign({}, obj);
     submitObj.target = target;
-    return fetch(`${API_ROOT}/management/`, {
+    return fetch(`${process.env.API_ROOT}/management/`, {
       body: JSON.stringify(submitObj),
       cache: 'default',
       headers,
