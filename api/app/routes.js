@@ -21,7 +21,7 @@ const userPermission = require('./modules/user-permission/permission');
 const routes = {
   configure: (app) => {
     // delete analysis tasks
-    app.delete('/analysis/tasks/:id', auth.validate, (req, res) => {
+    app.delete('/api/analysis/tasks/:id', auth.validate, (req, res) => {
       tasks.delete(Number(req.params.id), res.locals.user)
         .then((response) => {
           routes.response(res, response);
@@ -29,7 +29,7 @@ const routes = {
       ;
     });
     // deleting
-    app.delete('/management', auth.validate, (req, res) => {
+    app.delete('/api/management', auth.validate, (req, res) => {
       deleteQuery.item(req.query.target, Number(req.query._id), res.locals.user)
         .then((response) => {
           routes.response(res, response);
@@ -37,7 +37,7 @@ const routes = {
       ;
     });
     // delete images channels
-    app.delete('/image/:fileID', auth.validate, (req, res) => {
+    app.delete('/api/image/:fileID', auth.validate, (req, res) => {
       image.delete(req.params.fileID, res.locals.user)
         .then((response) => {
           routes.response(res, response);
@@ -45,14 +45,14 @@ const routes = {
       ;
     });
     // invalid delete method
-    app.delete('/*', (req, res) => {
+    app.delete('/api/*', (req, res) => {
       res.status(404).send({
         status: 404,
         error: routes.messages.invalidRoute,
       });
     });
     // returns all available project, screens, experiments and samples for a user
-    app.get('/analysis/samples', auth.validate, (req, res) => {
+    app.get('/api/analysis/samples', auth.validate, (req, res) => {
       analysisAvailable.get(req.query.screenType, res.locals.user)
         .then((response) => {
           routes.response(res, response);
@@ -60,14 +60,14 @@ const routes = {
       ;
     });
     // get analysis tasks
-    app.get('/analysis/tasks', auth.validate, (req, res) => {
+    app.get('/api/analysis/tasks', auth.validate, (req, res) => {
       tasks.get(res.locals.user)
         .then((response) => {
           routes.response(res, response);
         })
       ;
     });
-    app.get('/analysis/tasks/:id', auth.validate, (req, res) => {
+    app.get('/api/analysis/tasks/:id', auth.validate, (req, res) => {
       tasks.getOne(Number(req.params.id), req.query, res.locals.user)
         .then((response) => {
           routes.response(res, response);
@@ -75,14 +75,14 @@ const routes = {
       ;
     });
     // get list of available cells
-    app.get('/cells', auth.validate, (req, res) => {
+    app.get('/api/cells', auth.validate, (req, res) => {
       dataSource.cells(req.query.text)
         .then((response) => {
           routes.response(res, response);
         })
       ;
     });
-    app.get('/image/:fileID', auth.validate, (req, res) => {
+    app.get('/api/image/:fileID', auth.validate, (req, res) => {
       image.get(req.params.fileID, res.locals.user)
         .then((response) => {
           routes.response(res, response);
@@ -90,7 +90,7 @@ const routes = {
       ;
     });
     // returns available projects, screens, etc, based on user
-    app.get('/loadRoute', auth.validate, (req, res) => {
+    app.get('/api/loadRoute', auth.validate, (req, res) => {
       loadRoute.get(req.query.target, req.query.selected, res.locals.user)
         .then((response) => {
           routes.response(res, response);
@@ -98,7 +98,7 @@ const routes = {
       ;
     });
     // for adding and removing users from project list
-    app.get('/login', (req, res) => {
+    app.get('/api/login', (req, res) => {
       auth.login(req.get('Signin-Token'), res)
         .then((response) => {
           routes.response(res, response);
@@ -106,7 +106,7 @@ const routes = {
       ;
     });
     // returns available projects, screens, etc, based on user
-    app.get('/management/list', auth.validate, (req, res) => {
+    app.get('/api/management/list', auth.validate, (req, res) => {
       availableList.get(req.query.target, res.locals.user)
         .then((response) => {
           routes.response(res, response);
@@ -114,7 +114,7 @@ const routes = {
       ;
     });
     // returns available projects, screens, etc, based on user
-    app.get('/management', auth.validate, (req, res) => {
+    app.get('/api/management', auth.validate, (req, res) => {
       available.get(req.query.target, req.query.filters, res.locals.user)
         .then((response) => {
           routes.response(res, response);
@@ -122,7 +122,7 @@ const routes = {
       ;
     });
     // gets a list of available users for a project (for user management)
-    app.get('/project/users', auth.validate, (req, res) => {
+    app.get('/api/project/users', auth.validate, (req, res) => {
       users.get(Number(req.query._id), req.query.lab, req.query.permission, res.locals.user)
         .then((response) => {
           routes.response(res, response);
@@ -130,7 +130,7 @@ const routes = {
       ;
     });
     // returns available projects, screens, etc, based on user
-    app.get('/queue', auth.validate, (req, res) => {
+    app.get('/api/queue', auth.validate, (req, res) => {
       queue.get(req.query.target)
         .then((response) => {
           routes.response(res, response);
@@ -138,7 +138,7 @@ const routes = {
       ;
     });
     // returns sample details according to format
-    app.get('/sample', auth.validate, (req, res) => {
+    app.get('/api/sample', auth.validate, (req, res) => {
       sample.get(Number(req.query.target), req.query.format, res.locals.user)
         .then((response) => {
           routes.response(res, response);
@@ -146,7 +146,7 @@ const routes = {
       ;
     });
     // get list of available species
-    app.get('/species', auth.validate, (req, res) => {
+    app.get('/api/species', auth.validate, (req, res) => {
       dataSource.species(req.query.text)
         .then((response) => {
           routes.response(res, response);
@@ -154,7 +154,7 @@ const routes = {
       ;
     });
     // for user searches
-    app.get('/users', auth.validate, (req, res) => {
+    app.get('/api/users', auth.validate, (req, res) => {
       search.user(req.query.type, req.query[req.query.type])
         .then((response) => {
           routes.response(res, response);
@@ -162,14 +162,14 @@ const routes = {
       ;
     });
     // validating tokens on login
-    app.get('/validate', auth.validate, (req, res) => {
+    app.get('/api/validate', auth.validate, (req, res) => {
       auth.tokenLogin(res)
         .then((response) => {
           routes.response(res, response);
         })
       ;
     });
-    app.get('/view/task/:id', auth.validate, (req, res) => {
+    app.get('/api/view/task/:id', auth.validate, (req, res) => {
       view.get(Number(req.params.id), res.locals.user)
         .then((response) => {
           routes.response(res, response);
@@ -177,14 +177,14 @@ const routes = {
       ;
     });
     // invalid get methods
-    app.get('/*', (req, res) => {
+    app.get('/api/*', (req, res) => {
       res.status(404).send({
         status: 404,
         error: routes.messages.invalidRoute,
       });
     });
     // submit comparison
-    app.post('/analysis/comparison', auth.validate, (req, res) => {
+    app.post('/api/analysis/comparison', auth.validate, (req, res) => {
       comparison.get(req.body, res.locals.user)
         .then((response) => {
           routes.response(res, response);
@@ -192,7 +192,7 @@ const routes = {
       ;
     });
     // submit analysis
-    app.post('/analysis/new', auth.validate, (req, res) => {
+    app.post('/api/analysis/new', auth.validate, (req, res) => {
       analysis.create(req.body, res.locals.user)
         .then((response) => {
           routes.response(res, response);
@@ -200,7 +200,7 @@ const routes = {
       ;
     });
     // get specific image channel
-    app.post('/image/channel/:fileID/:channel', auth.validate, (req, res) => {
+    app.post('/api/image/channel/:fileID/:channel', auth.validate, (req, res) => {
       image.getChannel(req.params.fileID, req.params.channel, req.body, res.locals.user)
         .then((response) => {
           routes.response(res, response);
@@ -208,7 +208,7 @@ const routes = {
       ;
     });
     // crop image(s)
-    app.post('/image/crop/:fileID', auth.validate, (req, res) => {
+    app.post('/api/image/crop/:fileID', auth.validate, (req, res) => {
       image.crop(req.params.fileID, req.body, res.locals.user)
         .then((response) => {
           routes.response(res, response);
@@ -216,7 +216,7 @@ const routes = {
       ;
     });
     // export image(s)
-    app.post('/image/export', auth.validate, (req, res) => {
+    app.post('/api/image/export', auth.validate, (req, res) => {
       image.export(req.body, res.locals.user)
         .then((response) => {
           routes.response(res, response);
@@ -224,7 +224,7 @@ const routes = {
       ;
     });
     // split an image to separate channels
-    app.post('/image/split/:fileID', auth.validate, (req, res) => {
+    app.post('/api/image/split/:fileID', auth.validate, (req, res) => {
       image.splitImage(req.params.fileID, req.body, res.locals.user)
         .then((response) => {
           routes.response(res, response);
@@ -232,7 +232,7 @@ const routes = {
       ;
     });
     // save image(s)
-    app.post('/image/:fileID', auth.validate, (req, res) => {
+    app.post('/api/image/:fileID', auth.validate, (req, res) => {
       image.save(req.params.fileID, req.body, res.locals.user)
         .then((response) => {
           routes.response(res, response);
@@ -240,7 +240,7 @@ const routes = {
       ;
     });
     // create new projects, screens or experiments
-    app.post('/management', auth.validate, (req, res) => {
+    app.post('/api/management', auth.validate, (req, res) => {
       create[req.body.target](req, res.locals.user)
         .then((response) => {
           routes.response(res, response);
@@ -248,7 +248,7 @@ const routes = {
       ;
     });
     // get merged image
-    app.post('/image/merge/:fileID', auth.validate, (req, res) => {
+    app.post('/api/image/merge/:fileID', auth.validate, (req, res) => {
       image.getMerge(req.params.fileID, req.body, res.locals.user)
         .then((response) => {
           routes.response(res, response);
@@ -256,7 +256,7 @@ const routes = {
       ;
     });
     // for adding and removing users from project list
-    app.post('/project/users', auth.validate, (req, res) => {
+    app.post('/api/project/users', auth.validate, (req, res) => {
       users.post[req.body.type](req.body._id, req.body.list, res.locals.user)
         .then((response) => {
           routes.response(res, response);
@@ -264,9 +264,9 @@ const routes = {
       ;
     });
     // invalid post routes
-    app.post('/*', (req, res) => { routes.invalidRoute(res); });
+    app.post('/api/*', (req, res) => { routes.invalidRoute(res); });
     // for updating images (brightness, contrast)
-    app.put('/image', auth.validate, (req, res) => {
+    app.put('/api/image', auth.validate, (req, res) => {
       image.update(req.body, res.locals.user)
         .then((response) => {
           routes.response(res, response);
@@ -274,7 +274,7 @@ const routes = {
       ;
     });
     // updating projects, screens, etc
-    app.put('/management', auth.validate, (req, res) => {
+    app.put('/api/management', auth.validate, (req, res) => {
       update.put(req.body, res.locals.user)
         .then((response) => {
           routes.response(res, response);
@@ -282,7 +282,7 @@ const routes = {
       ;
     });
     // update user permissions
-    app.put('/permission', auth.validate, (req, res) => {
+    app.put('/api/permission', auth.validate, (req, res) => {
       userPermission.put(Number(req.body._id), req.body.permission, res.locals.user)
         .then((response) => {
           routes.response(res, response);
@@ -290,7 +290,7 @@ const routes = {
       ;
     });
     // for updating user info for a project
-    app.put('/users', auth.validate, (req, res) => {
+    app.put('/api/users', auth.validate, (req, res) => {
       users.put(req.body._id, req.body.users, res.locals.user)
         .then((response) => {
           routes.response(res, response);
@@ -298,7 +298,7 @@ const routes = {
       ;
     });
     // invalid put routes
-    app.put('/*', (req, res) => { routes.invalidRoute(res); });
+    app.put('/api/*', (req, res) => { routes.invalidRoute(res); });
     // for invalid methods
     app.use((req, res) => {
       res.status(405).send({

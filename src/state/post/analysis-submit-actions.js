@@ -1,4 +1,6 @@
 import fetch from 'isomorphic-fetch';
+
+import API_ROOT from '../../api-config';
 import { updateToken } from '../set/token-actions';
 
 export const FAIL_ANALYSIS_POST = 'FAIL_ANALYSIS_POST';
@@ -40,7 +42,7 @@ const submitAnalysis = (form) => {
     headers.append('Accept', 'application/json');
     headers.append('Auth-Token', getState().token);
     headers.append('Content-Type', 'application/json');
-    return fetch('http://localhost:8003/analysis/new', {
+    return fetch(`${API_ROOT}/analysis/new`, {
       body: JSON.stringify(form),
       cache: 'default',
       headers,

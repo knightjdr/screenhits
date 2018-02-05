@@ -1,4 +1,6 @@
 import fetch from 'isomorphic-fetch';
+
+import API_ROOT from '../../api-config';
 import { updateToken } from '../set/token-actions';
 import { pushData } from '../get/data-actions';
 
@@ -49,7 +51,7 @@ const submitPost = (target, obj, isFormData = false) => {
       headers.append('Content-Type', 'application/json');
     }
     const body = isFormData ? obj : JSON.stringify(obj);
-    return fetch('http://localhost:8003/management/', {
+    return fetch(`${API_ROOT}/management/`, {
       body,
       cache: 'default',
       headers,

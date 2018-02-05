@@ -1,6 +1,9 @@
 # data folder for tests
 data/*
 
+# environment
+.env
+
 # task folder
 tasks/*
 

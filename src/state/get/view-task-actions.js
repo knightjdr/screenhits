@@ -1,4 +1,6 @@
 import fetch from 'isomorphic-fetch';
+
+import API_ROOT from '../../api-config';
 import { updateToken } from '../set/token-actions';
 
 export const FAILED_GET_VIEW_TASK = 'FAILED_GET_VIEW_TASK';
@@ -34,7 +36,7 @@ const getViewTask = (id) => {
     headers.append('Accept', 'application/json');
     headers.append('Auth-Token', getState().token);
     headers.append('Content-Type', 'application/json');
-    return fetch(`http://localhost:8003/view/task/${id}`, {
+    return fetch(`${API_ROOT}/${id}`, {
       cache: 'default',
       headers,
       mode: 'cors',

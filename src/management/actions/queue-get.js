@@ -1,5 +1,7 @@
 import fetch from 'isomorphic-fetch';
 
+import API_ROOT from '../../api-config';
+
 // retrieves queue from server
 const Queue = {
   get: (token) => {
@@ -7,7 +9,7 @@ const Queue = {
       const headers = new Headers();
       headers.append('Accept', 'application/json');
       headers.append('Auth-Token', token);
-      const url = 'http://localhost:8003/queue?target=creation';
+      const url = `${API_ROOT}/queue?target=creation`;
       fetch(
         url,
         {

@@ -1,4 +1,6 @@
 import fetch from 'isomorphic-fetch';
+
+import API_ROOT from '../../api-config';
 import { updateToken } from '../set/token-actions';
 import { userGet } from '../get/project-user-actions';
 
@@ -44,7 +46,7 @@ const changeBulkPermissionAction = (_id, lab, permission) => {
     headers.append('Accept', 'application/json');
     headers.append('Auth-Token', getState().token);
     headers.append('Content-Type', 'application/json');
-    return fetch('http://localhost:8003/permission/', {
+    return fetch(`${API_ROOT}/permission/`, {
       body: JSON.stringify({
         _id,
         permission,

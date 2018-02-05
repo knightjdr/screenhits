@@ -1,5 +1,7 @@
 import fetch from 'isomorphic-fetch';
 
+import API_ROOT from '../api-config';
+
 // retrieves queue from server
 const Download = (route, body, authToken) => {
   return new Promise((resolve, reject) => {
@@ -7,7 +9,7 @@ const Download = (route, body, authToken) => {
     headers.append('Accept', 'application/json');
     headers.append('Auth-Token', authToken);
     headers.append('Content-Type', 'application/json');
-    const url = `http://localhost:8003/${route}`;
+    const url = `${API_ROOT}/${route}`;
     fetch(
       url,
       {

@@ -1,4 +1,6 @@
 import fetch from 'isomorphic-fetch';
+
+import API_ROOT from '../../api-config';
 import { updateToken } from '../set/token-actions';
 
 import { userGet } from '../get/project-user-actions';
@@ -46,7 +48,7 @@ const manageUsers = (_id, lab, obj, permission) => {
     headers.append('Accept', 'application/json');
     headers.append('Auth-Token', getState().token);
     headers.append('Content-Type', 'application/json');
-    return fetch('http://localhost:8003/project/users', {
+    return fetch(`${API_ROOT}/project/users`, {
       body: JSON.stringify(obj),
       cache: 'default',
       headers,

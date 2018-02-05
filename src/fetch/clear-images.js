@@ -1,12 +1,14 @@
 import fetch from 'isomorphic-fetch';
 
+import API_ROOT from '../api-config';
+
 // retrieves queue from server
 const Clear = (route, authToken) => {
   return new Promise((resolve, reject) => {
     const headers = new Headers();
     headers.append('Accept', 'application/json');
     headers.append('Auth-Token', authToken);
-    const url = `http://localhost:8003/${route}`;
+    const url = `${API_ROOT}/${route}`;
     fetch(
       url,
       {

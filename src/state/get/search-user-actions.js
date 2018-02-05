@@ -1,4 +1,6 @@
 import fetch from 'isomorphic-fetch';
+
+import API_ROOT from '../../api-config';
 import { updateToken } from '../set/token-actions';
 
 export const FAIL_GET = 'FAIL_SEARCH_USER_GET';
@@ -44,7 +46,7 @@ const userSearch = (_id, queryString) => {
     headers.append('Accept', 'application/json');
     headers.append('Auth-Token', getState().token);
     headers.append('Content-Type', 'application/json');
-    return fetch(`http://localhost:8003/users?${queryString}`, {
+    return fetch(`${API_ROOT}/users?${queryString}`, {
       cache: 'default',
       headers,
       method: 'GET',

@@ -1,4 +1,6 @@
 import fetch from 'isomorphic-fetch';
+
+import API_ROOT from '../../api-config';
 import { updateToken } from '../set/token-actions';
 
 import activeLevel from '../../helpers/find-active-level';
@@ -57,7 +59,7 @@ const getData = (target, filters, selected) => {
     headers.append('Accept', 'application/json');
     headers.append('Auth-Token', getState().token);
     headers.append('Content-Type', 'application/json');
-    let url = `http://localhost:8003/management?target=${target}`;
+    let url = `${API_ROOT}/management?target=${target}`;
     if (!objectEmpty(filters)) {
       url = `${url}&filters=${JSON.stringify(filters)}`;
     }
@@ -106,7 +108,7 @@ const getRouteData = (selected) => {
     headers.append('Accept', 'application/json');
     headers.append('Auth-Token', getState().token);
     headers.append('Content-Type', 'application/json');
-    let url = 'http://localhost:8003/loadRoute?target=management';
+    let url = `${API_ROOT}/loadRoute?target=management`;
     if (!objectEmpty(selected)) {
       url = `${url}&selected=${JSON.stringify(selected)}`;
     }
