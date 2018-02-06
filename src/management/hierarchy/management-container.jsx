@@ -66,7 +66,7 @@ class ManagementContainer extends React.Component {
     });
   }
   changeView = () => {
-    browserHistory.replace('/management/list/project');
+    browserHistory.replace(`/management/list/project?user=${this.props.user.name}`);
   }
   fillProjectState = (selected) => {
     this.props.getRouteData(selected, this.props.user);

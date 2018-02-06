@@ -184,6 +184,7 @@ class ManagementListContainer extends React.Component {
       if (newLevel !== activeLevel) {
         return {
           activeLevel: newLevel,
+          filterType: newLevel,
           header: this.getHeader(newLevel),
           showList: false,
           listStatus: {
