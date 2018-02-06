@@ -76,6 +76,7 @@ module.exports = {
       'process.env': {
         NODE_ENV: JSON.stringify('development'),
         API_ROOT: JSON.stringify('http://localhost:8003/api'),
+        ROOT: JSON.stringify('http://localhost'),
       },
     }),
   ],

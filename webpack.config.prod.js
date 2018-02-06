@@ -77,6 +77,7 @@ module.exports = {
       'process.env': {
         NODE_ENV: JSON.stringify('production'),
         API_ROOT: JSON.stringify('https://screenhits.org:8003/api'),
+        ROOT: JSON.stringify('https://screenhits.org'),
       },
     }),
     new webpack.optimize.UglifyJsPlugin(), // minify everything

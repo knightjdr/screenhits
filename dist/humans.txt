@@ -1,0 +1,21 @@
+/* TEAM */
+	Chief: Anne-Claude Gingras
+	Contact: gingras [at] lunenfeld.ca
+	From:Toronto, Ontario, Canada
+
+  Designer, front-end and backend developer: James Knight
+	Contact: jknight [at] lunenfeld.ca
+	From:Toronto, Ontario, Canada
+
+/* THANKS */
+
+	Tester: Geoff Hesketh
+	From:Toronto, Ontario, Canada
+
+  Tester: Payman Samavarchi Tehrani
+	From:Toronto, Ontario, Canada
+
+/* SITE */
+	Last update: 2018
+	Language: English
+	Doctype: HTML5

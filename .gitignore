@@ -4,6 +4,9 @@ data/*
 # environment
 .env
 
+# htaccess
+dist/.htaccess
+
 # task folder
 tasks/*
 
