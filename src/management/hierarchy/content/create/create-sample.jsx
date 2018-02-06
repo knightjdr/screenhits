@@ -93,7 +93,7 @@ class CreateSample extends React.Component {
             ) }
           >
             <TextField
-              floatingLabelText="Concentration (optional)"
+              floatingLabelText="Concentration"
               fullWidth={ true }
               multiLine={ true }
               onChange={ (e) => { this.props.inputChange('concentration', e.target.value); } }
@@ -121,7 +121,7 @@ class CreateSample extends React.Component {
             ) }
           >
             <TextField
-              floatingLabelText="Time point (optional)"
+              floatingLabelText="Time point"
               fullWidth={ true }
               multiLine={ true }
               onChange={ (e) => { this.props.inputChange('timepoint', e.target.value); } }
@@ -140,7 +140,7 @@ class CreateSample extends React.Component {
             </IconButton>
           </div>
           <TextField
-            floatingLabelText="Comments (optional)"
+            floatingLabelText="Comments"
             fullWidth={ true }
             multiLine={ true }
             onChange={ (e) => { this.props.inputChange('comment', e.target.value); } }

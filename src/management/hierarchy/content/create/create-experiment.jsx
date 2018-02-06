@@ -80,7 +80,7 @@ class CreateExperiment extends React.Component {
             ) }
           >
             <TextField
-              floatingLabelText="Concentration (optional)"
+              floatingLabelText="Concentration"
               fullWidth={ true }
               multiLine={ true }
               onChange={ this.inputChangeConcentration }
@@ -108,7 +108,7 @@ class CreateExperiment extends React.Component {
             ) }
           >
             <TextField
-              floatingLabelText="Time point (optional)"
+              floatingLabelText="Time point"
               fullWidth={ true }
               multiLine={ true }
               onChange={ this.inputChangeTimepoint }
@@ -181,7 +181,7 @@ class CreateExperiment extends React.Component {
             </IconButton>
           </div>
           <TextField
-            floatingLabelText="Comments (optional)"
+            floatingLabelText="Comments"
             fullWidth={ true }
             multiLine={ true }
             onChange={ this.inputChangeComment }

@@ -1,4 +1,7 @@
 // styling for creation elements
+
+const inputWidth = 500; // 370 for screenshots, 500 for normal
+
 const createStyle = {
   divFileParsed: {
     marginBottom: 10,
@@ -19,13 +22,13 @@ const createStyle = {
   input: {
     marginLeft: 4,
     marginRight: 4,
-    maxWidth: 500,
+    maxWidth: inputWidth,
   },
   inputChannel: {
     marginLeft: 4,
     marginRight: 4,
-    minWidth: 200,
-    maxWidth: 500,
+    minWidth: 100,
+    maxWidth: inputWidth,
   },
   inputSmall: {
     marginLeft: 4,
@@ -37,7 +40,7 @@ const createStyle = {
     display: 'inline-flex',
     marginLeft: 4,
     marginRight: 4,
-    maxWidth: 500,
+    maxWidth: inputWidth,
   },
   inputWithHelpInput: {
     marginLeft: 4,
@@ -46,7 +49,7 @@ const createStyle = {
   inputWithHelpSelect: {
     marginLeft: 4,
     marginRight: 4,
-    maxWidth: 442,
+    maxWidth: `calc(${inputWidth} - 58)`,
   },
   paragraphSmallMargin: {
     marginBottom: 5,

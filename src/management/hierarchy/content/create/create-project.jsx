@@ -72,7 +72,7 @@ class CreateProject extends React.Component {
             <MenuItem key="n" value="n" primaryText="None (only you can view this project)" />
           </SelectField>
           <TextField
-            floatingLabelText="Comments (optional)"
+            floatingLabelText="Comments"
             fullWidth={ true }
             multiLine={ true }
             onChange={ this.inputChangeComment }

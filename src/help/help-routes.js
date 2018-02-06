@@ -1,10 +1,25 @@
 import Analysis from './analysis/analysis';
-import Creation from './creation/creation';
+import CreateExperiment from './management/creation/create-experiment';
+import CreateProject from './management/creation/create-project';
+import CreateSample from './management/creation/create-sample';
+import CreateSampleCRISPR from './management/creation/create-sample-crispr';
+import CreateSampleMicroscopy from './management/creation/create-sample-microscopy';
+import CreateScreen from './management/creation/create-screen';
+import Creation from './management/creation/creation';
+import Edit from './management/edit';
 import Management from './management/management';
 import ManagementNavigation from './management/navigation/navigation';
 import ManagementNavigationHierarchical from './management/navigation/hierarchical';
 import ManagementNavigationList from './management/navigation/list';
+import Microscopy from './management/microscopy';
 import Permissions from './permissions';
+import ProtocolManage from './management/creation/protocols/protocol-manage';
+import Protocols from './management/creation/protocols/protocols';
+import ProtocolTemplates from './management/creation/protocols/protocol-templates';
+import UserAdd from './management/users/user-add';
+import UserBulkPermissions from './management/users/user-bulk-permissions';
+import UserCustomization from './management/users/user-customization';
+import Users from './management/users/users';
 
 const HelpRoutes = [
   {
@@ -51,31 +66,37 @@ const HelpRoutes = [
         text: 'Creating items',
         children: [
           {
+            component: CreateProject,
             name: 'project',
             path: '/help/management/creation/project',
             text: 'Project',
           },
           {
+            component: CreateScreen,
             name: 'screen',
             path: '/help/management/creation/screen',
             text: 'Screen',
           },
           {
+            component: CreateExperiment,
             name: 'experiment',
             path: '/help/management/creation/experiment',
             text: 'Experiment',
           },
           {
+            component: CreateSample,
             name: 'sample',
             path: '/help/management/creation/sample',
-            text: 'sample',
+            text: 'Sample',
             children: [
               {
+                component: CreateSampleCRISPR,
                 name: 'CRISPR',
                 path: '/help/management/creation/sample/CRISPR',
                 text: 'CRISPR',
               },
               {
+                component: CreateSampleMicroscopy,
                 name: 'microscopy',
                 path: '/help/management/creation/screen/microscopy',
                 text: 'Microscopy',
@@ -83,82 +104,62 @@ const HelpRoutes = [
             ],
           },
           {
+            component: Protocols,
             name: 'protocols',
             path: '/help/management/creation/protocols',
             text: 'Protocols',
             children: [
               {
+                component: ProtocolManage,
+                name: 'manage',
+                path: '/help/management/creation/protocols/manage',
+                text: 'Manage protocols',
+              },
+              {
+                component: ProtocolTemplates,
                 name: 'templates',
                 path: '/help/management/creation/protocols/templates',
                 text: 'Templates',
               },
-              {
-                name: 'default',
-                path: '/help/management/creation/protocols/default',
-                text: 'Default',
-              },
             ],
           },
         ],
       },
       {
+        component: Edit,
         name: 'edit',
         path: '/help/management/edit',
         text: 'Editing items',
-        children: [
-          {
-            name: 'project',
-            path: '/help/management/creation/project',
-            text: 'Project',
-          },
-          {
-            name: 'screen',
-            path: '/help/management/creation/screen',
-            text: 'Screen',
-          },
-          {
-            name: 'experiment',
-            path: '/help/management/creation/experiment',
-            text: 'Experiment',
-          },
-          {
-            name: 'sample',
-            path: '/help/management/creation/sample',
-            text: 'sample',
-            children: [
-              {
-                name: 'microscopy',
-                path: '/help/management/creation/screen/microscopy',
-                text: 'Microscopy',
-              },
-            ],
-          },
-          {
-            name: 'protocols',
-            path: '/help/management/creation/protocols',
-            text: 'Protocols',
-          },
-        ],
       },
       {
+        component: Microscopy,
+        name: 'microscopy',
+        path: '/help/management/microscopy',
+        text: 'Microscopy images',
+      },
+      {
+        component: Users,
         name: 'users',
         path: '/help/management/users',
         text: 'Managing users',
         children: [
           {
+            component: UserCustomization,
             name: 'customization',
             path: '/help/management/users/customization',
-            text: 'Customize permissions',
+            text: 'Permissions',
           },
           {
+            component: UserAdd,
             name: 'add',
             path: '/help/management/users/add',
             text: 'Add users',
           },
           {
+            component: UserBulkPermissions,
             name: 'bulk-permissions',
             path: '/help/management/users/bulk-permissions',
-            text: 'Edit bulk permissions',
+            text: 'Bulk permissions',
           },
         ],
       },

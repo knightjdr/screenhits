@@ -327,7 +327,7 @@ class CreateScreen extends React.Component {
             })
           }
           <TextField
-            floatingLabelText="Comments (optional)"
+            floatingLabelText="Comments"
             fullWidth={ true }
             multiLine={ true }
             onChange={ this.inputChangeComment }

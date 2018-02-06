@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 
-import HelpImage from '../help-image-container';
+import HelpImage from '../../help-image-container';
 import CreationImg from './images/creation.png';
 
 class Creation extends React.Component {
