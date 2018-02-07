@@ -21,8 +21,8 @@ const Zip = {
           zip
             .generateAsync({ type: 'nodebuffer' })
             .then((buffer) => {
-              const zipURI = `data:application/octet-stream;charset=utf-16le;base64,${buffer.toString('base64')}`;
-              resolve(zipURI);
+              const zipB64 = buffer.toString('base64');
+              resolve(zipB64);
             })
           ;
         })

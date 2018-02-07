@@ -22,6 +22,18 @@ class Home extends React.Component {
   dotWillLeave = () => {
     return { opacity: spring(0, springConfig) };
   }
+  footer = () => {
+    return (
+      <div
+        style={ {
+          bottom: 5,
+          position: 'fixed',
+        } }
+      >
+        &#169; 2018, the Gingras lab.
+      </div>
+    );
+  }
   render() {
     return (
       <div
@@ -107,6 +119,16 @@ class Home extends React.Component {
                 key="signin"
               />
             </div>
+          </div>
+          <div
+            style={ {
+              bottom: 5,
+              position: 'fixed',
+              left: '50%',
+              transform: 'translate(-50%, 0)',
+            } }
+          >
+            &#169; 2018, the Gingras lab.
           </div>
         </CSSTransitionGroup>
       </div>

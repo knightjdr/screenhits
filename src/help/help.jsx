@@ -86,6 +86,7 @@ class Help extends React.Component {
               {
                 color: palette.textColor,
                 float: 'right',
+                marginRight: 10,
                 ':hover': {
                   color: palette.accent2Color,
                 },

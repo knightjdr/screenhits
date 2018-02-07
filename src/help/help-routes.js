@@ -1,4 +1,5 @@
 import Analysis from './analysis/analysis';
+import Archive from './analysis/archive/archive';
 import CreateExperiment from './management/creation/create-experiment';
 import CreateProject from './management/creation/create-project';
 import CreateSample from './management/creation/create-sample';
@@ -7,17 +8,17 @@ import CreateSampleMicroscopy from './management/creation/create-sample-microsco
 import CreateScreen from './management/creation/create-screen';
 import Creation from './management/creation/creation';
 import Edit from './management/edit';
+import GeneSearch from './analysis/gene-search/gene-search';
 import Management from './management/management';
 import ManagementNavigation from './management/navigation/navigation';
 import ManagementNavigationHierarchical from './management/navigation/hierarchical';
 import ManagementNavigationList from './management/navigation/list';
 import Microscopy from './management/microscopy';
+import NewAnalysis from './analysis/new-analysis/new';
 import Permissions from './permissions';
 import ProtocolManage from './management/creation/protocols/protocol-manage';
 import Protocols from './management/creation/protocols/protocols';
 import ProtocolTemplates from './management/creation/protocols/protocol-templates';
-import UserAdd from './management/users/user-add';
-import UserBulkPermissions from './management/users/user-bulk-permissions';
 import UserCustomization from './management/users/user-customization';
 import Users from './management/users/users';
 
@@ -147,19 +148,7 @@ const HelpRoutes = [
             component: UserCustomization,
             name: 'customization',
             path: '/help/management/users/customization',
-            text: 'Permissions',
-          },
-          {
-            component: UserAdd,
-            name: 'add',
-            path: '/help/management/users/add',
-            text: 'Add users',
-          },
-          {
-            component: UserBulkPermissions,
-            name: 'bulk-permissions',
-            path: '/help/management/users/bulk-permissions',
-            text: 'Bulk permissions',
+            text: 'Customization',
           },
         ],
       },
@@ -172,16 +161,19 @@ const HelpRoutes = [
     text: 'Analysis',
     children: [
       {
+        component: NewAnalysis,
         name: 'new',
         path: '/help/analysis/new',
         text: 'New analysis',
       },
       {
+        component: Archive,
         name: 'archive',
         path: '/help/analysis/archive',
         text: 'Completed analysis',
       },
       {
+        component: GeneSearch,
         name: 'search',
         path: '/help/analysis/search',
         text: 'Gene search',

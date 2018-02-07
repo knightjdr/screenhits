@@ -1,5 +1,7 @@
 import fetch from 'isomorphic-fetch';
 
+import b64ToBlob from '../helpers/b64ToBlob';
+
 // retrieves queue from server
 const Export = (filename, body, authToken) => {
   return new Promise((resolve, reject) => {
@@ -23,10 +25,9 @@ const Export = (filename, body, authToken) => {
     })
     .then((json) => {
       if (json.status === 200) {
+        const blob = b64ToBlob(json.data, 'application/zip');
         const link = document.createElement('a');
-        document.body.appendChild(link);
-        link.setAttribute('type', 'hidden');
-        link.href = json.uri;
+        link.href = window.URL.createObjectURL(blob);
         link.download = `${filename}.zip`;
         link.click();
         window.URL.revokeObjectURL(link.href);

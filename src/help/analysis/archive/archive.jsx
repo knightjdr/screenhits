@@ -1,15 +1,16 @@
 import React from 'react';
 
-class UserAdd extends React.Component {
+
+class Archive extends React.Component {
   render() {
     return (
       <div>
         <p>
-          UserAdd
+          Archive.
         </p>
       </div>
     );
   }
 }
 
-export default UserAdd;
+export default Archive;

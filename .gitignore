@@ -1,35 +1,19 @@
 # data folder for tests
 data/*
 
-# environment
-.env
-
 # htaccess
 dist/.htaccess
 
 # task folder
 tasks/*
 
-# todo list
-todo.txt
-
 # node modules, client and server side
 node_modules/*
-
-# NPM
 npm-debug.log
-
-# Optional npm cache directory
 .npm
 
 # Mac folder
 **/.DS_Store
-
-#client side config
-src/env.js
-
-#server side config
-server/config.js
 
 #old site versions
 versions/*

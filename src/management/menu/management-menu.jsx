@@ -14,9 +14,6 @@ const containerStyle = {
   position: 'absolute',
   width: 50,
 };
-const fabStyle = {
-  zIndex: 5,
-};
 const fontStyle = {
   transition: 'all 450ms cubic-bezier(0.23, 1, 0.32, 1) 0ms',
 };
@@ -42,7 +39,6 @@ class ManagementMenu extends React.Component {
               height: this.props.radius,
               width: this.props.radius,
             } }
-            style={ fabStyle }
           >
             <FontAwesome
               name="bars"

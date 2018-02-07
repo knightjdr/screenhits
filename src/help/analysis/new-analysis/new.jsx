@@ -1,15 +1,16 @@
 import React from 'react';
 
-class UserBulkPermissions extends React.Component {
+
+class NewAnalysis extends React.Component {
   render() {
     return (
       <div>
         <p>
-          UserBulkPermissions
+          NewAnalysis.
         </p>
       </div>
     );
   }
 }
 
-export default UserBulkPermissions;
+export default NewAnalysis;

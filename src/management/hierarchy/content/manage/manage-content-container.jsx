@@ -31,7 +31,7 @@ const smallButtonStyle = {
 const tabNames = {
   full: {
     current: 'Current users',
-    manage: 'Manage Users',
+    manage: 'Add Users',
   },
   short: {
     current: <FontAwesome key="current" name="user" />,

@@ -19,7 +19,7 @@ class DisplayContent extends React.Component {
     return (
       <Paper
         style={ {
-          maxHeight: 'calc(100vh - 130px)',
+          maxHeight: 'calc(100vh - 140px)',
           overflowY: 'hidden',
           padding: '15px 15px 10px 15px',
         } }
@@ -30,7 +30,7 @@ class DisplayContent extends React.Component {
           autoHideTimeout={ 1000 }
           autoHideDuration={ 200 }
           autoHeight={ true }
-          autoHeightMax={ 'calc(100vh - 150px)' }
+          autoHeightMax={ 'calc(100vh - 160px)' }
         >
           {
             this.props.activeLevel === 'project' &&

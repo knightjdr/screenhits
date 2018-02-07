@@ -221,8 +221,8 @@ const RouteHandler = {
             status: 200,
             clientResponse: {
               status: 200,
-              message: 'Crop completed',
-              uri: zipped,
+              message: 'Images exported',
+              data: zipped,
             },
           });
         })
