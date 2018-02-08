@@ -1,5 +1,7 @@
 import Analysis from './analysis/analysis';
 import Archive from './analysis/archive/archive';
+import ArchiveList from './analysis/archive/archive-list';
+import ArchiveView from './analysis/archive/archive-view';
 import CreateExperiment from './management/creation/create-experiment';
 import CreateProject from './management/creation/create-project';
 import CreateSample from './management/creation/create-sample';
@@ -171,6 +173,20 @@ const HelpRoutes = [
         name: 'archive',
         path: '/help/analysis/archive',
         text: 'Completed analysis',
+        children: [
+          {
+            component: ArchiveList,
+            name: 'list',
+            path: '/help/analysis/archive/list',
+            text: 'Archive list',
+          },
+          {
+            component: ArchiveView,
+            name: 'view',
+            path: '/help/analysis/archive/view',
+            text: 'Viewing analysis',
+          },
+        ],
       },
       {
         component: GeneSearch,

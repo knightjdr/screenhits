@@ -8,7 +8,14 @@ class Analysis extends React.Component {
         {
           this.props.children ||
           <div>
-            Analysis
+            <p>
+              Currently in ScreenHits the analysis area is for CRISPR data alone.
+              BAGEL, DrugZ, MAGeCK and RANKS are all supported. Begin analysis
+              by selecting &apos;New analysis&apos;, view completed or queued
+              analysis by selecting &apos;Archive&apos; and search for analysis
+              results by gene by selecting &apos;Gene search&apos;.
+            </p>
+            IMAGE
           </div>
         }
       </div>
