@@ -35,7 +35,7 @@ const getViewTask = (id) => {
     headers.append('Accept', 'application/json');
     headers.append('Auth-Token', getState().token);
     headers.append('Content-Type', 'application/json');
-    return fetch(`${process.env.API_ROOT}/${id}`, {
+    return fetch(`${process.env.API_ROOT}/view/task/${id}`, {
       cache: 'default',
       headers,
       mode: 'cors',

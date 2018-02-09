@@ -97,7 +97,7 @@ class NewAnalysis extends React.Component {
             autoHideTimeout={ 1000 }
             autoHideDuration={ 200 }
             autoHeight={ true }
-            autoHeightMax={ 'calc(100vh - 80px)' }
+            autoHeightMax={ 'calc(100vh - 90px)' }
             renderThumbVertical={ ({ style, props }) => {
               return (
                 <div

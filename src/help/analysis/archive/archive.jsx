@@ -13,7 +13,7 @@ class Archive extends React.Component {
               can be found. Right now users are restricted to viewing analysis
               created by themselves or their lab (site administators can view
               anything). Finer controls for permissions will be added in the future
-              to allow users to share results between labs or specific users.
+              to allow users to share results between labs or ScreenHits users.
             </p>
           </div>
         }

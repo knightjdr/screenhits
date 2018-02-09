@@ -19,7 +19,7 @@ class Management extends React.Component {
             </p>
             <HelpImage
               caption="ScreenHits levels"
-              height={ 330 }
+              height={ 600 }
               image={ OrganizationImg }
               legend="ScreenHits levels"
             />

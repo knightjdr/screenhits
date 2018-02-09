@@ -40,6 +40,11 @@ const Fields = {
     },
   },
   screen: {
+    analysisOptions: {
+      values: [
+        'CRISPR',
+      ],
+    },
     cellID: {
       help: `An identifier for the cell line, for example from ATCC or Cellosaurus.
         This field is optional.`,

@@ -50,7 +50,7 @@ class SelectScreenType extends React.Component {
             value={ this.props.formData.screenType }
           >
             {
-              Fields.screen.type.values.map((type) => {
+              Fields.screen.analysisOptions.values.map((type) => {
                 return (
                   <MenuItem
                     key={ type }
