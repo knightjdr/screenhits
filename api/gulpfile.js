@@ -4,7 +4,7 @@ const nodemon = require('gulp-nodemon');
 const util = require('gulp-util');
 
 const modules = {
-  node: { src: 'api/**/*.js' },
+  node: { src: './**/*.js' },
 };
 
 gulp.task('js-hint', () => {
@@ -17,13 +17,13 @@ gulp.task('js-hint', () => {
 
 gulp.task('dev', () => {
   nodemon({
-    script: 'api/index.js',
-    watch: modules.node.src
+    script: './index.js',
+    watch: modules.node.src,
   }).on('restart', () => {
-    gulp.src('api/index.js')
+    gulp.src('./index.js');
   });
-	gulp.watch(modules.node.src, ['js-hint'])
-    .on('change',  () => {
+  gulp.watch(modules.node.src, ['js-hint'])
+    .on('change', () => {
       util.env.module = 'node';
     })
   ;
