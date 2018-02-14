@@ -265,7 +265,6 @@ const FormatTask = {
             min: 0,
           },
         };
-        console.log(task.results);
         const results = task.results.map((row) => {
           const columns = [];
           headers.forEach((header) => {

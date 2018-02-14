@@ -5,8 +5,8 @@ const Query = {
   get: (collection, queryObject = {}, returnObject = {}, method = 'find') => {
     return new Promise((resolve, reject) => {
       if (method === 'find') {
-        database.acquire(config.settings().database.name)
-          .collection(collection)
+        const db = database.acquire(config.settings().database.name);
+        db.collection(collection)
           .find(queryObject, returnObject)
           .toArray((err, documents) => {
             if (!err) {
@@ -17,8 +17,8 @@ const Query = {
           })
         ;
       } else {
-        database.acquire(config.settings().database.name)
-          .collection(collection)
+        const db = database.acquire(config.settings().database.name);
+        db.collection(collection)
           .findOne(queryObject, returnObject, (err, document) => {
             if (!err) {
               resolve(document);

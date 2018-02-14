@@ -150,7 +150,6 @@ const Delete = {
         })
         .then(resolve())
         .catch((error) => {
-          console.log(error);
           reject(error);
         })
       ;

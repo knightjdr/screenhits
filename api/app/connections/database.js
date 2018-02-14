@@ -14,9 +14,9 @@ const connection = {
   },
   init: () => {
     const url = `mongodb://${config.settings().database.user}:${config.settings().database.readPW}@localhost:27017/${config.settings().database.name}`;
-    mongoClient.connect(url, (err, db) => {
+    mongoClient.connect(url, (err, client) => {
       if (!err) {
-        connection.connection = db;
+        connection.connection = client.db(config.settings().database.name);
         console.log(`MongoDB connected, db: ${config.settings().database.name}`);
       } else {
         console.log(err);

@@ -45,7 +45,6 @@ const DataSource = {
         query.get('cells', { name: { $regex: re } }, { })
           .then((matches) => {
             const sortedResults = textMatch(matches);
-            console.log(sortedResults);
             resolve({
               status: 200,
               clientResponse: {

@@ -4,20 +4,25 @@ import googleClientID from './client-id';
 
 const GoogleAPI = {
   auth: null,
-  signin: () => {
-    return new Promise((resolve, reject) => {
+  authInit: () => {
+    if (!GoogleAPI.auth) {
       const gapiOptions = {
         clientId: googleClientID,
-        scope: 'email',
-      };
-      const signinOptions = {
         scope: 'email',
       };
       gapi.client.init(gapiOptions)
         .then(() => {
           GoogleAPI.auth = gapi.auth2.getAuthInstance();
-          return GoogleAPI.auth.signIn(signinOptions);
         })
+      ;
+    }
+  },
+  signin: () => {
+    return new Promise((resolve, reject) => {
+      const signinOptions = {
+        scope: 'email',
+      };
+      GoogleAPI.auth.signIn(signinOptions)
         .then((googleUser) => {
           const idToken = googleUser.getAuthResponse().id_token;
           resolve(idToken);

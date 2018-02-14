@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import Radium from 'radium';
 import React from 'react';
 
-import GoogleIcon from './google/google.png';
+import GoogleIcon from './google/google.svg';
 
 const signinContainer = {
   cursor: 'pointer',

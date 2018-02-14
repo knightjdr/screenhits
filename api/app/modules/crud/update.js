@@ -29,7 +29,6 @@ const Update = {
               next(array, index + 1);
             })
             .catch((error) => {
-              console.log(error);
               reject(error);
             })
           ;

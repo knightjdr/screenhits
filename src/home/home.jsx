@@ -3,7 +3,7 @@ import React from 'react';
 import { CSSTransitionGroup } from 'react-transition-group';
 import { TransitionMotion, spring } from 'react-motion';
 
-import LogoImg from '../assets/logo/main-logo-for-web.png';
+import LogoImg from '../assets/logo/main-logo-for-web.svg';
 import Signin from '../signin/signin-container';
 
 import './home.scss';

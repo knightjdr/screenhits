@@ -6,7 +6,7 @@ import { Link } from 'react-router';
 import CompactRefList from './compact-ref-list-container';
 import HorizontalRefList from './horizontal-ref-list';
 
-import LogoImg from '../assets/logo/logo-white.png';
+import LogoImg from '../assets/logo/logo-white.svg';
 
 class Navbar extends React.Component {
   componentDidMount = () => {

@@ -45,7 +45,7 @@ const routes = {
       ;
     });
     // invalid delete method
-    app.delete('/api/*', (req, res) => {
+    app.delete('*', (req, res) => {
       res.status(404).send({
         status: 404,
         error: routes.messages.invalidRoute,
@@ -177,7 +177,7 @@ const routes = {
       ;
     });
     // invalid get methods
-    app.get('/api/*', (req, res) => {
+    app.get('*', (req, res) => {
       res.status(404).send({
         status: 404,
         error: routes.messages.invalidRoute,
@@ -264,7 +264,7 @@ const routes = {
       ;
     });
     // invalid post routes
-    app.post('/api/*', (req, res) => { routes.invalidRoute(res); });
+    app.post('*', (req, res) => { routes.invalidRoute(res); });
     // for updating images (brightness, contrast)
     app.put('/api/image', auth.validate, (req, res) => {
       image.update(req.body, res.locals.user)
@@ -298,7 +298,7 @@ const routes = {
       ;
     });
     // invalid put routes
-    app.put('/api/*', (req, res) => { routes.invalidRoute(res); });
+    app.put('*', (req, res) => { routes.invalidRoute(res); });
     // for invalid methods
     app.use((req, res) => {
       res.status(405).send({

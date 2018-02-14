@@ -14,9 +14,18 @@ class SigninContainer extends React.Component {
       signinText: this.props.signedIn ? 'Sign out' : 'Sign in',
     };
   }
+  componentDidMount = () => {
+    window.addEventListener('load', this.onload);
+  }
   componentWillReceiveProps = (nextProps) => {
     const { signedIn, signInFailed } = nextProps;
     this.updateSignin(signedIn, this.props.signedIn, signInFailed);
+  }
+  componentWillUnmount = () => {
+    window.removeEventListener('load', this.onload);
+  }
+  onload = () => {
+    GoogleAPI.authInit();
   }
   signin = () => {
     if (!this.props.signedIn) {

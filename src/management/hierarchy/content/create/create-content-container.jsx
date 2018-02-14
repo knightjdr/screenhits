@@ -236,18 +236,23 @@ class CreateContentContainer extends React.Component {
     }
   }
   updateScreenType = (screenID, screens) => {
-    const screenIndex = screens.findIndex((screen) => {
-      return screen._id === screenID;
-    });
-    const nextType = screens[screenIndex].type;
-    this.setState(({ screenType }) => {
-      if (nextType !== screenType) {
-        return {
-          screenType: nextType,
-        };
-      }
-      return {};
-    });
+    if (
+      screenID &&
+      screens.length > 0
+    ) {
+      const screenIndex = screens.findIndex((screen) => {
+        return screen._id === screenID;
+      });
+      const nextType = screens[screenIndex].type;
+      this.setState(({ screenType }) => {
+        if (nextType !== screenType) {
+          return {
+            screenType: nextType,
+          };
+        }
+        return {};
+      });
+    }
   }
   render() {
     return (

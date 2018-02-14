@@ -15,7 +15,7 @@ module.exports = {
   module: {
     loaders: [
       {
-        test: /\.(jpe?g|png|gif)$/i,
+        test: /\.(jpe?g|png|gif|svg)$/i,
         loaders: [
           'file-loader?hash=sha512&digest=hex&name=/images/[hash].[ext]',
           {
@@ -57,7 +57,7 @@ module.exports = {
         loader: ExtractTextPlugin.extract('css-loader!postcss-loader!sass-loader'),
       },
       {
-        test: /\.(ttf|svg|eot)(\?v=\d+\.\d+\.\d+)?$/,
+        test: /\.(ttf|eot)(\?v=\d+\.\d+\.\d+)?$/,
         loader: 'file-loader?&name=./fonts/[hash].[ext]',
       },
       {
