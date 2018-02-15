@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 16.0.4, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 width="379.631px" height="328.473px" viewBox="0 0 379.631 328.473" enable-background="new 0 0 379.631 328.473"
+	 xml:space="preserve">
+<rect x="98.445" y="269.949" fill="#B0BEC5" width="281.186" height="58.524"/>
+<rect x="98.445" fill="#607D8B" width="281.185" height="59.429"/>
+<rect x="98.445" y="52.792" fill="#78909C" width="281.185" height="138.468"/>
+<rect x="98.445" y="191.221" fill="#90A4AE" width="281.186" height="79.642"/>
+<text transform="matrix(1 0 0 1 107.5029 72.5049)"><tspan x="0" y="0" fill="#231F20" font-family="'Lato-Regular'" font-size="14.4803">Screen type (CRISPR, microscopy)</tspan><tspan x="0" y="26.427" fill="#231F20" font-family="'Lato-Regular'" font-size="14.4803">Species</tspan><tspan x="0" y="52.853" fill="#231F20" font-family="'Lato-Regular'" font-size="14.4803">Cell Line</tspan><tspan x="0" y="79.28" fill="#231F20" font-family="'Lato-Regular'" font-size="14.4803">Conditions (genetric perturbations, drugs)</tspan><tspan x="0" y="105.706" fill="#231F20" font-family="'Lato-Regular'" font-size="14.4803">Screen type specific fields</tspan></text>
+<text transform="matrix(1 0 0 1 107.5029 207.6533)"><tspan x="0" y="0" fill="#231F20" font-family="'Lato-Regular'" font-size="14.4803">T</tspan><tspan x="8.435" y="0" fill="#231F20" font-family="'Lato-Regular'" font-size="14.4803">ime point definition</tspan><tspan x="0" y="26.427" fill="#231F20" font-family="'Lato-Regular'" font-size="14.4803">Drug concentrations</tspan><tspan x="0" y="52.853" fill="#231F20" font-family="'Lato-Regular'" font-size="14.4803" letter-spacing="-1">T</tspan><tspan x="7.233" y="52.853" fill="#231F20" font-family="'Lato-Regular'" font-size="14.4803">ext-based protocols</tspan></text>
+<text transform="matrix(1 0 0 1 107.5029 18.3989)"><tspan x="0" y="0" fill="#231F20" font-family="'Lato-Regular'" font-size="14.4803">Description</tspan><tspan x="0" y="26.427" fill="#231F20" font-family="'Lato-Regular'" font-size="14.4803">User permissions</tspan></text>
+<text transform="matrix(1 0 0 1 17.5698 18.0986)" font-family="'Lato-Black'" font-size="18.1004">Project</text>
+<text transform="matrix(1 0 0 1 19.4253 71.6021)" font-family="'Lato-Black'" font-size="18.1004">Screen</text>
+<text transform="matrix(1 0 0 1 -0.064 207.8179)" font-family="'Lato-Black'" font-size="18.1004">Experiment</text>
+<text transform="matrix(1 0 0 1 17.375 294.6943)" font-family="'Lato-Black'" font-size="18.1004">Sample</text>
+<text transform="matrix(1 0 0 1 107.5029 291.0718)"><tspan x="0" y="0" font-family="'Lato-Regular'" font-size="14.4803">Replicate information</tspan><tspan x="0" y="26.427" font-family="'Lato-Regular'" font-size="14.4803">Sample type specific fields</tspan></text>
+<g>
+	<g>
+		<line fill="none" stroke="#4F4C4D" stroke-width="2" stroke-miterlimit="10" x1="47.208" y1="26.091" x2="47.208" y2="41.414"/>
+		<g>
+			<path fill="#4F4C4D" d="M47.208,53.484c-2.107-5.68-5.703-12.727-9.512-17.095l9.512,3.44l9.51-3.44
+				C52.91,40.758,49.314,47.805,47.208,53.484z"/>
+		</g>
+	</g>
+</g>
+<g>
+	<g>
+		<line fill="none" stroke="#4F4C4D" stroke-width="2" stroke-miterlimit="10" x1="47.208" y1="79.527" x2="47.208" y2="177.383"/>
+		<g>
+			<path fill="#4F4C4D" d="M47.208,189.454c-2.107-5.68-5.703-12.727-9.512-17.095l9.512,3.44l9.51-3.44
+				C52.91,176.727,49.314,183.774,47.208,189.454z"/>
+		</g>
+	</g>
+</g>
+<g>
+	<g>
+		<line fill="none" stroke="#4F4C4D" stroke-width="2" stroke-miterlimit="10" x1="47.208" y1="217.831" x2="47.208" y2="261.499"/>
+		<g>
+			<path fill="#4F4C4D" d="M47.208,273.569c-2.107-5.68-5.703-12.727-9.512-17.095l9.512,3.44l9.51-3.44
+				C52.91,260.843,49.314,267.89,47.208,273.569z"/>
+		</g>
+	</g>
+</g>
+</svg>

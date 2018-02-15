@@ -3,7 +3,7 @@ import React from 'react';
 
 import HelpImage from '../help-image-container';
 import ManagemenetMainImg from './images/management-main.png';
-import OrganizationImg from './images/screenhits_organization.png';
+import OrganizationImg from './images/screenhits_organization.svg';
 
 class Management extends React.Component {
   render() {

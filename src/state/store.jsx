@@ -1,4 +1,4 @@
-import { createStore, applyMiddleware } from 'redux';
+import { createStore, applyMiddleware, compose } from 'redux';
 import PropTypes from 'prop-types';
 import { Provider } from 'react-redux';
 import React from 'react';

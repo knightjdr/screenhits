@@ -34,9 +34,8 @@ const getAnalysisTasks = () => {
     const headers = new Headers();
     headers.append('Accept', 'application/json');
     headers.append('Auth-Token', getState().token);
-    headers.append('Content-Type', 'application/json');
     return fetch(`${process.env.API_ROOT}/analysis/tasks/`, {
-      cache: 'default',
+      cache: 'no-store',
       headers,
       mode: 'cors',
     })

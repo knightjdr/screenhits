@@ -91,6 +91,7 @@ const analysisStyle = {
   selectedItemsContainer: {
     border: '1px solid #d4d6d7',
     height: 278,
+    overflowX: 'scroll',
     userSelect: 'none',
     width: 250,
   },

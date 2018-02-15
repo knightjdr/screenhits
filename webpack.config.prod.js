@@ -52,6 +52,12 @@ module.exports = {
         test: /\.jsx?$/,
         exclude: /(node_modules)/,
         loader: 'babel-loader',
+        query: {
+          plugins: [
+            'transform-class-properties',
+          ],
+          presets: ['es2015', 'react', 'stage-0'],
+        },
       },
       {
         test: /\.s?css$/,

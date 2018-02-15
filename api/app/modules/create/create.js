@@ -8,7 +8,7 @@ const Permission = require('../permission/permission');
 const query = require('../query/query');
 const readFile = require('./read-file');
 const storeImage = require('../images/store-image');
-const update = require('../crud/update');
+// const update = require('../crud/update');
 const validate = require('../validation/validation');
 
 const Create = {
@@ -205,8 +205,8 @@ const Create = {
           objCreate.data = documents.sample;
           return Promise.all([
             create.insert('sample', documents.sample),
-            update.insertMany('CRISPRgene', 'name', 'records', documents.gene),
-            update.insertMany('CRISPRguide', 'sequence', 'records', documents.guide),
+            // update.insertMany('CRISPRgene', 'name', 'records', documents.gene),
+            // update.insertMany('CRISPRguide', 'sequence', 'records', documents.guide),
           ]);
         })
         .then(() => {

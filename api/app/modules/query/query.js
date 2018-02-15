@@ -7,7 +7,7 @@ const Query = {
       if (method === 'find') {
         const db = database.acquire(config.settings().database.name);
         db.collection(collection)
-          .find(queryObject, returnObject)
+          .find(queryObject, { projection: returnObject })
           .toArray((err, documents) => {
             if (!err) {
               resolve(documents);
@@ -19,7 +19,7 @@ const Query = {
       } else {
         const db = database.acquire(config.settings().database.name);
         db.collection(collection)
-          .findOne(queryObject, returnObject, (err, document) => {
+          .findOne(queryObject, { projection: returnObject }, (err, document) => {
             if (!err) {
               resolve(document);
             } else {

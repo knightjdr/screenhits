@@ -234,7 +234,7 @@ const Tasks = {
           const designSamples = getSampleIDs(formattedTasks);
           return Promise.all([
             query.get('sample', { _id: { $in: designSamples } }, { records: 0 }),
-            formattedTasks,
+            Promise.resolve(formattedTasks),
           ]);
         })
         .then((values) => {

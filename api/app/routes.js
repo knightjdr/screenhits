@@ -326,6 +326,10 @@ const routes = {
         data[key] = value;
       }
     });
+    // security headers
+    // resObject.setHeader('X-XSS-Protection', '1;mode=block');
+    // resObject.setHeader('X-Frame-Options', 'SAMEORIGIN');
+    // resObject.setHeader('X-Content-Type-Options', 'nosniff');
     resObject.status(response.status).send(data);
   },
 };

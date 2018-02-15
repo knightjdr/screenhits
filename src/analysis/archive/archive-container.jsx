@@ -40,10 +40,10 @@ class ArchiveContainer extends React.Component {
     if (!deepEqual(tasks, this.props.tasks)) {
       this.setState(({ filters }) => {
         return {
-          tasks: this.filterTasks(tasks.items, filters),
+          tasks: tasks.items.length > 0 ? this.filterTasks(tasks.items, filters) : [],
           taskStatus: {
             didInvalidate: tasks.didInvalidate,
-            fetching: tasks.fetching,
+            fetching: tasks.isFetching,
             message: tasks.message,
           },
         };
