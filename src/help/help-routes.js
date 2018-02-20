@@ -101,7 +101,7 @@ const HelpRoutes = [
               {
                 component: CreateSampleMicroscopy,
                 name: 'microscopy',
-                path: '/help/management/creation/screen/microscopy',
+                path: '/help/management/creation/sample/microscopy',
                 text: 'Microscopy',
               },
             ],

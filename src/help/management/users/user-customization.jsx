@@ -18,8 +18,8 @@ class UserCustomization extends React.Component {
           caption="Changing user permissions"
           height={ 600 }
           image={ Users2Img }
-          legend="Changing user permissions. 1) Change current user permissions
-            tab, 2) add new users tab"
+          legend="Changing user permissions. &#9312; Change current user permissions
+            tab; &#9313; add new users tab"
         />
         <p>
           New users can be added from the second tab of the user management screen.
@@ -35,8 +35,8 @@ class UserCustomization extends React.Component {
           caption="Adding users"
           height={ 740 }
           image={ Users3Img }
-          legend="Add users. 1) Enter the name or email of the person to add, 2)
-          specify his/her permission and add to the project, 3) modify the bulk
+          legend="Add users. &#9312; Enter the name or email of the person to add; &#9313;
+          specify his/her permission and add to the project; &#9314; modify the bulk
           permissions for the project"
         />
       </div>

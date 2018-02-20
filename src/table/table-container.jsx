@@ -29,7 +29,7 @@ class TableContainer extends React.Component {
     } else if (!deepEqual(nextProps.data.header, this.props.data.header)) {
       this.updateHeader(nextProps);
     } else if (!deepEqual(nextProps.data.list, this.props.data.list)) {
-      this.updateList(nextProps);
+      this.updateList(nextProps, this.props);
     } else if (nextProps.height !== this.props.height) {
       this.changeHeight(nextProps);
     }
@@ -182,11 +182,17 @@ class TableContainer extends React.Component {
       };
     });
   }
-  updateList = (nextProps) => {
+  updateList = (nextProps, props) => {
     const pageLength = this.getPageLength(nextProps.height);
+    const setPage = (prevPage, prevLength, newLength) => {
+      if (newLength !== prevLength) {
+        return 0;
+      }
+      return prevPage;
+    };
     this.setState((prevState) => {
       return {
-        page: prevState.page,
+        page: setPage(prevState.page, props.data.list.length, nextProps.data.list.length),
         pageData: this.getPageData(
           prevState.page,
           pageLength,

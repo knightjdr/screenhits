@@ -20,7 +20,7 @@ class Users extends React.Component {
               lab read permission for example. The owner can even transfer ownership
               to another person. Lab administrators can also adjust permissions for
               all projects in their lab and site administrators can do this for all
-              projects in ScreenHits. User management is accessed from at the project
+              projects in ScreenHits. User management is accessed at the project
               level from the action menu.
             </p>
             <HelpImage

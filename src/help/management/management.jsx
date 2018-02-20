@@ -31,9 +31,9 @@ class Management extends React.Component {
               caption="Management home page"
               height={ 600 }
               image={ ManagemenetMainImg }
-              legend="Main management view: 1) content display area, 2) toggle
-              between organizational views, 3) level selection menu, 4) action menu
-             and 5) information menu"
+              legend="Main management view: &#9312; content display area, &#9313; toggle
+              between organizational views, &#9314; level selection menu, &#9315; action menu
+             and &#9316; information menu"
             />
           </div>
         }

@@ -25,9 +25,14 @@ class CreateProject extends React.Component {
             should be completed for searching and tracking purposes"
         />
         <p>
+          The input form will not reset after upload, allowing you to change the sample
+          name, replicate and other fields as required, as well as selecting a different
+          image to upload.
+        </p>
+        <p>
           The image and sample information will be inserted into the database
           immediately upon upload although it will not be available for viewing until the
-          user updates the sample store in their browser. On the action menu hit the
+          user updates the sample store in his/her browser. On the action menu hit the
           &apos;Update sample store&apos; button to refresh the list of available
           samples, or you can simply refresh the browser.
         </p>
@@ -38,11 +43,6 @@ class CreateProject extends React.Component {
           legend="The action menu at bottom left includes an option to update
             the sample store"
         />
-        <p>
-          The input form will not reset after upload, allowing you to change the sample
-          name, replicate and other fields as required, as well as selecting a different
-          image to upload.
-        </p>
       </div>
     );
   }

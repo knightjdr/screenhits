@@ -25,9 +25,9 @@ class Microscopy extends React.Component {
           caption="Processing microscope images"
           height={ 875 }
           image={ Microscope1Img }
-          legend="Processing microscopy images. 1) Split a particular channel by clicking
-           the plus button within it, 2) split all channels by clicking the &apos;Split all&apos;
-           button, 3) save, clear and export images by clicking the appropriate button
+          legend="Processing microscopy images. &#9312; Split a particular channel by clicking
+           the plus button within it; &#9313; split all channels by clicking the &apos;Split all&apos;
+           button; &#9314; save, clear and export images by clicking the appropriate button
            under the options panel"
         />
         <p>
@@ -40,10 +40,10 @@ class Microscopy extends React.Component {
           caption="Adjusting channels and merging"
           height={ 945 }
           image={ Microscope2Img }
-          legend="Channel and merge options. Channels brightness and contrast can
+          legend="Channel and merge options. Channel brightness and contrast can
             be adjusted with its sliders. These changes will be applied after pressing
-            1) and reverted by pressing 2). Selectively merge channels using the toggles
-            at 3)"
+            &#9312; and reverted by pressing &#9313;. Selectively merge channels using the toggles
+            at &#9314;"
         />
         <p>
           The channel and merged images can be cropped. Activate the crop tool in
@@ -58,11 +58,11 @@ class Microscopy extends React.Component {
           caption="Cropping the image"
           height={ 945 }
           image={ Microscope3Img }
-          legend="Cropping. 1) Activate the crop tool, 2) select the area to crop,
-            3) apply a new crop or revert the existing crop"
+          legend="Cropping. &#9312; Activate the crop tool; &#9313; select the area to crop;
+            &#9314; apply a new crop or revert the existing crop"
         />
         <p>
-          You can export the original image, the merge image or any processed channels.
+          You can export the original image, the merged image or any processed channels.
           All adjustments made (brightness, contrast and cropping) will be applied
           to the exported images. If desired, images can be converted to greyscale
           during export.

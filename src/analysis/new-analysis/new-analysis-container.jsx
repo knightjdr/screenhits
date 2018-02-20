@@ -167,18 +167,20 @@ class NewAnalysisContainer extends React.Component {
     window.removeEventListener('resize', this.resize);
   }
   getDateRange = (items) => {
-    const itemsForSort = JSON.parse(JSON.stringify(items));
-    itemsForSort.sort((a, b) => {
-      const dateA = Moment(Date.parse(a.creationDate), 'MMMM Do YYYY, h:mm a').format('x');
-      const dateB = Moment(Date.parse(b.creationDate), 'MMMM Do YYYY, h:mm a').format('x');
-      if (dateA < dateB) {
-        return 1;
+    let end = 0;
+    let start = Number(Moment().format('X'));
+    items.forEach((item) => {
+      const itemDate = Number(Moment(item.creationDate, 'MMMM Do YYYY, h:mm a').format('X'));
+      if (itemDate > end) {
+        end = itemDate;
       }
-      return -1;
+      if (itemDate < start) {
+        start = itemDate;
+      }
     });
     return {
-      end: Moment(itemsForSort[itemsForSort.length - 1].creationDate, 'MMMM Do YYYY, h:mm a').toDate(),
-      start: Moment(itemsForSort[0].creationDate, 'MMMM Do YYYY, h:mm a').toDate(),
+      end: Moment(end, 'X').toDate(),
+      start: Moment(start, 'X').toDate(),
     };
   }
   addSamples = () => {
@@ -298,10 +300,10 @@ class NewAnalysisContainer extends React.Component {
         addItem = false;
       }
       // filter by date
-      const itemDate = Moment(item.creationDate, 'MMMM Do YYYY, h:mm a');
+      const itemDate = Moment(item.creationDate, 'MMMM Do YYYY, h:mm a').format('X');
       if (
-        Moment(itemDate).isBefore(filters.date.min) ||
-        Moment(itemDate).isAfter(filters.date.max)
+        itemDate < Moment(filters.date.min, 'MMMM Do YYYY, h:mm a').format('X') ||
+        itemDate > Moment(filters.date.max, 'MMMM Do YYYY, h:mm a').format('X')
       ) {
         addItem = false;
       }
@@ -842,7 +844,6 @@ class NewAnalysisContainer extends React.Component {
           omitFromTooltip.indexOf(field) < 0 &&
           Array.isArray(item[field])
         ) {
-          console.log(field);
           const str = `${uppercaseFirst(convertCamel.toLower(field))}: ${item[field].join(', ')}`;
           otherFields.push(str);
         }
@@ -959,7 +960,7 @@ class NewAnalysisContainer extends React.Component {
       newDateRange = this.getDateRange(next.items.sample);
       newDefaultFilters = this.defaultFilters(newDateRange);
     }
-    this.setState(({ dateRange, selection }) => {
+    this.setState(({ dateRange, filters, selection }) => {
       return {
         dateRange: itemsUpdated ? this.assignDateRange(newDateRange) : dateRange,
         fetchStatus: {
@@ -967,6 +968,10 @@ class NewAnalysisContainer extends React.Component {
           didInvalidate: next.didInvalidate,
           message: next.message,
         },
+        filters: Object.assign(
+          {},
+          newDefaultFilters || filters
+        ),
         selection: itemsUpdated ?
         {
           isDrawerOpen: true,

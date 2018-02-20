@@ -10,12 +10,12 @@ class ArchiveView extends React.Component {
         <p>
           Tasks are viewed as heat maps, with the samples sets columns and the
           rows genes. The range of values displayed in the heat map can
-          be capped in the menu at left. You can apply filters to scores
+          be capped in the panel at left. You can apply filters to scores
           associated with each gene to limit the displayed results. Enabling tooltips
           in the menu will show additional information about a gene and its
           sample when hovering over the cell on the heat map. The heat map
           will be cropped to fit the available display space. You can increase
-          the amount of rows displayed on the heat map by changing the cell dimensions
+          the number of rows displayed on the heat map by changing the cell dimensions
           from the menu (or enlarging your browser if possible). The arrow icons
           adjacent to the image allow for navigation
           of the heat map. The innermost arrows will move up and down a single
@@ -30,10 +30,10 @@ class ArchiveView extends React.Component {
           height={ 600 }
           image={ AnalysisArchiveViewImg }
           legend="Viewing analysis results. Image configuration and display
-            options are available in the menu at left. 1) The reset button
+            options are available in the panel at left. &#9312; The reset button
             will reset all menu options to their defaults and re-display
-            the image in its orignal state. 2) the navigation arrows can
-            be used to move around the image. 3) Clicking on any column
+            the image in its orignal state. &#9313; the navigation arrows can
+            be used to move around the image. &#9314; Clicking on any column
             heading will sort the rows by that sample set."
         />
         <p>
@@ -41,7 +41,7 @@ class ArchiveView extends React.Component {
           feature but we intend on allowing for images to be imported, analyzed
           and exported via&nbsp;
           <a
-            href="http://prohits-viz.lunenfeld.ca"
+            href="https://prohits-viz.lunenfeld.ca"
             target="_blank"
             rel="noopener noreferrer"
           >

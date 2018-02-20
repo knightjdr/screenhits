@@ -21,18 +21,18 @@ class ProtocolManage extends React.Component {
           plus button. As an alternative to defining multiple subsections, protocols
           can be created as a single stream of text (paragaph). Simply create a single
           subfield called &apos;description&apos; (or something suitable) and write
-          the entire protocol in the this subfield&apos;s text box. The structure for
+          the entire protocol in this subfield&apos;s text box. The structure for
           protocols should be defined by the lab and adhered to by all its users.
         </p>
         <HelpImage
           caption="Creating protocols"
           height={ 600 }
           image={ ProtocolManageImg }
-          legend="Managing protocols. 1) select an existing protocol to view or edit,
-            2) click the button to create a new protocol, 3) the templates dropdown
+          legend="Managing protocols. &#9312; select an existing protocol to view or edit;
+            &#9313; click the button to create a new protocol; &#9314; the templates dropdown
             can be used to select an existing template or default protocol to use
-            and/or modify as needed, 4) define a new subfield using the
-            &apos;New subsection name&apos; field, 5) add a newly defined subfield
+            and/or modify as needed; &#9315; define a new subfield using the
+            &apos;New subsection name&apos; field; &#9316; add a newly defined subfield
             to the protocol using the plus button"
         />
       </div>

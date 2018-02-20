@@ -15,6 +15,9 @@ import HelpStyle from './help-style';
 const Link = Radium(ReactRouterLink);
 
 class Help extends React.Component {
+  componentDidUpdate = () => {
+    this.scrollbar.scrollToTop();
+  }
   children = (parentRoute, children) => {
     return (
       children &&
@@ -232,6 +235,24 @@ class Help extends React.Component {
             autoHideDuration={ 200 }
             autoHeight={ true }
             autoHeightMax={ 'calc(100vh - 120px)' }
+            ref={ (scrollbar) => { this.scrollbar = scrollbar; } }
+            renderThumbVertical={ ({ style, props }) => {
+              return (
+                <div
+                  { ...props }
+                  style={ Object.assign(
+                    {},
+                    style,
+                    {
+                      backgroundColor: this.props.muiTheme.palette.alternativeButtonColor,
+                      borderRadius: 4,
+                      opacity: 0.5,
+                      width: 8,
+                    }
+                  ) }
+                />
+              );
+            } }
           >
             <div
               style={ HelpStyle.content }
@@ -277,6 +298,7 @@ Help.propTypes = {
   muiTheme: PropTypes.shape({
     palette: PropTypes.shape({
       accent2Color: PropTypes.string,
+      alternativeButtonColor: PropTypes.string,
       buttonColor: PropTypes.string,
       buttonColorHover: PropTypes.string,
       offWhite: PropTypes.string,

@@ -117,6 +117,23 @@ class TemplateContent extends React.Component {
           autoHideDuration={ 200 }
           autoHeight={ true }
           autoHeightMax={ 'calc(100vh - 150px)' }
+          renderThumbVertical={ ({ style, props }) => {
+            return (
+              <div
+                { ...props }
+                style={ Object.assign(
+                  {},
+                  style,
+                  {
+                    backgroundColor: this.props.muiTheme.palette.alternativeButtonColor,
+                    borderRadius: 4,
+                    opacity: 0.5,
+                    width: 8,
+                  }
+                ) }
+              />
+            );
+          } }
         >
           <div>
             { this.props.templates.items.length > 0 ?
@@ -607,6 +624,7 @@ TemplateContent.propTypes = {
   inputChangeSubField: PropTypes.func.isRequired,
   muiTheme: PropTypes.shape({
     palette: PropTypes.shape({
+      alternativeButtonColor: PropTypes.string,
       buttonColor: PropTypes.string,
       buttonColorHover: PropTypes.string,
       blueGrey100: PropTypes.string,

@@ -2,28 +2,32 @@ const gulp = require('gulp');
 const jshint = require('gulp-jshint');
 const nodemon = require('gulp-nodemon');
 
-const modules = {
-  node: { src: './**/*.js' },
-};
+const src = './**/*.js';
 
 gulp.task('js-hint', () => {
-  return gulp.src(modules.node.src)
+  return gulp.src(src)
     .pipe(jshint({ esversion: 6, node: true }))
     .pipe(jshint.reporter('jshint-stylish'))
   ;
 });
 
-gulp.task('node-watch', () => {
-  gulp.watch(modules.node.src, ['js-hint']);
+gulp.task('lint', () => {
+  gulp.src(src)
+    .pipe(jshint())
+  ;
 });
 
-
 gulp.task('dev', () => {
-  nodemon({
-    script: './index.js',
-    watch: modules.node.src,
-  }).on('restart', () => {
-    console.log('restarted');
-    // gulp.src('./index.js');
+  const stream = nodemon({
+    env: {
+      NODE_ENV: 'development',
+    },
+    ext: 'js',
+    tasks: ['lint'],
   });
+  stream
+    .on('restart', () => {
+      console.log('restarted');
+    })
+  ;
 });

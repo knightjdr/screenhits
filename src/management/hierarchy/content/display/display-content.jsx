@@ -31,6 +31,23 @@ class DisplayContent extends React.Component {
           autoHideDuration={ 200 }
           autoHeight={ true }
           autoHeightMax={ 'calc(100vh - 160px)' }
+          renderThumbVertical={ ({ style, props }) => {
+            return (
+              <div
+                { ...props }
+                style={ Object.assign(
+                  {},
+                  style,
+                  {
+                    backgroundColor: this.props.muiTheme.palette.alternativeButtonColor,
+                    borderRadius: 4,
+                    opacity: 0.5,
+                    width: 8,
+                  }
+                ) }
+              />
+            );
+          } }
         >
           {
             this.props.activeLevel === 'project' &&
@@ -232,6 +249,7 @@ DisplayContent.propTypes = {
   }).isRequired,
   muiTheme: PropTypes.shape({
     palette: PropTypes.shape({
+      alternativeButtonColor: PropTypes.string,
       primary2Color: PropTypes.string,
     }),
   }).isRequired,

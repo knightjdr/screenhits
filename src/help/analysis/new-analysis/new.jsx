@@ -13,7 +13,7 @@ class NewAnalysis extends React.Component {
       <div>
         <p>
           Begin analysis by selecting the type of screen you would like to analyze
-          and naming your task. Currently there is only a single option when selecting
+          and name your task. Currently there is only a single option when selecting
           screen type (CRISPR) but more will be added in the future as we
           support more screen types.
         </p>
@@ -35,11 +35,11 @@ class NewAnalysis extends React.Component {
           caption="New analysis - step 2"
           height={ 800 }
           image={ NewAnalysis2Img }
-          legend="Step 2 of new analysis. 1) Select samples by project, screen,
-            experiment or sample. 2) If the sample names and IDs are not informative
+          legend="Step 2 of new analysis. &#9312; Select samples by project, screen,
+            experiment or sample. &#9313; If the sample names and IDs are not informative
             enough, activate tooltips that will display additional item information
-            on mouseover. 3) Use the arrow buttons to add and remove samples from
-            the selected pool at 4). 5) Use filters to restrict the items displayed
+            on mouseover. &#9314; Use the arrow buttons to add and remove samples from
+            the selected pool at &#9315;. &#9316; Use filters to restrict the items displayed
             in the selection panels above."
         />
         <p>
@@ -114,12 +114,12 @@ class NewAnalysis extends React.Component {
           plus button. Empty rows or columns will be ignored. Any samples that
           are not placed in the design grid will be excluded from your analysis. Be sure
           to edit the name of each sample set to the name you would like it to have
-          on your visualized results. For examples, &apos;Sample set 1&apos; could
+          on your visualized results. For example, &apos;Sample set 1&apos; could
           be changed to something like
           &apos;My screen name, Drug X, time 10min&apos;. Put enough information in
           the name to make it easy to know what the sample set refers to. For generic
           analysis the design step can be ignored if you are happy with the ordering
-          of your samples in the left column. If not, reorder your samples in design
+          of your samples in the left column. If not, reorder your samples in the design
           grid to how you would like them to appear on your image. Top to bottom on
           the grid would become left to right on the image.
         </p>
@@ -127,13 +127,13 @@ class NewAnalysis extends React.Component {
           caption="Designing analysis"
           height={ 600 }
           image={ NewAnalysis4Img }
-          legend="Designing analysis. 1) Samples not yet placed onto the design
-            grid will be in the left column. 2) Add columns (sample sets) to
-            the design grid. 3) Add rows (replicates) to the design grid. 4) The design
+          legend="Designing analysis. &#9312; Samples not yet placed onto the design
+            grid will be in the left column. &#9313; Add columns (sample sets) to
+            the design grid. &#9314; Add rows (replicates) to the design grid. &#9315; The design
             grid: in this example samples 83 and 84 are controls. Sample 85 is the first
             replicate harvested at 10 minutes in this experiment and its control is sample
             83. Sample 86 is the second replicate and should be placed beneath 85 and
-            next to its control sample 84. 5) If the sample IDs and names are not informative
+            next to its control sample 84. &#9316; If the sample IDs and names are not informative
             enough, activate information tooltips by clicking the checkbox."
         />
         <p>
@@ -145,7 +145,7 @@ class NewAnalysis extends React.Component {
           caption="Queue"
           height={ 600 }
           image={ NewAnalysis5Img }
-          legend="View completed and queued samples from the by clicking the action
+          legend="View completed and queued samples by clicking the action
             menu"
         />
       </div>

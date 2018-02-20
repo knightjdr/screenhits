@@ -8,7 +8,7 @@ class CreateScreen extends React.Component {
     return (
       <div>
         <p>
-          The screen level is where the bulk of tracking information is specified.
+          The screen level is where the most tracking information is specified.
           This includes the screen type, species of the host cell, cell type, cell line
           modification and drug treatments. Certain types of screens will have additional
           fields. Clicking on the help icons next to fields will open a dialog box

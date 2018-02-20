@@ -10,7 +10,7 @@ class Edit extends React.Component {
       <div>
         <p>
           If you have write permission for a project you can edit all content it contains.
-          This is done by selected the &apos;Edit&apos; option from the action menu
+          This is done by selecting the &apos;Edit&apos; option from the action menu
           which will open a form with fields that are available for editing.
         </p>
         <HelpImage

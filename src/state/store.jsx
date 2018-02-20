@@ -1,4 +1,4 @@
-import { createStore, applyMiddleware, compose } from 'redux';
+import { createStore, applyMiddleware } from 'redux';
 import PropTypes from 'prop-types';
 import { Provider } from 'react-redux';
 import React from 'react';
@@ -6,14 +6,11 @@ import thunkMiddleware from 'redux-thunk';
 
 import stateApp from './reducers';
 
-const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 export const store = createStore(
   stateApp,
   {},
-  composeEnhancers(
-    applyMiddleware(
-      thunkMiddleware,
-    ),
+  applyMiddleware(
+    thunkMiddleware,
   ),
 );
 

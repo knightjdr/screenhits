@@ -16,13 +16,13 @@ class CreateExperiment extends React.Component {
           the drug concentration field will be entered accordingly at the experiment level
           while the timepoint field would be left blank (filled at the sample level).
           Alternatively, if the experiment is performed at a specific timepoint
-          with varying drug concentrations the tracking information would be reversed:
+          with varying drug concentrations, the tracking information would be reversed:
           timepoint entered at the experiment level and drug concentration at the sample
           level.
         </p>
         <p>
           Users should also specify all protocols used in the experiment by clicking the
-          dropdown menu laballed &apos;Protocols&apos; and selecting from those available.
+          dropdown menu labelled &apos;Protocols&apos; and selecting from those available.
           The procedure for creating protocols is discussed in the&nbsp;
           <HelpLink
             text="&apos;Protocol&apos;"

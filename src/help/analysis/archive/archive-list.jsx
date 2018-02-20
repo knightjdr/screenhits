@@ -20,10 +20,10 @@ class ArchiveList extends React.Component {
           caption="Analysis archive"
           height={ 620 }
           image={ AnalysisArchiveListImg }
-          legend="Archive of completed and queued results. 1) Update task status using
-          the button indicated here. 2) Filters for the list. By default
+          legend="Archive of completed and queued results. &#9312; Update task status using
+          the button indicated here. &#9313; Filters for the list. By default
           the user&apos;s own tasks will be displayed, but this and other filters can be
-          changed here. 3) View task parameters, the task log, download the task
+          changed here. &#9314; View task parameters, the task log, download the task
           in tab-delimited format, visualize the task and delete it using the options
           here"
         />

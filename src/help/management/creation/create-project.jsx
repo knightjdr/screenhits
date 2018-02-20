@@ -12,12 +12,12 @@ class CreateProject extends React.Component {
           all of their content. The person creating the project will become the
           project owner, giving him/her full write permission to the project
           and giving his/her lab read permission. These permissions can be adjusted
-          as discussed the section&nbsp;
+          as discussed in the section&nbsp;
           <HelpLink
             text="&apos;Managing Users&apos;"
             to="/help/management/users"
           />. Lab administrators will always have write permission to all projects
-          creating by their lab.
+          created by their lab.
         </p>
       </div>
     );

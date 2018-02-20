@@ -25,7 +25,7 @@ class Navigation extends React.Component {
               caption="Navigation toggle"
               height={ 600 }
               image={ NavigationImg }
-              legend="Click 1) to toggle between organizational views"
+              legend="Click &#9312; to toggle between organizational views"
             />
           </div>
         }

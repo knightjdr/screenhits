@@ -8,7 +8,7 @@ class Permissions extends React.Component {
       <div>
         <p>
           There are three types of users in ScreenHits. When you are given access
-          to ScreeHits you will be assigned to one of these roles.
+          you will be assigned to one of these roles.
         </p>
         <ol>
           <li
@@ -30,7 +30,7 @@ class Permissions extends React.Component {
             style={ HelpStyle.list }
           >
             Site administrators have full permission to create, view, edit and delete
-            content regardless of which user or lab to which it belongs.
+            content regardless of which user or lab the content belongs.
           </li>
         </ol>
       </div>

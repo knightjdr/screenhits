@@ -41,7 +41,7 @@ const RouteHandler = {
         ) {
           rejectAccess('Image cannot be found');
         }
-        permission.canView.project([imageInfo.metadata.project], user)
+        permission.canView.project(imageInfo.metadata.project, user)
           .then(() => {
             resolveAccess();
           })
@@ -64,7 +64,7 @@ const RouteHandler = {
       query.get('imagefs.files', { _id }, { metadata: 1 }, 'findOne')
         .then((imageInfo) => {
           return Promise.all([
-            RouteHandler.checkAccess.edit(imageInfo, user),
+            RouteHandler.checkAccess.view(imageInfo, user),
             getImage.buffer(fileID),
           ]);
         })
@@ -152,7 +152,7 @@ const RouteHandler = {
       query.get('imagefs.files', { _id }, { metadata: 1 }, 'findOne')
         .then((imageInfo) => {
           return Promise.all([
-            RouteHandler.checkAccess.edit(imageInfo, user),
+            RouteHandler.checkAccess.view(imageInfo, user),
             getImage.buffer(body.fileID),
           ]);
         })

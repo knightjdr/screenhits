@@ -77,10 +77,13 @@ class CreateSampleContainer extends React.Component {
     }
   }
   componentDidUpdate = (prevProps, prevState) => {
-    const { didSubmit, formData } = prevState;
+    const { didSubmit, file, formData } = prevState;
     if (
       didSubmit &&
-      !deepEqual(this.state.formData, formData)
+      (
+        !deepEqual(this.state.formData, formData) ||
+        !deepEqual(this.state.file.header, file.header)
+      )
     ) {
       this.props.resetPost();
       this.setState({

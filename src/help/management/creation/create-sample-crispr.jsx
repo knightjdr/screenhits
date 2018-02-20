@@ -112,14 +112,14 @@ class CreateSampleCRISPR extends React.Component {
           &apos;Definitions&apos; section. Each sample will correspond to a single
           column in the input file and the form will prompt you to specify the column
           in the &apos;Required&apos; section. After selecting the sample in the dropdown,
-          press the plus button to add it to your list of column definitions.
+          press the plus button next to add it to your list of column definitions.
         </p>
         <HelpImage
           caption="Defining sample columns"
           height={ 765 }
           image={ CreateSampleCrispr2Img }
           legend="Select the required sample column from the dropdown and press the
-            plus button to add it to your definitions. In this example the columns
+            plus button next to add it to your definitions. In this example the column
             'SN_TO' will be defined as our time 0 sample"
         />
         <p>
@@ -152,7 +152,7 @@ class CreateSampleCRISPR extends React.Component {
           caption="Sample queue and store"
           height={ 765 }
           image={ CreateSampleCrispr3Img }
-          legend="The information menu at 1) will open a dropdown from which the sample
+          legend="The information menu at &#9312; will open a dropdown from which the sample
             queue can be accessed. The action menu at bottom left includes an option to update
             the sample store"
         />

@@ -19,7 +19,6 @@ import SelectField from 'material-ui/SelectField';
 import Snackbar from 'material-ui/Snackbar';
 import TextField from 'material-ui/TextField';
 import ViewIcon from 'material-ui/svg-icons/action/visibility';
-import { Scrollbars } from 'react-custom-scrollbars';
 
 import AnalysisOptions from '../../../modules/analysis-new';
 import ArchiveStyle from '../archive-style';
@@ -569,18 +568,10 @@ class TaskList extends React.Component {
             borderBottom: 'none',
           } }
         >
-          <Scrollbars
-            autoHide={ true }
-            autoHideTimeout={ 1000 }
-            autoHideDuration={ 200 }
-            autoHeight={ true }
-            autoHeightMax={ 'calc(100vh - 100px)' }
-          >
-            { this.designDialogContent(
-              this.props.designDialog.design,
-              this.props.designDialog.params
-            ) }
-          </Scrollbars>
+          { this.designDialogContent(
+            this.props.designDialog.design,
+            this.props.designDialog.params
+          ) }
         </Dialog>
         <Dialog
           actions={ [
@@ -597,15 +588,7 @@ class TaskList extends React.Component {
             borderBottom: 'none',
           } }
         >
-          <Scrollbars
-            autoHide={ true }
-            autoHideTimeout={ 1000 }
-            autoHideDuration={ 200 }
-            autoHeight={ true }
-            autoHeightMax={ 'calc(100vh - 100px)' }
-          >
-            { this.props.logDialog.text }
-          </Scrollbars>
+          { this.props.logDialog.text }
         </Dialog>
         <Dialog
           actions={ [
