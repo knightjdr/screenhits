@@ -5,7 +5,7 @@ const Login = (signinToken, res) => {
   return new Promise((resolve) => {
     googleValidate(signinToken)
       .then((email) => {
-        return loginUser(email);
+        return loginUser(email.toLowerCase());
       })
       .then(({ authToken, user }) => {
         res.locals.authToken = authToken;
