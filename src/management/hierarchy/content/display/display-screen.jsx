@@ -188,7 +188,7 @@ class DisplayScreen extends React.Component {
                   >
                     <Ellipsis
                       key={ `drugID-ellipsis-${drug._id}` }
-                      text={ drug.names.join('; ') }
+                      text={ drug.names ? drug.names.join('; ') : 'None' }
                     />
                   </div>,
                 ]);

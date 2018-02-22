@@ -106,8 +106,8 @@ class NewAnalysis extends React.Component {
           samples into the first column of the design grid. Next drag your first
           set of replicates into the second column of the design grid. For example,
           if you have three replicates that were harvested 10 minutes post-treatment,
-          drag these samples into the second column. These replicate group are
-          called samples sets. The control sample in the same row as a sample
+          drag these samples into the second column. These replicate groups are
+          called sample sets. The control sample in the same row as a sample
           set replicate is the control that replicate will be compared against, so
           reorder your sample set replicates or controls as needed. You can add
           additional colums or rows to the design grid by clicking the appropriate
