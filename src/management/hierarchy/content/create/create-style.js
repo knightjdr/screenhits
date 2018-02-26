@@ -54,6 +54,29 @@ const createStyle = {
   paragraphSmallMargin: {
     marginBottom: 5,
   },
+  smallSelect: {
+    floatingLabelStyle: {
+      marginTop: -10,
+    },
+    listStyle: {
+      paddingBottom: 0,
+      paddingTop: 0,
+    },
+    menuStyle: {
+      marginTop: 0,
+    },
+    style: {
+      height: 45,
+      maxHeight: 45,
+      margin: '0 10px',
+      overflowY: 'none',
+      width: 150,
+    },
+    underlineStyle: {
+      position: 'relative',
+      top: 2,
+    },
+  },
   userHeader: {
     alignItems: 'flex-start',
     display: 'flex',

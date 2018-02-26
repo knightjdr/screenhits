@@ -165,23 +165,50 @@ class CreateSampleContainer extends React.Component {
   }
   changeFileType = (e, index, value) => {
     this.inputChange('fileType', value);
-    this.setState((prevState) => {
+    this.setState(({ screenType }) => {
       return {
         columnToUse: Object.assign({}, reset.columnToUse),
         file: Object.assign(
           {},
           JSON.parse(JSON.stringify(reset.file)),
           {
-            mandatoryProperties: FileTypes[prevState.screenType][index].mandatory ?
-              FileTypes[prevState.screenType][index].mandatory
+            mandatoryProperties: FileTypes[screenType][index].mandatory ?
+              FileTypes[screenType][index].mandatory
               :
               [],
-            needMandatory: FileTypes[prevState.screenType][index].mandatory &&
-              FileTypes[prevState.screenType][index].mandatory.length > 0,
+            needMandatory: FileTypes[screenType][index].mandatory &&
+              FileTypes[screenType][index].mandatory.length > 0,
           }
         ),
-        fileParser: FileTypes[prevState.screenType][index],
+        fileParser: JSON.parse(JSON.stringify(FileTypes[screenType][index])),
         lines: Object.assign([], reset.lines),
+      };
+    });
+  }
+  changeParsing = (columnIndex, columnName, value) => {
+    this.setState(({ file, fileParser }) => {
+      const newFileParser = JSON.parse(JSON.stringify(fileParser));
+      newFileParser.firstLine.regex[columnIndex].patternsIndex = value;
+      return {
+        file: Object.assign(
+          {},
+          file,
+          {
+            header: this.updateHeader(
+              file.header,
+              fileParser.header[columnIndex],
+              columnName,
+              value
+            ),
+            parsing: this.parseLine(
+              newFileParser.delimiter,
+              newFileParser.firstLine,
+              file.header,
+              file.lines[1]
+            ),
+          }
+        ),
+        fileParser: newFileParser,
       };
     });
   }
@@ -232,7 +259,7 @@ class CreateSampleContainer extends React.Component {
       warning,
     });
   }
-  parseLines = (lines) => {
+  parseFile = (lines, parserIndex = 0) => {
     const header = stringParser[this.state.fileParser.delimiter](lines[0]);
     const headerArray = [];
     const headerUnused = [...Array(header.length).keys()];
@@ -241,8 +268,11 @@ class CreateSampleContainer extends React.Component {
       if (header[expectedHeader.index]) {
         headerArray.push({
           index: expectedHeader.index,
-          layName: expectedHeader.layName ? expectedHeader.layName : expectedHeader.name,
-          name: expectedHeader.name,
+          layName: expectedHeader.layName ?
+            expectedHeader.layName[parserIndex]
+            :
+            expectedHeader.name[parserIndex],
+          name: expectedHeader.name[parserIndex],
           type: expectedHeader.type,
           value: header[expectedHeader.index],
         });
@@ -252,19 +282,6 @@ class CreateSampleContainer extends React.Component {
         }
       }
     });
-    // show how special columns will be parsed, if defined
-    const firstLine = stringParser[this.state.fileParser.delimiter](lines[1]);
-    const parsingObject = {};
-    this.state.fileParser.firstLine.toParse.forEach((column, index) => {
-      const columnName = header[column];
-      const keep = this.state.fileParser.firstLine.regex[index].keep;
-      const regex = new RegExp(this.state.fileParser.firstLine.regex[index].pattern);
-      const matched = firstLine[column].match(regex);
-      parsingObject[columnName] = {
-        original: firstLine[index],
-        parsed: matched[keep],
-      };
-    });
     const unusedColumns = headerUnused.map((headerIndex) => {
       return {
         index: headerIndex,
@@ -273,30 +290,63 @@ class CreateSampleContainer extends React.Component {
     });
     return {
       header: headerArray,
-      parsing: parsingObject,
+      parsing: this.parseLine(
+        this.state.fileParser.delimiter,
+        this.state.fileParser.firstLine,
+        headerArray,
+        lines[1]
+      ),
       unusedColumns,
     };
   }
+  parseLine = (delimiter, firstLine, header, line) => {
+    // show how special columns will be parsed, if defined
+    const firstLineString = stringParser[delimiter](line);
+    const parsingObject = {};
+    firstLine.toParse.forEach((column, index) => {
+      const headerIndex = header.findIndex((item) => {
+        return item.index === index;
+      });
+      const keep = firstLine.regex[index].keep;
+      const patternsIndex = firstLine.regex[index].patternsIndex;
+      const regex = new RegExp(
+        firstLine.regex[index].patterns[patternsIndex]
+      );
+      const matched = firstLineString[column].match(regex);
+      parsingObject[header[headerIndex].value] = {
+        index,
+        original: firstLineString[index],
+        parsed: matched ? matched[keep] : firstLineString[column],
+      };
+    });
+    return parsingObject;
+  }
   readFileInput = (e) => {
-    const file = e.target.files[0];
-    const fileName = file.name;
-    fileReader.nLines(file, 2)
+    const inputFile = e.target.files[0];
+    const fileName = inputFile.name;
+    fileReader.nLines(inputFile, 2)
       .then((lines) => {
-        const parsedLines = this.parseLines(lines);
-        this.setState((prevState) => {
+        const parsedFile = this.parseFile(lines);
+        this.setState(({ file, fileParser }) => {
           return {
             columnToUse: Object.assign({}, reset.columnToUse),
             file: Object.assign(
               {},
-              prevState.file,
+              file,
               {
-                file,
+                file: inputFile,
                 error: null,
-                header: parsedLines.header,
+                header: parsedFile.header,
+                lines,
                 mandatory: {},
+                mandatoryProperties: fileParser.mandatory ?
+                  fileParser.mandatory
+                  :
+                  [],
+                needMandatory: fileParser.mandatory && fileParser.mandatory.length > 0,
                 name: fileName,
-                parsing: parsedLines.parsing,
-                unusedColumns: parsedLines.unusedColumns,
+                parsing: parsedFile.parsing,
+                unusedColumns: parsedFile.unusedColumns,
               }
             ),
             lines: Object.assign([], reset.lines),
@@ -418,6 +468,19 @@ class CreateSampleContainer extends React.Component {
       });
     }
   }
+  updateHeader = (header, headerOptions, columnName, parseIndex) => {
+    const headerIndex = header.findIndex((column) => {
+      return column.value === columnName;
+    });
+    const newHeader = JSON.parse(JSON.stringify(header));
+    newHeader[headerIndex].layName = headerOptions.layName ?
+      headerOptions.layName[parseIndex]
+      :
+      headerOptions.name[parseIndex]
+    ;
+    newHeader[headerIndex].name = headerOptions.name[parseIndex];
+    return newHeader;
+  };
   updateSnackbar = (next, current) => {
     if (next.message) {
       const currentTime = new Date();
@@ -540,12 +603,14 @@ class CreateSampleContainer extends React.Component {
         cancelButton={ this.state.cancelButton }
         changeColumnToUse={ this.changeColumnToUse }
         changeFileType={ this.changeFileType }
+        changeParsing={ this.changeParsing }
         columnToUse={ this.state.columnToUse }
         defineMandatory={ this.defineMandatory }
         dialog={ this.props.dialog }
         errors={ this.state.errors }
         file={ this.state.file }
         fileTypes={ this.state.fileTypes }
+        firstLine={ this.state.fileParser.firstLine }
         formData={ this.state.formData }
         inputChange={ this.inputChange }
         inputWidth={ this.props.inputWidth }

@@ -11,21 +11,29 @@ const fileParser = {
         regex: [
           {
             keep: 1,
-            pattern: '.+_(.+)',
+            patterns: [
+              '.+_(.+)',
+              '([^_]+)_.+_',
+            ],
+            patternsIndex: 0,
+            patternNames: [
+              'gene_guide',
+              'chr_gene_+/-',
+            ],
           },
         ],
       },
       header: [
         {
-          name: 'guideSequence',
+          name: ['guideSequence', 'chromosome'],
           index: 0,
-          layName: 'guide sequence',
+          layName: ['guide sequence', 'chromosome'],
           type: 'readout',
         },
         {
-          name: 'gene',
+          name: ['gene'],
           index: 1,
-          layName: 'gene identifier',
+          layName: ['gene identifier'],
           type: 'readout',
         },
       ],

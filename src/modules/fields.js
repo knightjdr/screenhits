@@ -70,6 +70,7 @@ const Fields = {
           name: 'library',
           options: [
             'TKO v1',
+            'TKO v1 - supplemental',
             'TKO v2',
             'TKO v3',
           ],

@@ -21,9 +21,10 @@ const ReadFile = {
         const headerIndex = header.findIndex((column) => {
           return column.index === toParseIndex;
         });
+        const patternsIndex = parser.regex[toParseIndex].patternsIndex;
         headerParse[header[headerIndex].value] = {
           keep: parser.regex[toParseIndex].keep,
-          pattern: parser.regex[toParseIndex].pattern,
+          pattern: parser.regex[toParseIndex].patterns[patternsIndex],
         };
       });
       // line parser
@@ -33,7 +34,11 @@ const ReadFile = {
           if (headerToKeep.indexOf(column) > -1) {
             if (headerParse[column]) {
               const regex = new RegExp(headerParse[column].pattern);
-              newEntry[headerMap[column]] = data[column].match(regex)[headerParse[column].keep];
+              const matched = data[column].match(regex);
+              newEntry[headerMap[column]] = matched ?
+                matched[headerParse[column].keep]
+                :
+                data[column];
             } else {
               newEntry[headerMap[column]] = data[column];
             }
@@ -47,7 +52,7 @@ const ReadFile = {
         guideSequence: {},
         sample: [],
       };
-      const addRecord = (line, type) => {
+      /* const addRecord = (line, type) => {
         const currKey = line[type];
         const currLine = Object.assign({}, line);
         delete currLine[type];
@@ -63,7 +68,7 @@ const ReadFile = {
         } else {
           parsed[type][currKey] = [currEntry];
         }
-      };
+      }; */
       const bufferStream = new stream.PassThrough();
       bufferStream.end(new Buffer(file.file.data));
       bufferStream
@@ -73,14 +78,14 @@ const ReadFile = {
         }))
         .on('data', (data) => {
           const line = parseLine(data);
-          addRecord(line, 'gene');
-          addRecord(line, 'guideSequence');
+          // addRecord(line, 'gene');
+          // addRecord(line, 'guideSequence');
           parsed.sample.push(line);
         })
         .on('end', () => {
           resolve({
-            gene: parsed.gene,
-            guide: parsed.guideSequence,
+            // gene: parsed.gene,
+            // guide: parsed.guideSequence,
             sample: Object.assign(
               {},
               sample,

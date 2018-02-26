@@ -30,6 +30,103 @@ class CreateSample extends React.Component {
       />,
     ]);
   }
+  parsingContent = (firstLine, parsedValues, palette) => {
+    if (objectEmpty(parsedValues)) {
+      return null;
+    }
+    return (
+      <div>
+        <hr />
+        <div
+          style={ createStyle.userHeader }
+        >
+          <div
+            style={ Object.assign(
+              {},
+              createStyle.userHeaderKey,
+              {
+                backgroundColor: palette.keyColor,
+                border: `1px solid ${palette.keyColorBorder}`,
+              },
+            ) }
+          >
+            Parsing rules:
+          </div>
+          <div
+            style={ createStyle.userHeaderContent }
+          >
+            The following columns will be parsed as
+            indicated in the example to extract relevant values:
+          </div>
+        </div>
+        <div
+          style={ {
+            alignItems: 'flex-end',
+            display: 'flex',
+            margin: '10px 0px 0px 150px',
+          } }
+        >
+          {
+            Object.keys(parsedValues).map((key) => {
+              const columnIndex = parsedValues[key].index;
+              return ([
+                <div
+                  key={ key }
+                  style={ {
+                    margin: '4px 0px 4px 0px',
+                  } }
+                >
+                  { `${key}:` }
+                  <br />
+                  <div
+                    style={ {
+                      marginLeft: 20,
+                    } }
+                  >
+                    { `original value: ${parsedValues[key].original}` }
+                  </div>
+                  <div
+                    style={ {
+                      marginLeft: 20,
+                    } }
+                  >
+                    { `parsed value: ${parsedValues[key].parsed}` }
+                  </div>
+                </div>,
+                <SelectField
+                  floatingLabelText="Parsing rule"
+                  listStyle={ createStyle.smallSelect.listStyle }
+                  onChange={ (e, target, value) => {
+                    this.props.changeParsing(columnIndex, key, value);
+                  } }
+                  style={ {
+                    marginLeft: 30,
+                    width: 250,
+                  } }
+                  value={ firstLine.regex[columnIndex].patternsIndex }
+                >
+                  {
+                    firstLine.regex[columnIndex].patterns.map((pattern, patternIndex) => {
+                      const patternKey = `pattern-${patternIndex}`;
+                      return (
+                        <MenuItem
+                          key={ patternKey }
+                          value={ patternIndex }
+                          primaryText={ `
+                            format: ${firstLine.regex[columnIndex].patternNames[patternIndex]}
+                          ` }
+                        />
+                      );
+                    })
+                  }
+                </SelectField>,
+              ]);
+            })
+          }
+        </div>
+      </div>
+    );
+  }
   render() {
     return (
       <div>
@@ -414,54 +511,11 @@ class CreateSample extends React.Component {
               </div>
             }
             {
-              !objectEmpty(this.props.file.parsing) &&
-                <div>
-                  <hr />
-                  <div
-                    style={ createStyle.userHeader }
-                  >
-                    <div
-                      style={ Object.assign(
-                        {},
-                        createStyle.userHeaderKey,
-                        {
-                          backgroundColor: this.props.muiTheme.palette.keyColor,
-                          border: `1px solid ${this.props.muiTheme.palette.keyColorBorder}`,
-                        },
-                      ) }
-                    >
-                      Parsing rules:
-                    </div>
-                    <div
-                      style={ createStyle.userHeaderContent }
-                    >
-                      The following columns will be parsed as
-                      indicated in the example to extract relevant values:
-                    </div>
-                  </div>
-                  <div
-                    style={ {
-                      margin: '10px 0px 0px 150px',
-                    } }
-                  >
-                    {
-                      Object.keys(this.props.file.parsing).map((key) => {
-                        return (
-                          <div
-                            key={ key }
-                            style={ {
-                              margin: '4px 0px 4px 0px',
-                            } }
-                          >
-                            { `${key} - original value: ${this.props.file.parsing[key].original},
-                            parsed value: ${this.props.file.parsing[key].parsed}` }
-                          </div>
-                        );
-                      })
-                    }
-                  </div>
-                </div>
-
+              this.parsingContent(
+                this.props.firstLine,
+                this.props.file.parsing,
+                this.props.muiTheme.palette
+              )
             }
             {
               !objectEmpty(this.props.file.unusedColumns) &&
@@ -648,6 +702,10 @@ class CreateSample extends React.Component {
   }
 }
 
+CreateSample.defaultProps = {
+  firstLine: {},
+};
+
 CreateSample.propTypes = {
   actions: PropTypes.shape({
     cancel: PropTypes.func,
@@ -661,6 +719,7 @@ CreateSample.propTypes = {
   }).isRequired,
   changeColumnToUse: PropTypes.func.isRequired,
   changeFileType: PropTypes.func.isRequired,
+  changeParsing: PropTypes.func.isRequired,
   columnToUse: PropTypes.shape({
     error: PropTypes.string,
     index: PropTypes.number,
@@ -705,6 +764,18 @@ CreateSample.propTypes = {
   fileTypes: PropTypes.arrayOf(
     PropTypes.shape({})
   ).isRequired,
+  firstLine: PropTypes.shape({
+    toParse: PropTypes.array,
+    regex: PropTypes.arrayOf(
+      PropTypes.shape({
+        keep: PropTypes.number,
+        patterns: PropTypes.arrayOf(
+          PropTypes.string,
+        ),
+        patternsIndex: PropTypes.number,
+      }),
+    ),
+  }),
   formData: PropTypes.shape({
     comment: PropTypes.string,
     concentration: PropTypes.string,
