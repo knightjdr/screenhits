@@ -12,22 +12,22 @@ const fileParser = {
           {
             keep: 1,
             patterns: [
-              '.+_(.+)',
               '([^_]+)_.+_',
+              '.+_(.+)',
             ],
             patternsIndex: 0,
             patternNames: [
-              'gene_guide',
               'chr_gene_+/-',
+              'gene_guide',
             ],
           },
         ],
       },
       header: [
         {
-          name: ['guideSequence', 'chromosome'],
+          name: ['chromosome', 'guideSequence'],
           index: 0,
-          layName: ['guide sequence', 'chromosome'],
+          layName: ['chromosome', 'guide sequence'],
           type: 'readout',
         },
         {

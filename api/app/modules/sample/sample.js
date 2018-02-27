@@ -10,13 +10,24 @@ const Sample = {
       };
       const formatSample = (sample) => {
         let returnElement = '';
+        // get all properties stored as records and sample props
+        const recordKeys = Object.keys(sample.records[0]);
+        const sampleKeys = sample.properties.map((prop) => { return prop.name; });
+        // check which properties were added from database (not supplied by user)
+        const addedKeys = recordKeys.filter((x) => { return !sampleKeys.includes(x); });
+        // format
         switch (format) {
           case 'html': {
             const columns = [];
+            // format header
             const header = sample.properties.map((prop) => {
               columns.push(prop.name);
               return `<th>${prop.layName}</th>`;
-            }).join('');
+            }).concat(addedKeys.map((prop) => {
+              columns.push(prop);
+              return `<th>${prop}</th>`;
+            })).join('');
+            // create rows
             const body = sample.records.map((record) => {
               let row = '';
               columns.forEach((column) => {
@@ -36,11 +47,16 @@ const Sample = {
           }
           case 'tsv': {
             const columns = [];
+            // create tab separated header
             returnElement = sample.properties.map((prop) => {
               columns.push(prop.name);
               return prop.layName;
-            }).join('\t');
+            }).concat(addedKeys.map((prop) => {
+              columns.push(prop);
+              return prop;
+            })).join('\t');
             returnElement += '\n';
+            // create rows
             sample.records.forEach((record) => {
               returnElement += columns.map((column) => {
                 return `${record[column]}`;
