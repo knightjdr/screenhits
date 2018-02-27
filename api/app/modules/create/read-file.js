@@ -7,12 +7,18 @@ const delimiter = {
   'text/tab-separated-values': '\t',
 };
 
+const properties = {
+  chromosome: { layName: 'chromosome', name: 'chromosome', type: 'readout' },
+  guideSequence: { layName: 'guide sequence', name: 'guideSequence', type: 'readout' },
+};
+
 const ReadFile = {
   CRISPR: (file, sample, fileType, header, parser, sampleID) => {
     return new Promise((resolve, reject) => {
       // define header columns to keep and needed guide information
       const guideInfo = {
         have: null,
+        mapping: {},
         need: null,
         options: ['chromosome', 'guideSequence'],
       };
@@ -29,9 +35,11 @@ const ReadFile = {
           guideInfo.options.splice(optionsIndex, 1);
         }
       });
-      // if a needed piece of guide information is missing, specify it
+      // if a needed piece of guide information is missing
+      const addedProperties = [];
       if (guideInfo.options.length > 0) {
         guideInfo.need = guideInfo.options[0];
+        addedProperties.push(properties[guideInfo.need]);
       }
       // declare how to parse columns if necessary
       parser.toParse.forEach((toParseIndex) => {
@@ -44,8 +52,16 @@ const ReadFile = {
           pattern: parser.regex[toParseIndex].patterns[patternsIndex],
         };
       });
+      // mapping guides
+      const mapGuides = (key, value, library) => {
+        const mapped = {};
+        library.forEach((guide) => {
+          mapped[guide[key]] = guide[value];
+        });
+        return mapped;
+      };
       // line parser
-      const parseLine = (data, guides) => {
+      const parseLine = (data) => {
         const newEntry = {};
         Object.keys(data).forEach((column) => {
           if (headerToKeep.indexOf(column) > -1) {
@@ -58,14 +74,8 @@ const ReadFile = {
                 data[column];
               // get missing guide info if current column is a lookup value
               if (headerMap[column] === guideInfo.have) {
-                const guidesIndex = guides.findIndex((guide) => {
-                  return guide[guideInfo.have] === newEntry[headerMap[column]];
-                });
-                newEntry[guideInfo.need] = guidesIndex > -1 ?
-                  guides[guidesIndex][guideInfo.need]
-                  :
-                  null
-                ;
+                newEntry[guideInfo.need] = guideInfo.mapping[newEntry[headerMap[column]]] ||
+                  null;
               }
             } else {
               newEntry[headerMap[column]] = data[column];
@@ -98,7 +108,7 @@ const ReadFile = {
         }
       }; */
 
-      const readFile = (guides) => {
+      const readFile = () => {
         return new Promise((resolveRead, rejectRead) => {
           const bufferStream = new stream.PassThrough();
           bufferStream.end(new Buffer(file.file.data));
@@ -108,7 +118,7 @@ const ReadFile = {
               delimiter: delimiter[fileType],
             }))
             .on('data', (data) => {
-              const line = parseLine(data, guides);
+              const line = parseLine(data);
               // addRecord(line, 'gene');
               // addRecord(line, 'guideSequence');
               parsed.sample.push(line);
@@ -122,6 +132,7 @@ const ReadFile = {
                   sample,
                   {
                     _id: sampleID,
+                    properties: sample.properties.concat(addedProperties),
                     records: parsed.sample,
                   }
                 ),
@@ -140,8 +151,8 @@ const ReadFile = {
           return query.get('libraries', { name: screen.other.library }, {}, 'findOne');
         })
         .then((library) => {
-          const guideLibrary = library.guides;
-          return readFile(guideLibrary);
+          guideInfo.mapping = mapGuides(guideInfo.have, guideInfo.need, library.guides);
+          return readFile(guideInfo.mapping);
         })
         .then((sampleObj) => {
           resolve(sampleObj);

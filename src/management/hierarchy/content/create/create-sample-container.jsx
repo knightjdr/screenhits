@@ -76,20 +76,15 @@ class CreateSampleContainer extends React.Component {
       this.updateSnackbar(postState, this.props.postState);
     }
   }
-  componentDidUpdate = (prevProps, prevState) => {
-    const { didSubmit, file, formData } = prevState;
-    if (
-      didSubmit &&
-      (
-        !deepEqual(this.state.formData, formData) ||
-        !deepEqual(this.state.file.header, file.header)
-      )
-    ) {
-      this.props.resetPost();
-      this.setState({
-        didSubmit: false,
-        snackbar: Object.assign({}, reset.snackbar),
-      });
+  componentDidUpdate = () => {
+    if (this.props.postState.didSubmitSucceed) {
+      setTimeout(() => {
+        this.props.resetPost();
+        this.setState({
+          didSubmit: false,
+          snackbar: Object.assign({}, reset.snackbar),
+        });
+      }, 3000);
     }
   }
   addMandatory = () => {
@@ -481,7 +476,7 @@ class CreateSampleContainer extends React.Component {
     newHeader[headerIndex].name = headerOptions.name[parseIndex];
     return newHeader;
   };
-  updateSnackbar = (next, current) => {
+  updateSnackbar = (next) => {
     if (next.message) {
       const currentTime = new Date();
       const lastOpen = this.state.snackbar.last;
@@ -520,10 +515,7 @@ class CreateSampleContainer extends React.Component {
                 open: true,
               }
             );
-          } else if (
-            current.isSubmitted &&
-            !next.isSubmitted
-          ) {
+          } else if (next.didSubmitSucceed) {
             return newSnackBarState(
               snackbar,
               {
@@ -629,6 +621,7 @@ class CreateSampleContainer extends React.Component {
 CreateSampleContainer.defaultProps = {
   postState: {
     didSubmitFail: false,
+    didSubmitSucceed: false,
     _id: null,
     isSubmitted: false,
     message: null,
@@ -649,6 +642,7 @@ CreateSampleContainer.propTypes = {
   inputWidth: PropTypes.number.isRequired,
   postState: PropTypes.shape({
     didSubmitFail: PropTypes.bool,
+    didSubmitSucceed: PropTypes.bool,
     _id: PropTypes.number,
     isSubmitted: PropTypes.bool,
     message: PropTypes.string,

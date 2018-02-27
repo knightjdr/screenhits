@@ -5,7 +5,7 @@ data/*
 dist/.htaccess
 
 # task folder
-tasks/*
+**/tasks/*
 
 # node modules, client and server side
 node_modules/*

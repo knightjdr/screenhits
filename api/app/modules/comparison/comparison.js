@@ -166,6 +166,8 @@ const Comparison = {
             normResults,
             form.design
           );
+          const filters = {};
+          filters[form.metric] = [];
           resolve({
             status: 200,
             clientResponse: {
@@ -173,7 +175,7 @@ const Comparison = {
                 header,
                 legend,
                 options: {
-                  filters: [],
+                  filters,
                   valueName: [
                     {
                       text: metricName,
