@@ -155,6 +155,9 @@ class DisplayScreenContainer extends React.Component {
           message: null,
         };
         updateObject.other[field] = value;
+        if (!errors.other) {
+          errors.other = {};
+        }
         errors.other[field] = validate.error ? validate.message : null;
       }
       const warning = !objectEmpty(errors);
