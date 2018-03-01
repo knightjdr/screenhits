@@ -144,8 +144,11 @@ const Tasks = {
           if (queueIndex > 0) {
             formattedTasks.push({
               _id: task._id,
-              analysisType: task.details.analysisType,
+              analysisType: task.analysisType,
               date: task.date,
+              details: {
+                design: task.design,
+              },
               error: '',
               isComplete: false,
               isOfficial: false,
@@ -153,8 +156,8 @@ const Tasks = {
               isRunning: false,
               lab: task.lab,
               log: '',
-              name: task.details.analysisName,
-              screenType: task.details.screenType,
+              name: task.analysisName,
+              screenType: task.screenType,
               status: `Queued/position ${queueIndex}`,
               user: task.userName,
             });

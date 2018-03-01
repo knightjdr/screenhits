@@ -20,7 +20,7 @@ class Navbar extends React.Component {
       <div
         style={ {
           backgroundColor: this.props.muiTheme.palette.primary1Color,
-          borderBottom: `2px solid ${this.props.muiTheme.palette.primary2Color}`,
+          boxShadow: '0px 2px 5px 0px rgba(0,0,0,0.75)',
           color: this.props.muiTheme.palette.offWhite,
           height: 60,
           left: 0,

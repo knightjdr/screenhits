@@ -3,7 +3,6 @@ const config = require('../../../../config').settings();
 const create = require('../../crud/create');
 const CrisprDefaults = require('../CRISPR/crispr-defaults');
 const csv = require('csvtojson');
-const deepEqual = require('deep-equal');
 const fs = require('mz/fs');
 const Log = require('../log');
 const Params = require('./params');
@@ -207,23 +206,6 @@ const MAGeCK = {
   },
   sampleToFiles: (folder, design, samples) => {
     return new Promise((resolve, reject) => {
-      // check if samples have same guide list (in the same order)
-      const compareGuideOrder = () => {
-        const expectedGuides = samples[0].records.map((record) => {
-          return record.quideSequence;
-        });
-        const sameGuideOrder = samples.every((sample, i) => {
-          if (i === 0) {
-            return true;
-          }
-          const currGuides = sample.records.map((record) => {
-            return record.quideSequence;
-          });
-          return deepEqual(currGuides, expectedGuides);
-        });
-        return sameGuideOrder;
-      };
-
       // create header
       const createHeader = (controls, replicates) => {
         let header = 'sgRNA\tgENE\t';
@@ -240,66 +222,42 @@ const MAGeCK = {
 
       // get guides to print out
       const getGuides = (arr) => {
-        let guides = [];
+        const guides = {};
         arr.forEach((sample) => {
-          const currGuides = sample.records.map((record) => {
-            return {
-              gene: record.gene,
-              guide: record.guideSequence,
-            };
+          sample.records.forEach((record) => {
+            if (!guides[record.guideSequence]) {
+              guides[record.guideSequence] = record.gene;
+            }
           });
-          guides = guides.concat(currGuides);
         });
-        // remove duplicates
-        if (arr.length > 1) {
-          guides = guides.filter((guide, index, self) => {
-            return self.findIndex((g) => {
-              return g.gene === guide.gene && g.guide === guide.guide;
-            }) === index;
-          });
-        }
         return guides;
       };
 
-      // write to file where sampleshave the same guide set
-      const writeInOrder = (guides, header, sampleIds) => {
-        const file = fs.createWriteStream(`${folder}/samples.txt`);
-        file.write(header);
-        guides.forEach((guideEntry, i) => {
-          let line = `${guideEntry.gene}_${guideEntry.guide}\t${guideEntry.gene}`;
-          sampleIds.forEach((_id) => {
-            const sampleIndex = samples.findIndex((sample) => {
-              return sample._id === _id;
-            });
-            line += `\t${samples[sampleIndex].records[i].readCount}`;
-          });
-          line += '\n';
-          file.write(line);
-        });
-        file.on('error', () => {
-          reject('Input file could not be created');
-        });
-        file.end();
-      };
-
       // write to file where samples do not have the same guide set
-      const writeLineByLine = (guides, header, sampleIds) => {
+      const writeToFile = (guides, header, sampleIds) => {
+        // map sample records to an array for quick lookup
+        const mappedSampleRecords = [];
+        sampleIds.forEach((_id, index) => {
+          const sampleIndex = samples.findIndex((sample) => {
+            return sample._id === _id;
+          });
+          mappedSampleRecords[index] = {};
+          samples[sampleIndex].records.forEach((record) => {
+            mappedSampleRecords[index][`${record.guideSequence}_${record.gene}`] = record.readCount;
+          });
+        });
+        // write file
         const file = fs.createWriteStream(`${folder}/samples.txt`);
         file.write(header);
-        guides.forEach((guideEntry) => {
-          let line = `${guideEntry.gene}_${guideEntry.guide}\t${guideEntry.gene}`;
-          sampleIds.forEach((_id) => {
-            const sampleIndex = samples.findIndex((sample) => {
-              return sample._id === _id;
-            });
-            const recordIndex = samples[sampleIndex].records.findIndex((record) => {
-              return record.guideSequence === guideEntry.guide;
-            });
-            line += recordIndex > -1 ?
-              `\t${samples[sampleIndex].records[recordIndex].readCount}`
-              :
-              0
-            ;
+        Object.entries(guides).forEach(([guide, gene]) => {
+          let line = `${gene}_${guide}\t${gene}`;
+          const lookupKey = `${guide}_${gene}`;
+          mappedSampleRecords.forEach((mappedSample) => {
+            if (mappedSample[lookupKey]) {
+              line += `\t${mappedSample[lookupKey]}`;
+            } else {
+              line += '\t0';
+            }
           });
           line += '\n';
           file.write(line);
@@ -327,14 +285,8 @@ const MAGeCK = {
       const allSampleIds = controls.concat(replicates);
 
       const header = createHeader(controls, replicateNames);
-      const sameFormat = compareGuideOrder(allSampleIds);
-      if (sameFormat) {
-        const guides = getGuides([samples[0]]);
-        writeInOrder(guides, header, allSampleIds);
-      } else {
-        const guides = getGuides(samples);
-        writeLineByLine(guides, header, allSampleIds);
-      }
+      const guides = getGuides([samples[0]]);
+      writeToFile(guides, header, allSampleIds);
       resolve();
     });
   },
