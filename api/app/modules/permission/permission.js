@@ -7,7 +7,7 @@ const Permission = {
         if (user.privilege === 'siteAdmin') {
           resolve(true);
         } else if (!queuedTask) { // if task is running or complete
-          query.get('analysisTasks', { _id }, { lab: 1, userEmail: 1 }, 'findOne')
+          query.get('analysisTasks', { _id: Number(_id) }, { lab: 1, userEmail: 1 }, 'findOne')
             .then((task) => {
               return Permission.checkEditTask(task, user) ?
                 Promise.resolve()
@@ -35,7 +35,7 @@ const Permission = {
           resolve(true);
         }
 
-        query.get('experiment', { _id }, { group: 1 }, 'findOne')
+        query.get('experiment', { _id: Number(_id) }, { group: 1 }, 'findOne')
           .then((experiment) => {
             return query.get('project', { _id: experiment.group.project }, {}, 'findOne');
           })
@@ -61,7 +61,7 @@ const Permission = {
           resolve(true);
         }
 
-        query.get('project', { _id }, { lab: 1, ownerEmail: 1, userPermission: 1 }, 'findOne')
+        query.get('project', { _id: Number(_id) }, { lab: 1, ownerEmail: 1, userPermission: 1 }, 'findOne')
           .then((project) => {
             return Permission.checkEditProject(project, user) ?
               Promise.resolve()
@@ -84,7 +84,7 @@ const Permission = {
           resolve(true);
         }
 
-        query.get('protocol', { _id }, { creatorEmail: 1 }, 'findOne')
+        query.get('protocol', { _id: Number(_id) }, { creatorEmail: 1 }, 'findOne')
           .then((protocol) => {
             return Permission.checkEditProtocol(protocol, user) ?
               Promise.resolve()
@@ -107,7 +107,7 @@ const Permission = {
           resolve(true);
         }
 
-        query.get('sample', { _id }, { group: 1 }, 'findOne')
+        query.get('sample', { _id: Number(_id) }, { group: 1 }, 'findOne')
           .then((sample) => {
             return query.get('project', { _id: sample.group.project }, {}, 'findOne');
           })
@@ -133,7 +133,7 @@ const Permission = {
           resolve(true);
         }
 
-        query.get('screen', { _id }, { group: 1 }, 'findOne')
+        query.get('screen', { _id: Number(_id) }, { group: 1 }, 'findOne')
           .then((screen) => {
             return query.get('project', { _id: screen.group.project }, {}, 'findOne');
           })
@@ -159,7 +159,7 @@ const Permission = {
           resolve(true);
         }
 
-        query.get('template', { _id }, { creatorEmail: 1, lab: 1 }, 'findOne')
+        query.get('template', { _id: Number(_id) }, { creatorEmail: 1, lab: 1 }, 'findOne')
           .then((template) => {
             return Permission.checkEditTemplate(template, user) ?
               Promise.resolve()
@@ -185,7 +185,7 @@ const Permission = {
         }
 
         Promise.all([
-          query.get('analysisTasks', { _id }, {}, 'findOne'),
+          query.get('analysisTasks', { _id: Number(_id) }, {}, 'findOne'),
           query.get('taskPermissions', { _id: { $in: ['global', user.email] } }),
         ])
           .then((values) => {
@@ -210,7 +210,7 @@ const Permission = {
           resolve(true);
         }
 
-        query.get('project', { _id }, { lab: 1, ownerEmail: 1, userPermission: 1 }, 'findOne')
+        query.get('project', { _id: Number(_id) }, { lab: 1, ownerEmail: 1, userPermission: 1 }, 'findOne')
           .then((project) => {
             return Permission.checkViewProject(project, user) ?
               Promise.resolve()

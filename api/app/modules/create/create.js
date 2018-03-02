@@ -259,8 +259,9 @@ const Create = {
             next(Create.queue.running);
           })
           .catch((error) => {
+            const _id = array[0]._id;
             Create.updateQueue('errors', error);
-            if (array[0]._id) {
+            if (_id) {
               deleteSample({ _id: array[0]._id });
             }
             next(Create.queue.running);
