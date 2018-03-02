@@ -247,7 +247,7 @@ class ActionMenu extends React.Component {
                             {
                               this.props.queue.details.errors.length > 0 ?
                                 <div>
-                                  <p>Samples produced errors and could not be processed.</p>
+                                  <p>Samples that produced errors and could not be processed.</p>
                                   <Queue
                                     header={ [
                                       {
@@ -272,7 +272,7 @@ class ActionMenu extends React.Component {
                                       },
                                     ] }
                                     keyName="date"
-                                    queue={ this.props.queue.details.queue }
+                                    queue={ this.props.queue.details.errors }
                                   />
                                 </div>
                                 :

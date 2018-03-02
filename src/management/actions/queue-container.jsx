@@ -10,10 +10,10 @@ class QueueContainer extends React.Component {
       tableHeight: this.getHeight(),
     };
   }
-  componentDidMount() {
+  componentDidMount = () => {
     window.addEventListener('resize', this.resize);
   }
-  componentWillUnmount() {
+  componentWillUnmount = () => {
     window.removeEventListener('resize', this.resize);
   }
   getHeight = () => {
